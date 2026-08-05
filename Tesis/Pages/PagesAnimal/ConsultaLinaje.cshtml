@@ -1,0 +1,108 @@
+@page
+@model Tesis.Pages.PagesAnimal.ConsultaLinajeModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Consultar Linaje y Registro Genealogico</h1>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+
+                @* El animal se elige desde el selector modal, no desde un select *@
+                <div class="form-group">
+                    <label for="txtAnimal">Animal:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="txtAnimal" value="@Model.numCaravana" placeholder="Ningun animal seleccionado" readonly>
+                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('numCaravana','txtAnimal','Seleccionar Animal','',true)">Buscar</button>
+                    </div>
+                    <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                </div>
+            </div>
+
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <br />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-info" asp-page-handler="ConsultarLinaje">Ver Linaje</button>
+                <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
+            </div>
+        </div>
+
+    </form>
+    <hr />
+
+    @if (Model.animal != null)
+    {
+        <h4>Arbol genealogico de @Model.animal.NumCaravana</h4>
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>Nivel</th>
+                    <th>Parentesco</th>
+                    <th>Caravana</th>
+                    <th>Sexo</th>
+                    <th>Raza</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>Animal</td>
+                    <td>@Model.animal.NumCaravana</td>
+                    <td>@(Model.animal is Dominio.Hembra ? "Hembra" : "Macho")</td>
+                    <td>@(Model.animal.Raza != null ? Model.animal.Raza.Nombre : "")</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Madre</td>
+                    <td>@(Model.animal.Madre != null ? Model.animal.Madre.NumCaravana : "Desconocido / No registrado")</td>
+                    <td>Hembra</td>
+                    <td>@(Model.animal.Madre != null && Model.animal.Madre.Raza != null ? Model.animal.Madre.Raza.Nombre : "")</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Padre</td>
+                    <td>@(Model.animal.Padre != null ? Model.animal.Padre.NumCaravana : "Desconocido / No registrado")</td>
+                    <td>Macho</td>
+                    <td>@(Model.animal.Padre != null && Model.animal.Padre.Raza != null ? Model.animal.Padre.Raza.Nombre : "")</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Abuela materna</td>
+                    <td>@(Model.animal.Madre != null && Model.animal.Madre.Madre != null ? Model.animal.Madre.Madre.NumCaravana : "Desconocido / No registrado")</td>
+                    <td>Hembra</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Abuelo materno</td>
+                    <td>@(Model.animal.Madre != null && Model.animal.Madre.Padre != null ? Model.animal.Madre.Padre.NumCaravana : "Desconocido / No registrado")</td>
+                    <td>Macho</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Abuela paterna</td>
+                    <td>@(Model.animal.Padre != null && Model.animal.Padre.Madre != null ? Model.animal.Padre.Madre.NumCaravana : "Desconocido / No registrado")</td>
+                    <td>Hembra</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Abuelo paterno</td>
+                    <td>@(Model.animal.Padre != null && Model.animal.Padre.Padre != null ? Model.animal.Padre.Padre.NumCaravana : "Desconocido / No registrado")</td>
+                    <td>Macho</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    }
+
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />

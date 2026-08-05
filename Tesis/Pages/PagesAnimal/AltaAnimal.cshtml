@@ -1,0 +1,127 @@
+@page
+@model Tesis.Pages.PagesAnimal.AltaAnimalModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Agregar Animal</h1>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+
+                <div class="form-group">
+                    <label for="id">ID:</label>
+                    <input asp-for="id" type="text" class="form-control" id="id" name="id" readonly>
+                    <span class="validation" asp-validation-for="id"></span>
+                </div>
+                <div class="form-group">
+                    <label for="numCaravana">Numero de Caravana:</label>
+                    <input asp-for="numCaravana" type="text" class="form-control" id="numCaravana" name="numCaravana">
+                    <span class="validation" asp-validation-for="numCaravana"></span>
+                </div>
+                <div class="form-group">
+                    <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                    <input asp-for="fechaNacimiento" type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento">
+                    <span class="validation" asp-validation-for="fechaNacimiento"></span>
+                </div>
+                <div class="form-group">
+                    <label for="sexo">Sexo:</label>
+                    <select id="sexo" name="sexo" asp-for="sexo" class="form-control" onchange="mostrarCamposXSexo()">
+                        <option value="H">Hembra</option>
+                        <option value="M">Macho</option>
+                    </select>
+                    <span class="validation" asp-validation-for="sexo"></span>
+                </div>
+                <div class="form-group">
+                    <label for="idRaza">Raza:</label>
+                    <select id="idRaza" name="idRaza" asp-for="idRaza" class="form-control">
+                        <option value="0">Seleccione una Raza</option>
+                        @foreach (var item in Model.razas)
+                        {
+                            <option value="@item.IdRaza">@item.Nombre</option>
+                        }
+                    </select>
+                    <span class="validation" asp-validation-for="idRaza"></span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+
+                @* La madre y el padre se eligen desde el selector modal, no desde un select *@
+                <div class="form-group">
+                    <label for="txtMadre">Madre:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="txtMadre" value="@Model.caravanaMadre" placeholder="Sin registrar" readonly>
+                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idMadre','txtMadre','Seleccionar Madre','H',false)">Buscar</button>
+                    </div>
+                    <input type="hidden" id="idMadre" name="idMadre" value="@Model.idMadre" />
+                </div>
+                <div class="form-group">
+                    <label for="txtPadre">Padre:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="txtPadre" value="@Model.caravanaPadre" placeholder="Sin registrar" readonly>
+                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idPadre','txtPadre','Seleccionar Padre','M',false)">Buscar</button>
+                    </div>
+                    <input type="hidden" id="idPadre" name="idPadre" value="@Model.idPadre" />
+                </div>
+                <div class="form-group" id="fHembra">
+                    <label for="numeroPartos">Partos Registrados:</label>
+                    <input asp-for="numeroPartos" type="number" min="0" class="form-control" id="numeroPartos" name="numeroPartos">
+                    <span class="validation" asp-validation-for="numeroPartos"></span>
+                </div>
+                <div class="form-group" id="fMacho">
+                    <label for="enPie">En pie (integra el rodeo como reproductor):</label>
+                    <input asp-for="enPie" type="checkbox" class="form-check-input ms-2" id="enPie" name="enPie">
+                    <span class="validation" asp-validation-for="enPie"></span>
+                </div>
+                <div class="form-group">
+                    <label for="idCategoria">Categoria:</label>
+                    <select id="idCategoria" name="idCategoria" asp-for="idCategoria" class="form-control">
+                        <option value="0">La calcula el sistema</option>
+                        @foreach (var item in Model.categorias)
+                        {
+                            <option value="@item.IdCategoria">@item.Nombre</option>
+                        }
+                    </select>
+                    <span class="validation" asp-validation-for="idCategoria"></span>
+                    @* La clase cancel hace que jQuery Validation no bloquee este envio *@
+                    <button type="submit" class="btn btn-info mt-2 cancel" asp-page-handler="CalcularCategoria">Calcular Categoria</button>
+                </div>
+            </div>
+
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <br />
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="AgregarAnimal">Agregar</button>
+                <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />
+
+<script>
+    function mostrarCamposXSexo() {
+        // El numero de partos es solo de la hembra y el en pie es solo del macho
+        var sexo = document.getElementById("sexo").value;
+
+        if (sexo === "H") {
+            document.getElementById("fHembra").style.display = "block";
+            document.getElementById("fMacho").style.display = "none";
+        } else {
+            document.getElementById("fHembra").style.display = "none";
+            document.getElementById("fMacho").style.display = "block";
+        }
+    }
+
+    mostrarCamposXSexo();
+</script>

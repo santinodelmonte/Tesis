@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tesis",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "Tesis/Tesis.csproj", "--launch-profile", "http"],
+      "port": 5174
+    }
+  ]
+}

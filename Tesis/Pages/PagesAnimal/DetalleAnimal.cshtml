@@ -1,0 +1,151 @@
+@page
+@model Tesis.Pages.PagesAnimal.DetalleAnimalModel
+@{
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Detalle de Animal</h1>
+    <hr />
+    @if (Model.animal != null)
+    {
+        <dl class="row">
+            <dt class="col-sm-2">
+                Numero de Caravana
+            </dt>
+            <dd class="col-sm-10">
+                @Model.animal.NumCaravana
+            </dd>
+            <dt class="col-sm-2">
+                Sexo
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.animal is Dominio.Hembra ? "Hembra" : "Macho")
+            </dd>
+            <dt class="col-sm-2">
+                Fecha de Nacimiento
+            </dt>
+            <dd class="col-sm-10">
+                @Model.animal.FechaNacimiento.ToShortDateString()
+            </dd>
+            <dt class="col-sm-2">
+                Edad
+            </dt>
+            <dd class="col-sm-10">
+                @Model.edadMeses meses
+            </dd>
+            <dt class="col-sm-2">
+                Raza
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.animal.Raza != null ? Model.animal.Raza.Nombre : "")
+            </dd>
+            <dt class="col-sm-2">
+                Categoria
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.animal.Categoria != null ? Model.animal.Categoria.Nombre : "")
+            </dd>
+            <dt class="col-sm-2">
+                Madre
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.animal.Madre != null ? Model.animal.Madre.NumCaravana : "No registrada")
+            </dd>
+            <dt class="col-sm-2">
+                Padre
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.animal.Padre != null ? Model.animal.Padre.NumCaravana : "No registrado")
+            </dd>
+            <dt class="col-sm-2">
+                Estado
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.animal.Activo ? "Activo" : "Inactivo")
+            </dd>
+
+            @if (!Model.animal.Activo)
+            {
+                <dt class="col-sm-2">
+                    Fecha de Baja
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.animal.FechaBaja.ToShortDateString()
+                </dd>
+                <dt class="col-sm-2">
+                    Motivo de Baja
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.animal.MotivoBaja
+                </dd>
+            }
+
+            @if (Model.animal is Dominio.Hembra)
+            {
+                Dominio.Hembra unaHembra = (Dominio.Hembra)Model.animal;
+                <dt class="col-sm-2">
+                    Partos Registrados
+                </dt>
+                <dd class="col-sm-10">
+                    @unaHembra.NumeroPartos
+                </dd>
+                <dt class="col-sm-2">
+                    Estado Productivo
+                </dt>
+                <dd class="col-sm-10">
+                    @unaHembra.EstadoProductivo
+                </dd>
+                <dt class="col-sm-2">
+                    Estado Reproductivo
+                </dt>
+                <dd class="col-sm-10">
+                    @unaHembra.EstadoReproductivo
+                </dd>
+            }
+            else
+            {
+                Dominio.Macho unMacho = (Dominio.Macho)Model.animal;
+                <dt class="col-sm-2">
+                    En pie
+                </dt>
+                <dd class="col-sm-10">
+                    @(unMacho.EnPie ? "Si, integra el rodeo" : "No, es toro de catalogo")
+                </dd>
+            }
+        </dl>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12">
+                <a class="btn btn-primary" asp-page="./ListaAnimales">Volver</a>
+                <a class="btn btn-primary" asp-page="./ModificarAnimal" asp-route-id="@Model.animal.IdAnimal">Modificar</a>
+                <a class="btn btn-secondary" asp-page="./ConsultaLinaje">Ver Linaje</a>
+
+                @if (Model.animal.Activo)
+                {
+                    <a class="btn btn-warning" asp-page="./BajaAnimal" asp-route-id="@Model.animal.IdAnimal">Registrar Baja</a>
+                }
+            </div>
+        </div>
+
+        <hr />
+        @* El borrado fisico vive solo aca, para que no quede a mano desde el listado *@
+        <div class="alert alert-light border mt-4">
+            <h5 class="text-danger" style="font-size: 20px">Eliminar del sistema</h5>
+            <p class="mb-2">
+                Si el animal salio del rodeo (venta, fallecimiento o descarte) corresponde
+                <strong>registrar la baja</strong>, que conserva su historial y su linaje.
+                Eliminar borra el registro de forma definitiva y solo debe usarse para corregir una carga erronea.
+            </p>
+            <a class="btn btn-outline-danger btn-sm" asp-page="./EliminarAnimal" asp-route-id="@Model.animal.IdAnimal">Eliminar animal</a>
+        </div>
+    }
+    else
+    {
+        <p>No se encontro el animal solicitado.</p>
+        <hr />
+        <div class="row">
+            <div class="col-sm-4">
+                <a class="btn btn-primary" asp-page="./ListaAnimales">Volver</a>
+            </div>
+        </div>
+    }
+</div>

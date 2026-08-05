@@ -1,0 +1,81 @@
+@page
+@model Tesis.Pages.PagesAnimal.VerificarConsanguinidadModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Verificar Consanguinidad</h1>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+
+                @* Los animales se eligen desde el selector modal, no desde un select *@
+                <div class="form-group">
+                    <label for="txtHembra">Hembra:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="txtHembra" value="@Model.caravanaHembra" placeholder="Ninguna hembra seleccionada" readonly>
+                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idHembra','txtHembra','Seleccionar Hembra','H',false)">Buscar</button>
+                    </div>
+                    <input type="hidden" id="idHembra" name="idHembra" value="@Model.idHembra" />
+                </div>
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="form-group">
+                    <label for="txtMacho">Reproductor:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="txtMacho" value="@Model.caravanaMacho" placeholder="Ningun reproductor seleccionado" readonly>
+                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idMacho','txtMacho','Seleccionar Reproductor','M',false)">Buscar</button>
+                    </div>
+                    <input type="hidden" id="idMacho" name="idMacho" value="@Model.idMacho" />
+                </div>
+            </div>
+
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <br />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-info" asp-page-handler="Verificar">Verificar</button>
+                <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
+            </div>
+        </div>
+
+    </form>
+    <hr />
+
+    @if (Model.verificado)
+    {
+        if (Model.hayParentesco)
+        {
+            <div class="alert alert-danger">
+                <h4>Existe parentesco directo entre los animales seleccionados.</h4>
+                @if (Model.ancestroComun != null)
+                {
+                    <p>El parentesco lo origina el animal @Model.ancestroComun.NumCaravana.</p>
+                }
+                <p>La verificacion es informativa y no bloquea el registro del servicio.</p>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-success">
+                <h4>No se detecto parentesco directo entre los animales seleccionados.</h4>
+            </div>
+        }
+
+        @if (Model.verificacionParcial)
+        {
+            <div class="alert alert-warning">
+                La verificacion es parcial. @Model.detalle
+            </div>
+        }
+    }
+
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />

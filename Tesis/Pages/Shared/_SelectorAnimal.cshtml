@@ -1,0 +1,172 @@
+@model List<Tesis.Dominio.Animal>
+@{
+    // Categorias distintas de los animales listados, para el filtro del selector
+    List<string> _categoriasSelector = new List<string>();
+    foreach (Tesis.Dominio.Animal animal in Model)
+    {
+        if (animal.Categoria != null && !_categoriasSelector.Contains(animal.Categoria.Nombre))
+        {
+            _categoriasSelector.Add(animal.Categoria.Nombre);
+        }
+    }
+}
+
+<!-- Selector de animal por caravana. Se abre con abrirSelectorAnimal(...) -->
+<div class="modal fade" id="mSelectorAnimal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mSelectorTitulo">Seleccionar Animal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="mSelectorBusqueda">Buscar por caravana:</label>
+                            <input type="text" class="form-control" id="mSelectorBusqueda" onkeyup="filtrarSelectorAnimal()">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="mSelectorCategoria">Categoria:</label>
+                            <select id="mSelectorCategoria" class="form-control" onchange="filtrarSelectorAnimal()">
+                                <option value="">Todas</option>
+                                @foreach (var item in _categoriasSelector)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="mSelectorEstado">Estado:</label>
+                            <select id="mSelectorEstado" class="form-control" onchange="filtrarSelectorAnimal()">
+                                <option value="">Todos</option>
+                                <option value="1">Activos</option>
+                                <option value="0">Inactivos</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <table class="table table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th>Caravana</th>
+                            <th>Sexo</th>
+                            <th>Categoria</th>
+                            <th>Estado</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mSelectorCuerpo">
+                        @foreach (Tesis.Dominio.Animal animal in Model)
+                        {
+                            <tr data-id="@animal.IdAnimal"
+                                data-caravana="@animal.NumCaravana"
+                                data-sexo="@(animal is Tesis.Dominio.Hembra ? "H" : "M")"
+                                data-categoria="@(animal.Categoria != null ? animal.Categoria.Nombre : "")"
+                                data-activo="@(animal.Activo ? "1" : "0")">
+                                <td>@animal.NumCaravana</td>
+                                <td>@(animal is Tesis.Dominio.Hembra ? "Hembra" : "Macho")</td>
+                                <td>@(animal.Categoria != null ? animal.Categoria.Nombre : "")</td>
+                                <td>@(animal.Activo ? "Activo" : "Inactivo")</td>
+                                <td>
+                                    <button type="button" class="btn btn-success btn-sm" onclick="elegirAnimalSelector(this)">Elegir</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <p id="mSelectorVacio" class="text-center" style="display: none">
+                    No hay animales que coincidan con la busqueda.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="limpiarSelectorAnimal()">Quitar seleccion</button>
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Campos del formulario que abrieron el selector
+    var selectorCampoOculto = "";
+    var selectorCampoTexto = "";
+    var selectorSexo = "";
+    var selectorGuardaCaravana = false;
+
+    function abrirSelectorAnimal(pCampoOculto, pCampoTexto, pTitulo, pSexo, pGuardaCaravana) {
+        selectorCampoOculto = pCampoOculto;
+        selectorCampoTexto = pCampoTexto;
+        selectorSexo = pSexo;
+        selectorGuardaCaravana = pGuardaCaravana;
+
+        document.getElementById("mSelectorTitulo").innerText = pTitulo;
+        document.getElementById("mSelectorBusqueda").value = "";
+        document.getElementById("mSelectorCategoria").value = "";
+        document.getElementById("mSelectorEstado").value = "";
+        filtrarSelectorAnimal();
+
+        var modal = new bootstrap.Modal(document.getElementById("mSelectorAnimal"));
+        modal.show();
+    }
+
+    function filtrarSelectorAnimal() {
+        var texto = document.getElementById("mSelectorBusqueda").value.toLowerCase();
+        var categoria = document.getElementById("mSelectorCategoria").value;
+        var estado = document.getElementById("mSelectorEstado").value;
+        var filas = document.getElementById("mSelectorCuerpo").rows;
+        var visibles = 0;
+
+        for (var i = 0; i < filas.length; i++) {
+            var fila = filas[i];
+            var mostrar = true;
+
+            if (texto !== "" && fila.getAttribute("data-caravana").toLowerCase().indexOf(texto) === -1) {
+                mostrar = false;
+            }
+            if (categoria !== "" && fila.getAttribute("data-categoria") !== categoria) {
+                mostrar = false;
+            }
+            if (estado !== "" && fila.getAttribute("data-activo") !== estado) {
+                mostrar = false;
+            }
+            // El sexo lo impone la pantalla que abrio el selector, no el usuario
+            if (selectorSexo !== "" && fila.getAttribute("data-sexo") !== selectorSexo) {
+                mostrar = false;
+            }
+
+            fila.style.display = mostrar ? "" : "none";
+            if (mostrar) {
+                visibles = visibles + 1;
+            }
+        }
+
+        document.getElementById("mSelectorVacio").style.display = visibles === 0 ? "block" : "none";
+    }
+
+    function elegirAnimalSelector(pBoton) {
+        var fila = pBoton.parentNode.parentNode;
+
+        if (selectorGuardaCaravana) {
+            document.getElementById(selectorCampoOculto).value = fila.getAttribute("data-caravana");
+        } else {
+            document.getElementById(selectorCampoOculto).value = fila.getAttribute("data-id");
+        }
+        document.getElementById(selectorCampoTexto).value = fila.getAttribute("data-caravana");
+
+        bootstrap.Modal.getInstance(document.getElementById("mSelectorAnimal")).hide();
+    }
+
+    function limpiarSelectorAnimal() {
+        // El id vuelve a cero y la caravana a vacio, que es como viaja "sin seleccion"
+        document.getElementById(selectorCampoOculto).value = selectorGuardaCaravana ? "" : "0";
+        document.getElementById(selectorCampoTexto).value = "";
+
+        bootstrap.Modal.getInstance(document.getElementById("mSelectorAnimal")).hide();
+    }
+</script>

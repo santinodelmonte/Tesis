@@ -1,0 +1,116 @@
+@page
+@model Tesis.Pages.PagesAnimal.ModificarAnimalModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Modificar Animal</h1>
+    <hr />
+    @if (Model.animal != null)
+    {
+        <form method="post">
+            <div class="row">
+                <div class="col-md-4">
+
+                    <div class="form-group">
+                        <label for="id">ID:</label>
+                        <input asp-for="id" type="text" class="form-control" id="id" name="id" value="@Model.animal.IdAnimal" readonly>
+                        <span class="validation" asp-validation-for="id"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="numCaravana">Numero de Caravana:</label>
+                        <input asp-for="numCaravana" type="text" class="form-control" id="numCaravana" name="numCaravana" value="@Model.animal.NumCaravana">
+                        <span class="validation" asp-validation-for="numCaravana"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                        <input asp-for="fechaNacimiento" type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" value="@Model.animal.FechaNacimiento.ToString("yyyy-MM-dd")">
+                        <span class="validation" asp-validation-for="fechaNacimiento"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="sexo">Sexo:</label>
+                        <input type="text" class="form-control" id="sexo" name="sexo" value="@(Model.animal is Dominio.Hembra ? "Hembra" : "Macho")" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="idRaza">Raza:</label>
+                        <select id="idRaza" name="idRaza" asp-for="idRaza" class="form-control">
+                            <option value="0">Seleccione una Raza</option>
+                            @foreach (var item in Model.razas)
+                            {
+                                if (Model.animal.Raza != null && item.IdRaza == Model.animal.Raza.IdRaza)
+                                {
+                                    <option value="@item.IdRaza" selected>@item.Nombre</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.IdRaza">@item.Nombre</option>
+                                }
+                            }
+                        </select>
+                        <span class="validation" asp-validation-for="idRaza"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="form-group">
+                        <label for="idCategoria">Categoria:</label>
+                        <select id="idCategoria" name="idCategoria" asp-for="idCategoria" class="form-control">
+                            <option value="0">Seleccione una Categoria</option>
+                            @foreach (var item in Model.categorias)
+                            {
+                                if (Model.animal.Categoria != null && item.IdCategoria == Model.animal.Categoria.IdCategoria)
+                                {
+                                    <option value="@item.IdCategoria" selected>@item.Nombre</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.IdCategoria">@item.Nombre</option>
+                                }
+                            }
+                        </select>
+                        <span class="validation" asp-validation-for="idCategoria"></span>
+                    </div>
+                    @* La madre y el padre se eligen desde el selector modal, no desde un select *@
+                    <div class="form-group">
+                        <label for="txtMadre">Madre:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="txtMadre" value="@Model.caravanaMadre" placeholder="Sin registrar" readonly>
+                            <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idMadre','txtMadre','Seleccionar Madre','H',false)">Buscar</button>
+                        </div>
+                        <input type="hidden" id="idMadre" name="idMadre" value="@Model.idMadre" />
+                    </div>
+                    <div class="form-group">
+                        <label for="txtPadre">Padre:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="txtPadre" value="@Model.caravanaPadre" placeholder="Sin registrar" readonly>
+                            <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idPadre','txtPadre','Seleccionar Padre','M',false)">Buscar</button>
+                        </div>
+                        <input type="hidden" id="idPadre" name="idPadre" value="@Model.idPadre" />
+                    </div>
+                </div>
+
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+            <br />
+            <hr />
+            <div class="row">
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-primary" asp-page-handler="ModificarAnimal">Guardar Cambios</button>
+                    <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
+                </div>
+            </div>
+
+        </form>
+    }
+    else
+    {
+        <p>No se encontro el animal solicitado.</p>
+        <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
+    }
+
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />
