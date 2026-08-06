@@ -22,22 +22,37 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
+                    @* El menu del sistema solo se muestra con la sesion iniciada *@
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/ListaAnimales">Animales</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/BuscarAnimales">Buscar Animales</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/ConsultaLinaje">Linaje</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/VerificarConsanguinidad">Consanguinidad</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-page="/PagesSeguridad/Login">Iniciar Sesion</a>
-                        </li>
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/ListaAnimales">Animales</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/BuscarAnimales">Buscar Animales</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/ConsultaLinaje">Linaje</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/VerificarConsanguinidad">Consanguinidad</a>
+                            </li>
+                            <li class="nav-item">
+                                <span class="nav-link text-light">@User.Identity.Name</span>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" asp-page="/PagesSeguridad/Login" asp-page-handler="Salir">
+                                    <button type="submit" class="nav-link btn btn-link text-light">Cerrar Sesion</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-page="/PagesSeguridad/Login">Iniciar Sesion</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

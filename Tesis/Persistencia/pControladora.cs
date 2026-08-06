@@ -4,8 +4,6 @@ namespace Tesis.Persistencia
 {
     public class pControladora
     {
-        private pConexion Conexion = new pConexion();
-
         #region RAZAS
         public List<Raza> ListarRazas()
         {
@@ -15,11 +13,6 @@ namespace Tesis.Persistencia
         public bool AltaRaza(Raza pRaza)
         {
             return new pRaza().AltaRaza(pRaza);
-        }
-
-        public int ProximoRazaId()
-        {
-            return new pRaza().ProximoRazaId();
         }
         #endregion
 
@@ -33,17 +26,14 @@ namespace Tesis.Persistencia
         {
             return new pCategoria().AltaCategoria(pCategoria);
         }
-
-        public int ProximoCategoriaId()
-        {
-            return new pCategoria().ProximoCategoriaId();
-        }
         #endregion
 
         #region ANIMALES
-        public List<Animal> ListarAnimales()
+        // Razas y categorias van como parametro: pAnimal las necesita para resolver
+        // cada animal y ya no se las pide al dominio.
+        public List<Animal> ListarAnimales(List<Raza> pListaRazas, List<Categoria> pListaCategorias)
         {
-            return new pAnimal().ListarAnimales();
+            return new pAnimal().ListarAnimales(pListaRazas, pListaCategorias);
         }
 
         public bool AltaAnimal(Animal pAnimal)
@@ -60,22 +50,12 @@ namespace Tesis.Persistencia
         {
             return new pAnimal().BajaAnimal(pIdAnimal, pMotivoBaja);
         }
-
-        public bool EliminarAnimal(int pIdAnimal)
-        {
-            return new pAnimal().EliminarAnimal(pIdAnimal);
-        }
-
-        public int ProximoAnimalId()
-        {
-            return new pAnimal().ProximoAnimalId();
-        }
         #endregion
 
         #region HEMBRAS
-        public List<Hembra> ListarHembras()
+        public List<Hembra> ListarHembras(List<Animal> pListaAnimales)
         {
-            return new pHembra().ListarHembras();
+            return new pHembra().ListarHembras(pListaAnimales);
         }
 
         public bool AltaHembra(Hembra pHembra)
@@ -87,17 +67,12 @@ namespace Tesis.Persistencia
         {
             return new pHembra().ModificarHembra(pHembra);
         }
-
-        public int ProximoHembraId()
-        {
-            return new pHembra().ProximoHembraId();
-        }
         #endregion
 
         #region MACHOS
-        public List<Macho> ListarMachos()
+        public List<Macho> ListarMachos(List<Animal> pListaAnimales)
         {
-            return new pMacho().ListarMachos();
+            return new pMacho().ListarMachos(pListaAnimales);
         }
 
         public bool AltaMacho(Macho pMacho)
@@ -105,9 +80,9 @@ namespace Tesis.Persistencia
             return new pMacho().AltaMacho(pMacho);
         }
 
-        public int ProximoMachoId()
+        public bool ModificarMacho(Macho pMacho)
         {
-            return new pMacho().ProximoMachoId();
+            return new pMacho().ModificarMacho(pMacho);
         }
         #endregion
     }

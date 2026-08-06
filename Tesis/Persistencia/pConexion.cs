@@ -6,41 +6,40 @@ namespace Tesis.Persistencia
     public class pConexion
     {
         // ---------------------------------------------------------------------
-        // DATOS DE CONEXION A MySQL - completar con los datos del equipo
+        // La cadena de conexion no se escribe aca: se carga desde appsettings.json
+        // al iniciar la aplicacion (ver Program.cs). De esa forma los datos del
+        // servidor y la contrasena de MySQL no quedan versionados en el repositorio.
         // ---------------------------------------------------------------------
-        private static string servidor = "localhost";
-        private static string puerto = "3306";
-        private static string baseDeDatos = "tambo";
-        private static string usuario = "root";
-        private static string contrasena = "";
+        private static string mCadenaConexion = "";
+
+        public static void Configurar(string pCadenaConexion)
+        {
+            mCadenaConexion = pCadenaConexion;
+        }
         // ---------------------------------------------------------------------
-
-        private string mCadenaConexion = "server=" + servidor + "; port=" + puerto + "; " +
-       "database=" + baseDeDatos + "; uid=" + usuario + "; pwd=" + contrasena + "; CharSet=utf8mb4;";
-        private MySqlConnection mConexion;
-
-        public bool Abrir()
-        {
-            mConexion = new MySqlConnection(this.mCadenaConexion);
-            mConexion.Open();
-            return true;
-        }
-
-        public bool Cerrar()
-        {
-            mConexion.Close();
-            return true;
-        }
 
         public bool EjecutarComando(string pSql)
         {
+            return this.EjecutarComando(pSql, null);
+        }
+
+        // Las consultas se arman con parametros y no concatenando texto: asi un
+        // numero de caravana o un motivo de baja con apostrofo no rompe el comando
+        // ni permite inyectar SQL.
+        public bool EjecutarComando(string pSql, Dictionary<string, object?>? pParametros)
+        {
             try
             {
-                this.Abrir();
-                MySqlCommand comando = new MySqlCommand(pSql, mConexion);
-                comando.ExecuteNonQuery();
-                comando.Dispose();
-                this.Cerrar();
+                // El using cierra la conexion y el comando aunque el comando falle
+                using (MySqlConnection conexion = new MySqlConnection(mCadenaConexion))
+                {
+                    conexion.Open();
+                    using (MySqlCommand comando = new MySqlCommand(pSql, conexion))
+                    {
+                        this.CargarParametros(comando, pParametros);
+                        comando.ExecuteNonQuery();
+                    }
+                }
                 return true;
             }
             catch (Exception e)
@@ -51,19 +50,77 @@ namespace Tesis.Persistencia
 
         public DataTable EjecutarConsulta(string pSql)
         {
+            return this.EjecutarConsulta(pSql, null);
+        }
+
+        public DataTable EjecutarConsulta(string pSql, Dictionary<string, object?>? pParametros)
+        {
             try
             {
-                this.Abrir();
-                MySqlDataAdapter adaptador = new MySqlDataAdapter(pSql, mConexion);
-                DataTable resultado = new DataTable();
-                adaptador.Fill(resultado);
-                adaptador.Dispose();
-                this.Cerrar();
-                return resultado;
+                using (MySqlConnection conexion = new MySqlConnection(mCadenaConexion))
+                {
+                    conexion.Open();
+                    using (MySqlCommand comando = new MySqlCommand(pSql, conexion))
+                    {
+                        this.CargarParametros(comando, pParametros);
+                        using (MySqlDataAdapter adaptador = new MySqlDataAdapter(comando))
+                        {
+                            DataTable resultado = new DataTable();
+                            adaptador.Fill(resultado);
+                            return resultado;
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
                 throw new Exception("Error en conexion sql = " + pSql, e);
+            }
+        }
+
+        // Devuelve una conexion ya abierta. La usa el alta de animal, que necesita
+        // escribir en dos tablas dentro de una misma transaccion. El que la pide se
+        // encarga de cerrarla (con using).
+        public MySqlConnection AbrirConexion()
+        {
+            MySqlConnection conexion = new MySqlConnection(mCadenaConexion);
+            conexion.Open();
+            return conexion;
+        }
+
+        // Ejecuta un comando sobre una conexion y una transaccion que ya estan abiertas
+        public int EjecutarInsercionEnTransaccion(string pSql, Dictionary<string, object?> pParametros,
+            MySqlConnection pConexion, MySqlTransaction pTransaccion)
+        {
+            using (MySqlCommand comando = new MySqlCommand(pSql, pConexion, pTransaccion))
+            {
+                this.CargarParametros(comando, pParametros);
+                comando.ExecuteNonQuery();
+                return (int)comando.LastInsertedId;
+            }
+        }
+
+        public void EjecutarComandoEnTransaccion(string pSql, Dictionary<string, object?> pParametros,
+            MySqlConnection pConexion, MySqlTransaction pTransaccion)
+        {
+            using (MySqlCommand comando = new MySqlCommand(pSql, pConexion, pTransaccion))
+            {
+                this.CargarParametros(comando, pParametros);
+                comando.ExecuteNonQuery();
+            }
+        }
+
+        private void CargarParametros(MySqlCommand pComando, Dictionary<string, object?>? pParametros)
+        {
+            if (pParametros == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<string, object?> unParametro in pParametros)
+            {
+                // Un valor nulo se manda como NULL de la base, no como texto vacio
+                pComando.Parameters.AddWithValue(unParametro.Key, unParametro.Value ?? DBNull.Value);
             }
         }
     }

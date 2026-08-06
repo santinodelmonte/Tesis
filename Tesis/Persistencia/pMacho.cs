@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Tesis.Dominio;
 using System.Data;
 
@@ -8,17 +7,34 @@ namespace Tesis.Persistencia
     {
         private pConexion Conexion = new pConexion();
 
-        public List<Macho> ListarMachos()
+        // El alta de macho la usan dos caminos: el alta de animal, que la ejecuta
+        // dentro de su transaccion, y AltaMacho. Por eso el comando y sus parametros
+        // se declaran una sola vez aca.
+        public const string SQL_ALTA = "INSERT INTO machos (id_animal, en_pie) " +
+            "VALUES (@id_animal, @en_pie)";
+
+        public static Dictionary<string, object?> ParametrosAlta(Macho pMacho)
+        {
+            return new Dictionary<string, object?>
+            {
+                { "@id_animal", pMacho.IdAnimal },
+                { "@en_pie", pMacho.EnPie ? 1 : 0 }
+            };
+        }
+
+        // Los animales ya armados llegan por parametro. Antes esta clase instanciaba
+        // una Controladora para sacarlos de su cache, con lo cual la capa de
+        // persistencia terminaba llamando a la de dominio.
+        public List<Macho> ListarMachos(List<Animal> pListaAnimales)
         {
             string sql = "SELECT id_animal FROM machos ORDER BY id_animal";
             DataTable datos = Conexion.EjecutarConsulta(sql);
             List<Macho> lista = new List<Macho>();
-            Controladora unaControladora = new Controladora();
 
-            // El objeto ya fue armado por pAnimal, aca solo se recupera de la cache
+            // El objeto ya fue armado por pAnimal, aca solo se selecciona
             foreach (DataRow fila in datos.Rows)
             {
-                Macho unMacho = unaControladora.BuscarAnimal(int.Parse(fila["id_animal"].ToString())) as Macho;
+                Macho unMacho = this.BuscarEnLista(pListaAnimales, int.Parse(fila["id_animal"].ToString())) as Macho;
                 if (unMacho != null)
                 {
                     lista.Add(unMacho);
@@ -27,24 +43,40 @@ namespace Tesis.Persistencia
             return lista;
         }
 
-        public bool AltaMacho(Macho pMacho)
+        private Animal BuscarEnLista(List<Animal> pLista, int pIdAnimal)
         {
-            string sql = "INSERT INTO machos (id_animal, en_pie) " +
-                "VALUES ("
-                + pMacho.IdAnimal + ","
-                + (pMacho.EnPie ? 1 : 0) + ")";
-
-            return Conexion.EjecutarComando(sql);
+            foreach (Animal unAnimal in pLista)
+            {
+                if (unAnimal.IdAnimal == pIdAnimal)
+                {
+                    return unAnimal;
+                }
+            }
+            return null;
         }
 
-        public int ProximoMachoId()
+        public bool AltaMacho(Macho pMacho)
         {
-            string sql = "SELECT (IFNULL(MAX(id_animal),0)+1) FROM machos";
-            DataTable datos = Conexion.EjecutarConsulta(sql);
-            DataRowCollection filas = datos.Rows;
-            var campo = filas[0];
-            int Id = int.Parse(campo[0].ToString());
-            return Id;
+            return Conexion.EjecutarComando(SQL_ALTA, ParametrosAlta(pMacho));
+        }
+
+        // Igual que el alta, la modificacion la usan dos caminos: la modificacion de
+        // animal, que la ejecuta dentro de su transaccion, y ModificarMacho.
+        public const string SQL_MODIFICAR = "UPDATE machos SET en_pie = @en_pie "
+            + "WHERE id_animal = @id_animal";
+
+        public static Dictionary<string, object?> ParametrosModificar(Macho pMacho)
+        {
+            return new Dictionary<string, object?>
+            {
+                { "@en_pie", pMacho.EnPie ? 1 : 0 },
+                { "@id_animal", pMacho.IdAnimal }
+            };
+        }
+
+        public bool ModificarMacho(Macho pMacho)
+        {
+            return Conexion.EjecutarComando(SQL_MODIFICAR, ParametrosModificar(pMacho));
         }
     }
 }

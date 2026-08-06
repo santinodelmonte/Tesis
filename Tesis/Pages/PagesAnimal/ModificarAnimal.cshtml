@@ -14,19 +14,21 @@
             <div class="row">
                 <div class="col-md-4">
 
+                    @* Los campos se dibujan desde las propiedades del modelo y no desde
+                       el animal de la cache, para no perder lo tipeado si falla la validacion *@
                     <div class="form-group">
                         <label for="id">ID:</label>
-                        <input asp-for="id" type="text" class="form-control" id="id" name="id" value="@Model.animal.IdAnimal" readonly>
+                        <input asp-for="id" type="text" class="form-control" id="id" name="id" readonly>
                         <span class="validation" asp-validation-for="id"></span>
                     </div>
                     <div class="form-group">
                         <label for="numCaravana">Numero de Caravana:</label>
-                        <input asp-for="numCaravana" type="text" class="form-control" id="numCaravana" name="numCaravana" value="@Model.animal.NumCaravana">
+                        <input asp-for="numCaravana" type="text" class="form-control" id="numCaravana" name="numCaravana">
                         <span class="validation" asp-validation-for="numCaravana"></span>
                     </div>
                     <div class="form-group">
                         <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-                        <input asp-for="fechaNacimiento" type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" value="@Model.animal.FechaNacimiento.ToString("yyyy-MM-dd")">
+                        <input asp-for="fechaNacimiento" type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento">
                         <span class="validation" asp-validation-for="fechaNacimiento"></span>
                     </div>
                     <div class="form-group">
@@ -39,7 +41,7 @@
                             <option value="0">Seleccione una Raza</option>
                             @foreach (var item in Model.razas)
                             {
-                                if (Model.animal.Raza != null && item.IdRaza == Model.animal.Raza.IdRaza)
+                                if (item.IdRaza == Model.idRaza)
                                 {
                                     <option value="@item.IdRaza" selected>@item.Nombre</option>
                                 }
@@ -55,24 +57,6 @@
 
                 <div class="col-md-4">
 
-                    <div class="form-group">
-                        <label for="idCategoria">Categoria:</label>
-                        <select id="idCategoria" name="idCategoria" asp-for="idCategoria" class="form-control">
-                            <option value="0">Seleccione una Categoria</option>
-                            @foreach (var item in Model.categorias)
-                            {
-                                if (Model.animal.Categoria != null && item.IdCategoria == Model.animal.Categoria.IdCategoria)
-                                {
-                                    <option value="@item.IdCategoria" selected>@item.Nombre</option>
-                                }
-                                else
-                                {
-                                    <option value="@item.IdCategoria">@item.Nombre</option>
-                                }
-                            }
-                        </select>
-                        <span class="validation" asp-validation-for="idCategoria"></span>
-                    </div>
                     @* La madre y el padre se eligen desde el selector modal, no desde un select *@
                     <div class="form-group">
                         <label for="txtMadre">Madre:</label>
@@ -89,6 +73,45 @@
                             <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idPadre','txtPadre','Seleccionar Padre','M',false)">Buscar</button>
                         </div>
                         <input type="hidden" id="idPadre" name="idPadre" value="@Model.idPadre" />
+                    </div>
+
+                    @* El sexo no se puede cambiar, asi que se muestra el campo que corresponde *@
+                    @if (Model.animal is Dominio.Hembra)
+                    {
+                        <div class="form-group">
+                            <label for="numeroPartos">Partos Registrados:</label>
+                            <input asp-for="numeroPartos" type="number" min="0" class="form-control" id="numeroPartos" name="numeroPartos">
+                            <span class="validation" asp-validation-for="numeroPartos"></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label for="enPie">En pie (integra el rodeo como reproductor):</label>
+                            <input asp-for="enPie" type="checkbox" class="form-check-input ms-2" id="enPie" name="enPie">
+                            <span class="validation" asp-validation-for="enPie"></span>
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        <label for="idCategoria">Categoria:</label>
+                        <select id="idCategoria" name="idCategoria" asp-for="idCategoria" class="form-control">
+                            <option value="0">Seleccione una Categoria</option>
+                            @foreach (var item in Model.categorias)
+                            {
+                                if (item.IdCategoria == Model.idCategoria)
+                                {
+                                    <option value="@item.IdCategoria" selected>@item.Nombre</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.IdCategoria">@item.Nombre</option>
+                                }
+                            }
+                        </select>
+                        <span class="validation" asp-validation-for="idCategoria"></span>
+                        @* La clase cancel hace que jQuery Validation no bloquee este envio *@
+                        <button type="submit" class="btn btn-info mt-2 cancel" asp-page-handler="CalcularCategoria">Calcular Categoria</button>
                     </div>
                 </div>
 
