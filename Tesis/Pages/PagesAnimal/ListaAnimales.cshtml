@@ -8,6 +8,13 @@
         Rodeo actual: @Model.animales.Count animales activos.
         Los animales dados de baja se consultan desde <a asp-page="./BuscarAnimales">Buscar y Filtrar</a>.
     </p>
+    @if (Model.categoriasDesactualizadas.Count > 0)
+    {
+        <div class="alert alert-warning">
+            @Model.categoriasDesactualizadas.Count animal(es) cambiaron de condicion y su categoria
+            quedo desactualizada. Se marcan abajo con la categoria que les corresponde.
+        </div>
+    }
     <div class="row">
         <div class="col-sm-12 text-right">
             <a class="btn btn-success" asp-page="./AltaAnimal">Agregar</a>
@@ -37,13 +44,28 @@
                         <td>@(animal is Dominio.Hembra ? "Hembra" : "Macho")</td>
                         <td>@animal.FechaNacimiento.ToShortDateString()</td>
                         <td>@(animal.Raza != null ? animal.Raza.Nombre : "")</td>
-                        <td>@(animal.Categoria != null ? animal.Categoria.Nombre : "")</td>
+                        <td>
+                            @(animal.Categoria != null ? animal.Categoria.Nombre : "")
+                            @if (Model.categoriasDesactualizadas.ContainsKey(animal.IdAnimal))
+                            {
+                                <br />
+                                <span class="badge bg-warning text-dark">
+                                    Corresponde @Model.categoriasDesactualizadas[animal.IdAnimal]
+                                </span>
+                            }
+                        </td>
                         <td>
                             <div class="mt-2">
                                 <a class="btn btn-primary" asp-page="./ModificarAnimal" asp-route-id="@animal.IdAnimal">Modificar</a>
                                 <a class="btn btn-warning" asp-page="./DetalleAnimal" asp-route-id="@animal.IdAnimal">Detalle</a>
                                 <a class="btn btn-secondary" asp-page="./BajaAnimal" asp-route-id="@animal.IdAnimal">Baja</a>
                             </div>
+                            @if (Model.categoriasDesactualizadas.ContainsKey(animal.IdAnimal))
+                            {
+                                <form method="post" asp-page-handler="ActualizarCategoria" asp-route-id="@animal.IdAnimal" class="mt-2">
+                                    <button type="submit" class="btn btn-warning btn-sm">Actualizar Categoria</button>
+                                </form>
+                            }
                         </td>
                     </tr>
                 }

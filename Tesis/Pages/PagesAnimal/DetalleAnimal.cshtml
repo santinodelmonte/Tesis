@@ -43,6 +43,14 @@
             </dt>
             <dd class="col-sm-10">
                 @(Model.animal.Categoria != null ? Model.animal.Categoria.Nombre : "")
+                @if (Model.categoriaSugerida != "")
+                {
+                    @* RF1.9: la condicion del animal cambio y la categoria quedo vieja *@
+                    <span class="badge bg-warning text-dark">Corresponde @Model.categoriaSugerida</span>
+                    <form method="post" asp-page-handler="ActualizarCategoria" asp-route-id="@Model.animal.IdAnimal" class="mt-2">
+                        <button type="submit" class="btn btn-warning btn-sm">Actualizar a @Model.categoriaSugerida</button>
+                    </form>
+                }
             </dd>
             <dt class="col-sm-2">
                 Madre
@@ -126,17 +134,6 @@
             </div>
         </div>
 
-        <hr />
-        @* El borrado fisico vive solo aca, para que no quede a mano desde el listado *@
-        <div class="alert alert-light border mt-4">
-            <h5 class="text-danger" style="font-size: 20px">Eliminar del sistema</h5>
-            <p class="mb-2">
-                Si el animal salio del rodeo (venta, fallecimiento o descarte) corresponde
-                <strong>registrar la baja</strong>, que conserva su historial y su linaje.
-                Eliminar borra el registro de forma definitiva y solo debe usarse para corregir una carga erronea.
-            </p>
-            <a class="btn btn-outline-danger btn-sm" asp-page="./EliminarAnimal" asp-route-id="@Model.animal.IdAnimal">Eliminar animal</a>
-        </div>
     }
     else
     {

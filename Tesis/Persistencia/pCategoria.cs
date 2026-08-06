@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Tesis.Dominio;
 using System.Data;
 
@@ -28,22 +27,16 @@ namespace Tesis.Persistencia
 
         public bool AltaCategoria(Categoria pCategoria)
         {
-            string sql = "INSERT INTO categorias (nombre, descripcion) " +
-                "VALUES ('"
-                + pCategoria.Nombre + "','"
-                + pCategoria.Descripcion + "')";
+            // El id_categoria lo asigna MySQL con el AUTO_INCREMENT
+            string sql = "INSERT INTO categorias (nombre, descripcion) VALUES (@nombre, @descripcion)";
 
-            return Conexion.EjecutarComando(sql);
-        }
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@nombre", pCategoria.Nombre },
+                { "@descripcion", pCategoria.Descripcion }
+            };
 
-        public int ProximoCategoriaId()
-        {
-            string sql = "SELECT (IFNULL(MAX(id_categoria),0)+1) FROM categorias";
-            DataTable datos = Conexion.EjecutarConsulta(sql);
-            DataRowCollection filas = datos.Rows;
-            var campo = filas[0];
-            int Id = int.Parse(campo[0].ToString());
-            return Id;
+            return Conexion.EjecutarComando(sql, parametros);
         }
     }
 }

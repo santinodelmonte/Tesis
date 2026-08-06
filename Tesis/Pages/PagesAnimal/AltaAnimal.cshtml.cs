@@ -8,9 +8,6 @@ namespace Tesis.Pages.PagesAnimal
     public class AltaAnimalModel : PageModel
     {
         [BindProperty]
-        [Required(ErrorMessage = "El ID es requerido")]
-        public int id { get; set; } = 1;
-        [BindProperty]
         [Required(ErrorMessage = "El número de caravana es requerido")]
         public string numCaravana { get; set; } = "";
         [BindProperty]
@@ -46,7 +43,6 @@ namespace Tesis.Pages.PagesAnimal
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
-            id = unaControladora.ProximoAnimalId();
             razas = unaControladora.ListarRazas();
             categorias = unaControladora.ListarCategorias();
             hembras = unaControladora.ListarHembras();
@@ -113,6 +109,15 @@ namespace Tesis.Pages.PagesAnimal
 
             Animal unAnimal = this.ArmarAnimal(unaControladora);
 
+            // La genealogia se valida antes de guardar para poder informar el motivo
+            string vMotivo = unaControladora.ValidarGenealogia(unAnimal.IdAnimal, unAnimal.FechaNacimiento,
+                unAnimal.Madre, unAnimal.Padre);
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
+
             // Si el usuario no ajusto la categoria, se usa la que propone el sistema
             if (unAnimal.Categoria == null)
             {
@@ -134,7 +139,6 @@ namespace Tesis.Pages.PagesAnimal
         private void LeerFormulario()
         {
             // Los select y las fechas pueden llegar vacios, por eso se comparan antes de convertir
-            id = Request.Form["id"] != "" ? Convert.ToInt32(Request.Form["id"]) : 0;
             numCaravana = Request.Form["numCaravana"];
             fechaNacimiento = Request.Form["fechaNacimiento"] != "" ? Convert.ToDateTime(Request.Form["fechaNacimiento"]) : DateTime.Now;
             sexo = Request.Form["sexo"] != "" ? Request.Form["sexo"] : "H";
@@ -164,13 +168,16 @@ namespace Tesis.Pages.PagesAnimal
             Hembra unaMadre = pControladoraDominio.BuscarHembra(idMadre);
             Macho unPadre = pControladoraDominio.BuscarMacho(idPadre);
 
+            // El id va en cero: lo asigna la base al insertar y la persistencia lo
+            // devuelve cargado en el objeto.
             if (sexo == "H")
             {
-                return new Hembra(id, numCaravana, fechaNacimiento, true, DateTime.MinValue, "",
-                    unaRaza, unaCategoria, unaMadre, unPadre, numeroPartos, "Sin lactancia", "Vacía");
+                return new Hembra(0, numCaravana, fechaNacimiento, true, DateTime.MinValue, "",
+                    unaRaza, unaCategoria, unaMadre, unPadre, numeroPartos,
+                    Hembra.SIN_LACTANCIA, Hembra.VACIA);
             }
 
-            return new Macho(id, numCaravana, fechaNacimiento, true, DateTime.MinValue, "",
+            return new Macho(0, numCaravana, fechaNacimiento, true, DateTime.MinValue, "",
                 unaRaza, unaCategoria, unaMadre, unPadre, enPie);
         }
     }

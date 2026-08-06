@@ -6,6 +6,12 @@ namespace Tesis.Dominio
     {
         private pControladora Persistencia;
 
+        // Edad minima a la que un animal puede entrar en servicio y duracion de la
+        // gestacion, en meses. La suma es la diferencia minima de edad que puede
+        // haber entre un progenitor y su cria.
+        public const int EDAD_MINIMA_SERVICIO_MESES = 15;
+        public const int GESTACION_MESES = 9;
+
         private static List<Raza> mListaRazas = new List<Raza>();
         private static List<Categoria> mListaCategorias = new List<Categoria>();
         private static List<Animal> mListaAnimales = new List<Animal>();
@@ -19,11 +25,25 @@ namespace Tesis.Dominio
 
         #region SEGURIDAD
         // Credenciales fijas del sistema. Un unico par para la encargada del sector.
-        private static string mUsuarioSistema = "sofia";
-        private static string mContrasenaSistema = "tambo2026";
+        // No se escriben aca: las carga Program.cs desde appsettings.json.
+        private static string mUsuarioSistema = "";
+        private static string mContrasenaSistema = "";
+
+        public static void ConfigurarCredenciales(string pUsuario, string pContrasena)
+        {
+            mUsuarioSistema = pUsuario;
+            mContrasenaSistema = pContrasena;
+        }
 
         public bool ValidarCredenciales(string pUsuario, string pContrasena)
         {
+            // Si la configuracion no trajo credenciales no se habilita el acceso,
+            // para que una carga incompleta no deje pasar con los campos vacios.
+            if (mUsuarioSistema == "" || mContrasenaSistema == "")
+            {
+                return false;
+            }
+
             if (pUsuario == mUsuarioSistema && pContrasena == mContrasenaSistema)
             {
                 return true;
@@ -76,16 +96,13 @@ namespace Tesis.Dominio
         #region ANIMALES
         public List<Animal> ListarAnimales()
         {
-            // pAnimal resuelve raza y categoria contra la cache, por eso se refrescan primero
+            // pAnimal necesita razas y categorias para resolver cada animal: se listan
+            // primero y se le pasan. Antes las buscaba solo, instanciando una
+            // Controladora desde la capa de persistencia.
             mListaRazas = Persistencia.ListarRazas();
             mListaCategorias = Persistencia.ListarCategorias();
-            mListaAnimales = Persistencia.ListarAnimales();
+            mListaAnimales = Persistencia.ListarAnimales(mListaRazas, mListaCategorias);
             return mListaAnimales;
-        }
-
-        public int ProximoAnimalId()
-        {
-            return Persistencia.ProximoAnimalId();
         }
 
         public Animal BuscarAnimal(int pId)
@@ -127,22 +144,25 @@ namespace Tesis.Dominio
 
         public bool AltaAnimal(Animal pAnimal)
         {
+            if (this.ValidarGenealogia(pAnimal.IdAnimal, pAnimal.FechaNacimiento,
+                pAnimal.Madre, pAnimal.Padre) != "")
+            {
+                return false;
+            }
+
             if (!this.ExisteCaravana(pAnimal.NumCaravana))
             {
+                // La persistencia guarda el animal y su especializacion dentro de una
+                // misma transaccion, y le asigna el id que genero la base.
                 if (Persistencia.AltaAnimal(pAnimal))
                 {
-                    // La especializacion se guarda en su propia tabla
                     if (pAnimal is Hembra)
                     {
-                        Hembra unaHembra = (Hembra)pAnimal;
-                        Persistencia.AltaHembra(unaHembra);
-                        mListaHembras.Add(unaHembra);
+                        mListaHembras.Add((Hembra)pAnimal);
                     }
                     else
                     {
-                        Macho unMacho = (Macho)pAnimal;
-                        Persistencia.AltaMacho(unMacho);
-                        mListaMachos.Add(unMacho);
+                        mListaMachos.Add((Macho)pAnimal);
                     }
 
                     mListaAnimales.Add(pAnimal);
@@ -153,31 +173,112 @@ namespace Tesis.Dominio
 
         }
 
+        // Ademas de los datos del animal recibe los de su especializacion: el numero
+        // de partos de la hembra y el en pie del macho, que CU3 pide poder corregir
+        // y que ademas determinan la categoria.
         public bool ModificarAnimal(int pIdAnimal, string pNumCaravana, DateTime pFechaNacimiento,
-            Raza pRaza, Categoria pCategoria, Hembra pMadre, Macho pPadre)
+            Raza pRaza, Categoria pCategoria, Hembra pMadre, Macho pPadre,
+            int pNumeroPartos, bool pEnPie)
         {
             Animal unAnimal = this.BuscarAnimal(pIdAnimal);
-            if (unAnimal != null)
+            if (unAnimal == null)
             {
-                // La validacion de unicidad excluye al propio animal
-                Animal otroAnimal = this.BuscarAnimalXCaravana(pNumCaravana);
-                if (otroAnimal == null || otroAnimal.IdAnimal == pIdAnimal)
-                {
-                    unAnimal.NumCaravana = pNumCaravana;
-                    unAnimal.FechaNacimiento = pFechaNacimiento;
-                    unAnimal.Raza = pRaza;
-                    unAnimal.Categoria = pCategoria;
-                    unAnimal.Madre = pMadre;
-                    unAnimal.Padre = pPadre;
+                return false;
+            }
 
-                    if (Persistencia.ModificarAnimal(unAnimal))
-                    {
-                        return true;
-                    }
-                }
+            // La validacion de unicidad excluye al propio animal
+            Animal otroAnimal = this.BuscarAnimalXCaravana(pNumCaravana);
+            if (otroAnimal != null && otroAnimal.IdAnimal != pIdAnimal)
+            {
+                return false;
+            }
+
+            if (this.ValidarGenealogia(pIdAnimal, pFechaNacimiento, pMadre, pPadre) != "")
+            {
+                return false;
+            }
+
+            // Se persiste sobre una copia con los datos nuevos. La cache se actualiza
+            // recien cuando la escritura salio bien, que es el orden que describen
+            // 2.2.3 y 2.2.7: si la base falla, en memoria no queda un dato que no
+            // esta guardado.
+            Animal unAnimalNuevo = this.CopiarAnimal(unAnimal, pNumCaravana, pFechaNacimiento,
+                pRaza, pCategoria, pMadre, pPadre, pNumeroPartos, pEnPie);
+
+            if (!Persistencia.ModificarAnimal(unAnimalNuevo))
+            {
+                return false;
+            }
+
+            unAnimal.NumCaravana = pNumCaravana;
+            unAnimal.FechaNacimiento = pFechaNacimiento;
+            unAnimal.Raza = pRaza;
+            unAnimal.Categoria = pCategoria;
+            unAnimal.Madre = pMadre;
+            unAnimal.Padre = pPadre;
+
+            if (unAnimal is Hembra)
+            {
+                ((Hembra)unAnimal).NumeroPartos = pNumeroPartos;
+            }
+            else
+            {
+                ((Macho)unAnimal).EnPie = pEnPie;
+            }
+
+            return true;
+
+        }
+
+        // RF1.9: reemplaza la categoria almacenada por la que corresponde a la
+        // condicion actual del animal. No toca la genealogia, por eso no pasa por
+        // ModificarAnimal.
+        public bool ActualizarCategoria(int pIdAnimal)
+        {
+            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
+            if (unAnimal == null)
+            {
+                return false;
+            }
+
+            Categoria unaCategoria = this.CalcularCategoria(unAnimal);
+            if (unaCategoria == null || this.AplicaCategoria(unAnimal.Categoria, unAnimal))
+            {
+                return false;
+            }
+
+            int vNumeroPartos = unAnimal is Hembra ? ((Hembra)unAnimal).NumeroPartos : 0;
+            bool vEnPie = unAnimal is Macho ? ((Macho)unAnimal).EnPie : false;
+
+            Animal unAnimalNuevo = this.CopiarAnimal(unAnimal, unAnimal.NumCaravana,
+                unAnimal.FechaNacimiento, unAnimal.Raza, unaCategoria, unAnimal.Madre,
+                unAnimal.Padre, vNumeroPartos, vEnPie);
+
+            if (Persistencia.ModificarAnimal(unAnimalNuevo))
+            {
+                unAnimal.Categoria = unaCategoria;
+                return true;
             }
             return false;
 
+        }
+
+        // Arma una copia del animal con los datos nuevos, para poder escribir en la
+        // base sin tocar todavia el objeto que esta en la cache.
+        private Animal CopiarAnimal(Animal pAnimal, string pNumCaravana, DateTime pFechaNacimiento,
+            Raza pRaza, Categoria pCategoria, Hembra pMadre, Macho pPadre,
+            int pNumeroPartos, bool pEnPie)
+        {
+            if (pAnimal is Hembra)
+            {
+                Hembra unaHembra = (Hembra)pAnimal;
+                return new Hembra(pAnimal.IdAnimal, pNumCaravana, pFechaNacimiento, pAnimal.Activo,
+                    pAnimal.FechaBaja, pAnimal.MotivoBaja, pRaza, pCategoria, pMadre, pPadre,
+                    pNumeroPartos, unaHembra.EstadoProductivo, unaHembra.EstadoReproductivo);
+            }
+
+            return new Macho(pAnimal.IdAnimal, pNumCaravana, pFechaNacimiento, pAnimal.Activo,
+                pAnimal.FechaBaja, pAnimal.MotivoBaja, pRaza, pCategoria, pMadre, pPadre, pEnPie);
         }
 
         public bool BajaAnimal(string pNumCaravana, string pMotivoBaja)
@@ -198,62 +299,115 @@ namespace Tesis.Dominio
 
         }
 
-        public bool EliminarAnimal(int pIdAnimal)
-        {
-            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
-            if (unAnimal != null && !this.EsProgenitor(pIdAnimal))
-            {
-                if (Persistencia.EliminarAnimal(pIdAnimal))
-                {
-                    if (unAnimal is Hembra)
-                    {
-                        mListaHembras.Remove((Hembra)unAnimal);
-                    }
-                    else
-                    {
-                        mListaMachos.Remove((Macho)unAnimal);
-                    }
-
-                    mListaAnimales.Remove(unAnimal);
-                    return true;
-                }
-            }
-            return false;
-
-        }
-
-        public bool EsProgenitor(int pIdAnimal)
-        {
-            bool flag = false;
-            foreach (Animal unAnimal in mListaAnimales)
-            {
-                if (unAnimal.Madre != null && unAnimal.Madre.IdAnimal == pIdAnimal)
-                {
-                    flag = true;
-                }
-                if (unAnimal.Padre != null && unAnimal.Padre.IdAnimal == pIdAnimal)
-                {
-                    flag = true;
-                }
-            }
-            return flag;
-        }
-
         public int CalcularEdadMeses(Animal pAnimal)
         {
-            int meses = ((DateTime.Now.Year - pAnimal.FechaNacimiento.Year) * 12)
-                + (DateTime.Now.Month - pAnimal.FechaNacimiento.Month);
-
-            // Todavia no cumplio meses este mes
-            if (DateTime.Now.Day < pAnimal.FechaNacimiento.Day)
-            {
-                meses = meses - 1;
-            }
+            int meses = this.DiferenciaMeses(pAnimal.FechaNacimiento, DateTime.Now);
             if (meses < 0)
             {
                 meses = 0;
             }
             return meses;
+        }
+
+        private int DiferenciaMeses(DateTime pDesde, DateTime pHasta)
+        {
+            int meses = ((pHasta.Year - pDesde.Year) * 12) + (pHasta.Month - pDesde.Month);
+
+            // Todavia no se cumplio el mes
+            if (pHasta.Day < pDesde.Day)
+            {
+                meses = meses - 1;
+            }
+            return meses;
+        }
+
+        // Recorre la descendencia completa del animal, no solo los hijos directos.
+        // Sirve para no dejar que un descendiente termine siendo su progenitor.
+        public List<Animal> ListarDescendencia(Animal pAnimal)
+        {
+            List<Animal> _listaDescendencia = new List<Animal>();
+            if (pAnimal != null)
+            {
+                this.AgregarHijos(pAnimal, _listaDescendencia);
+            }
+            return _listaDescendencia;
+        }
+
+        private void AgregarHijos(Animal pAnimal, List<Animal> pListaDescendencia)
+        {
+            foreach (Animal unAnimal in mListaAnimales)
+            {
+                bool esHijo = (unAnimal.Madre != null && unAnimal.Madre.IdAnimal == pAnimal.IdAnimal)
+                    || (unAnimal.Padre != null && unAnimal.Padre.IdAnimal == pAnimal.IdAnimal);
+
+                // El control de repetidos ademas corta el recorrido si los datos ya
+                // vienen con un ciclo cargado de antes
+                if (esHijo && this.BuscarEnLista(pListaDescendencia, unAnimal.IdAnimal) == null)
+                {
+                    pListaDescendencia.Add(unAnimal);
+                    this.AgregarHijos(unAnimal, pListaDescendencia);
+                }
+            }
+        }
+
+        private Animal BuscarEnLista(List<Animal> pLista, int pIdAnimal)
+        {
+            foreach (Animal unAnimal in pLista)
+            {
+                if (unAnimal.IdAnimal == pIdAnimal)
+                {
+                    return unAnimal;
+                }
+            }
+            return null;
+        }
+
+        // Devuelve el motivo por el que la genealogia elegida no sirve, o una cadena
+        // vacia si esta bien. La usan el alta y la modificacion antes de guardar.
+        public string ValidarGenealogia(int pIdAnimal, DateTime pFechaNacimiento,
+            Hembra pMadre, Macho pPadre)
+        {
+            // 1. Un animal no puede ser progenitor de si mismo
+            if (pMadre != null && pMadre.IdAnimal == pIdAnimal)
+            {
+                return "Un animal no puede ser su propia madre!";
+            }
+            if (pPadre != null && pPadre.IdAnimal == pIdAnimal)
+            {
+                return "Un animal no puede ser su propio padre!";
+            }
+
+            // 2. El progenitor elegido no puede descender del animal: seria un ciclo
+            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
+            if (unAnimal != null)
+            {
+                List<Animal> _listaDescendencia = this.ListarDescendencia(unAnimal);
+
+                if (pMadre != null && this.BuscarEnLista(_listaDescendencia, pMadre.IdAnimal) != null)
+                {
+                    return "La madre elegida desciende del animal!";
+                }
+                if (pPadre != null && this.BuscarEnLista(_listaDescendencia, pPadre.IdAnimal) != null)
+                {
+                    return "El padre elegido desciende del animal!";
+                }
+            }
+
+            // 3. El progenitor tiene que haber nacido con la antelacion suficiente
+            // para haber estado en condiciones de servicio: la edad minima al
+            // servicio mas los meses de gestacion.
+            int vMesesMinimos = EDAD_MINIMA_SERVICIO_MESES + GESTACION_MESES;
+
+            if (pMadre != null && this.DiferenciaMeses(pMadre.FechaNacimiento, pFechaNacimiento) < vMesesMinimos)
+            {
+                return "La madre tiene que haber nacido al menos " + vMesesMinimos + " meses antes que la cria!";
+            }
+            if (pPadre != null && this.DiferenciaMeses(pPadre.FechaNacimiento, pFechaNacimiento) < vMesesMinimos)
+            {
+                return "El padre tiene que haber nacido al menos " + vMesesMinimos + " meses antes que la cria!";
+            }
+
+            return "";
         }
 
         public Categoria CalcularCategoria(Animal pAnimal)
@@ -280,7 +434,7 @@ namespace Tesis.Dominio
             else
             {
                 Macho unMacho = (Macho)pAnimal;
-                if (vEdadMeses > 15 && unMacho.EnPie)
+                if (vEdadMeses > EDAD_MINIMA_SERVICIO_MESES && unMacho.EnPie)
                 {
                     vNombre = "Toro";
                 }
@@ -510,15 +664,10 @@ namespace Tesis.Dominio
         #region HEMBRAS
         public List<Hembra> ListarHembras()
         {
-            // pHembra recupera los objetos de la cache de animales, por eso se refresca primero
+            // pHembra selecciona sobre los animales ya armados, por eso se refrescan primero
             this.ListarAnimales();
-            mListaHembras = Persistencia.ListarHembras();
+            mListaHembras = Persistencia.ListarHembras(mListaAnimales);
             return mListaHembras;
-        }
-
-        public int ProximoHembraId()
-        {
-            return Persistencia.ProximoHembraId();
         }
 
         public Hembra BuscarHembra(int pId)
@@ -554,7 +703,7 @@ namespace Tesis.Dominio
             if (unAnimal != null && unAnimal is Hembra)
             {
                 Hembra unaHembra = (Hembra)unAnimal;
-                if (unaHembra.EstadoProductivo == "En lactancia")
+                if (unaHembra.EstadoProductivo == Hembra.EN_LACTANCIA)
                 {
                     return true;
                 }
@@ -567,15 +716,10 @@ namespace Tesis.Dominio
         #region MACHOS
         public List<Macho> ListarMachos()
         {
-            // pMacho recupera los objetos de la cache de animales, por eso se refresca primero
+            // pMacho selecciona sobre los animales ya armados, por eso se refrescan primero
             this.ListarAnimales();
-            mListaMachos = Persistencia.ListarMachos();
+            mListaMachos = Persistencia.ListarMachos(mListaAnimales);
             return mListaMachos;
-        }
-
-        public int ProximoMachoId()
-        {
-            return Persistencia.ProximoMachoId();
         }
 
         public Macho BuscarMacho(int pId)
@@ -607,8 +751,8 @@ namespace Tesis.Dominio
 
         public bool EsToro(Macho pMacho)
         {
-            // Puede usarse como reproductor a partir de los quince meses
-            if (pMacho != null && this.CalcularEdadMeses(pMacho) > 15)
+            // Puede usarse como reproductor a partir de la edad minima al servicio
+            if (pMacho != null && this.CalcularEdadMeses(pMacho) > EDAD_MINIMA_SERVICIO_MESES)
             {
                 return true;
             }

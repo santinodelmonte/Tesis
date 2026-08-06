@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Tesis.Dominio;
 using System.Data;
 
@@ -28,22 +27,16 @@ namespace Tesis.Persistencia
 
         public bool AltaRaza(Raza pRaza)
         {
-            string sql = "INSERT INTO razas (nombre, descripcion) " +
-                "VALUES ('"
-                + pRaza.Nombre + "','"
-                + pRaza.Descripcion + "')";
+            // El id_raza lo asigna MySQL con el AUTO_INCREMENT
+            string sql = "INSERT INTO razas (nombre, descripcion) VALUES (@nombre, @descripcion)";
 
-            return Conexion.EjecutarComando(sql);
-        }
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@nombre", pRaza.Nombre },
+                { "@descripcion", pRaza.Descripcion }
+            };
 
-        public int ProximoRazaId()
-        {
-            string sql = "SELECT (IFNULL(MAX(id_raza),0)+1) FROM razas";
-            DataTable datos = Conexion.EjecutarConsulta(sql);
-            DataRowCollection filas = datos.Rows;
-            var campo = filas[0];
-            int Id = int.Parse(campo[0].ToString());
-            return Id;
+            return Conexion.EjecutarComando(sql, parametros);
         }
     }
 }
