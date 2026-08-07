@@ -1,0 +1,110 @@
+@page
+@model Tesis.Pages.PagesReproduccion.ListaServiciosModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div>
+    <h1 class="display-4 text-center">Servicios</h1>
+    <p class="text-center text-muted">@Model.servicios.Count servicios registrados.</p>
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-success" asp-page="./RegistrarServicio">Registrar Servicio</a>
+            <a class="btn btn-primary" asp-page="./RegistrarTacto">Registrar Tacto</a>
+            <a class="btn btn-info" asp-page="./AlertasParto">Alertas de Parto</a>
+            <a class="btn btn-secondary" asp-page="./RegistrarParto">Registrar Parto</a>
+        </div>
+    </div>
+    <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Caravana</th>
+                <th>Tipo</th>
+                <th>Reproductor</th>
+                <th>Toro genetico</th>
+                <th>Fecha probable de parto</th>
+                <th>Ultimo tacto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.servicios.Any())
+            {
+                @foreach (Dominio.Servicio servicio in Model.servicios)
+                {
+                    <tr>
+                        <td>@servicio.FechaServicio.ToShortDateString()</td>
+                        <td>@(servicio.Animal != null ? servicio.Animal.NumCaravana : "")</td>
+                        <td>@servicio.TipoServicio</td>
+                        <td>
+                            @if (servicio.Toro != null)
+                            {
+                                <text>Toro @servicio.Toro.NumCaravana</text>
+                            }
+                            else if (servicio.Pajuela != null)
+                            {
+                                <text>Pajuela @servicio.Pajuela.Nombre</text>
+                            }
+                        </td>
+                        <td>
+                            @{
+                                Dominio.Macho toroGenetico = Model.toros[servicio.IdServicio];
+                            }
+                            @(toroGenetico != null ? toroGenetico.NumCaravana : "")
+                        </td>
+                        <td>
+                            @if (Model.conPrenezVigente.Contains(servicio.IdServicio))
+                            {
+                                @* Curso alternativo 7a de CU15: solo tiene sentido ajustar
+                                   la fecha en la preñez que esta en curso. El ajuste baja
+                                   tambien a la lactancia, que es de donde sale la alerta
+                                   de secado. *@
+                                <form method="post" asp-page-handler="AjustarFechaParto"
+                                      asp-route-id="@servicio.IdServicio" class="input-group input-group-sm">
+                                    <input type="date" name="fechaProbableParto" class="form-control"
+                                           value="@servicio.FechaProbableParto.ToString("yyyy-MM-dd")" />
+                                    <button type="submit" class="btn btn-outline-primary">Ajustar</button>
+                                </form>
+                            }
+                            else
+                            {
+                                @servicio.FechaProbableParto.ToShortDateString()
+                            }
+                        </td>
+                        <td>
+                            @{
+                                Dominio.Tacto ultimoTacto = Model.ultimosTactos[servicio.IdServicio];
+                            }
+                            @if (ultimoTacto == null)
+                            {
+                                <span class="badge bg-secondary">Sin tacto</span>
+                            }
+                            else if (ultimoTacto.Resultado == Dominio.Tacto.PRENADA)
+                            {
+                                <span class="badge bg-success">@ultimoTacto.Resultado</span>
+                            }
+                            else if (ultimoTacto.Resultado == Dominio.Tacto.VACIA)
+                            {
+                                <span class="badge bg-danger">@ultimoTacto.Resultado</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">@ultimoTacto.Resultado</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center">
+                        No hay servicios registrados
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

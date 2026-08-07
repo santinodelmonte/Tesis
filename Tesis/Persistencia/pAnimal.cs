@@ -89,15 +89,18 @@ namespace Tesis.Persistencia
             return lista;
         }
 
-        public bool AltaAnimal(Animal pAnimal)
-        {
-            // El id_animal no se manda: lo asigna MySQL con el AUTO_INCREMENT.
-            string sql = "INSERT INTO animales (num_caravana, fecha_nacimiento, activo, fecha_baja, " +
-                "motivo_baja, id_raza, id_categoria, id_madre, id_padre) " +
-                "VALUES (@num_caravana, @fecha_nacimiento, @activo, NULL, NULL, " +
-                "@id_raza, @id_categoria, @id_madre, @id_padre)";
+        // El id_animal no se manda: lo asigna MySQL con el AUTO_INCREMENT.
+        // El alta la usan dos caminos: esta clase y el registro del parto, que da de
+        // alta la cria dentro de su propia transaccion. Por eso el comando y sus
+        // parametros se declaran una sola vez aca.
+        public const string SQL_ALTA = "INSERT INTO animales (num_caravana, fecha_nacimiento, activo, fecha_baja, " +
+            "motivo_baja, id_raza, id_categoria, id_madre, id_padre) " +
+            "VALUES (@num_caravana, @fecha_nacimiento, @activo, NULL, NULL, " +
+            "@id_raza, @id_categoria, @id_madre, @id_padre)";
 
-            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        public static Dictionary<string, object?> ParametrosAlta(Animal pAnimal)
+        {
+            return new Dictionary<string, object?>
             {
                 { "@num_caravana", pAnimal.NumCaravana },
                 { "@fecha_nacimiento", pAnimal.FechaNacimiento.Date },
@@ -107,6 +110,12 @@ namespace Tesis.Persistencia
                 { "@id_madre", pAnimal.Madre != null ? (object)pAnimal.Madre.IdAnimal : null },
                 { "@id_padre", pAnimal.Padre != null ? (object)pAnimal.Padre.IdAnimal : null }
             };
+        }
+
+        public bool AltaAnimal(Animal pAnimal)
+        {
+            string sql = SQL_ALTA;
+            Dictionary<string, object?> parametros = ParametrosAlta(pAnimal);
 
             // El animal y su especializacion se guardan dentro de una misma transaccion.
             // Si falla la segunda insercion se deshace la primera: de lo contrario

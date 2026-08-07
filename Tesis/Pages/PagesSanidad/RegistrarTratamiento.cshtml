@@ -1,0 +1,124 @@
+@page
+@model Tesis.Pages.PagesSanidad.RegistrarTratamientoModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Registrar Tratamiento Sanitario</h1>
+    <p class="text-muted">
+        El tratamiento descuenta el producto del stock y fija hasta cuándo hay que
+        descartar la leche del animal. Mientras el descarte esté vigente, el sistema lo
+        deja fuera del lote de ordeñe.
+    </p>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="idDiagnostico">Diagnostico que lo origina:</label>
+                    <select id="idDiagnostico" name="idDiagnostico" asp-for="idDiagnostico" class="form-control">
+                        <option value="0">Sin diagnostico (tratamiento preventivo)</option>
+                        @foreach (Dominio.Diagnostico diagnostico in Model.diagnosticos)
+                        {
+                            <option value="@diagnostico.IdDiagnostico">
+                                @(diagnostico.Animal != null ? diagnostico.Animal.NumCaravana : "")
+                                &mdash; @diagnostico.Enfermedad
+                                (@diagnostico.FechaDiagnostico.ToShortDateString())
+                            </option>
+                        }
+                    </select>
+                    <small class="text-muted">
+                        El tratamiento preventivo no queda asociado a ningún animal en el
+                        modelo, así que no genera descarte de leche.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="idInsumo">Producto aplicado:</label>
+                    <select id="idInsumo" name="idInsumo" asp-for="idInsumo" class="form-control">
+                        <option value="0">Seleccione un producto</option>
+                        @foreach (Dominio.Insumo insumo in Model.insumos)
+                        {
+                            <option value="@insumo.IdInsumo">
+                                @insumo.Nombre &mdash; stock @insumo.StockActual.ToString("N2")
+                                @if (insumo.PeriodoDescarteDias > 0)
+                                {
+                                    <text>&mdash; carencia @insumo.PeriodoDescarteDias d</text>
+                                }
+                            </option>
+                        }
+                    </select>
+                    @if (!Model.insumos.Any())
+                    {
+                        <small class="text-danger">
+                            No hay productos sanitarios cargados. Se dan de alta desde
+                            <a asp-page="/PagesInsumo/AltaInsumo">Insumos</a>.
+                        </small>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fechaInicio">Fecha de inicio:</label>
+                    <input type="date" id="fechaInicio" name="fechaInicio" class="form-control"
+                           value="@Model.fechaInicio.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="diasDuracion">Duracion (dias):</label>
+                    <input type="number" min="1" id="diasDuracion" name="diasDuracion"
+                           class="form-control" value="@Model.diasDuracion" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="dosisDiaria">Dosis diaria:</label>
+                    <input type="text" id="dosisDiaria" name="dosisDiaria" class="form-control"
+                           maxlength="60" value="@Model.dosisDiaria" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="cantidadInsumo">Unidades a descontar:</label>
+                    <input type="number" step="0.01" min="0" id="cantidadInsumo" name="cantidadInsumo"
+                           class="form-control" value="@Model.cantidadInsumo" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="fechaFinDescarte">Descarte de leche hasta:</label>
+                    <div class="input-group">
+                        <input type="date" id="fechaFinDescarte" name="fechaFinDescarte" class="form-control"
+                               value="@(Model.fechaFinDescarte != DateTime.MinValue ? Model.fechaFinDescarte.ToString("yyyy-MM-dd") : "")" />
+                        <button type="submit" class="btn btn-secondary" asp-page-handler="CalcularDescarte">
+                            Calcular
+                        </button>
+                    </div>
+                    <small class="text-muted">
+                        La propone el sistema sumando la duración del tratamiento y el
+                        período de carencia del producto. Se puede ajustar.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-warning" asp-page="./ListaDiagnosticos">Volver</a>
+            </div>
+        </div>
+    </form>
+</div>

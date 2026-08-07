@@ -1,0 +1,125 @@
+@page
+@model Tesis.Pages.PagesProduccion.HistorialProduccionModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Historial de Produccion</h1>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="modalidad">Modalidad:</label>
+                    <select id="modalidad" name="modalidad" asp-for="modalidad" class="form-control">
+                        <option value="@Dominio.Controladora.MODALIDAD_INDIVIDUAL">Individual</option>
+                        <option value="@Dominio.Controladora.MODALIDAD_LOTE">Por Lote</option>
+                        <option value="@Dominio.Controladora.MODALIDAD_TOTALES">Totales (Individual + Lote)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fechaDesde">Desde:</label>
+                    <input type="date" id="fechaDesde" name="fechaDesde" class="form-control"
+                           value="@Model.fechaDesde.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fechaHasta">Hasta:</label>
+                    <input type="date" id="fechaHasta" name="fechaHasta" class="form-control"
+                           value="@Model.fechaHasta.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>&nbsp;</label><br />
+                    <button type="submit" class="btn btn-primary" asp-page-handler="Buscar">Buscar</button>
+                    <a class="btn btn-secondary" asp-page="./MetricaMensual">Metrica Mensual</a>
+                </div>
+            </div>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+    </form>
+
+    @if (Model.consultado)
+    {
+        <hr />
+        <div class="alert alert-info">
+            <h4 class="mb-0">
+                Acumulado del periodo: @Model.acumulado.ToString("N2") litros
+            </h4>
+            <small>
+                @Model.fechaDesde.ToShortDateString() a @Model.fechaHasta.ToShortDateString()
+                &mdash; modalidad @Model.modalidad
+            </small>
+        </div>
+
+        @if (Model.ordeniesLote.Any())
+        {
+            <h5>Ordeñes por lote (@Model.ordeniesLote.Count)</h5>
+            <table class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Turno</th>
+                        <th>Litros</th>
+                        <th>Animales</th>
+                        <th>Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Dominio.OrdenieLote ordenie in Model.ordeniesLote)
+                    {
+                        <tr>
+                            <td>@ordenie.Fecha.ToShortDateString()</td>
+                            <td>@ordenie.Turno</td>
+                            <td>@ordenie.LitrosTotales.ToString("N2")</td>
+                            <td>@ordenie.Animales.Count</td>
+                            <td>
+                                <a class="btn btn-primary btn-sm" asp-page="./ModificarOrdenieLote"
+                                   asp-route-id="@ordenie.IdOrdenieLote">Corregir</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (Model.ordeniesIndividual.Any())
+        {
+            <h5>Controles individuales (@Model.ordeniesIndividual.Count)</h5>
+            <table class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Turno</th>
+                        <th>Caravana</th>
+                        <th>Litros</th>
+                        <th>Lactancia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Dominio.OrdenieIndividual control in Model.ordeniesIndividual)
+                    {
+                        <tr>
+                            <td>@control.Fecha.ToShortDateString()</td>
+                            <td>@control.Turno</td>
+                            <td>@(control.Animal != null ? control.Animal.NumCaravana : "")</td>
+                            <td>@control.Litros.ToString("N2")</td>
+                            <td>@(control.Lactancia != null ? control.Lactancia.NumeroLactancia.ToString() : "")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (!Model.ordeniesLote.Any() && !Model.ordeniesIndividual.Any())
+        {
+            <p>No hay registros de produccion en el periodo consultado.</p>
+        }
+    }
+</div>

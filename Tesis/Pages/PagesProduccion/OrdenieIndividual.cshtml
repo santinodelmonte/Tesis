@@ -1,0 +1,96 @@
+@page
+@model Tesis.Pages.PagesProduccion.OrdenieIndividualModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Registrar Ordeñe Individual</h1>
+    <p class="text-muted">
+        El control individual es puntual: convive con el registro por lote y se imputa
+        a la lactancia vigente del animal.
+    </p>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="turno">Turno:</label>
+                    <select id="turno" name="turno" asp-for="turno" class="form-control">
+                        <option value="@Dominio.OrdenieLote.TURNO_1">@Dominio.OrdenieLote.TURNO_1</option>
+                        <option value="@Dominio.OrdenieLote.TURNO_2">@Dominio.OrdenieLote.TURNO_2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha" name="fecha" class="form-control"
+                           value="@Model.fecha.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="caravanaTexto">Caravana:</label>
+                    <div class="input-group">
+                        <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                        <input type="text" id="caravanaTexto" class="form-control" readonly
+                               value="@Model.numCaravana" />
+                        <button type="button" class="btn btn-secondary"
+                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="litros">Litros:</label>
+                    <input type="number" step="0.01" min="0" id="litros" name="litros"
+                           class="form-control" value="@Model.litros" />
+                </div>
+            </div>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-info" asp-page="./OrdenieLote">Ordeñe por Lote</a>
+                <a class="btn btn-warning" asp-page="./HistorialProduccion">Historial</a>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.ultimosControles.Any())
+    {
+        <hr />
+        <h5>Controles de los ultimos siete dias</h5>
+        <table class="table table-sm text-center">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Turno</th>
+                    <th>Caravana</th>
+                    <th>Litros</th>
+                    <th>Lactancia</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Dominio.OrdenieIndividual control in Model.ultimosControles)
+                {
+                    <tr>
+                        <td>@control.Fecha.ToShortDateString()</td>
+                        <td>@control.Turno</td>
+                        <td>@(control.Animal != null ? control.Animal.NumCaravana : "")</td>
+                        <td>@control.Litros.ToString("N2")</td>
+                        <td>@(control.Lactancia != null ? control.Lactancia.NumeroLactancia.ToString() : "")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />

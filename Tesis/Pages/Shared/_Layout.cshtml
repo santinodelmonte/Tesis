@@ -26,18 +26,67 @@
                     <ul class="navbar-nav ms-auto">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/ListaAnimales">Animales</a>
+                            @* Modulo 1: Gestion de Animales y Genetica *@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">Animales</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesAnimal/ListaAnimales">Lista de Animales</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesAnimal/BuscarAnimales">Buscar y Filtrar</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesAnimal/ConsultaLinaje">Consultar Linaje</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesAnimal/VerificarConsanguinidad">Verificar Consanguinidad</a></li>
+                                </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/BuscarAnimales">Buscar Animales</a>
+
+                            @* Modulo 2: Control de Produccion *@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">Produccion</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/OrdenieLote">Ordeñe por Lote</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/OrdenieIndividual">Ordeñe Individual</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/HistorialProduccion">Historial de Produccion</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/MetricaMensual">Metrica Mensual</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/ListaLactancias">Lactancias</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/RegistrarSecado">Registrar Secado</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/AlertasSecado">Alertas de Secado</a></li>
+                                </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/ConsultaLinaje">Linaje</a>
+
+                            @* Modulo 3: Gestion Reproductiva *@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">Reproduccion</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarCelo">Registrar Celo</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/ListaCelos">Celos Detectados</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarServicio">Registrar Servicio</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/ListaServicios">Servicios</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarTacto">Registrar Tacto</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/AlertasParto">Alertas de Parto</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarParto">Registrar Parto</a></li>
+                                </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-page="/PagesAnimal/VerificarConsanguinidad">Consanguinidad</a>
+
+                            @* Adelantos de los modulos 4 y 5 que los modulos 2 y 3 necesitan *@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">Sanidad e Insumos</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/ListaDiagnosticos">Sanidad</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarDiagnostico">Registrar Diagnostico</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarTratamiento">Registrar Tratamiento</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/ListaInsumos">Insumos</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/IngresoStock">Ingreso de Stock</a></li>
+                                </ul>
                             </li>
+
                             <li class="nav-item">
                                 <span class="nav-link text-light">@User.Identity.Name</span>
                             </li>

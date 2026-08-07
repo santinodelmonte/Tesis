@@ -1,0 +1,96 @@
+@page
+@model Tesis.Pages.PagesProduccion.AltaLactanciaModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Abrir Lactancia</h1>
+    <div class="alert alert-info">
+        Normalmente la lactancia la abre el parto. Esta pantalla es para las vacas que
+        ya estaban en ordeñe cuando arrancó el sistema y no tienen un parto registrado.
+        Al abrirla, el animal pasa a estado productivo "En lactancia".
+    </div>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="caravanaTexto">Caravana:</label>
+                    <div class="input-group">
+                        <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                        <input type="text" id="caravanaTexto" class="form-control" readonly
+                               value="@Model.numCaravana" />
+                        <button type="button" class="btn btn-secondary"
+                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="numeroLactancia">Numero de lactancia:</label>
+                    <div class="input-group">
+                        <input type="number" min="1" id="numeroLactancia" name="numeroLactancia"
+                               class="form-control" value="@Model.numeroLactancia" />
+                        <button type="submit" class="btn btn-secondary" asp-page-handler="ProponerNumero">
+                            Proponer
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fechaInicio">Fecha de inicio:</label>
+                    <input type="date" id="fechaInicio" name="fechaInicio" class="form-control"
+                           value="@Model.fechaInicio.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="AbrirLactancia">Abrir Lactancia</button>
+                <a class="btn btn-warning" asp-page="./ListaLactancias">Volver</a>
+            </div>
+        </div>
+    </form>
+
+    <hr />
+    <h5>Hembras sin lactancia abierta (@Model.sinLactancia.Count)</h5>
+    <table class="table table-sm text-center">
+        <thead>
+            <tr>
+                <th>Caravana</th>
+                <th>Categoria</th>
+                <th>Partos</th>
+                <th>Estado productivo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.sinLactancia.Any())
+            {
+                @foreach (Dominio.Hembra hembra in Model.sinLactancia)
+                {
+                    <tr>
+                        <td>@hembra.NumCaravana</td>
+                        <td>@(hembra.Categoria != null ? hembra.Categoria.Nombre : "")</td>
+                        <td>@hembra.NumeroPartos</td>
+                        <td>@hembra.EstadoProductivo</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">Todas las hembras del rodeo tienen su lactancia abierta.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />

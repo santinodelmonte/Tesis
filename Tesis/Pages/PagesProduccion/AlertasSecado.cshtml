@@ -1,0 +1,69 @@
+@page
+@model Tesis.Pages.PagesProduccion.AlertasSecadoModel
+@{
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Alertas de Secado Proximo</h1>
+    <p class="text-muted">
+        Vacas en produccion que ya entraron en la ventana para iniciar el secado. La
+        fecha recomendada se calcula restando @Model.diasAntesDelParto dias a la fecha
+        probable de parto, y la alerta se emite con @Model.diasAnticipacion dias de
+        anticipacion.
+    </p>
+    <hr />
+
+    @if (Model.alertas.Any())
+    {
+        <div class="alert alert-warning">
+            @Model.alertas.Count animal(es) para secar.
+        </div>
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>Caravana</th>
+                    <th>Categoria</th>
+                    <th>Fecha probable de parto</th>
+                    <th>Secado recomendado</th>
+                    <th>Dias</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Dominio.Hembra hembra in Model.alertas)
+                {
+                    <tr>
+                        <td>@hembra.NumCaravana</td>
+                        <td>@(hembra.Categoria != null ? hembra.Categoria.Nombre : "")</td>
+                        <td>@Model.fechasProbablesParto[hembra.IdAnimal].ToShortDateString()</td>
+                        <td>@Model.fechasRecomendadas[hembra.IdAnimal].ToShortDateString()</td>
+                        <td>
+                            @if (Model.diasRestantes[hembra.IdAnimal] < 0)
+                            {
+                                <span class="badge bg-danger">
+                                    Vencido hace @(-Model.diasRestantes[hembra.IdAnimal]) dias
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Faltan @Model.diasRestantes[hembra.IdAnimal] dias
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" asp-page="./RegistrarSecado"
+                               asp-route-caravana="@hembra.NumCaravana">Registrar Secado</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No hay animales proximos a secado.</p>
+    }
+
+    <hr />
+    <a class="btn btn-warning" asp-page="./ListaLactancias">Volver</a>
+</div>

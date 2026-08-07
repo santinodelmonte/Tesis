@@ -5,32 +5,23 @@ namespace Tesis.Persistencia
 {
     public class pConexion
     {
-        // ---------------------------------------------------------------------
-        // La cadena de conexion no se escribe aca: se carga desde appsettings.json
-        // al iniciar la aplicacion (ver Program.cs). De esa forma los datos del
-        // servidor y la contrasena de MySQL no quedan versionados en el repositorio.
-        // ---------------------------------------------------------------------
         private static string mCadenaConexion = "";
 
         public static void Configurar(string pCadenaConexion)
         {
             mCadenaConexion = pCadenaConexion;
         }
-        // ---------------------------------------------------------------------
+
 
         public bool EjecutarComando(string pSql)
         {
             return this.EjecutarComando(pSql, null);
         }
 
-        // Las consultas se arman con parametros y no concatenando texto: asi un
-        // numero de caravana o un motivo de baja con apostrofo no rompe el comando
-        // ni permite inyectar SQL.
         public bool EjecutarComando(string pSql, Dictionary<string, object?>? pParametros)
         {
             try
             {
-                // El using cierra la conexion y el comando aunque el comando falle
                 using (MySqlConnection conexion = new MySqlConnection(mCadenaConexion))
                 {
                     conexion.Open();
@@ -44,7 +35,34 @@ namespace Tesis.Persistencia
             }
             catch (Exception e)
             {
-                throw new Exception("Error en conexion sql = " + pSql, e);
+                // El motivo real viaja en la excepcion interna. Se copia al mensaje
+                // porque es lo unico que se ve al vuelo en el depurador, y sin eso un
+                // "no se puede conectar" y un "no existe la tabla" se leen igual.
+                throw new Exception("Error en conexion sql = " + pSql + " -- " + e.Message, e);
+            }
+        }
+
+        public int EjecutarInsercion(string pSql, Dictionary<string, object?> pParametros)
+        {
+            try
+            {
+                using (MySqlConnection conexion = new MySqlConnection(mCadenaConexion))
+                {
+                    conexion.Open();
+                    using (MySqlCommand comando = new MySqlCommand(pSql, conexion))
+                    {
+                        this.CargarParametros(comando, pParametros);
+                        comando.ExecuteNonQuery();
+                        return (int)comando.LastInsertedId;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                // El motivo real viaja en la excepcion interna. Se copia al mensaje
+                // porque es lo unico que se ve al vuelo en el depurador, y sin eso un
+                // "no se puede conectar" y un "no existe la tabla" se leen igual.
+                throw new Exception("Error en conexion sql = " + pSql + " -- " + e.Message, e);
             }
         }
 
@@ -74,13 +92,13 @@ namespace Tesis.Persistencia
             }
             catch (Exception e)
             {
-                throw new Exception("Error en conexion sql = " + pSql, e);
+                // El motivo real viaja en la excepcion interna. Se copia al mensaje
+                // porque es lo unico que se ve al vuelo en el depurador, y sin eso un
+                // "no se puede conectar" y un "no existe la tabla" se leen igual.
+                throw new Exception("Error en conexion sql = " + pSql + " -- " + e.Message, e);
             }
         }
 
-        // Devuelve una conexion ya abierta. La usa el alta de animal, que necesita
-        // escribir en dos tablas dentro de una misma transaccion. El que la pide se
-        // encarga de cerrarla (con using).
         public MySqlConnection AbrirConexion()
         {
             MySqlConnection conexion = new MySqlConnection(mCadenaConexion);
@@ -88,7 +106,6 @@ namespace Tesis.Persistencia
             return conexion;
         }
 
-        // Ejecuta un comando sobre una conexion y una transaccion que ya estan abiertas
         public int EjecutarInsercionEnTransaccion(string pSql, Dictionary<string, object?> pParametros,
             MySqlConnection pConexion, MySqlTransaction pTransaccion)
         {
@@ -119,7 +136,6 @@ namespace Tesis.Persistencia
 
             foreach (KeyValuePair<string, object?> unParametro in pParametros)
             {
-                // Un valor nulo se manda como NULL de la base, no como texto vacio
                 pComando.Parameters.AddWithValue(unParametro.Key, unParametro.Value ?? DBNull.Value);
             }
         }

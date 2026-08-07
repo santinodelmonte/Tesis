@@ -1,0 +1,71 @@
+@page
+@model Tesis.Pages.PagesReproduccion.AlertasPartoModel
+@{
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Alertas de Parto Proximo</h1>
+    <p class="text-muted">
+        Vacas preñadas cuya fecha probable de parto entra dentro de los proximos
+        @Model.diasAnticipacion dias, para preparar la maternidad.
+    </p>
+    <hr />
+
+    @if (Model.alertas.Any())
+    {
+        <div class="alert alert-warning">
+            @Model.alertas.Count animal(es) proximos a parir.
+        </div>
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>Caravana</th>
+                    <th>Categoria</th>
+                    <th>Estado productivo</th>
+                    <th>Fecha del servicio</th>
+                    <th>Fecha probable de parto</th>
+                    <th>Dias</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Dominio.Servicio servicio in Model.alertas)
+                {
+                    <tr>
+                        <td>@(servicio.Animal != null ? servicio.Animal.NumCaravana : "")</td>
+                        <td>@(servicio.Animal != null && servicio.Animal.Categoria != null ? servicio.Animal.Categoria.Nombre : "")</td>
+                        <td>@(servicio.Animal != null ? servicio.Animal.EstadoProductivo : "")</td>
+                        <td>@servicio.FechaServicio.ToShortDateString()</td>
+                        <td>@servicio.FechaProbableParto.ToShortDateString()</td>
+                        <td>
+                            @if (Model.diasRestantes[servicio.IdServicio] < 0)
+                            {
+                                <span class="badge bg-danger">
+                                    Atrasado @(-Model.diasRestantes[servicio.IdServicio]) dias
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Faltan @Model.diasRestantes[servicio.IdServicio] dias
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" asp-page="./RegistrarParto"
+                               asp-route-caravana="@(servicio.Animal != null ? servicio.Animal.NumCaravana : "")">
+                                Registrar Parto
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No hay animales proximos a parir.</p>
+    }
+
+    <hr />
+    <a class="btn btn-warning" asp-page="./ListaServicios">Volver</a>
+</div>

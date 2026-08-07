@@ -1,0 +1,69 @@
+@page
+@model Tesis.Pages.PagesInsumo.ListaInsumosModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Insumos</h1>
+    <p class="text-center text-muted">
+        @Model.insumos.Count insumos registrados. La gestion completa de stock
+        (umbrales, vencimientos y alertas) es del Modulo 5.
+    </p>
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-success" asp-page="./AltaInsumo">Agregar Insumo</a>
+            <a class="btn btn-primary" asp-page="./IngresoStock">Registrar Ingreso</a>
+        </div>
+    </div>
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Toro (pajuelas)</th>
+                <th>Stock actual</th>
+                <th>Stock minimo</th>
+                <th>Descarte de leche</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.insumos.Any())
+            {
+                @foreach (Dominio.Insumo insumo in Model.insumos)
+                {
+                    <tr>
+                        <td>@insumo.Nombre</td>
+                        <td>@insumo.TipoInsumo</td>
+                        <td>@(insumo.Toro != null ? insumo.Toro.NumCaravana : "")</td>
+                        <td>
+                            @insumo.StockActual.ToString("N2")
+                            @if (insumo.StockActual <= insumo.StockMinimo)
+                            {
+                                <br />
+                                <span class="badge bg-danger">Stock critico</span>
+                            }
+                        </td>
+                        <td>@insumo.StockMinimo.ToString("N2")</td>
+                        <td>
+                            @if (insumo.PeriodoDescarteDias > 0)
+                            {
+                                <text>@insumo.PeriodoDescarteDias dias</text>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No obliga</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">
+                        No hay insumos registrados
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

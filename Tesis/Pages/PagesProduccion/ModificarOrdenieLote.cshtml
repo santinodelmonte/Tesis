@@ -1,0 +1,92 @@
+@page
+@model Tesis.Pages.PagesProduccion.ModificarOrdenieLoteModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Corregir Ordeñe del Lote</h1>
+    <hr />
+    @if (Model.ordenie != null)
+    {
+        <dl class="row">
+            <dt class="col-sm-2">Fecha</dt>
+            <dd class="col-sm-4">@Model.ordenie.Fecha.ToShortDateString()</dd>
+            <dt class="col-sm-2">Turno</dt>
+            <dd class="col-sm-4">@Model.ordenie.Turno</dd>
+        </dl>
+        <p class="text-muted">
+            La fecha y el turno no se modifican: son la clave que identifica al ordeñe.
+            Si están mal, hay que corregirlo en la base.
+        </p>
+        <hr />
+        <form method="post">
+            <input type="hidden" name="idOrdenieLote" value="@Model.idOrdenieLote" />
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="litrosTotales">Litros del ordeñe masivo:</label>
+                        <input type="number" step="0.01" min="0" id="litrosTotales" name="litrosTotales"
+                               class="form-control" value="@Model.litrosTotales" />
+                        <small class="text-muted">
+                            Sin la leche de las vacas con control individual.
+                        </small>
+                    </div>
+                </div>
+                @if (Model.litrosIndividualesDelTurno > 0)
+                {
+                    <div class="col-md-6">
+                        <div class="alert alert-info mb-0">
+                            Este turno tiene además
+                            <strong>@Model.litrosIndividualesDelTurno.ToString("N2") litros</strong>
+                            cargados como controles individuales. El total del turno es
+                            @((Model.litrosTotales + Model.litrosIndividualesDelTurno).ToString("N2")) litros.
+                        </div>
+                    </div>
+                }
+            </div>
+            <hr />
+
+            <h5>Animales del lote</h5>
+            <table class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Ordeñada</th>
+                        <th>Caravana</th>
+                        <th>Categoria</th>
+                        <th>Estado productivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Dominio.Hembra hembra in Model.animalesDisponibles)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="animales" value="@hembra.IdAnimal"
+                                       checked="@Model.seleccionados.Contains(hembra.IdAnimal)" />
+                            </td>
+                            <td>@hembra.NumCaravana</td>
+                            <td>@(hembra.Categoria != null ? hembra.Categoria.Nombre : "")</td>
+                            <td>@hembra.EstadoProductivo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+            <hr />
+            <div class="row">
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-success" asp-page-handler="GuardarCambios">Guardar Cambios</button>
+                    <a class="btn btn-warning" asp-page="./HistorialProduccion">Volver</a>
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+        <p>No se encontro el ordeñe solicitado.</p>
+        <a class="btn btn-warning" asp-page="./HistorialProduccion">Volver</a>
+    }
+</div>

@@ -1,0 +1,159 @@
+@page
+@model Tesis.Pages.PagesReproduccion.RegistrarServicioModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Registrar Servicio</h1>
+    <p class="text-muted">
+        Todo servicio tiene un único reproductor: el toro del rodeo y la pajuela son
+        excluyentes. La pajuela conserva el vínculo con el toro que la aporta, de modo
+        que la genealogía de la cría se puede reconstruir aunque el reproductor no
+        integre el rodeo.
+    </p>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="caravanaTexto">Caravana de la hembra:</label>
+                    <div class="input-group">
+                        <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                        <input type="text" id="caravanaTexto" class="form-control" readonly
+                               value="@Model.numCaravana" />
+                        <button type="button" class="btn btn-secondary"
+                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="fechaServicio">Fecha del servicio:</label>
+                    <input type="date" id="fechaServicio" name="fechaServicio" class="form-control"
+                           value="@Model.fechaServicio.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="tipoServicio">Tipo de servicio:</label>
+                    <select id="tipoServicio" name="tipoServicio" asp-for="tipoServicio"
+                            class="form-control" onchange="cambiarTipoServicio()">
+                        <option value="@Dominio.Servicio.MONTA_NATURAL">@Dominio.Servicio.MONTA_NATURAL</option>
+                        <option value="@Dominio.Servicio.INSEMINACION">@Dominio.Servicio.INSEMINACION</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="bloqueToro">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="idToro">Toro del rodeo:</label>
+                    <select id="idToro" name="idToro" asp-for="idToro" class="form-control">
+                        <option value="0">Seleccione un toro</option>
+                        @foreach (Dominio.Macho toro in Model.toros)
+                        {
+                            <option value="@toro.IdAnimal">
+                                @toro.NumCaravana (@(toro.Raza != null ? toro.Raza.Nombre : ""))
+                            </option>
+                        }
+                    </select>
+                    @if (!Model.toros.Any())
+                    {
+                        <small class="text-danger">
+                            No hay toros en pie disponibles en el rodeo.
+                        </small>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="bloquePajuela" style="display: none">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="idPajuela">Pajuela del stock:</label>
+                    <select id="idPajuela" name="idPajuela" asp-for="idPajuela" class="form-control">
+                        <option value="0">Seleccione una pajuela</option>
+                        @foreach (Dominio.Insumo pajuela in Model.pajuelas)
+                        {
+                            <option value="@pajuela.IdInsumo">
+                                @pajuela.Nombre
+                                &mdash; toro @(pajuela.Toro != null ? pajuela.Toro.NumCaravana : "sin vincular")
+                                &mdash; stock @pajuela.StockActual.ToString("N0")
+                            </option>
+                        }
+                    </select>
+                    @if (!Model.pajuelas.Any())
+                    {
+                        <small class="text-danger">
+                            No hay pajuelas cargadas. Se dan de alta desde
+                            <a asp-page="/PagesInsumo/AltaInsumo">Insumos</a>.
+                        </small>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="fechaProbableParto">Fecha probable de parto:</label>
+                    <div class="input-group">
+                        <input type="date" id="fechaProbableParto" name="fechaProbableParto" class="form-control"
+                               value="@(Model.fechaProbableParto != DateTime.MinValue ? Model.fechaProbableParto.ToString("yyyy-MM-dd") : "")" />
+                        <button type="submit" class="btn btn-secondary" asp-page-handler="CalcularFechaParto">
+                            Recalcular
+                        </button>
+                    </div>
+                    <small class="text-muted">
+                        La propone el sistema sumando @Dominio.Controladora.GESTACION_DIAS dias
+                        a la fecha del servicio. Se puede ajustar.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="observaciones">Observaciones:</label>
+                    <textarea id="observaciones" name="observaciones" class="form-control" rows="2"
+                              maxlength="200">@Model.observaciones</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-info" asp-page="./RegistrarTacto">Registrar Tacto</a>
+                <a class="btn btn-warning" asp-page="./ListaServicios">Volver</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />
+
+<script>
+    // El reproductor es excluyente: se muestra el selector que corresponde al tipo de
+    // servicio elegido y se limpia el otro, para que no viajen los dos.
+    function cambiarTipoServicio() {
+        var tipo = document.getElementById("tipoServicio").value;
+        var esInseminacion = tipo === "@Dominio.Servicio.INSEMINACION";
+
+        document.getElementById("bloqueToro").style.display = esInseminacion ? "none" : "";
+        document.getElementById("bloquePajuela").style.display = esInseminacion ? "" : "none";
+
+        if (esInseminacion) {
+            document.getElementById("idToro").value = "0";
+        } else {
+            document.getElementById("idPajuela").value = "0";
+        }
+    }
+
+    cambiarTipoServicio();
+</script>

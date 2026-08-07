@@ -1,0 +1,172 @@
+@page
+@model Tesis.Pages.PagesProduccion.OrdenieLoteModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Registrar Ordeñe General (Por Lote)</h1>
+    <p class="text-muted">
+        El sistema propone las vacas en lactancia y deja afuera a las que tienen un
+        descarte de leche vigente. La lista se puede ajustar antes de guardar.
+    </p>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="turno">Turno:</label>
+                    <select id="turno" name="turno" asp-for="turno" class="form-control">
+                        <option value="@Dominio.OrdenieLote.TURNO_1">@Dominio.OrdenieLote.TURNO_1</option>
+                        <option value="@Dominio.OrdenieLote.TURNO_2">@Dominio.OrdenieLote.TURNO_2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha" name="fecha" class="form-control"
+                           value="@Model.fecha.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="litrosTotales">Litros:</label>
+                    <input type="number" step="0.01" min="0" id="litrosTotales" name="litrosTotales"
+                           class="form-control" value="@Model.litrosTotales" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="litrosDelTanque"
+                           name="litrosDelTanque" value="true" checked="@Model.litrosDelTanque" />
+                    <label class="form-check-label" for="litrosDelTanque">
+                        Los litros son del <strong>tanque</strong> e incluyen la leche de las vacas
+                        con control individual de este turno.
+                    </label>
+                </div>
+                <small class="text-muted">
+                    El sistema guarda siempre los litros del ordeñe masivo. Si el número
+                    viene del tanque, le descuenta los controles individuales ya cargados
+                    de esa fecha y turno, para que el historial pueda sumar las dos
+                    fuentes sin contar esa leche dos veces. Destilde la casilla si el
+                    número que ingresa ya excluye a esas vacas.
+                </small>
+            </div>
+        </div>
+        <hr />
+
+        <h5>Animales del lote (@Model.animalesDelLote.Count en lactancia)</h5>
+        <table class="table table-sm text-center">
+            <thead>
+                <tr>
+                    <th>Ordeñada</th>
+                    <th>Caravana</th>
+                    <th>Categoria</th>
+                    <th>Numero de partos</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.animalesDelLote.Any())
+                {
+                    @foreach (Dominio.Hembra hembra in Model.animalesDelLote)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="animales" value="@hembra.IdAnimal"
+                                       checked="@Model.seleccionados.Contains(hembra.IdAnimal)" />
+                            </td>
+                            <td>@hembra.NumCaravana</td>
+                            <td>@(hembra.Categoria != null ? hembra.Categoria.Nombre : "")</td>
+                            <td>@hembra.NumeroPartos</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">No hay animales en lactancia.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.animalesEnDescarte.Any())
+        {
+            <div class="alert alert-warning">
+                <strong>Excluidas por descarte de leche.</strong>
+                La leche de estos animales no debe destinarse a consumo. Si igual se
+                ordeñaron, se pueden incluir tildándolas.
+            </div>
+            <table class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Incluir</th>
+                        <th>Caravana</th>
+                        <th>Categoria</th>
+                        <th>Descarte vigente hasta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Dominio.Hembra hembra in Model.animalesEnDescarte)
+                    {
+                        <tr class="table-warning">
+                            <td>
+                                <input type="checkbox" name="animales" value="@hembra.IdAnimal"
+                                       checked="@Model.seleccionados.Contains(hembra.IdAnimal)" />
+                            </td>
+                            <td>@hembra.NumCaravana</td>
+                            <td>@(hembra.Categoria != null ? hembra.Categoria.Nombre : "")</td>
+                            <td>@Model.finDescarte[hembra.IdAnimal].ToShortDateString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-info" asp-page="./OrdenieIndividual">Ordeñe Individual</a>
+                <a class="btn btn-warning" asp-page="./HistorialProduccion">Historial</a>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.ultimosOrdenies.Any())
+    {
+        <hr />
+        <h5>Ordeñes de los ultimos siete dias</h5>
+        <table class="table table-sm text-center">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Turno</th>
+                    <th>Litros del lote</th>
+                    <th>Animales</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Dominio.OrdenieLote ordenie in Model.ultimosOrdenies)
+                {
+                    <tr>
+                        <td>@ordenie.Fecha.ToShortDateString()</td>
+                        <td>@ordenie.Turno</td>
+                        <td>@ordenie.LitrosTotales.ToString("N2")</td>
+                        <td>@ordenie.Animales.Count</td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" asp-page="./ModificarOrdenieLote"
+                               asp-route-id="@ordenie.IdOrdenieLote">Corregir</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

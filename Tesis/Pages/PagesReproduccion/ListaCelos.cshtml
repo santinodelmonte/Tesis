@@ -1,0 +1,49 @@
+@page
+@model Tesis.Pages.PagesReproduccion.ListaCelosModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Celos Detectados</h1>
+    <p class="text-center text-muted">@Model.celos.Count celos registrados.</p>
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-success" asp-page="./RegistrarCelo">Registrar Celo</a>
+            <a class="btn btn-primary" asp-page="./RegistrarServicio">Registrar Servicio</a>
+            <a class="btn btn-info" asp-page="./ListaServicios">Servicios</a>
+        </div>
+    </div>
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Caravana</th>
+                <th>Categoria</th>
+                <th>Estado reproductivo</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.celos.Any())
+            {
+                @foreach (Dominio.Celo celo in Model.celos)
+                {
+                    <tr>
+                        <td>@celo.Fecha.ToShortDateString()</td>
+                        <td>@(celo.Animal != null ? celo.Animal.NumCaravana : "")</td>
+                        <td>@(celo.Animal != null && celo.Animal.Categoria != null ? celo.Animal.Categoria.Nombre : "")</td>
+                        <td>@(celo.Animal != null ? celo.Animal.EstadoReproductivo : "")</td>
+                        <td>@celo.Observaciones</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No hay celos registrados
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
