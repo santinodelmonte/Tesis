@@ -30,12 +30,29 @@
                         }
                     </select>
                     <small class="text-muted">
-                        El tratamiento preventivo no queda asociado a ningún animal en el
-                        modelo, así que no genera descarte de leche.
+                        Si el tratamiento es preventivo &mdash;una desparasitación, por
+                        ejemplo&mdash; no elija diagnóstico e indique la caravana del animal.
                     </small>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="caravanaTexto">Caravana (tratamiento preventivo):</label>
+                    <div class="input-group">
+                        <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                        <input type="text" id="caravanaTexto" class="form-control" readonly
+                               value="@Model.numCaravana" />
+                        <button type="button" class="btn btn-secondary"
+                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Animal', '', true)">
+                            Buscar
+                        </button>
+                    </div>
+                    <small class="text-muted">
+                        Si eligió un diagnóstico, el animal sale de él y este campo se ignora.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="form-group">
                     <label for="idInsumo">Producto aplicado:</label>
                     <select id="idInsumo" name="idInsumo" asp-for="idInsumo" class="form-control">
@@ -94,6 +111,25 @@
         </div>
 
         <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="idPlan">Plan sanitario que cumple:</label>
+                    <select id="idPlan" name="idPlan" asp-for="idPlan" class="form-control">
+                        <option value="0">Fuera de plan</option>
+                        @foreach (Dominio.PlanSanitario plan in Model.planes)
+                        {
+                            <option value="@plan.IdPlan">@plan.Nombre</option>
+                        }
+                    </select>
+                    <small class="text-muted">
+                        Solo planes de desparasitación activos. Declararlo es lo que hace que
+                        el calendario sanitario deje de pedir el procedimiento.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="fechaFinDescarte">Descarte de leche hasta:</label>
@@ -122,3 +158,5 @@
         </div>
     </form>
 </div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />

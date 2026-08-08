@@ -1,0 +1,132 @@
+@page
+@model Tesis.Pages.PagesInsumo.HistorialMovimientosModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Historial de Movimientos</h1>
+    <p class="text-center text-muted">
+        Ingresos y egresos de stock en orden cronológico. Los descuentos automáticos de
+        pajuelas, medicamentos y vacunas quedan asentados como un movimiento más.
+    </p>
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="idInsumo">Insumo:</label>
+                    <select id="idInsumo" name="idInsumo" asp-for="idInsumo" class="form-control">
+                        <option value="0">Todos</option>
+                        @foreach (Dominio.Insumo insumo in Model.insumos)
+                        {
+                            <option value="@insumo.IdInsumo">@insumo.Nombre (@insumo.TipoInsumo)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="tipoMovimiento">Tipo:</label>
+                    <select id="tipoMovimiento" name="tipoMovimiento" asp-for="tipoMovimiento" class="form-control">
+                        <option value="">Todos</option>
+                        <option value="@Dominio.MovimientoStock.INGRESO">@Dominio.MovimientoStock.INGRESO</option>
+                        <option value="@Dominio.MovimientoStock.EGRESO">@Dominio.MovimientoStock.EGRESO</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="desde">Desde:</label>
+                    <input type="date" id="desde" name="desde" class="form-control"
+                           value="@(Model.desde != DateTime.MinValue ? Model.desde.ToString("yyyy-MM-dd") : "")" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="hasta">Hasta:</label>
+                    <input type="date" id="hasta" name="hasta" class="form-control"
+                           value="@(Model.hasta != DateTime.MinValue ? Model.hasta.ToString("yyyy-MM-dd") : "")" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary form-control" asp-page-handler="Buscar">
+                        Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+    </form>
+    <hr />
+
+    @if (Model.buscoSinResultados)
+    {
+        <div class="alert alert-info">
+            No se encontraron movimientos con los criterios seleccionados.
+        </div>
+    }
+
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Insumo</th>
+                <th>Cantidad</th>
+                <th>Motivo</th>
+                <th>Vencimiento de la partida</th>
+                <th>Stock resultante</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.movimientos.Any())
+            {
+                @for (int i = 0; i < Model.movimientos.Count; i++)
+                {
+                    <tr>
+                        <td>@Model.movimientos[i].Fecha.ToShortDateString()</td>
+                        <td>
+                            @if (Model.movimientos[i].TipoMovimiento == Dominio.MovimientoStock.INGRESO)
+                            {
+                                <span class="badge bg-success">@Model.movimientos[i].TipoMovimiento</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">@Model.movimientos[i].TipoMovimiento</span>
+                            }
+                        </td>
+                        <td>
+                            @(Model.movimientos[i].Insumo != null ? Model.movimientos[i].Insumo.Nombre : "")
+                        </td>
+                        <td>@Model.movimientos[i].Cantidad.ToString("N2")</td>
+                        <td>@Model.movimientos[i].Motivo</td>
+                        <td>
+                            @if (Model.movimientos[i].FechaVencimiento != DateTime.MinValue)
+                            {
+                                @Model.movimientos[i].FechaVencimiento.ToShortDateString()
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sin vencimiento</span>
+                            }
+                        </td>
+                        <td>@Model.stockResultante[i].ToString("N2")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7">No hay movimientos registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-warning" asp-page="./ListaInsumos">Volver</a>
+        </div>
+    </div>
+</div>

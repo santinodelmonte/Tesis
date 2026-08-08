@@ -1,3 +1,4 @@
+using MySql.Data.MySqlClient;
 using Tesis.Dominio;
 using System.Data;
 
@@ -46,10 +47,46 @@ namespace Tesis.Persistencia
             };
         }
 
-        public bool AltaMovimiento(MovimientoStock pMovimiento)
+        // El ingreso de una partida deja su movimiento y suma el stock del insumo en
+        // una misma transaccion. Antes eran dos escrituras sueltas: si la segunda
+        // fallaba, el movimiento quedaba asentado y el inventario no lo reflejaba.
+        //
+        // El stock se suma con la cuenta hecha en la base y no con el valor que trae el
+        // objeto, para que dos ingresos simultaneos no se pisen el saldo. Es el mismo
+        // criterio con el que los egresos automaticos lo descuentan.
+        public bool RegistrarIngreso(MovimientoStock pMovimiento)
         {
-            pMovimiento.IdMovimiento = Conexion.EjecutarInsercion(SQL_ALTA, ParametrosAlta(pMovimiento));
-            return pMovimiento.IdMovimiento > 0;
+            using (MySqlConnection conexion = Conexion.AbrirConexion())
+            {
+                using (MySqlTransaction transaccion = conexion.BeginTransaction())
+                {
+                    try
+                    {
+                        int vIdNuevo = Conexion.EjecutarInsercionEnTransaccion(SQL_ALTA,
+                            ParametrosAlta(pMovimiento), conexion, transaccion);
+                        pMovimiento.IdMovimiento = vIdNuevo;
+
+                        Conexion.EjecutarComandoEnTransaccion(
+                            "UPDATE insumos SET stock_actual = stock_actual + @cantidad WHERE id_insumo = @id_insumo",
+                            new Dictionary<string, object?>
+                            {
+                                { "@cantidad", pMovimiento.Cantidad },
+                                { "@id_insumo", pMovimiento.Insumo.IdInsumo }
+                            },
+                            conexion, transaccion);
+
+                        transaccion.Commit();
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        transaccion.Rollback();
+                        // El id que habia asignado la base ya no vale, el alta se deshizo
+                        pMovimiento.IdMovimiento = 0;
+                        throw new Exception("Error al registrar el ingreso de stock", e);
+                    }
+                }
+            }
         }
 
         private Insumo BuscarInsumo(List<Insumo> pLista, int pIdInsumo)

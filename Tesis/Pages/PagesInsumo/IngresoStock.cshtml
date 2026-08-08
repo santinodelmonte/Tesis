@@ -68,7 +68,10 @@
     @if (Model.movimientos.Any())
     {
         <hr />
-        <h5>Ultimos movimientos</h5>
+        <h5>
+            Ultimos movimientos
+            <a class="btn btn-info btn-sm ms-2" asp-page="./HistorialMovimientos">Ver historial completo</a>
+        </h5>
         <table class="table table-sm text-center">
             <thead>
                 <tr>

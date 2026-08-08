@@ -1,0 +1,127 @@
+@page
+@model Tesis.Pages.PagesSanidad.RegistrarDescorneModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Registrar Descorne</h1>
+    <p class="text-muted">
+        El descorne se registra una sola vez por animal. Si cumple un plan sanitario,
+        indicarlo es lo que hace que el calendario deje de pedirlo.
+    </p>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="caravanaTexto">Caravana:</label>
+                    <div class="input-group">
+                        <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                        <input type="text" id="caravanaTexto" class="form-control" readonly
+                               value="@Model.numCaravana" />
+                        <button type="button" class="btn btn-secondary"
+                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Animal', '', true)">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fecha">Fecha del procedimiento:</label>
+                    <input type="date" id="fecha" name="fecha" class="form-control"
+                           value="@Model.fecha.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="metodo">Metodo utilizado:</label>
+                    <select id="metodo" name="metodo" asp-for="metodo" class="form-control">
+                        <option value="@Dominio.Descorne.PASTA_CAUSTICA">@Dominio.Descorne.PASTA_CAUSTICA</option>
+                        <option value="@Dominio.Descorne.TERMOCAUTERIO">@Dominio.Descorne.TERMOCAUTERIO</option>
+                        <option value="@Dominio.Descorne.QUIRURGICO">@Dominio.Descorne.QUIRURGICO</option>
+                        <option value="@Dominio.Descorne.OTRO">@Dominio.Descorne.OTRO</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="idPlan">Plan sanitario que cumple:</label>
+                    <select id="idPlan" name="idPlan" asp-for="idPlan" class="form-control">
+                        <option value="0">Fuera de plan</option>
+                        @foreach (Dominio.PlanSanitario plan in Model.planes)
+                        {
+                            <option value="@plan.IdPlan">@plan.Nombre</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="observaciones">Observaciones:</label>
+                    <input type="text" id="observaciones" name="observaciones" class="form-control"
+                           maxlength="200" value="@Model.observaciones" />
+                </div>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Confirmar</button>
+                <a class="btn btn-warning" asp-page="./ListaDiagnosticos">Volver</a>
+            </div>
+        </div>
+    </form>
+
+    <h5 class="mt-4">Ultimos descornes</h5>
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Caravana</th>
+                <th>Metodo</th>
+                <th>Plan</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.descornes.Any())
+            {
+                @foreach (Dominio.Descorne descorne in Model.descornes)
+                {
+                    <tr>
+                        <td>@descorne.Fecha.ToShortDateString()</td>
+                        <td>@(descorne.Animal != null ? descorne.Animal.NumCaravana : "")</td>
+                        <td>@descorne.Metodo</td>
+                        <td>
+                            @if (descorne.Plan != null)
+                            {
+                                @descorne.Plan.Nombre
+                            }
+                            else
+                            {
+                                <span class="text-muted">Fuera de plan</span>
+                            }
+                        </td>
+                        <td>@descorne.Observaciones</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">No hay descornes registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />

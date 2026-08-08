@@ -73,17 +73,36 @@
                                 </ul>
                             </li>
 
-                            @* Adelantos de los modulos 4 y 5 que los modulos 2 y 3 necesitan *@
+                            @* Modulo 4: Gestion Sanitaria *@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-light" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">Sanidad e Insumos</a>
+                                   data-bs-toggle="dropdown" aria-expanded="false">Sanidad</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/ListaDiagnosticos">Sanidad</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/ListaDiagnosticos">Ficha Sanitaria</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarDiagnostico">Registrar Diagnostico</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarTratamiento">Registrar Tratamiento</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarVacunacion">Registrar Vacunacion</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarDescorne">Registrar Descorne</a></li>
                                     <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/ListaInsumos">Insumos</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/ListaPlanes">Planes Sanitarios</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/CalendarioSanitario">Calendario Sanitario</a></li>
+                                </ul>
+                            </li>
+
+                            @* Modulo 5: Control de Insumos y Stock *@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">Insumos</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/ListaInsumos">Lista de Insumos</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/AltaInsumo">Agregar Insumo</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/IngresoStock">Ingreso de Stock</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/ConfigurarStockMinimo">Configurar Stock Minimo</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/AlertasStock">Alertas de Stock Critico</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/AlertasVencimiento">Alertas de Vencimiento</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/HistorialMovimientos">Historial de Movimientos</a></li>
                                 </ul>
                             </li>
 

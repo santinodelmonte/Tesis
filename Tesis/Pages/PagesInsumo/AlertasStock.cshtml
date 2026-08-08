@@ -1,0 +1,60 @@
+@page
+@model Tesis.Pages.PagesInsumo.AlertasStockModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Alertas de Stock Critico</h1>
+    <p class="text-center text-muted">
+        Insumos cuya existencia quedó por debajo o igual al stock mínimo configurado.
+        Se revisan sobre @Model.totalInsumos insumos registrados.
+    </p>
+
+    @if (!Model.criticos.Any())
+    {
+        <div class="alert alert-success">
+            Ningún insumo está por debajo de su stock mínimo.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <strong>@Model.criticos.Count insumo(s) en stock crítico.</strong>
+            Conviene reponerlos antes de la próxima jornada sanitaria.
+        </div>
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>Insumo</th>
+                    <th>Tipo</th>
+                    <th>Stock actual</th>
+                    <th>Stock minimo</th>
+                    <th>Faltante</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Dominio.Insumo insumo in Model.criticos)
+                {
+                    <tr>
+                        <td>@insumo.Nombre</td>
+                        <td>@insumo.TipoInsumo</td>
+                        <td><span class="badge bg-danger">@insumo.StockActual.ToString("N2")</span></td>
+                        <td>@insumo.StockMinimo.ToString("N2")</td>
+                        <td>@((insumo.StockMinimo - insumo.StockActual).ToString("N2"))</td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" asp-page="./IngresoStock">Registrar Ingreso</a>
+                            <a class="btn btn-secondary btn-sm" asp-page="./ConfigurarStockMinimo"
+                               asp-route-id="@insumo.IdInsumo">Umbral</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-warning" asp-page="./ListaInsumos">Volver</a>
+        </div>
+    </div>
+</div>

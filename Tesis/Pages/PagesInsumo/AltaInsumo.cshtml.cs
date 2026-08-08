@@ -4,8 +4,9 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesInsumo
 {
-    // Adelantado del Modulo 5. Alcanza para cargar las pajuelas que CU15 necesita y
-    // los productos sanitarios que CU20 consume.
+    // CU25. El alta del insumo y el ingreso de su primera partida son un solo tramite:
+    // la existencia inicial entra como movimiento de stock, con su vencimiento, para
+    // que la alerta de CU28 y el historial de CU29 arranquen completos.
     public class AltaInsumoModel : PageModel
     {
         [BindProperty]
@@ -13,7 +14,9 @@ namespace Tesis.Pages.PagesInsumo
         [BindProperty]
         public string tipoInsumo { get; set; } = Insumo.PAJUELA;
         [BindProperty]
-        public double stockActual { get; set; } = 0;
+        public double cantidadInicial { get; set; } = 0;
+        [BindProperty]
+        public DateTime fechaVencimiento { get; set; } = DateTime.MinValue;
         [BindProperty]
         public double stockMinimo { get; set; } = 0;
         [BindProperty]
@@ -54,16 +57,27 @@ namespace Tesis.Pages.PagesInsumo
                 return Page();
             }
 
-            if (stockActual < 0 || stockMinimo < 0 || periodoDescarteDias < 0)
+            // Curso de excepcion 4a: la cantidad no puede ser negativa. El cero se
+            // admite para dar de alta el producto antes de que llegue la mercaderia.
+            if (cantidadInicial < 0 || stockMinimo < 0 || periodoDescarteDias < 0)
             {
                 ModelState.AddModelError(string.Empty, "Los valores numericos no pueden ser negativos!");
                 return Page();
             }
 
-            Insumo unInsumo = new Insumo(0, nombre, tipoInsumo, stockActual, stockMinimo,
+            // Paso 3: el insumo es nuevo o es una reposicion de uno que ya existe. La
+            // reposicion se carga como ingreso de stock, no como alta.
+            if (unaControladora.ExisteInsumo(nombre, tipoInsumo))
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Ese insumo ya esta registrado. Si es una reposicion, cargue la partida desde Ingreso de Stock.");
+                return Page();
+            }
+
+            Insumo unInsumo = new Insumo(0, nombre, tipoInsumo, 0, stockMinimo,
                 periodoDescarteDias, tipoInsumo == Insumo.PAJUELA ? unToro : null);
 
-            if (unaControladora.AltaInsumo(unInsumo))
+            if (unaControladora.RegistrarIngreso(unInsumo, cantidadInicial, DateTime.Now, fechaVencimiento))
             {
                 return Redirect("./ListaInsumos");
             }
@@ -77,9 +91,13 @@ namespace Tesis.Pages.PagesInsumo
             nombre = Request.Form["nombre"];
             tipoInsumo = Request.Form["tipoInsumo"] != "" ? Request.Form["tipoInsumo"] : Insumo.PAJUELA;
 
-            double vStockActual = 0;
-            double.TryParse(Request.Form["stockActual"], out vStockActual);
-            stockActual = vStockActual;
+            double vCantidadInicial = 0;
+            double.TryParse(Request.Form["cantidadInicial"], out vCantidadInicial);
+            cantidadInicial = vCantidadInicial;
+
+            fechaVencimiento = Request.Form["fechaVencimiento"] != ""
+                ? Convert.ToDateTime(Request.Form["fechaVencimiento"])
+                : DateTime.MinValue;
 
             double vStockMinimo = 0;
             double.TryParse(Request.Form["stockMinimo"], out vStockMinimo);

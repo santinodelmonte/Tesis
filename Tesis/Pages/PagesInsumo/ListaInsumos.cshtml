@@ -5,13 +5,21 @@
 <div>
     <h1 class="display-4 text-center">Insumos</h1>
     <p class="text-center text-muted">
-        @Model.insumos.Count insumos registrados. La gestion completa de stock
-        (umbrales, vencimientos y alertas) es del Modulo 5.
+        @Model.insumos.Count insumos registrados.
+        @if (Model.criticos > 0)
+        {
+            <text>
+                <span class="badge bg-danger">@Model.criticos en stock crítico</span>
+            </text>
+        }
     </p>
     <div class="row">
         <div class="col-sm-12 text-right">
             <a class="btn btn-success" asp-page="./AltaInsumo">Agregar Insumo</a>
             <a class="btn btn-primary" asp-page="./IngresoStock">Registrar Ingreso</a>
+            <a class="btn btn-danger" asp-page="./AlertasStock">Alertas de Stock</a>
+            <a class="btn btn-warning" asp-page="./AlertasVencimiento">Alertas de Vencimiento</a>
+            <a class="btn btn-info" asp-page="./HistorialMovimientos">Historial</a>
         </div>
     </div>
     <table class="table text-center">
@@ -23,6 +31,7 @@
                 <th>Stock actual</th>
                 <th>Stock minimo</th>
                 <th>Descarte de leche</th>
+                <th>Accion</th>
             </tr>
         </thead>
         <tbody>
@@ -53,13 +62,17 @@
                                 <span class="text-muted">No obliga</span>
                             }
                         </td>
+                        <td>
+                            <a class="btn btn-secondary btn-sm" asp-page="./ConfigurarStockMinimo"
+                               asp-route-id="@insumo.IdInsumo">Stock Minimo</a>
+                        </td>
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="6" class="text-center">
+                    <td colspan="7" class="text-center">
                         No hay insumos registrados
                     </td>
                 </tr>

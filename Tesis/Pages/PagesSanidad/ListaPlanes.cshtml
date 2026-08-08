@@ -1,0 +1,100 @@
+@page
+@model Tesis.Pages.PagesSanidad.ListaPlanesModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Planes Sanitarios</h1>
+    <p class="text-center text-muted">
+        @Model.planes.Count planes configurados. Solo los activos generan procedimientos
+        pendientes en el calendario sanitario.
+    </p>
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-success" asp-page="./ConfigurarPlan">Nuevo Plan</a>
+            <a class="btn btn-primary" asp-page="./CalendarioSanitario">Calendario Sanitario</a>
+        </div>
+    </div>
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Procedimiento</th>
+                <th>Insumo</th>
+                <th>Periodicidad</th>
+                <th>Edad de inicio</th>
+                <th>Categorias alcanzadas</th>
+                <th>Estado</th>
+                <th>Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.planes.Any())
+            {
+                @foreach (Dominio.PlanSanitario plan in Model.planes)
+                {
+                    <tr>
+                        <td>@plan.Nombre</td>
+                        <td>@plan.TipoProcedimiento</td>
+                        <td>
+                            @if (plan.Insumo != null)
+                            {
+                                @plan.Insumo.Nombre
+                            }
+                            else
+                            {
+                                <span class="text-muted">No consume</span>
+                            }
+                        </td>
+                        <td>
+                            @if (plan.PeriodicidadDias > Dominio.PlanSanitario.SIN_PERIODICIDAD)
+                            {
+                                <text>Cada @plan.PeriodicidadDias dias</text>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Una unica vez</span>
+                            }
+                        </td>
+                        <td>@plan.EdadInicioMeses meses</td>
+                        <td>
+                            @if (plan.Categorias.Any())
+                            {
+                                @foreach (Dominio.Categoria categoria in plan.Categorias)
+                                {
+                                    <span class="badge bg-secondary">@categoria.Nombre</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Todo el rodeo</span>
+                            }
+                        </td>
+                        <td>
+                            @if (plan.Activo)
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactivo</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" asp-page="./ConfigurarPlan"
+                               asp-route-id="@plan.IdPlan">Modificar</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8">
+                        No hay planes sanitarios configurados. Sin planes activos el
+                        calendario sanitario no tiene nada que proyectar.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
