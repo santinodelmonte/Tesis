@@ -4,8 +4,16 @@ namespace Tesis.Dominio
     {
         // Turnos admitidos. Se usan tanto al guardar como al comparar, para que no
         // queden literales sueltos por el codigo.
-        public const string TURNO_1 = "Turno 1";
-        public const string TURNO_2 = "Turno 2";
+        // El turno se nombra por su numero. No son constantes fijas porque la cantidad
+        // de ordenies por dia es un parametro del establecimiento: hay tambos que
+        // ordenian dos veces y otros tres, y la lista de turnos sale de ahi
+        // (Controladora.ListarTurnos).
+        public const string PREFIJO_TURNO = "Turno ";
+
+        public static string NombreTurno(int pNumero)
+        {
+            return PREFIJO_TURNO + pNumero;
+        }
 
         private int mIdOrdenieLote;
         private DateTime mFecha;

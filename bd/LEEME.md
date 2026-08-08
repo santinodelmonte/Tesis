@@ -16,6 +16,10 @@ mysql -u root -p < bd/tambo_m2_m3.sql
 mysql -u root -p < bd/tambo_m4_m5.sql
 ```
 
+```bash
+mysql -u root -p < bd/tambo_configuracion.sql
+```
+
 O abrirlos en MySQL Workbench y ejecutarlos enteros, uno después del otro. Cada
 script asume que los anteriores ya corrieron: las tablas nuevas tienen claves
 foráneas hacia `animales`, `hembras`, `machos` e `insumos`.
@@ -121,7 +125,13 @@ listado de animales en `/PagesAnimal/ListaAnimales`.
 ## 5. Constantes de negocio de los Módulos 2 a 5
 
 El documento no las fija con números. Están en `Dominio/Controladora.cs` con los
-valores habituales de un tambo Holando:
+valores habituales de un tambo Holando.
+
+**Nueve de ellas ya no son constantes sino parámetros configurables**: viven en la
+tabla `configuracion` y se editan desde **Configuración** en el menú. Los valores de
+abajo pasaron a ser el valor por defecto de cada una, el que trae una base recién
+creada. Qué se configura y qué no está explicado en
+`docs/configuracion-del-establecimiento.md`.
 
 | Constante | Valor | Para qué |
 |---|---|---|
@@ -134,6 +144,9 @@ valores habituales de un tambo Holando:
 | `DIAS_ANTICIPACION_SANITARIA` | 30 | Horizonte del calendario sanitario (CU23) |
 | `DIAS_ANTICIPACION_VENCIMIENTO` | 30 | Ventana de la alerta de vencimiento (CU28) |
 | `UNIDADES_POR_VACUNACION` | 1 | Dosis que consume una aplicación (CU21) |
+| `EDAD_MINIMA_CELO_MESES` | 9 | Edad a la que la hembra empieza a ciclar (CU14) |
+| `GESTACION_DIAS_MINIMA` | 240 | Piso de una gestación viable, para advertir en el parto |
+| `GESTACION_DIAS_MAXIMA` | 320 | Techo de una gestación normal, para advertir en el parto |
 
 Las dos ventanas de anticipación se pueden cambiar desde la pantalla: el valor de la
 tabla es el que trae por defecto.

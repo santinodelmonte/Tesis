@@ -61,7 +61,7 @@
         @if (Model.ordeniesLote.Any())
         {
             <h5>Ordeñes por lote (@Model.ordeniesLote.Count)</h5>
-            <table class="table table-sm text-center">
+            <table data-paginar="10" class="table table-sm text-center">
                 <thead>
                     <tr>
                         <th>Fecha</th>
@@ -92,7 +92,7 @@
         @if (Model.ordeniesIndividual.Any())
         {
             <h5>Controles individuales (@Model.ordeniesIndividual.Count)</h5>
-            <table class="table table-sm text-center">
+            <table data-paginar="10" class="table table-sm text-center">
                 <thead>
                     <tr>
                         <th>Fecha</th>

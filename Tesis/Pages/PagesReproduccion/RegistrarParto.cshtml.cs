@@ -37,9 +37,17 @@ namespace Tesis.Pages.PagesReproduccion
         [BindProperty]
         public int idRazaCria2 { get; set; } = 0;
 
+        // Lo tilda el boton "Registrar de todos modos": llega en verdadero solo cuando
+        // el usuario ya vio las advertencias y decidio guardar igual.
+        [BindProperty]
+        public bool confirmado { get; set; } = false;
+
         public List<Animal> animales = new List<Animal>();
         public List<Raza> razas = new List<Raza>();
         public List<Macho> machos = new List<Macho>();
+
+        // Motivos que no impiden el registro pero que el usuario tiene que ver antes
+        public List<string> advertencias = new List<string>();
 
         public Hembra madre = null;
         public Servicio servicioVigente = null;
@@ -178,6 +186,15 @@ namespace Tesis.Pages.PagesReproduccion
 
             Parto unParto = new Parto(0, fechaParto, tipoParto, observaciones ?? "", madre);
 
+            // Advertencias que no impiden el parto: mellizos de distinto sexo -la cria
+            // hembra nace freemartin-, madre que no figuraba prenada, o una duracion de
+            // gestacion fuera de rango.
+            advertencias = unaControladora.AdvertenciasParto(unParto, _listaCrias);
+            if (advertencias.Count > 0 && !confirmado)
+            {
+                return Page();
+            }
+
             // El parto actua sobre los dos ejes: cierra el reproductivo devolviendo la
             // hembra a vacia e inicia el productivo llevandola a lactancia. Ademas da de
             // alta las crias, cierra la lactancia anterior si habia quedado abierta y
@@ -284,6 +301,10 @@ namespace Tesis.Pages.PagesReproduccion
 
             Macho unPadre = pControladoraDominio.BuscarMacho(idPadre);
             caravanaPadre = unPadre != null ? unPadre.NumCaravana : "";
+
+            // Solo viaja cuando se apreto el boton de confirmacion: si el usuario
+            // corrige un dato, las advertencias se vuelven a evaluar desde cero.
+            confirmado = Request.Form["confirmado"].ToString().Contains("true");
         }
     }
 }

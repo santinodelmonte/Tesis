@@ -1,0 +1,178 @@
+@page
+@model Tesis.Pages.PagesConfiguracion.ConfiguracionModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Configuracion del Establecimiento</h1>
+    <p class="text-muted">
+        Reglas de manejo que cada tambo resuelve a su manera. Cambiarlas afecta los
+        cálculos de acá en adelante &mdash;las alertas y las recomendaciones se rehacen
+        al instante&mdash;, pero no modifica lo ya registrado: la fecha probable de parto
+        que quedó escrita en un servicio o en una lactancia sigue siendo la que era.
+    </p>
+    <hr />
+
+    @if (Model.guardado)
+    {
+        <div class="alert alert-success">La configuración se guardó.</div>
+    }
+
+    <form method="post">
+        <h5>Manejo reproductivo y productivo</h5>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="diasSecadoAntesParto">Dias de secado antes del parto:</label>
+                    <input type="number" min="1" max="120" id="diasSecadoAntesParto"
+                           name="diasSecadoAntesParto" class="form-control"
+                           value="@Model.diasSecadoAntesParto" />
+                    <small class="text-muted">
+                        Lo habitual son 60. Hay tambos que trabajan con 45&ndash;50 y otros
+                        con período seco corto de 30&ndash;40.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="edadMinimaServicioMeses">Edad minima al servicio (meses):</label>
+                    <input type="number" min="9" max="36" id="edadMinimaServicioMeses"
+                           name="edadMinimaServicioMeses" class="form-control"
+                           value="@Model.edadMinimaServicioMeses" />
+                    <small class="text-muted">
+                        A qué edad entra la vaquillona en servicio. También es el piso que
+                        usa la validación de genealogía.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="edadCambioCategoriaMeses">Edad de cambio de categoria (meses):</label>
+                    <input type="number" min="1" max="36" id="edadCambioCategoriaMeses"
+                           name="edadCambioCategoriaMeses" class="form-control"
+                           value="@Model.edadCambioCategoriaMeses" />
+                    <small class="text-muted">
+                        A partir de esta edad la cría deja de ser ternera o ternero.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="ordeniesPorDia">Ordeñes por dia:</label>
+                    <select id="ordeniesPorDia" name="ordeniesPorDia" asp-for="ordeniesPorDia"
+                            class="form-control">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                    <small class="text-muted">
+                        De acá salen los turnos de las pantallas de ordeñe. Bajar la cantidad
+                        no borra los ordeñes ya registrados en un turno que deja de ofrecerse.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="litrosMaximosIndividual">Litros maximos por control individual:</label>
+                    <input type="number" step="0.01" min="1" id="litrosMaximosIndividual"
+                           name="litrosMaximosIndividual" class="form-control"
+                           value="@Model.litrosMaximosIndividual" />
+                    <small class="text-muted">
+                        Tope de coherencia de una carga. También limita el ordeñe por lote,
+                        multiplicado por la cantidad de animales.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <h5>Anticipacion de las alertas</h5>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="diasAnticipacionSecado">Secado proximo (dias):</label>
+                    <input type="number" min="1" max="365" id="diasAnticipacionSecado"
+                           name="diasAnticipacionSecado" class="form-control"
+                           value="@Model.diasAnticipacionSecado" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="diasAnticipacionParto">Parto proximo (dias):</label>
+                    <input type="number" min="1" max="365" id="diasAnticipacionParto"
+                           name="diasAnticipacionParto" class="form-control"
+                           value="@Model.diasAnticipacionParto" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="diasAnticipacionSanitaria">Calendario sanitario (dias):</label>
+                    <input type="number" min="1" max="365" id="diasAnticipacionSanitaria"
+                           name="diasAnticipacionSanitaria" class="form-control"
+                           value="@Model.diasAnticipacionSanitaria" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="diasAnticipacionVencimiento">Vencimiento de insumos (dias):</label>
+                    <input type="number" min="1" max="365" id="diasAnticipacionVencimiento"
+                           name="diasAnticipacionVencimiento" class="form-control"
+                           value="@Model.diasAnticipacionVencimiento" />
+                </div>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-warning" asp-page="/Index">Volver</a>
+            </div>
+        </div>
+    </form>
+
+    <hr />
+    <h5>Valores que no se configuran</h5>
+    <p class="text-muted">
+        No son decisiones del establecimiento sino biología, así que viven en el código y
+        son iguales para cualquier tambo. Si en algún momento se trabaja con varias razas,
+        el lugar de la gestación es un campo de la raza y no un parámetro general.
+    </p>
+    <table class="table table-sm text-center">
+        <thead>
+            <tr>
+                <th>Valor</th>
+                <th>Usado en</th>
+                <th>Dias</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Duracion de la gestacion</td>
+                <td>Fecha probable de parto</td>
+                <td>@Model.gestacionDias</td>
+            </tr>
+            <tr>
+                <td>Edad a la que la hembra empieza a ciclar</td>
+                <td>Validacion del celo</td>
+                <td>@Model.edadMinimaCeloMeses meses</td>
+            </tr>
+            <tr>
+                <td>Gestacion minima viable</td>
+                <td>Advertencia al registrar el parto</td>
+                <td>@Model.gestacionDiasMinima</td>
+            </tr>
+            <tr>
+                <td>Gestacion maxima normal</td>
+                <td>Advertencia al registrar el parto</td>
+                <td>@Model.gestacionDiasMaxima</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

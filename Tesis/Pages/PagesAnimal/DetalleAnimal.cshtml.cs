@@ -26,6 +26,22 @@ namespace Tesis.Pages.PagesAnimal
             return RedirectToPage(new { id = id });
         }
 
+        // La baja es un dato mas y se puede haber cargado por error: reactivar devuelve
+        // el animal al rodeo con todo su historial.
+        public IActionResult OnPostReactivar(int id)
+        {
+            Controladora unaControladora = new Controladora();
+            unaControladora.ListarAnimales();
+
+            Animal unAnimal = unaControladora.BuscarAnimal(id);
+            if (unAnimal != null)
+            {
+                unaControladora.ReactivarAnimal(unAnimal.NumCaravana);
+            }
+
+            return RedirectToPage(new { id = id });
+        }
+
         private void CargarDetalle(int pId)
         {
             Controladora unaControladora = new Controladora();

@@ -30,11 +30,19 @@ namespace Tesis.Pages.PagesAnimal
         [BindProperty]
         public bool enPie { get; set; } = false;
 
+        // Lo tilda el boton "Guardar de todos modos": llega en verdadero solo cuando el
+        // usuario ya vio las advertencias de genealogia y decidio guardar igual.
+        [BindProperty]
+        public bool confirmado { get; set; } = false;
+
         public List<Raza> razas = new List<Raza>();
         public List<Categoria> categorias = new List<Categoria>();
         public List<Hembra> hembras = new List<Hembra>();
         public List<Macho> machos = new List<Macho>();
         public List<Animal> animales = new List<Animal>();
+
+        // Motivos que no impiden el alta pero que el usuario tiene que ver antes
+        public List<string> advertencias = new List<string>();
 
         // Caravanas de la madre y del padre elegidos, para mostrarlas en el formulario
         public string caravanaMadre = "";
@@ -118,6 +126,15 @@ namespace Tesis.Pages.PagesAnimal
                 return Page();
             }
 
+            // Advertencias que no impiden el alta: un progenitor que ya figuraba dado
+            // de baja, o padre y madre emparentados entre si.
+            advertencias = unaControladora.AdvertenciasGenealogia(unAnimal.FechaNacimiento,
+                unAnimal.Madre, unAnimal.Padre);
+            if (advertencias.Count > 0 && !confirmado)
+            {
+                return Page();
+            }
+
             // Si el usuario no ajusto la categoria, se usa la que propone el sistema
             if (unAnimal.Categoria == null)
             {
@@ -149,6 +166,10 @@ namespace Tesis.Pages.PagesAnimal
             numeroPartos = Request.Form["numeroPartos"] != "" ? Convert.ToInt32(Request.Form["numeroPartos"]) : 0;
             // El checkbox manda "true,false" cuando esta tildado
             enPie = Request.Form["enPie"].ToString().Contains("true");
+
+            // Solo viaja cuando se apreto el boton de confirmacion: si el usuario
+            // corrige un progenitor, las advertencias se evaluan de nuevo.
+            confirmado = Request.Form["confirmado"].ToString().Contains("true");
         }
 
         private void LeerCaravanasElegidas(Controladora pControladoraDominio)

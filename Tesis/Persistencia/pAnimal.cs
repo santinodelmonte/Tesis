@@ -233,6 +233,24 @@ namespace Tesis.Persistencia
             return Conexion.EjecutarComando(sql, parametros);
         }
 
+        // Deshace la baja logica: el animal vuelve al rodeo y se limpian la fecha y el
+        // motivo, que son los que dan por terminada su vida productiva.
+        public bool ReactivarAnimal(int pIdAnimal)
+        {
+            string sql = "UPDATE animales SET "
+                + "activo = 1,"
+                + "fecha_baja = NULL,"
+                + "motivo_baja = NULL "
+                + "WHERE id_animal = @id_animal";
+
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@id_animal", pIdAnimal }
+            };
+
+            return Conexion.EjecutarComando(sql, parametros);
+        }
+
         private Animal BuscarEnLista(List<Animal> pLista, int pIdAnimal)
         {
             foreach (Animal unAnimal in pLista)

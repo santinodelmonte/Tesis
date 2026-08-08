@@ -18,8 +18,10 @@
                 <div class="form-group">
                     <label for="turno">Turno:</label>
                     <select id="turno" name="turno" asp-for="turno" class="form-control">
-                        <option value="@Dominio.OrdenieLote.TURNO_1">@Dominio.OrdenieLote.TURNO_1</option>
-                        <option value="@Dominio.OrdenieLote.TURNO_2">@Dominio.OrdenieLote.TURNO_2</option>
+                        @foreach (string unTurno in Model.turnos)
+                        {
+                            <option value="@unTurno">@unTurno</option>
+                        }
                     </select>
                 </div>
             </div>
@@ -67,7 +69,7 @@
     {
         <hr />
         <h5>Controles de los ultimos siete dias</h5>
-        <table class="table table-sm text-center">
+        <table data-paginar="10" class="table table-sm text-center">
             <thead>
                 <tr>
                     <th>Fecha</th>

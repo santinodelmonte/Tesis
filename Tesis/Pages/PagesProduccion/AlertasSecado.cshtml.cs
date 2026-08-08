@@ -14,13 +14,19 @@ namespace Tesis.Pages.PagesProduccion
         public Dictionary<int, int> diasRestantes = new Dictionary<int, int>();
         public Dictionary<int, DateTime> fechasProbablesParto = new Dictionary<int, DateTime>();
 
-        public int diasAnticipacion = Controladora.DIAS_ANTICIPACION_SECADO;
-        public int diasAntesDelParto = Controladora.DIAS_SECADO_ANTES_PARTO;
+        // Los dos salen de la configuracion del establecimiento: cuantos dias antes
+        // del parto se seca y con cuanta anticipacion avisa la alerta.
+        public int diasAnticipacion = 0;
+        public int diasAntesDelParto = 0;
 
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
             unaControladora.ListarAnimales();
+
+            Configuracion unaConfiguracion = unaControladora.ObtenerConfiguracion();
+            diasAnticipacion = unaConfiguracion.DiasAnticipacionSecado;
+            diasAntesDelParto = unaConfiguracion.DiasSecadoAntesParto;
 
             alertas = unaControladora.ListarAlertasSecado();
 

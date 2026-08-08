@@ -10,7 +10,7 @@ namespace Tesis.Pages.PagesInsumo
     public class AlertasVencimientoModel : PageModel
     {
         [BindProperty]
-        public int anticipacionDias { get; set; } = Controladora.DIAS_ANTICIPACION_VENCIMIENTO;
+        public int anticipacionDias { get; set; } = 0;
 
         public List<PartidaVencimiento> partidas = new List<PartidaVencimiento>();
 
@@ -22,6 +22,10 @@ namespace Tesis.Pages.PagesInsumo
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
+
+            // La ventana que propone la pantalla es la configurada por el establecimiento
+            anticipacionDias = unaControladora.ObtenerConfiguracion().DiasAnticipacionVencimiento;
+
             this.Calcular(unaControladora);
         }
 
@@ -34,7 +38,7 @@ namespace Tesis.Pages.PagesInsumo
             {
                 ModelState.AddModelError(string.Empty,
                     "La ventana de anticipacion tiene que ser un numero positivo de dias!");
-                anticipacionDias = Controladora.DIAS_ANTICIPACION_VENCIMIENTO;
+                anticipacionDias = unaControladora.ObtenerConfiguracion().DiasAnticipacionVencimiento;
             }
 
             this.Calcular(unaControladora);

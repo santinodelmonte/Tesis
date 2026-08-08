@@ -22,9 +22,17 @@ namespace Tesis.Pages.PagesReproduccion
         [BindProperty]
         public string? observaciones { get; set; } = "";
 
+        // Lo tilda el boton "Registrar de todos modos": llega en verdadero solo cuando
+        // el usuario ya vio las advertencias y decidio guardar igual.
+        [BindProperty]
+        public bool confirmado { get; set; } = false;
+
         public List<Animal> animales = new List<Animal>();
         public List<Macho> toros = new List<Macho>();
         public List<Insumo> pajuelas = new List<Insumo>();
+
+        // Motivos que no impiden el registro pero que el usuario tiene que ver antes
+        public List<string> advertencias = new List<string>();
 
         public string caravanaToro = "";
 
@@ -105,6 +113,14 @@ namespace Tesis.Pages.PagesReproduccion
                 return Page();
             }
 
+            // Las advertencias no bloquean: el toro dado de baja o el parentesco con el
+            // reproductor se muestran y el servicio se guarda si el usuario insiste.
+            advertencias = unaControladora.AdvertenciasServicio(unServicio);
+            if (advertencias.Count > 0 && !confirmado)
+            {
+                return Page();
+            }
+
             if (unaControladora.AltaServicio(unServicio))
             {
                 return Redirect("./ListaServicios");
@@ -149,6 +165,11 @@ namespace Tesis.Pages.PagesReproduccion
             fechaProbableParto = Request.Form["fechaProbableParto"] != ""
                 ? Convert.ToDateTime(Request.Form["fechaProbableParto"])
                 : DateTime.MinValue;
+
+            // Solo viaja cuando se apreto el boton de confirmacion, no en un guardado
+            // normal: si el usuario cambia el reproductor, las advertencias se vuelven
+            // a evaluar desde cero.
+            confirmado = Request.Form["confirmado"].ToString().Contains("true");
 
             Macho unToro = pControladoraDominio.BuscarMacho(idToro);
             caravanaToro = unToro != null ? unToro.NumCaravana : "";
