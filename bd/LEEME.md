@@ -134,6 +134,9 @@ valores habituales de un tambo Holando:
 | `DIAS_ANTICIPACION_SANITARIA` | 30 | Horizonte del calendario sanitario (CU23) |
 | `DIAS_ANTICIPACION_VENCIMIENTO` | 30 | Ventana de la alerta de vencimiento (CU28) |
 | `UNIDADES_POR_VACUNACION` | 1 | Dosis que consume una aplicación (CU21) |
+| `EDAD_MINIMA_CELO_MESES` | 9 | Edad a la que la hembra empieza a ciclar (CU14) |
+| `GESTACION_DIAS_MINIMA` | 240 | Piso de una gestación viable, para advertir en el parto |
+| `GESTACION_DIAS_MAXIMA` | 320 | Techo de una gestación normal, para advertir en el parto |
 
 Las dos ventanas de anticipación se pueden cambiar desde la pantalla: el valor de la
 tabla es el que trae por defecto.

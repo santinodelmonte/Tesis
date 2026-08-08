@@ -134,6 +134,27 @@
             </div>
         </div>
 
+        @if (!Model.animal.Activo)
+        {
+            @* La baja pudo cargarse por error: se puede deshacer *@
+            <div class="alert alert-secondary mt-3">
+                <strong>El animal está dado de baja</strong>
+                @if (Model.animal.FechaBaja != DateTime.MinValue)
+                {
+                    <text>desde el @Model.animal.FechaBaja.ToShortDateString()</text>
+                }
+                @if (!string.IsNullOrEmpty(Model.animal.MotivoBaja))
+                {
+                    <text>(@Model.animal.MotivoBaja)</text>
+                }
+                y no participa del ordeñe, de las alertas ni del calendario sanitario.
+                Si la baja se cargó por error, se puede deshacer.
+                <form method="post" asp-page-handler="Reactivar" asp-route-id="@Model.animal.IdAnimal" class="mt-2">
+                    <button type="submit" class="btn btn-success btn-sm">Reactivar animal</button>
+                </form>
+            </div>
+        }
+
     }
     else
     {

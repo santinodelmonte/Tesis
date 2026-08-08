@@ -50,6 +50,13 @@ namespace Tesis.Persistencia
         {
             return new pAnimal().BajaAnimal(pIdAnimal, pMotivoBaja);
         }
+
+        // La baja es reversible: un error de carga no puede dejar al animal fuera del
+        // rodeo para siempre
+        public bool ReactivarAnimal(int pIdAnimal)
+        {
+            return new pAnimal().ReactivarAnimal(pIdAnimal);
+        }
         #endregion
 
         #region HEMBRAS

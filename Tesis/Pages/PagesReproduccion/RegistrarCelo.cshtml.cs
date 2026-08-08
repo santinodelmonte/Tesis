@@ -54,13 +54,16 @@ namespace Tesis.Pages.PagesReproduccion
                 return Page();
             }
 
-            if (fecha > DateTime.Now)
+            Celo unCelo = new Celo(0, fecha, observaciones ?? "", (Hembra)unAnimal);
+
+            // La Controladora concentra las reglas: fecha no futura, edad minima a la
+            // que la hembra empieza a ciclar y animal en el rodeo a esa fecha.
+            string vMotivo = unaControladora.ValidarCelo(unCelo);
+            if (vMotivo != "")
             {
-                ModelState.AddModelError(string.Empty, "La fecha de deteccion no puede ser futura!");
+                ModelState.AddModelError(string.Empty, vMotivo);
                 return Page();
             }
-
-            Celo unCelo = new Celo(0, fecha, observaciones ?? "", (Hembra)unAnimal);
 
             if (unaControladora.AltaCelo(unCelo))
             {

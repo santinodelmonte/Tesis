@@ -125,6 +125,28 @@
         </div>
 
         <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+
+        @if (Model.advertencias.Any())
+        {
+            <div class="alert alert-warning mt-2">
+                <strong>Revise antes de registrar:</strong>
+                <ul class="mb-2 mt-2">
+                    @foreach (string advertencia in Model.advertencias)
+                    {
+                        <li>@advertencia</li>
+                    }
+                </ul>
+                El servicio no se guardó. Corrija los datos, o registrelo igual si la
+                información es correcta.
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-warning" asp-page-handler="Guardar"
+                            name="confirmado" value="true">
+                        Registrar de todos modos
+                    </button>
+                </div>
+            </div>
+        }
+
         <hr />
         <div class="row">
             <div class="mt-2">

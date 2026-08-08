@@ -89,6 +89,28 @@
 
         </div>
         <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+
+        @if (Model.advertencias.Any())
+        {
+            <div class="alert alert-warning mt-2">
+                <strong>Revise la genealogía antes de guardar:</strong>
+                <ul class="mb-2 mt-2">
+                    @foreach (string advertencia in Model.advertencias)
+                    {
+                        <li>@advertencia</li>
+                    }
+                </ul>
+                El animal no se registró. Corrija los progenitores, o guárdelo igual si
+                los datos son correctos.
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-warning" asp-page-handler="AgregarAnimal"
+                            name="confirmado" value="true">
+                        Guardar de todos modos
+                    </button>
+                </div>
+            </div>
+        }
+
         <br />
         <hr />
         <div class="row">

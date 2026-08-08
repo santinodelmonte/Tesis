@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <hr />
-                <table class="table table-hover text-center">
+                <table id="mSelectorTabla" data-paginar="8" class="table table-hover text-center">
                     <thead>
                         <tr>
                             <th>Caravana</th>
@@ -140,13 +140,22 @@
                 mostrar = false;
             }
 
+            // El paginador reparte unicamente las filas que pasaron el filtro: las
+            // descartadas quedan marcadas para que no ocupen lugar en las paginas.
+            fila.setAttribute("data-filtrada", mostrar ? "0" : "1");
             fila.style.display = mostrar ? "" : "none";
+
             if (mostrar) {
                 visibles = visibles + 1;
             }
         }
 
         document.getElementById("mSelectorVacio").style.display = visibles === 0 ? "block" : "none";
+
+        // Con el filtro nuevo el paginado se rehace desde la primera pagina
+        if (typeof paginarTabla === "function") {
+            paginarTabla(document.getElementById("mSelectorTabla"));
+        }
     }
 
     function elegirAnimalSelector(pBoton) {

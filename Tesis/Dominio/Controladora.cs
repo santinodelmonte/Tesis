@@ -47,6 +47,18 @@ namespace Tesis.Dominio
         // Cada aplicacion consume una dosis del biologico (CU21, paso 6).
         public const double UNIDADES_POR_VACUNACION = 1;
 
+        // Edad a la que la vaquillona empieza a manifestar celo. Es anterior a la edad
+        // minima de servicio: el celo se detecta y se anota bastante antes de que el
+        // animal este en condiciones de ser servido.
+        public const int EDAD_MINIMA_CELO_MESES = 9;
+
+        // Rango en el que una gestacion Holando puede terminar en un parto viable. Por
+        // debajo del minimo es un aborto o un prematuro, y por encima del maximo la
+        // fecha de servicio o la de parto estan mal cargadas. La gestacion normal son
+        // los GESTACION_DIAS.
+        public const int GESTACION_DIAS_MINIMA = 240;
+        public const int GESTACION_DIAS_MAXIMA = 320;
+
         private static List<Raza> mListaRazas = new List<Raza>();
         private static List<Categoria> mListaCategorias = new List<Categoria>();
         private static List<Animal> mListaAnimales = new List<Animal>();
@@ -403,6 +415,53 @@ namespace Tesis.Dominio
 
         }
 
+        // Deshace la baja logica. Un error de carga -la caravana equivocada, un motivo
+        // mal elegido- dejaba al animal fuera del rodeo sin vuelta atras, y con el a
+        // todo su historial productivo y reproductivo: no aparecia mas en el lote de
+        // ordenie, ni en las alertas, ni en el calendario sanitario.
+        public bool ReactivarAnimal(string pNumCaravana)
+        {
+            Animal unAnimal = this.BuscarAnimalXCaravana(pNumCaravana);
+            if (unAnimal == null || unAnimal.Activo)
+            {
+                return false;
+            }
+
+            if (Persistencia.ReactivarAnimal(unAnimal.IdAnimal))
+            {
+                unAnimal.Activo = true;
+                unAnimal.FechaBaja = DateTime.MinValue;
+                unAnimal.MotivoBaja = "";
+                return true;
+            }
+            return false;
+
+        }
+
+        // Si el animal integraba el rodeo en esa fecha. Un animal dado de baja no puede
+        // protagonizar un evento posterior a su baja, pero si uno anterior: cargar hoy
+        // el servicio del mes pasado de una vaca que despues se vendio es lo normal en
+        // el tambo, no un error.
+        public bool EstabaActivo(Animal pAnimal, DateTime pFecha)
+        {
+            if (pAnimal == null)
+            {
+                return false;
+            }
+
+            if (pAnimal.Activo)
+            {
+                return true;
+            }
+
+            // Inactivo y sin fecha de baja: no hay contra que comparar
+            if (pAnimal.FechaBaja == DateTime.MinValue)
+            {
+                return false;
+            }
+            return pFecha.Date <= pAnimal.FechaBaja.Date;
+        }
+
         public int CalcularEdadMeses(Animal pAnimal)
         {
             int meses = this.DiferenciaMeses(pAnimal.FechaNacimiento, DateTime.Now);
@@ -513,6 +572,59 @@ namespace Tesis.Dominio
             }
 
             return "";
+        }
+
+        // Lo que hace ruido en la genealogia elegida pero no la vuelve imposible. No
+        // impide guardar: la pantalla las muestra y el usuario decide.
+        //
+        // La diferencia con ValidarGenealogia es deliberada. Alla estan las
+        // imposibilidades -un animal padre de si mismo, un progenitor mas joven que su
+        // cria-; aca, los datos que en un tambo real pueden ser ciertos aunque parezcan
+        // errores, y que trabar de entrada haria imposible la carga inicial del rodeo.
+        public List<string> AdvertenciasGenealogia(DateTime pFechaNacimiento, Hembra pMadre, Macho pPadre)
+        {
+            List<string> _listaAdvertencias = new List<string>();
+
+            // La madre tiene que haber estado en el rodeo el dia del parto. Si ya
+            // figuraba de baja, o la fecha de baja o la de nacimiento estan mal.
+            if (pMadre != null && !this.EstabaActivo(pMadre, pFechaNacimiento))
+            {
+                _listaAdvertencias.Add("La madre " + pMadre.NumCaravana + " figura dada de baja el "
+                    + pMadre.FechaBaja.ToShortDateString() + ", antes de la fecha de nacimiento de la cria.");
+            }
+
+            // El padre solo tiene que haber estado vivo en la concepcion, no en el
+            // parto, y ni siquiera eso si la cria vino de una pajuela: el semen
+            // congelado sigue sirviendo anios despues de que el toro murio.
+            if (pPadre != null && !this.EstabaActivo(pPadre, pFechaNacimiento.AddMonths(-GESTACION_MESES)))
+            {
+                _listaAdvertencias.Add("El padre " + pPadre.NumCaravana + " figura dado de baja el "
+                    + pPadre.FechaBaja.ToShortDateString() + ", antes de la concepcion. "
+                    + "Es correcto si la cria vino de una pajuela suya.");
+            }
+
+            // Padre y madre emparentados: la cria nace consanguinea (CU6)
+            if (pMadre != null && pPadre != null && this.VerificarConsanguinidad(pMadre, pPadre))
+            {
+                _listaAdvertencias.Add("Los progenitores tienen parentesco entre si: "
+                    + this.TextoAncestroComun(pMadre, pPadre) + " La cria nace consanguinea.");
+            }
+
+            return _listaAdvertencias;
+        }
+
+        // El ancestro que comparten dos animales, listo para mostrar. Se arma aca y no
+        // en la pantalla para que las tres advertencias de consanguinidad -alta,
+        // modificacion y servicio- digan lo mismo.
+        private string TextoAncestroComun(Animal pAnimal, Animal pPareja)
+        {
+            Animal unAncestro = this.BuscarAncestroComun(pAnimal, pPareja);
+
+            if (unAncestro != null)
+            {
+                return "el ancestro comun es la caravana " + unAncestro.NumCaravana + ".";
+            }
+            return "no se identifico el ancestro comun.";
         }
 
         public Categoria CalcularCategoria(Animal pAnimal)
@@ -1642,14 +1754,41 @@ namespace Tesis.Dominio
 
         // CU14. La validacion de que el animal sea hembra ya quedo resuelta al armar el
         // objeto: Celo solo admite una Hembra.
-        public bool AltaCelo(Celo pCelo)
+        // Devuelve el motivo por el que el celo no se puede registrar, o una cadena
+        // vacia si esta bien.
+        public string ValidarCelo(Celo pCelo)
         {
             if (pCelo.Animal == null)
             {
-                return false;
+                return "Hay que indicar la hembra en celo!";
             }
 
             if (pCelo.Fecha > DateTime.Now)
+            {
+                return "La fecha del celo no puede ser posterior a la fecha actual!";
+            }
+
+            // Una ternera no cicla. Anotarle un celo es un error de caravana, y el
+            // servicio que vendria despues seria imposible.
+            int vEdadAlCelo = this.DiferenciaMeses(pCelo.Animal.FechaNacimiento, pCelo.Fecha);
+            if (vEdadAlCelo < EDAD_MINIMA_CELO_MESES)
+            {
+                return "El animal tenia " + vEdadAlCelo + " meses en esa fecha: la hembra empieza a manifestar celo "
+                    + "a partir de los " + EDAD_MINIMA_CELO_MESES + " meses. Revise la caravana o la fecha!";
+            }
+
+            if (!this.EstabaActivo(pCelo.Animal, pCelo.Fecha))
+            {
+                return "El animal figura dado de baja el " + pCelo.Animal.FechaBaja.ToShortDateString()
+                    + ": no se le puede registrar un celo posterior a esa fecha!";
+            }
+
+            return "";
+        }
+
+        public bool AltaCelo(Celo pCelo)
+        {
+            if (this.ValidarCelo(pCelo) != "")
             {
                 return false;
             }
@@ -1752,6 +1891,24 @@ namespace Tesis.Dominio
                 return "La fecha del servicio no puede ser posterior a la fecha actual!";
             }
 
+            // Una ternera no entra en servicio: no esta desarrollada para gestar y el
+            // servicio compromete su crecimiento. Es el mismo umbral con el que
+            // ValidarGenealogia rechaza a una madre demasiado joven, aplicado ahora en
+            // el momento en que el dato se carga y no recien cuando nace la cria.
+            int vEdadAlServicio = this.DiferenciaMeses(pServicio.Animal.FechaNacimiento, pServicio.FechaServicio);
+            if (vEdadAlServicio < EDAD_MINIMA_SERVICIO_HEMBRA_MESES)
+            {
+                return "El animal tenia " + vEdadAlServicio + " meses en esa fecha: la edad minima para entrar "
+                    + "en servicio es de " + EDAD_MINIMA_SERVICIO_HEMBRA_MESES + " meses. Revise la caravana o la fecha!";
+            }
+
+            // La hembra tiene que haber estado en el rodeo ese dia
+            if (!this.EstabaActivo(pServicio.Animal, pServicio.FechaServicio))
+            {
+                return "El animal figura dado de baja el " + pServicio.Animal.FechaBaja.ToShortDateString()
+                    + ": no se le puede registrar un servicio posterior a esa fecha!";
+            }
+
             // Servir una hembra prenada le provoca el aborto. Si la preniez estaba mal
             // confirmada, el camino es registrar el tacto vacio y despues el servicio.
             if (pServicio.Animal.EstadoReproductivo == Hembra.PRENADA)
@@ -1795,6 +1952,45 @@ namespace Tesis.Dominio
             }
 
             return "";
+        }
+
+        // Lo que hace ruido en el servicio pero no lo vuelve imposible. No impide
+        // guardar: la pantalla las muestra y el usuario decide si registrarlo igual.
+        public List<string> AdvertenciasServicio(Servicio pServicio)
+        {
+            List<string> _listaAdvertencias = new List<string>();
+
+            if (pServicio.Animal == null)
+            {
+                return _listaAdvertencias;
+            }
+
+            // El toro de la monta natural tiene que haber estado en el campo ese dia.
+            // Si figura dado de baja antes, o el servicio es de otro toro o la fecha de
+            // baja quedo mal cargada. Se advierte y no se bloquea porque la baja suele
+            // registrarse dias despues del hecho, asi que la fecha almacenada puede ser
+            // posterior a la real.
+            //
+            // La inseminacion no entra en esta advertencia: la pajuela sobrevive al
+            // toro, y usar semen de un reproductor muerto es lo habitual.
+            if (pServicio.Toro != null && !this.EstabaActivo(pServicio.Toro, pServicio.FechaServicio))
+            {
+                _listaAdvertencias.Add("El toro " + pServicio.Toro.NumCaravana + " figura dado de baja el "
+                    + pServicio.Toro.FechaBaja.ToShortDateString() + ", antes de la fecha del servicio. "
+                    + "Revise la fecha del servicio o la de la baja.");
+            }
+
+            // Parentesco entre la hembra y el reproductor, sea el toro del rodeo o el
+            // que aporto la pajuela (CU6). La cria nace consanguinea.
+            Macho unReproductor = this.ToroDelServicio(pServicio);
+            if (unReproductor != null && this.VerificarConsanguinidad(pServicio.Animal, unReproductor))
+            {
+                _listaAdvertencias.Add("La hembra y el reproductor tienen parentesco: "
+                    + this.TextoAncestroComun(pServicio.Animal, unReproductor)
+                    + " La cria nace consanguinea.");
+            }
+
+            return _listaAdvertencias;
         }
 
         public bool AltaServicio(Servicio pServicio)
@@ -2161,6 +2357,80 @@ namespace Tesis.Dominio
         public Macho PadreSugerido(Hembra pMadre)
         {
             return this.ToroDelServicio(this.ServicioVigente(pMadre));
+        }
+
+        // Lo que hace ruido en el parto pero no lo vuelve imposible. Igual que en el
+        // servicio, no impide guardar: son datos que en el campo pasan y que el usuario
+        // tiene que ver antes de confirmar.
+        public List<string> AdvertenciasParto(Parto pParto, List<Animal> pListaCrias)
+        {
+            List<string> _listaAdvertencias = new List<string>();
+
+            if (pParto.Madre == null || pListaCrias == null || pListaCrias.Count == 0)
+            {
+                return _listaAdvertencias;
+            }
+
+            // Mellizos de distinto sexo: la hembra nace freemartin. Comparte
+            // circulacion con el hermano macho durante la gestacion y en la enorme
+            // mayoria de los casos queda esteril, asi que no conviene criarla como
+            // futura vaca lechera. Es la advertencia que evita descubrirlo dos anios
+            // despues, cuando la vaquillona no prende con ningun servicio.
+            if (pListaCrias.Count > 1)
+            {
+                bool vHayHembra = false;
+                bool vHayMacho = false;
+
+                foreach (Animal unaCria in pListaCrias)
+                {
+                    if (unaCria is Hembra)
+                    {
+                        vHayHembra = true;
+                    }
+                    else
+                    {
+                        vHayMacho = true;
+                    }
+                }
+
+                if (vHayHembra && vHayMacho)
+                {
+                    _listaAdvertencias.Add("Mellizos de distinto sexo: la cria hembra nace freemartin y "
+                        + "lo mas probable es que sea esteril. Conviene no destinarla a reposicion.");
+                }
+            }
+
+            // El parto de una vaca que no figuraba prenada significa que falto
+            // registrar el servicio o el tacto. No impide el parto -el ternero esta
+            // ahi-, pero deja el historial reproductivo incompleto.
+            if (pParto.Madre.EstadoReproductivo != Hembra.PRENADA)
+            {
+                _listaAdvertencias.Add("El animal no figuraba prenado, sino \"" + pParto.Madre.EstadoReproductivo
+                    + "\". Falta registrar el servicio o el tacto que confirmo la preniez.");
+            }
+
+            // Duracion de la gestacion contra el servicio del que viene la preniez. Muy
+            // corta es un aborto o un prematuro; muy larga, una fecha mal cargada.
+            Servicio unServicio = this.ServicioVigente(pParto.Madre);
+            if (unServicio != null)
+            {
+                int vDiasGestacion = (int)(pParto.FechaParto.Date - unServicio.FechaServicio.Date).TotalDays;
+
+                if (vDiasGestacion < GESTACION_DIAS_MINIMA)
+                {
+                    _listaAdvertencias.Add("Entre el servicio del " + unServicio.FechaServicio.ToShortDateString()
+                        + " y este parto pasaron " + vDiasGestacion + " dias, menos que los "
+                        + GESTACION_DIAS_MINIMA + " de una gestacion viable. Revise las fechas.");
+                }
+                else if (vDiasGestacion > GESTACION_DIAS_MAXIMA)
+                {
+                    _listaAdvertencias.Add("Entre el servicio del " + unServicio.FechaServicio.ToShortDateString()
+                        + " y este parto pasaron " + vDiasGestacion + " dias, mas que los "
+                        + GESTACION_DIAS_MAXIMA + " de una gestacion normal. Puede faltar registrar un servicio.");
+                }
+            }
+
+            return _listaAdvertencias;
         }
 
         // CU18. El parto actua sobre los dos ejes a la vez: cierra el ciclo reproductivo
