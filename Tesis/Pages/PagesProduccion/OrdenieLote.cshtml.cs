@@ -8,7 +8,7 @@ namespace Tesis.Pages.PagesProduccion
     public class OrdenieLoteModel : PageModel
     {
         [BindProperty]
-        public string turno { get; set; } = OrdenieLote.TURNO_1;
+        public string turno { get; set; } = OrdenieLote.NombreTurno(1);
         [BindProperty]
         public DateTime fecha { get; set; } = DateTime.Now;
         [BindProperty]
@@ -24,6 +24,9 @@ namespace Tesis.Pages.PagesProduccion
         public double litrosIndividualesDelTurno = 0;
 
         // Hembras en lactancia que el sistema propone para el lote
+        // Turnos de ordenie del establecimiento, segun cuantas veces por dia se ordenia
+        public List<string> turnos = new List<string>();
+
         public List<Hembra> animalesDelLote = new List<Hembra>();
         // Hembras en lactancia excluidas por tener un descarte de leche vigente
         public List<Hembra> animalesEnDescarte = new List<Hembra>();
@@ -53,7 +56,7 @@ namespace Tesis.Pages.PagesProduccion
             this.CargarListados(unaControladora);
             this.LeerFormulario();
 
-            if (turno != OrdenieLote.TURNO_1 && turno != OrdenieLote.TURNO_2)
+            if (!unaControladora.EsTurnoValido(turno))
             {
                 ModelState.AddModelError(string.Empty, "Seleccione el turno!");
                 return Page();
@@ -143,6 +146,9 @@ namespace Tesis.Pages.PagesProduccion
         {
             pControladoraDominio.ListarAnimales();
 
+            // Los turnos salen de la cantidad de ordenies por dia del establecimiento
+            turnos = pControladoraDominio.ListarTurnos();
+
             animalesDelLote = pControladoraDominio.ListarAnimalesParaOrdenie();
             animalesEnDescarte = pControladoraDominio.ListarHembrasEnDescarte();
 
@@ -157,7 +163,7 @@ namespace Tesis.Pages.PagesProduccion
 
         private void LeerFormulario()
         {
-            turno = Request.Form["turno"] != "" ? Request.Form["turno"] : OrdenieLote.TURNO_1;
+            turno = Request.Form["turno"] != "" ? Request.Form["turno"] : OrdenieLote.NombreTurno(1);
             fecha = Request.Form["fecha"] != "" ? Convert.ToDateTime(Request.Form["fecha"]) : DateTime.Now;
 
             // El campo puede venir con coma o con punto segun el teclado, y vacio si el

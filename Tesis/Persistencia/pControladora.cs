@@ -4,6 +4,20 @@ namespace Tesis.Persistencia
 {
     public class pControladora
     {
+        #region CONFIGURACION
+        // Parametros de manejo del establecimiento. Devuelve nulo cuando la tabla esta
+        // vacia: el dominio responde con los valores por defecto.
+        public Configuracion ObtenerConfiguracion()
+        {
+            return new pConfiguracion().ObtenerConfiguracion();
+        }
+
+        public bool ModificarConfiguracion(Configuracion pConfiguracionNueva)
+        {
+            return new pConfiguracion().ModificarConfiguracion(pConfiguracionNueva);
+        }
+        #endregion
+
         #region RAZAS
         public List<Raza> ListarRazas()
         {

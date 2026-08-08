@@ -8,7 +8,7 @@ namespace Tesis.Pages.PagesProduccion
     public class OrdenieIndividualModel : PageModel
     {
         [BindProperty]
-        public string turno { get; set; } = OrdenieLote.TURNO_1;
+        public string turno { get; set; } = OrdenieLote.NombreTurno(1);
         [BindProperty]
         public DateTime fecha { get; set; } = DateTime.Now;
         [BindProperty]
@@ -18,6 +18,9 @@ namespace Tesis.Pages.PagesProduccion
 
         public List<Animal> animales = new List<Animal>();
         public List<OrdenieIndividual> ultimosControles = new List<OrdenieIndividual>();
+
+        // Turnos de ordenie del establecimiento, segun cuantas veces por dia se ordenia
+        public List<string> turnos = new List<string>();
 
         public void OnGet()
         {
@@ -102,6 +105,7 @@ namespace Tesis.Pages.PagesProduccion
         private void CargarListados(Controladora pControladoraDominio)
         {
             animales = pControladoraDominio.ListarAnimales();
+            turnos = pControladoraDominio.ListarTurnos();
 
             ultimosControles = pControladoraDominio.FiltrarOrdeniesIndividualXFecha(
                 DateTime.Now.AddDays(-7), DateTime.Now);
@@ -109,7 +113,7 @@ namespace Tesis.Pages.PagesProduccion
 
         private void LeerFormulario()
         {
-            turno = Request.Form["turno"] != "" ? Request.Form["turno"] : OrdenieLote.TURNO_1;
+            turno = Request.Form["turno"] != "" ? Request.Form["turno"] : OrdenieLote.NombreTurno(1);
             fecha = Request.Form["fecha"] != "" ? Convert.ToDateTime(Request.Form["fecha"]) : DateTime.Now;
             numCaravana = Request.Form["numCaravana"];
 

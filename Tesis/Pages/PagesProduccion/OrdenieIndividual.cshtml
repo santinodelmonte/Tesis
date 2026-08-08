@@ -18,8 +18,10 @@
                 <div class="form-group">
                     <label for="turno">Turno:</label>
                     <select id="turno" name="turno" asp-for="turno" class="form-control">
-                        <option value="@Dominio.OrdenieLote.TURNO_1">@Dominio.OrdenieLote.TURNO_1</option>
-                        <option value="@Dominio.OrdenieLote.TURNO_2">@Dominio.OrdenieLote.TURNO_2</option>
+                        @foreach (string unTurno in Model.turnos)
+                        {
+                            <option value="@unTurno">@unTurno</option>
+                        }
                     </select>
                 </div>
             </div>

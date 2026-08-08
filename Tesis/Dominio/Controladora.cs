@@ -6,6 +6,14 @@ namespace Tesis.Dominio
     {
         private pControladora Persistencia;
 
+        // Las constantes que siguen se dividen en dos. Unas son biologia y no se tocan:
+        // la duracion de la gestacion, la edad a la que la hembra empieza a ciclar, el
+        // rango en que una preniez termina en un parto viable. Otras son decisiones de
+        // manejo -cuantos dias antes del parto se seca, a que edad entra la vaquillona
+        // en servicio, con cuanta anticipacion avisa cada alerta- y esas viven en la
+        // tabla de configuracion: aca quedan nada mas que como valor por defecto, para
+        // que el sistema funcione antes de que nadie configure nada.
+        //
         // Edad minima a la que un animal puede entrar en servicio y duracion de la
         // gestacion, en meses. La suma es la diferencia minima de edad que puede
         // haber entre un progenitor y su cria.
@@ -33,6 +41,12 @@ namespace Tesis.Dominio
         public const double LITROS_MAXIMOS_INDIVIDUAL = 100;
         public const double LITROS_MAXIMOS_LOTE = 100000;
 
+        // Edad a la que la cria deja de ser ternera o ternero (RF1.9), y cantidad de
+        // ordenies por dia. Las dos son decisiones del establecimiento: hay tambos que
+        // ordenian dos veces y otros tres.
+        public const int EDAD_CAMBIO_CATEGORIA_MESES = 12;
+        public const int ORDENIES_POR_DIA = 2;
+
         // Constantes de los modulos 4 y 5. El documento tampoco las fija con numeros:
         // CU23 habla de "horizonte de anticipacion" y CU28 de "ventana de anticipacion"
         // sin decir de cuantos dias.
@@ -58,6 +72,11 @@ namespace Tesis.Dominio
         // los GESTACION_DIAS.
         public const int GESTACION_DIAS_MINIMA = 240;
         public const int GESTACION_DIAS_MAXIMA = 320;
+
+        // Parametros de manejo del establecimiento. Las constantes de arriba son los
+        // valores por defecto: si la tabla de configuracion esta vacia, el sistema se
+        // comporta como antes de que la configuracion existiera.
+        private static Configuracion mConfiguracion = null;
 
         private static List<Raza> mListaRazas = new List<Raza>();
         private static List<Categoria> mListaCategorias = new List<Categoria>();
@@ -113,6 +132,11 @@ namespace Tesis.Dominio
             }
             mRefrescado = true;
 
+            // Primero los parametros: las reglas que dependen de ellos -la fecha
+            // recomendada de secado, la edad minima al servicio, los turnos de ordenie-
+            // se evaluan sobre las listas que se cargan despues.
+            mConfiguracion = Persistencia.ObtenerConfiguracion();
+
             mListaRazas = Persistencia.ListarRazas();
             mListaCategorias = Persistencia.ListarCategorias();
             mListaAnimales = Persistencia.ListarAnimales(mListaRazas, mListaCategorias);
@@ -143,6 +167,147 @@ namespace Tesis.Dominio
             mListaVacunaciones = Persistencia.ListarVacunaciones(mListaAnimales, mListaInsumos, mListaPlanes);
             mListaDescornes = Persistencia.ListarDescornes(mListaAnimales, mListaPlanes);
         }
+
+        #region CONFIGURACION
+        // Los parametros de manejo, siempre con un valor utilizable. Es lo que consulta
+        // el resto de la Controladora en lugar de las constantes: si la tabla esta
+        // vacia devuelve los valores por defecto, asi que ninguna regla se queda sin
+        // numero por falta de configuracion.
+        private Configuracion Parametros()
+        {
+            if (mConfiguracion == null)
+            {
+                this.Refrescar();
+            }
+
+            if (mConfiguracion == null)
+            {
+                mConfiguracion = this.ConfiguracionPorDefecto();
+            }
+            return mConfiguracion;
+        }
+
+        private Configuracion ConfiguracionPorDefecto()
+        {
+            return new Configuracion(0, DIAS_SECADO_ANTES_PARTO, EDAD_MINIMA_SERVICIO_HEMBRA_MESES,
+                EDAD_CAMBIO_CATEGORIA_MESES, LITROS_MAXIMOS_INDIVIDUAL, ORDENIES_POR_DIA,
+                DIAS_ANTICIPACION_SECADO, DIAS_ANTICIPACION_PARTO, DIAS_ANTICIPACION_SANITARIA,
+                DIAS_ANTICIPACION_VENCIMIENTO);
+        }
+
+        public Configuracion ObtenerConfiguracion()
+        {
+            this.Refrescar();
+            return this.Parametros();
+        }
+
+        // Devuelve el motivo por el que la configuracion no se puede guardar, o una
+        // cadena vacia si esta bien. Los topes no son caprichosos: son el rango dentro
+        // del cual el parametro sigue teniendo sentido en un tambo.
+        public string ValidarConfiguracion(Configuracion pConfiguracion)
+        {
+            if (pConfiguracion.DiasSecadoAntesParto < 1 || pConfiguracion.DiasSecadoAntesParto > 120)
+            {
+                return "Los dias de secado antes del parto tienen que estar entre 1 y 120.";
+            }
+
+            // Por debajo de la edad de pubertad el parametro no tendria sentido: la
+            // hembra ni siquiera cicla.
+            if (pConfiguracion.EdadMinimaServicioMeses < EDAD_MINIMA_CELO_MESES
+                || pConfiguracion.EdadMinimaServicioMeses > 36)
+            {
+                return "La edad minima al servicio tiene que estar entre " + EDAD_MINIMA_CELO_MESES
+                    + " y 36 meses.";
+            }
+
+            if (pConfiguracion.EdadCambioCategoriaMeses < 1 || pConfiguracion.EdadCambioCategoriaMeses > 36)
+            {
+                return "La edad de cambio de categoria tiene que estar entre 1 y 36 meses.";
+            }
+
+            if (pConfiguracion.LitrosMaximosIndividual <= 0)
+            {
+                return "El tope de litros por control individual tiene que ser mayor a cero.";
+            }
+
+            if (pConfiguracion.OrdeniesPorDia < 1 || pConfiguracion.OrdeniesPorDia > 3)
+            {
+                return "La cantidad de ordenies por dia tiene que ser 1, 2 o 3.";
+            }
+
+            if (pConfiguracion.DiasAnticipacionSecado < 1 || pConfiguracion.DiasAnticipacionParto < 1
+                || pConfiguracion.DiasAnticipacionSanitaria < 1 || pConfiguracion.DiasAnticipacionVencimiento < 1)
+            {
+                return "Las ventanas de anticipacion tienen que ser numeros positivos de dias.";
+            }
+
+            if (pConfiguracion.DiasAnticipacionSecado > 365 || pConfiguracion.DiasAnticipacionParto > 365
+                || pConfiguracion.DiasAnticipacionSanitaria > 365 || pConfiguracion.DiasAnticipacionVencimiento > 365)
+            {
+                return "Las ventanas de anticipacion no pueden superar los 365 dias.";
+            }
+
+            return "";
+        }
+
+        // Cambiar un parametro mueve los calculos de ahi en adelante, no lo ya
+        // guardado: la fecha recomendada de secado se deriva en cada consulta y cambia
+        // al instante para todo el rodeo, pero la fecha probable de parto que quedo
+        // escrita en un servicio o en una lactancia sigue siendo la que era.
+        public bool ModificarConfiguracion(Configuracion pConfiguracionNueva)
+        {
+            if (this.ValidarConfiguracion(pConfiguracionNueva) != "")
+            {
+                return false;
+            }
+
+            // La configuracion no se da de alta: se modifica la fila que ya existe. Si
+            // la tabla estaba vacia no hay nada que actualizar.
+            Configuracion unaConfiguracion = this.ObtenerConfiguracion();
+            if (unaConfiguracion.IdConfiguracion == 0)
+            {
+                return false;
+            }
+
+            pConfiguracionNueva.IdConfiguracion = unaConfiguracion.IdConfiguracion;
+
+            if (Persistencia.ModificarConfiguracion(pConfiguracionNueva))
+            {
+                mConfiguracion = pConfiguracionNueva;
+                return true;
+            }
+            return false;
+
+        }
+
+        // Los turnos de ordenie que ofrece el sistema, armados a partir de la cantidad
+        // de ordenies por dia. Un tambo que ordenia tres veces tiene tres turnos.
+        public List<string> ListarTurnos()
+        {
+            List<string> _listaTurnos = new List<string>();
+
+            for (int vNumero = 1; vNumero <= this.Parametros().OrdeniesPorDia; vNumero = vNumero + 1)
+            {
+                _listaTurnos.Add(OrdenieLote.NombreTurno(vNumero));
+            }
+            return _listaTurnos;
+        }
+
+        // Un ordenie registrado antes de bajar la cantidad de turnos conserva el suyo:
+        // esto valida lo que se esta por guardar, no lo que ya esta guardado.
+        public bool EsTurnoValido(string pTurno)
+        {
+            foreach (string unTurno in this.ListarTurnos())
+            {
+                if (unTurno == pTurno)
+                {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+        #endregion
 
         #region SEGURIDAD
         // Credenciales fijas del sistema. Un unico par para la encargada del sector.
@@ -559,7 +724,7 @@ namespace Tesis.Dominio
             // 3. El progenitor tiene que haber nacido con la antelacion suficiente
             // para haber estado en condiciones de servicio: la edad minima al
             // servicio mas los meses de gestacion.
-            int vMesesMinimosMadre = EDAD_MINIMA_SERVICIO_HEMBRA_MESES + GESTACION_MESES;
+            int vMesesMinimosMadre = this.Parametros().EdadMinimaServicioMeses + GESTACION_MESES;
             int vMesesMinimosPadre = EDAD_MINIMA_SERVICIO_MESES + GESTACION_MESES;
 
             if (pMadre != null && this.DiferenciaMeses(pMadre.FechaNacimiento, pFechaNacimiento) < vMesesMinimosMadre)
@@ -639,7 +804,7 @@ namespace Tesis.Dominio
                 {
                     vNombre = "Vaca";
                 }
-                else if (vEdadMeses > 12)
+                else if (vEdadMeses > this.Parametros().EdadCambioCategoriaMeses)
                 {
                     vNombre = "Novilla";
                 }
@@ -655,7 +820,7 @@ namespace Tesis.Dominio
                 {
                     vNombre = "Toro";
                 }
-                else if (vEdadMeses > 12)
+                else if (vEdadMeses > this.Parametros().EdadCambioCategoriaMeses)
                 {
                     vNombre = "Novillo";
                 }
@@ -1310,7 +1475,7 @@ namespace Tesis.Dominio
             {
                 return DateTime.MinValue;
             }
-            return unaLactancia.FechaProbableParto.AddDays(-DIAS_SECADO_ANTES_PARTO);
+            return unaLactancia.FechaProbableParto.AddDays(-this.Parametros().DiasSecadoAntesParto);
         }
 
         // CU13. Vacas en produccion que ya entraron en la ventana critica para iniciar
@@ -1324,7 +1489,7 @@ namespace Tesis.Dominio
                 DateTime vFechaSecado = this.CalcularFechaSecado(unaHembra);
 
                 if (vFechaSecado != DateTime.MinValue
-                    && DateTime.Now.Date >= vFechaSecado.AddDays(-DIAS_ANTICIPACION_SECADO).Date)
+                    && DateTime.Now.Date >= vFechaSecado.AddDays(-this.Parametros().DiasAnticipacionSecado).Date)
                 {
                     _listaAlertas.Add(unaHembra);
                 }
@@ -1400,7 +1565,7 @@ namespace Tesis.Dominio
             }
 
             int vAnimales = pCantidadAnimales > 0 ? pCantidadAnimales : 1;
-            if (pLitros <= vAnimales * LITROS_MAXIMOS_INDIVIDUAL)
+            if (pLitros <= vAnimales * this.Parametros().LitrosMaximosIndividual)
             {
                 return true;
             }
@@ -1410,7 +1575,7 @@ namespace Tesis.Dominio
 
         public bool ValidarLitrosIndividual(double pLitros)
         {
-            if (pLitros > 0 && pLitros <= LITROS_MAXIMOS_INDIVIDUAL)
+            if (pLitros > 0 && pLitros <= this.Parametros().LitrosMaximosIndividual)
             {
                 return true;
             }
@@ -1457,7 +1622,7 @@ namespace Tesis.Dominio
                 return false;
             }
 
-            if (pOrdenieLote.Turno != OrdenieLote.TURNO_1 && pOrdenieLote.Turno != OrdenieLote.TURNO_2)
+            if (!this.EsTurnoValido(pOrdenieLote.Turno))
             {
                 return false;
             }
@@ -1591,7 +1756,7 @@ namespace Tesis.Dominio
                 return false;
             }
 
-            if (pOrdenie.Turno != OrdenieLote.TURNO_1 && pOrdenie.Turno != OrdenieLote.TURNO_2)
+            if (!this.EsTurnoValido(pOrdenie.Turno))
             {
                 return false;
             }
@@ -1896,10 +2061,10 @@ namespace Tesis.Dominio
             // ValidarGenealogia rechaza a una madre demasiado joven, aplicado ahora en
             // el momento en que el dato se carga y no recien cuando nace la cria.
             int vEdadAlServicio = this.DiferenciaMeses(pServicio.Animal.FechaNacimiento, pServicio.FechaServicio);
-            if (vEdadAlServicio < EDAD_MINIMA_SERVICIO_HEMBRA_MESES)
+            if (vEdadAlServicio < this.Parametros().EdadMinimaServicioMeses)
             {
                 return "El animal tenia " + vEdadAlServicio + " meses en esa fecha: la edad minima para entrar "
-                    + "en servicio es de " + EDAD_MINIMA_SERVICIO_HEMBRA_MESES + " meses. Revise la caravana o la fecha!";
+                    + "en servicio es de " + this.Parametros().EdadMinimaServicioMeses + " meses. Revise la caravana o la fecha!";
             }
 
             // La hembra tiene que haber estado en el rodeo ese dia
@@ -2171,7 +2336,7 @@ namespace Tesis.Dominio
                     continue;
                 }
 
-                if (unServicio.FechaProbableParto.Date <= DateTime.Now.AddDays(DIAS_ANTICIPACION_PARTO).Date)
+                if (unServicio.FechaProbableParto.Date <= DateTime.Now.AddDays(this.Parametros().DiasAnticipacionParto).Date)
                 {
                     _listaAlertas.Add(unServicio);
                 }

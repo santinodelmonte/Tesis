@@ -9,7 +9,7 @@ namespace Tesis.Pages.PagesSanidad
     public class CalendarioSanitarioModel : PageModel
     {
         [BindProperty]
-        public int anticipacionDias { get; set; } = Controladora.DIAS_ANTICIPACION_SANITARIA;
+        public int anticipacionDias { get; set; } = 0;
         [BindProperty]
         public string tipoProcedimiento { get; set; } = "";
         [BindProperty]
@@ -28,6 +28,10 @@ namespace Tesis.Pages.PagesSanidad
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
+
+            // El horizonte que propone la pantalla es el configurado por el establecimiento
+            anticipacionDias = unaControladora.ObtenerConfiguracion().DiasAnticipacionSanitaria;
+
             this.Calcular(unaControladora);
         }
 
@@ -40,7 +44,7 @@ namespace Tesis.Pages.PagesSanidad
             {
                 ModelState.AddModelError(string.Empty,
                     "El horizonte de anticipacion tiene que ser un numero positivo de dias!");
-                anticipacionDias = Controladora.DIAS_ANTICIPACION_SANITARIA;
+                anticipacionDias = unaControladora.ObtenerConfiguracion().DiasAnticipacionSanitaria;
             }
 
             this.Calcular(unaControladora);

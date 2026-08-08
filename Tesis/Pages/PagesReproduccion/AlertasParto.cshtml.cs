@@ -11,12 +11,16 @@ namespace Tesis.Pages.PagesReproduccion
         public List<Servicio> alertas = new List<Servicio>();
         public Dictionary<int, int> diasRestantes = new Dictionary<int, int>();
 
-        public int diasAnticipacion = Controladora.DIAS_ANTICIPACION_PARTO;
+        // Sale de la configuracion del establecimiento
+        public int diasAnticipacion = 0;
 
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
             unaControladora.ListarAnimales();
+
+            // La ventana de la alerta la fija la configuracion del establecimiento
+            diasAnticipacion = unaControladora.ObtenerConfiguracion().DiasAnticipacionParto;
 
             alertas = unaControladora.ListarAlertasParto();
 
