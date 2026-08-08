@@ -3,16 +3,18 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesInsumo
 {
-    // Adelantado del Modulo 5. Solo el listado y el stock: los umbrales, los
-    // vencimientos y las alertas llegan con ese modulo.
+    // Pantalla de entrada del Modulo 5: el catalogo de insumos con su stock, y desde
+    // aca se llega al ingreso de partidas, a los umbrales y a las alertas.
     public class ListaInsumosModel : PageModel
     {
         public List<Insumo> insumos = new List<Insumo>();
+        public int criticos = 0;
 
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
             insumos = unaControladora.ListarInsumos();
+            criticos = unaControladora.ListarAlertasStock().Count;
         }
     }
 }

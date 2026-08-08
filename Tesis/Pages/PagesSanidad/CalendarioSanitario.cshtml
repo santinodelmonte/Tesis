@@ -1,0 +1,140 @@
+@page
+@model Tesis.Pages.PagesSanidad.CalendarioSanitarioModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Calendario Sanitario</h1>
+    <p class="text-center text-muted">
+        Procedimientos vencidos y próximos a vencer, derivados de los planes sanitarios
+        activos. El pendiente es la diferencia entre lo que el plan exige y lo que
+        efectivamente se aplicó.
+    </p>
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="anticipacionDias">Horizonte (dias):</label>
+                    <input type="number" min="1" id="anticipacionDias" name="anticipacionDias"
+                           class="form-control" value="@Model.anticipacionDias" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="tipoProcedimiento">Procedimiento:</label>
+                    <select id="tipoProcedimiento" name="tipoProcedimiento" asp-for="tipoProcedimiento"
+                            class="form-control">
+                        <option value="">Todos</option>
+                        <option value="@Dominio.PlanSanitario.VACUNACION">@Dominio.PlanSanitario.VACUNACION</option>
+                        <option value="@Dominio.PlanSanitario.DESPARASITACION">@Dominio.PlanSanitario.DESPARASITACION</option>
+                        <option value="@Dominio.PlanSanitario.DESCORNE">@Dominio.PlanSanitario.DESCORNE</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="idCategoria">Categoria:</label>
+                    <select id="idCategoria" name="idCategoria" asp-for="idCategoria" class="form-control">
+                        <option value="0">Todas</option>
+                        @foreach (Dominio.Categoria categoria in Model.categorias)
+                        {
+                            <option value="@categoria.IdCategoria">@categoria.Nombre</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary form-control" asp-page-handler="Buscar">
+                        Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+    </form>
+    <hr />
+
+    @if (Model.planesActivos == 0)
+    {
+        <div class="alert alert-info">
+            No hay planes sanitarios activos, así que no hay procedimientos programados.
+            Se configuran desde <a asp-page="./ListaPlanes">Planes Sanitarios</a>.
+        </div>
+    }
+    else if (!Model.pendientes.Any())
+    {
+        <div class="alert alert-success">
+            No hay procedimientos vencidos ni por vencer en los próximos
+            @Model.anticipacionDias días.
+        </div>
+    }
+    else
+    {
+        <p>
+            @Model.pendientes.Count procedimiento(s) pendiente(s) sobre
+            @Model.planesActivos plan(es) activo(s).
+        </p>
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Caravana</th>
+                    <th>Categoria</th>
+                    <th>Plan</th>
+                    <th>Procedimiento</th>
+                    <th>Ultima aplicacion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.pendientes.Count; i++)
+                {
+                    <tr>
+                        <td>@Model.pendientes[i].ProximaAplicacion.ToShortDateString()</td>
+                        <td>
+                            @if (Model.vencidos[i])
+                            {
+                                <span class="badge bg-danger">
+                                    Vencido hace @(-Model.diasRestantes[i]) dias
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Faltan @Model.diasRestantes[i] dias
+                                </span>
+                            }
+                        </td>
+                        <td>@Model.pendientes[i].Animal.NumCaravana</td>
+                        <td>
+                            @(Model.pendientes[i].Animal.Categoria != null
+                                ? Model.pendientes[i].Animal.Categoria.Nombre : "")
+                        </td>
+                        <td>@Model.pendientes[i].Plan.Nombre</td>
+                        <td>@Model.pendientes[i].Plan.TipoProcedimiento</td>
+                        <td>
+                            @if (Model.pendientes[i].UltimaAplicacion != DateTime.MinValue)
+                            {
+                                @Model.pendientes[i].UltimaAplicacion.ToShortDateString()
+                            }
+                            else
+                            {
+                                <span class="text-muted">Nunca</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col-sm-12 text-right">
+                <a class="btn btn-success" asp-page="./RegistrarVacunacion">Registrar Vacunacion</a>
+                <a class="btn btn-primary" asp-page="./RegistrarTratamiento">Registrar Tratamiento</a>
+                <a class="btn btn-secondary" asp-page="./RegistrarDescorne">Registrar Descorne</a>
+            </div>
+        </div>
+    }
+</div>

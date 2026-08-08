@@ -205,7 +205,6 @@ namespace Tesis.Persistencia
         #endregion
 
         #region INSUMOS
-        // Adelantado del Modulo 5: CU15 necesita las pajuelas del stock
         public List<Insumo> ListarInsumos(List<Macho> pListaMachos)
         {
             return new pInsumo().ListarInsumos(pListaMachos);
@@ -216,9 +215,10 @@ namespace Tesis.Persistencia
             return new pInsumo().AltaInsumo(pInsumoNuevo);
         }
 
-        public bool ActualizarStock(int pIdInsumo, double pStockActual)
+        // CU26: el umbral que dispara la alerta de reposicion
+        public bool ModificarStockMinimo(int pIdInsumo, double pStockMinimo)
         {
-            return new pInsumo().ActualizarStock(pIdInsumo, pStockActual);
+            return new pInsumo().ModificarStockMinimo(pIdInsumo, pStockMinimo);
         }
         #endregion
 
@@ -228,15 +228,60 @@ namespace Tesis.Persistencia
             return new pMovimientoStock().ListarMovimientos(pListaInsumos);
         }
 
-        public bool AltaMovimientoStock(MovimientoStock pMovimiento)
+        // Asienta la partida y suma el stock del insumo en una misma transaccion
+        public bool RegistrarIngresoStock(MovimientoStock pMovimiento)
         {
-            return new pMovimientoStock().AltaMovimiento(pMovimiento);
+            return new pMovimientoStock().RegistrarIngreso(pMovimiento);
+        }
+        #endregion
+
+        #region PLANES SANITARIOS
+        public List<PlanSanitario> ListarPlanesSanitarios(List<Insumo> pListaInsumos,
+            List<Categoria> pListaCategorias)
+        {
+            return new pPlanSanitario().ListarPlanes(pListaInsumos, pListaCategorias);
+        }
+
+        // El plan y las categorias que alcanza se guardan en una misma transaccion
+        public bool AltaPlanSanitario(PlanSanitario pPlan)
+        {
+            return new pPlanSanitario().AltaPlan(pPlan);
+        }
+
+        public bool ModificarPlanSanitario(PlanSanitario pPlan)
+        {
+            return new pPlanSanitario().ModificarPlan(pPlan);
+        }
+        #endregion
+
+        #region VACUNACIONES
+        public List<Vacunacion> ListarVacunaciones(List<Animal> pListaAnimales,
+            List<Insumo> pListaInsumos, List<PlanSanitario> pListaPlanes)
+        {
+            return new pVacunacion().ListarVacunaciones(pListaAnimales, pListaInsumos, pListaPlanes);
+        }
+
+        // Registra la aplicacion y descuenta la vacuna del stock en una transaccion
+        public bool AltaVacunacion(Vacunacion pVacunacion, double pCantidadInsumo)
+        {
+            return new pVacunacion().AltaVacunacion(pVacunacion, pCantidadInsumo);
+        }
+        #endregion
+
+        #region DESCORNES
+        public List<Descorne> ListarDescornes(List<Animal> pListaAnimales,
+            List<PlanSanitario> pListaPlanes)
+        {
+            return new pDescorne().ListarDescornes(pListaAnimales, pListaPlanes);
+        }
+
+        public bool AltaDescorne(Descorne pDescorne)
+        {
+            return new pDescorne().AltaDescorne(pDescorne);
         }
         #endregion
 
         #region DIAGNOSTICOS
-        // Adelantado del Modulo 4: el paso 3 de CU8 excluye del lote a los animales
-        // con descarte de leche vigente, y el descarte sale del tratamiento
         public List<Diagnostico> ListarDiagnosticos(List<Animal> pListaAnimales)
         {
             return new pDiagnostico().ListarDiagnosticos(pListaAnimales);
@@ -255,9 +300,10 @@ namespace Tesis.Persistencia
 
         #region TRATAMIENTOS
         public List<Tratamiento> ListarTratamientos(List<Diagnostico> pListaDiagnosticos,
-            List<Insumo> pListaInsumos)
+            List<Insumo> pListaInsumos, List<Animal> pListaAnimales, List<PlanSanitario> pListaPlanes)
         {
-            return new pTratamiento().ListarTratamientos(pListaDiagnosticos, pListaInsumos);
+            return new pTratamiento().ListarTratamientos(pListaDiagnosticos, pListaInsumos,
+                pListaAnimales, pListaPlanes);
         }
 
         public bool AltaTratamiento(Tratamiento pTratamientoNuevo, double pCantidadInsumo)

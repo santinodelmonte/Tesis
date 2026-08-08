@@ -33,6 +33,20 @@ namespace Tesis.Dominio
         public const double LITROS_MAXIMOS_INDIVIDUAL = 100;
         public const double LITROS_MAXIMOS_LOTE = 100000;
 
+        // Constantes de los modulos 4 y 5. El documento tampoco las fija con numeros:
+        // CU23 habla de "horizonte de anticipacion" y CU28 de "ventana de anticipacion"
+        // sin decir de cuantos dias.
+        //
+        // El mes es el margen con el que se planifica en el establecimiento: alcanza
+        // para comprar el insumo y juntar los animales antes de que el procedimiento se
+        // atrase, y para dar de baja una partida antes de que venza en el estante.
+        // Las dos pantallas admiten cambiarlo.
+        public const int DIAS_ANTICIPACION_SANITARIA = 30;
+        public const int DIAS_ANTICIPACION_VENCIMIENTO = 30;
+
+        // Cada aplicacion consume una dosis del biologico (CU21, paso 6).
+        public const double UNIDADES_POR_VACUNACION = 1;
+
         private static List<Raza> mListaRazas = new List<Raza>();
         private static List<Categoria> mListaCategorias = new List<Categoria>();
         private static List<Animal> mListaAnimales = new List<Animal>();
@@ -48,8 +62,11 @@ namespace Tesis.Dominio
         private static List<Parto> mListaPartos = new List<Parto>();
         private static List<Insumo> mListaInsumos = new List<Insumo>();
         private static List<MovimientoStock> mListaMovimientosStock = new List<MovimientoStock>();
+        private static List<PlanSanitario> mListaPlanes = new List<PlanSanitario>();
         private static List<Diagnostico> mListaDiagnosticos = new List<Diagnostico>();
         private static List<Tratamiento> mListaTratamientos = new List<Tratamiento>();
+        private static List<Vacunacion> mListaVacunaciones = new List<Vacunacion>();
+        private static List<Descorne> mListaDescornes = new List<Descorne>();
 
         // Marca si esta Controladora ya refresco las listas. No es static: cada
         // peticion arma su propia Controladora y refresca una vez, aunque la pantalla
@@ -93,6 +110,11 @@ namespace Tesis.Dominio
             mListaInsumos = Persistencia.ListarInsumos(mListaMachos);
             mListaMovimientosStock = Persistencia.ListarMovimientosStock(mListaInsumos);
 
+            // Los planes van despues de los insumos y antes de las aplicaciones: el
+            // plan referencia al insumo que aplica, y la vacunacion, el tratamiento y
+            // el descorne referencian al plan que dan por cumplido.
+            mListaPlanes = Persistencia.ListarPlanesSanitarios(mListaInsumos, mListaCategorias);
+
             mListaLactancias = Persistencia.ListarLactancias(mListaHembras);
             mListaOrdeniesLote = Persistencia.ListarOrdeniesLote(mListaHembras);
             mListaOrdeniesIndividual = Persistencia.ListarOrdeniesIndividual(mListaHembras,
@@ -104,7 +126,10 @@ namespace Tesis.Dominio
             mListaPartos = Persistencia.ListarPartos(mListaHembras);
 
             mListaDiagnosticos = Persistencia.ListarDiagnosticos(mListaAnimales);
-            mListaTratamientos = Persistencia.ListarTratamientos(mListaDiagnosticos, mListaInsumos);
+            mListaTratamientos = Persistencia.ListarTratamientos(mListaDiagnosticos, mListaInsumos,
+                mListaAnimales, mListaPlanes);
+            mListaVacunaciones = Persistencia.ListarVacunaciones(mListaAnimales, mListaInsumos, mListaPlanes);
+            mListaDescornes = Persistencia.ListarDescornes(mListaAnimales, mListaPlanes);
         }
 
         #region SEGURIDAD
@@ -2272,9 +2297,13 @@ namespace Tesis.Dominio
         #endregion
 
         #region INSUMOS
-        // Adelantado del Modulo 5. Aca solo esta lo que CU15 y CU20 necesitan: listar
-        // las pajuelas, dar de alta un insumo y registrar su ingreso de stock. Los
-        // umbrales, los vencimientos y las alertas llegan con ese modulo.
+        // Modulo 5: Control de Insumos y Stock (CU25 a CU29).
+        //
+        // El stock disponible se guarda en insumos.stock_actual y lo mueven los
+        // ingresos de partida y los egresos automaticos de la inseminacion, el
+        // tratamiento y la vacunacion. Todo lo demas -si el stock es critico, cuanto
+        // queda de cada partida, el saldo despues de un movimiento- es derivado y se
+        // calcula en el momento de la consulta, que es lo que pide 2.2.5.2.
         public List<Insumo> ListarInsumos()
         {
             this.Refrescar();
@@ -2293,11 +2322,15 @@ namespace Tesis.Dominio
             return null;
         }
 
+        // Los tres listados filtrados recorren ListarInsumos y no la lista cache
+        // directamente: asi refrescan igual que cualquier otro Listar, y una pantalla
+        // que solo pide pajuelas o solo productos sanitarios no depende de que otra
+        // haya cargado la cache antes.
         public List<Insumo> ListarPajuelas()
         {
             List<Insumo> _listaPajuelas = new List<Insumo>();
 
-            foreach (Insumo unInsumo in mListaInsumos)
+            foreach (Insumo unInsumo in this.ListarInsumos())
             {
                 if (unInsumo.TipoInsumo == Insumo.PAJUELA)
                 {
@@ -2311,7 +2344,7 @@ namespace Tesis.Dominio
         {
             List<Insumo> _listaSanitarios = new List<Insumo>();
 
-            foreach (Insumo unInsumo in mListaInsumos)
+            foreach (Insumo unInsumo in this.ListarInsumos())
             {
                 if (unInsumo.TipoInsumo != Insumo.PAJUELA)
                 {
@@ -2319,6 +2352,38 @@ namespace Tesis.Dominio
                 }
             }
             return _listaSanitarios;
+        }
+
+        // La vacunacion aplica una vacuna y no cualquier producto sanitario, asi que la
+        // pantalla de CU21 ofrece solo ese tipo.
+        public List<Insumo> ListarInsumosXTipo(string pTipoInsumo)
+        {
+            List<Insumo> _listaXTipo = new List<Insumo>();
+
+            foreach (Insumo unInsumo in this.ListarInsumos())
+            {
+                if (unInsumo.TipoInsumo == pTipoInsumo)
+                {
+                    _listaXTipo.Add(unInsumo);
+                }
+            }
+            return _listaXTipo;
+        }
+
+        // CU25, paso 3: el usuario declara si el insumo es nuevo o si repone uno
+        // existente. El mismo producto no se da de alta dos veces; la segunda compra
+        // entra como partida del insumo que ya existe.
+        public bool ExisteInsumo(string pNombre, string pTipoInsumo)
+        {
+            foreach (Insumo unInsumo in mListaInsumos)
+            {
+                if (unInsumo.Nombre == pNombre && unInsumo.TipoInsumo == pTipoInsumo)
+                {
+                    return true;
+                }
+            }
+            return false;
+
         }
 
         public bool AltaInsumo(Insumo pInsumoNuevo)
@@ -2335,6 +2400,16 @@ namespace Tesis.Dominio
                 return false;
             }
 
+            if (pInsumoNuevo.StockMinimo < 0 || pInsumoNuevo.PeriodoDescarteDias < 0)
+            {
+                return false;
+            }
+
+            if (this.ExisteInsumo(pInsumoNuevo.Nombre, pInsumoNuevo.TipoInsumo))
+            {
+                return false;
+            }
+
             if (Persistencia.AltaInsumo(pInsumoNuevo))
             {
                 mListaInsumos.Add(pInsumoNuevo);
@@ -2342,6 +2417,30 @@ namespace Tesis.Dominio
             }
             return false;
 
+        }
+
+        // CU25: el alta del insumo y el ingreso de la primera partida son un solo
+        // tramite. El insumo nace con stock cero y la existencia entra como movimiento,
+        // asi la partida queda con su vencimiento (CU28) y el historial de CU29 arranca
+        // completo. Sin esto el stock inicial seria un numero sin respaldo.
+        public bool RegistrarIngreso(Insumo pInsumoNuevo, double pCantidad, DateTime pFecha,
+            DateTime pFechaVencimiento)
+        {
+            double vCantidadInicial = pCantidad;
+            pInsumoNuevo.StockActual = 0;
+
+            if (!this.AltaInsumo(pInsumoNuevo))
+            {
+                return false;
+            }
+
+            if (vCantidadInicial <= 0)
+            {
+                return true;
+            }
+
+            return this.IngresarStock(pInsumoNuevo.IdInsumo, vCantidadInicial, pFecha,
+                pFechaVencimiento, "Stock inicial");
         }
 
         public bool IngresarStock(int pIdInsumo, double pCantidad, DateTime pFecha,
@@ -2361,17 +2460,76 @@ namespace Tesis.Dominio
             MovimientoStock unMovimiento = new MovimientoStock(0, MovimientoStock.INGRESO, pCantidad,
                 pFecha, pFechaVencimiento, pMotivo, unInsumo);
 
-            if (Persistencia.AltaMovimientoStock(unMovimiento))
+            // El movimiento y la suma al stock van en una misma transaccion, adentro de
+            // la persistencia. Aca solo se refleja el resultado en la cache.
+            if (Persistencia.RegistrarIngresoStock(unMovimiento))
             {
-                if (Persistencia.ActualizarStock(pIdInsumo, unInsumo.StockActual + pCantidad))
-                {
-                    unInsumo.StockActual = unInsumo.StockActual + pCantidad;
-                    mListaMovimientosStock.Add(unMovimiento);
-                    return true;
-                }
+                unInsumo.StockActual = unInsumo.StockActual + pCantidad;
+                this.AgregarMovimientoOrdenado(unMovimiento);
+                return true;
             }
             return false;
 
+        }
+
+        // CU20 y CU21 lo consultan antes de guardar: el egreso automatico no puede
+        // dejar el stock en negativo.
+        public bool VerificarStock(int pIdInsumo, double pCantidad)
+        {
+            Insumo unInsumo = this.BuscarInsumo(pIdInsumo);
+
+            if (unInsumo != null && unInsumo.StockActual >= pCantidad)
+            {
+                return true;
+            }
+            return false;
+
+        }
+
+        // CU26. El umbral es lo unico del insumo que se configura a mano: el stock lo
+        // mueven los movimientos.
+        public bool ModificarStockMinimo(int pIdInsumo, double pStockMinimo)
+        {
+            Insumo unInsumo = this.BuscarInsumo(pIdInsumo);
+            if (unInsumo == null || pStockMinimo < 0)
+            {
+                return false;
+            }
+
+            if (Persistencia.ModificarStockMinimo(pIdInsumo, pStockMinimo))
+            {
+                unInsumo.StockMinimo = pStockMinimo;
+                return true;
+            }
+            return false;
+
+        }
+
+        public bool StockCritico(Insumo pInsumo)
+        {
+            if (pInsumo != null && pInsumo.StockActual <= pInsumo.StockMinimo)
+            {
+                return true;
+            }
+            return false;
+
+        }
+
+        // CU27. La condicion se evalua contra el stock del momento, que ya viene
+        // descontado por los egresos automaticos de la inseminacion, el tratamiento y
+        // la vacunacion.
+        public List<Insumo> ListarAlertasStock()
+        {
+            List<Insumo> _listaCriticos = new List<Insumo>();
+
+            foreach (Insumo unInsumo in this.ListarInsumos())
+            {
+                if (this.StockCritico(unInsumo))
+                {
+                    _listaCriticos.Add(unInsumo);
+                }
+            }
+            return _listaCriticos;
         }
 
         public List<MovimientoStock> ListarMovimientosStock()
@@ -2379,12 +2537,233 @@ namespace Tesis.Dominio
             this.Refrescar();
             return mListaMovimientosStock;
         }
+
+        // CU29. El insumo en cero y el tipo vacio significan "todos"; las fechas en
+        // DateTime.MinValue, "sin limite".
+        public List<MovimientoStock> FiltrarMovimientos(int pIdInsumo, string pTipoMovimiento,
+            DateTime pDesde, DateTime pHasta)
+        {
+            List<MovimientoStock> _listaFiltrada = new List<MovimientoStock>();
+
+            foreach (MovimientoStock unMovimiento in this.ListarMovimientosStock())
+            {
+                if (pIdInsumo != 0 && (unMovimiento.Insumo == null
+                    || unMovimiento.Insumo.IdInsumo != pIdInsumo))
+                {
+                    continue;
+                }
+
+                if (pTipoMovimiento != "" && unMovimiento.TipoMovimiento != pTipoMovimiento)
+                {
+                    continue;
+                }
+
+                if (pDesde != DateTime.MinValue && unMovimiento.Fecha.Date < pDesde.Date)
+                {
+                    continue;
+                }
+
+                if (pHasta != DateTime.MinValue && unMovimiento.Fecha.Date > pHasta.Date)
+                {
+                    continue;
+                }
+
+                _listaFiltrada.Add(unMovimiento);
+            }
+            return _listaFiltrada;
+        }
+
+        // CU29, paso 5: el stock que quedo despues de cada movimiento. No se almacena
+        // -seria un derivado mas- y tampoco se reconstruye sumando desde cero, porque
+        // el saldo bueno es el que tiene el insumo hoy: se le restan los movimientos
+        // posteriores al que se esta mostrando.
+        public double StockResultante(MovimientoStock pMovimiento)
+        {
+            if (pMovimiento == null || pMovimiento.Insumo == null)
+            {
+                return 0;
+            }
+
+            double vStock = pMovimiento.Insumo.StockActual;
+
+            foreach (MovimientoStock unMovimiento in mListaMovimientosStock)
+            {
+                if (unMovimiento.Insumo == null
+                    || unMovimiento.Insumo.IdInsumo != pMovimiento.Insumo.IdInsumo)
+                {
+                    continue;
+                }
+
+                if (this.EsPosterior(unMovimiento, pMovimiento))
+                {
+                    vStock = unMovimiento.TipoMovimiento == MovimientoStock.INGRESO
+                        ? vStock - unMovimiento.Cantidad
+                        : vStock + unMovimiento.Cantidad;
+                }
+            }
+            return vStock;
+        }
+
+        // CU28. Las partidas de un insumo son sus movimientos de ingreso. Como los
+        // egresos no dicen de que partida salieron -el modelo no los vincula-, el
+        // consumo se imputa a la partida que vence primero, que es el orden en el que
+        // se usan los productos en el tambo. El remanente que queda es el de esa
+        // imputacion.
+        public List<PartidaVencimiento> ListarPartidas(Insumo pInsumo)
+        {
+            List<PartidaVencimiento> _listaPartidas = new List<PartidaVencimiento>();
+
+            if (pInsumo == null)
+            {
+                return _listaPartidas;
+            }
+
+            double vConsumo = 0;
+
+            foreach (MovimientoStock unMovimiento in this.ListarMovimientosStock())
+            {
+                if (unMovimiento.Insumo == null || unMovimiento.Insumo.IdInsumo != pInsumo.IdInsumo)
+                {
+                    continue;
+                }
+
+                if (unMovimiento.TipoMovimiento == MovimientoStock.EGRESO)
+                {
+                    vConsumo = vConsumo + unMovimiento.Cantidad;
+                }
+                else
+                {
+                    this.InsertarPartidaOrdenada(_listaPartidas,
+                        new PartidaVencimiento(unMovimiento, unMovimiento.Cantidad));
+                }
+            }
+
+            foreach (PartidaVencimiento unaPartida in _listaPartidas)
+            {
+                if (vConsumo <= 0)
+                {
+                    break;
+                }
+
+                double vDescontado = vConsumo < unaPartida.Remanente ? vConsumo : unaPartida.Remanente;
+                unaPartida.Remanente = unaPartida.Remanente - vDescontado;
+                vConsumo = vConsumo - vDescontado;
+            }
+
+            return _listaPartidas;
+        }
+
+        // CU28. Partidas vencidas y por vencer dentro del horizonte, de todos los
+        // insumos, ordenadas por fecha de vencimiento. Las partidas agotadas y las que
+        // no declaran vencimiento no alertan.
+        public List<PartidaVencimiento> ListarAlertasVencimiento(int pAnticipacionDias)
+        {
+            List<PartidaVencimiento> _listaAlertas = new List<PartidaVencimiento>();
+            DateTime vLimite = DateTime.Now.Date.AddDays(pAnticipacionDias);
+
+            foreach (Insumo unInsumo in this.ListarInsumos())
+            {
+                foreach (PartidaVencimiento unaPartida in this.ListarPartidas(unInsumo))
+                {
+                    if (unaPartida.Remanente <= 0
+                        || unaPartida.Partida.FechaVencimiento == DateTime.MinValue)
+                    {
+                        continue;
+                    }
+
+                    if (unaPartida.Partida.FechaVencimiento.Date <= vLimite)
+                    {
+                        this.InsertarPartidaOrdenada(_listaAlertas, unaPartida);
+                    }
+                }
+            }
+            return _listaAlertas;
+        }
+
+        public int DiasParaVencer(PartidaVencimiento pPartida)
+        {
+            if (pPartida == null || pPartida.Partida.FechaVencimiento == DateTime.MinValue)
+            {
+                return 0;
+            }
+            return (int)(pPartida.Partida.FechaVencimiento.Date - DateTime.Now.Date).TotalDays;
+        }
+
+        public bool EstaVencida(PartidaVencimiento pPartida)
+        {
+            if (pPartida != null && pPartida.Partida.FechaVencimiento != DateTime.MinValue
+                && pPartida.Partida.FechaVencimiento.Date < DateTime.Now.Date)
+            {
+                return true;
+            }
+            return false;
+
+        }
+
+        // La cache viene ordenada por fecha descendente desde la persistencia. El
+        // ingreso nuevo se inserta donde le toca y no al final, para que el historial
+        // de CU29 no muestre un movimiento fuera de lugar hasta la proxima recarga.
+        private void AgregarMovimientoOrdenado(MovimientoStock pMovimiento)
+        {
+            int vPosicion = 0;
+
+            while (vPosicion < mListaMovimientosStock.Count
+                && mListaMovimientosStock[vPosicion].Fecha.Date >= pMovimiento.Fecha.Date)
+            {
+                vPosicion = vPosicion + 1;
+            }
+            mListaMovimientosStock.Insert(vPosicion, pMovimiento);
+        }
+
+        // Las partidas se ordenan por vencimiento ascendente. La que no declara
+        // vencimiento va al final: es la ultima que conviene usar.
+        private void InsertarPartidaOrdenada(List<PartidaVencimiento> pLista, PartidaVencimiento pPartida)
+        {
+            int vPosicion = 0;
+
+            while (vPosicion < pLista.Count
+                && this.ClaveVencimiento(pLista[vPosicion]) <= this.ClaveVencimiento(pPartida))
+            {
+                vPosicion = vPosicion + 1;
+            }
+            pLista.Insert(vPosicion, pPartida);
+        }
+
+        private DateTime ClaveVencimiento(PartidaVencimiento pPartida)
+        {
+            if (pPartida.Partida.FechaVencimiento == DateTime.MinValue)
+            {
+                return DateTime.MaxValue;
+            }
+            return pPartida.Partida.FechaVencimiento.Date;
+        }
+
+        private bool EsPosterior(MovimientoStock pMovimiento, MovimientoStock pReferencia)
+        {
+            if (pMovimiento.Fecha.Date > pReferencia.Fecha.Date)
+            {
+                return true;
+            }
+
+            // Dos movimientos del mismo dia se ordenan por identificador, que es el
+            // orden en que se registraron.
+            if (pMovimiento.Fecha.Date == pReferencia.Fecha.Date
+                && pMovimiento.IdMovimiento > pReferencia.IdMovimiento)
+            {
+                return true;
+            }
+            return false;
+
+        }
         #endregion
 
         #region SANIDAD
-        // Adelantado del Modulo 4. Aca solo esta lo que el paso 3 de CU8 necesita: el
-        // diagnostico, el tratamiento y la fecha de fin del descarte de leche. Los
-        // planes sanitarios, las vacunaciones y el calendario llegan con ese modulo.
+        // Modulo 4: Gestion Sanitaria (CU19 a CU24).
+        //
+        // El diagnostico origina el tratamiento, el tratamiento define el descarte de
+        // leche que el paso 3 de CU8 usa para excluir animales del lote de ordenie, y
+        // las tres aplicaciones -tratamiento, vacunacion y descorne- declaran que plan
+        // sanitario dan por cumplido. De esa declaracion sale el calendario de CU23.
         public List<Diagnostico> ListarDiagnosticos()
         {
             this.Refrescar();
@@ -2428,6 +2807,27 @@ namespace Tesis.Dominio
             if (Persistencia.AltaDiagnostico(pDiagnosticoNuevo))
             {
                 mListaDiagnosticos.Add(pDiagnosticoNuevo);
+                return true;
+            }
+            return false;
+
+        }
+
+        // El diagnostico arranca activo, el alta del tratamiento lo pasa a "En
+        // tratamiento" y aca se cierra cuando el animal se recupera. Sin este ultimo
+        // paso una afeccion ya resuelta seguiria figurando como abierta y se ofreceria
+        // para tratar indefinidamente.
+        public bool ResolverDiagnostico(int pIdDiagnostico)
+        {
+            Diagnostico unDiagnostico = this.BuscarDiagnostico(pIdDiagnostico);
+            if (unDiagnostico == null || unDiagnostico.Estado == Diagnostico.RESUELTO)
+            {
+                return false;
+            }
+
+            if (Persistencia.ModificarDiagnostico(pIdDiagnostico, Diagnostico.RESUELTO))
+            {
+                unDiagnostico.Estado = Diagnostico.RESUELTO;
                 return true;
             }
             return false;
@@ -2489,12 +2889,27 @@ namespace Tesis.Dominio
                 return false;
             }
 
+            // El tratamiento se aplica sobre un animal, venga de un diagnostico o sea
+            // preventivo. Sin animal no genera descarte de leche ni cumple ningun plan.
+            if (pTratamientoNuevo.Animal == null)
+            {
+                return false;
+            }
+
             if (pTratamientoNuevo.FechaInicio > DateTime.Now)
             {
                 return false;
             }
 
-            if (pCantidadInsumo > pTratamientoNuevo.Insumo.StockActual)
+            // Un tratamiento cumple un plan de desparasitacion: la vacunacion tiene su
+            // propio registro y el descorne no consume producto.
+            if (pTratamientoNuevo.Plan != null
+                && pTratamientoNuevo.Plan.TipoProcedimiento != PlanSanitario.DESPARASITACION)
+            {
+                return false;
+            }
+
+            if (!this.VerificarStock(pTratamientoNuevo.Insumo.IdInsumo, pCantidadInsumo))
             {
                 return false;
             }
@@ -2517,28 +2932,36 @@ namespace Tesis.Dominio
 
         // CU8, paso 3. El animal queda fuera del lote mientras su descarte siga vigente.
         //
-        // El vinculo con el animal pasa por el diagnostico, que es lo unico que la tabla
-        // tratamientos referencia. El tratamiento preventivo, que va sin diagnostico, no
-        // se puede atribuir a ningun animal en este modelo: queda anotado como
-        // limitacion del Modulo 4.
+        // El tratamiento apunta ahora al animal de forma directa, asi que el preventivo
+        // -que va sin diagnostico- tambien bloquea la leche. Con el vinculo anterior,
+        // que pasaba por el diagnostico, una desparasitacion no excluia a nadie del
+        // lote de ordenie.
         public DateTime FechaFinDescarte(Animal pAnimal)
         {
             DateTime vFechaFin = DateTime.MinValue;
 
-            foreach (Tratamiento unTratamiento in mListaTratamientos)
+            foreach (Tratamiento unTratamiento in this.FiltrarTratamientosXAnimal(pAnimal.IdAnimal))
             {
-                if (unTratamiento.Diagnostico == null || unTratamiento.Diagnostico.Animal == null)
-                {
-                    continue;
-                }
-
-                if (unTratamiento.Diagnostico.Animal.IdAnimal == pAnimal.IdAnimal
-                    && unTratamiento.FechaFinDescarte > vFechaFin)
+                if (unTratamiento.FechaFinDescarte > vFechaFin)
                 {
                     vFechaFin = unTratamiento.FechaFinDescarte;
                 }
             }
             return vFechaFin;
+        }
+
+        public List<Tratamiento> FiltrarTratamientosXAnimal(int pIdAnimal)
+        {
+            List<Tratamiento> _listaXAnimal = new List<Tratamiento>();
+
+            foreach (Tratamiento unTratamiento in mListaTratamientos)
+            {
+                if (unTratamiento.Animal != null && unTratamiento.Animal.IdAnimal == pIdAnimal)
+                {
+                    _listaXAnimal.Add(unTratamiento);
+                }
+            }
+            return _listaXAnimal;
         }
 
         public bool TieneDescarteVigente(Animal pAnimal)
@@ -2551,6 +2974,561 @@ namespace Tesis.Dominio
             }
             return false;
 
+        }
+        #endregion
+
+        #region VACUNACIONES
+        public List<Vacunacion> ListarVacunaciones()
+        {
+            this.Refrescar();
+            return mListaVacunaciones;
+        }
+
+        public Vacunacion BuscarVacunacion(int pId)
+        {
+            foreach (Vacunacion unaVacunacion in mListaVacunaciones)
+            {
+                if (unaVacunacion.IdVacunacion == pId)
+                {
+                    return unaVacunacion;
+                }
+            }
+            return null;
+        }
+
+        // CU21. La aplicacion descuenta una dosis del stock y declara, si corresponde,
+        // que plan sanitario da por cumplido. El plan tiene que ser de vacunacion: no
+        // se cumple un plan de desparasitacion aplicando una vacuna.
+        public bool AltaVacunacion(Vacunacion pVacunacionNueva)
+        {
+            if (pVacunacionNueva.Animal == null || pVacunacionNueva.Insumo == null)
+            {
+                return false;
+            }
+
+            if (pVacunacionNueva.FechaAplicacion > DateTime.Now)
+            {
+                return false;
+            }
+
+            if (pVacunacionNueva.Plan != null
+                && pVacunacionNueva.Plan.TipoProcedimiento != PlanSanitario.VACUNACION)
+            {
+                return false;
+            }
+
+            if (!this.VerificarStock(pVacunacionNueva.Insumo.IdInsumo, UNIDADES_POR_VACUNACION))
+            {
+                return false;
+            }
+
+            if (Persistencia.AltaVacunacion(pVacunacionNueva, UNIDADES_POR_VACUNACION))
+            {
+                mListaVacunaciones.Add(pVacunacionNueva);
+                return true;
+            }
+            return false;
+
+        }
+
+        public List<Vacunacion> FiltrarVacunacionesXAnimal(int pIdAnimal)
+        {
+            List<Vacunacion> _listaXAnimal = new List<Vacunacion>();
+
+            foreach (Vacunacion unaVacunacion in mListaVacunaciones)
+            {
+                if (unaVacunacion.Animal != null && unaVacunacion.Animal.IdAnimal == pIdAnimal)
+                {
+                    _listaXAnimal.Add(unaVacunacion);
+                }
+            }
+            return _listaXAnimal;
+        }
+        #endregion
+
+        #region DESCORNES
+        public List<Descorne> ListarDescornes()
+        {
+            this.Refrescar();
+            return mListaDescornes;
+        }
+
+        public Descorne BuscarDescorne(int pId)
+        {
+            foreach (Descorne unDescorne in mListaDescornes)
+            {
+                if (unDescorne.IdDescorne == pId)
+                {
+                    return unDescorne;
+                }
+            }
+            return null;
+        }
+
+        // CU24. El descorne es de aplicacion unica: un animal ya descornado no se
+        // vuelve a descornar, y ese registro es lo que hace que el plan deje de
+        // exigirlo.
+        public bool AltaDescorne(Descorne pDescorneNuevo)
+        {
+            if (pDescorneNuevo.Animal == null || pDescorneNuevo.Metodo == "")
+            {
+                return false;
+            }
+
+            if (pDescorneNuevo.Fecha > DateTime.Now)
+            {
+                return false;
+            }
+
+            if (pDescorneNuevo.Plan != null
+                && pDescorneNuevo.Plan.TipoProcedimiento != PlanSanitario.DESCORNE)
+            {
+                return false;
+            }
+
+            if (this.TieneDescorne(pDescorneNuevo.Animal))
+            {
+                return false;
+            }
+
+            if (Persistencia.AltaDescorne(pDescorneNuevo))
+            {
+                mListaDescornes.Add(pDescorneNuevo);
+                return true;
+            }
+            return false;
+
+        }
+
+        public bool TieneDescorne(Animal pAnimal)
+        {
+            if (pAnimal == null)
+            {
+                return false;
+            }
+            return this.FiltrarDescornesXAnimal(pAnimal.IdAnimal).Count > 0;
+        }
+
+        public List<Descorne> FiltrarDescornesXAnimal(int pIdAnimal)
+        {
+            List<Descorne> _listaXAnimal = new List<Descorne>();
+
+            foreach (Descorne unDescorne in mListaDescornes)
+            {
+                if (unDescorne.Animal != null && unDescorne.Animal.IdAnimal == pIdAnimal)
+                {
+                    _listaXAnimal.Add(unDescorne);
+                }
+            }
+            return _listaXAnimal;
+        }
+
+        public List<Descorne> FiltrarDescornesXFecha(DateTime pFechaInicio, DateTime pFechaFin)
+        {
+            List<Descorne> _listaXFecha = new List<Descorne>();
+
+            foreach (Descorne unDescorne in mListaDescornes)
+            {
+                if (unDescorne.Fecha.Date >= pFechaInicio.Date && unDescorne.Fecha.Date <= pFechaFin.Date)
+                {
+                    _listaXFecha.Add(unDescorne);
+                }
+            }
+            return _listaXFecha;
+        }
+        #endregion
+
+        #region PLANES SANITARIOS
+        public List<PlanSanitario> ListarPlanesSanitarios()
+        {
+            this.Refrescar();
+            return mListaPlanes;
+        }
+
+        // Solo los planes activos generan pendientes en el calendario (CU22, reglas de
+        // negocio). Desactivar un plan es la forma de dejar de exigir un procedimiento
+        // sin perder las aplicaciones ya registradas.
+        public List<PlanSanitario> ListarPlanesActivos()
+        {
+            List<PlanSanitario> _listaActivos = new List<PlanSanitario>();
+
+            foreach (PlanSanitario unPlan in this.ListarPlanesSanitarios())
+            {
+                if (unPlan.Activo)
+                {
+                    _listaActivos.Add(unPlan);
+                }
+            }
+            return _listaActivos;
+        }
+
+        // Los planes que puede cumplir una aplicacion de este tipo, para que la
+        // pantalla no ofrezca un plan de descorne al registrar una vacunacion.
+        public List<PlanSanitario> ListarPlanesXTipo(string pTipoProcedimiento)
+        {
+            List<PlanSanitario> _listaXTipo = new List<PlanSanitario>();
+
+            foreach (PlanSanitario unPlan in this.ListarPlanesActivos())
+            {
+                if (unPlan.TipoProcedimiento == pTipoProcedimiento)
+                {
+                    _listaXTipo.Add(unPlan);
+                }
+            }
+            return _listaXTipo;
+        }
+
+        public PlanSanitario BuscarPlanSanitario(int pId)
+        {
+            foreach (PlanSanitario unPlan in mListaPlanes)
+            {
+                if (unPlan.IdPlan == pId)
+                {
+                    return unPlan;
+                }
+            }
+            return null;
+        }
+
+        // El nombre del plan es unico (CU22, curso de excepcion 6a). Al modificar, el
+        // propio plan no se cuenta como duplicado: por eso el id se recibe y se excluye.
+        public bool ExistePlanSanitario(string pNombre, int pIdPlan)
+        {
+            foreach (PlanSanitario unPlan in mListaPlanes)
+            {
+                if (unPlan.Nombre == pNombre && unPlan.IdPlan != pIdPlan)
+                {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+
+        // Devuelve el motivo por el que el plan no se puede guardar, o el string vacio
+        // si esta bien. La pantalla informa cual de las validaciones de CU22 fallo.
+        public string ValidarPlanSanitario(PlanSanitario pPlan)
+        {
+            if (pPlan.Nombre == "")
+            {
+                return "El nombre del plan es obligatorio.";
+            }
+
+            if (pPlan.TipoProcedimiento != PlanSanitario.VACUNACION
+                && pPlan.TipoProcedimiento != PlanSanitario.DESPARASITACION
+                && pPlan.TipoProcedimiento != PlanSanitario.DESCORNE)
+            {
+                return "El tipo de procedimiento tiene que ser vacunacion, desparasitacion o descorne.";
+            }
+
+            if (pPlan.EdadInicioMeses <= 0)
+            {
+                return "La edad de inicio tiene que ser un numero positivo de meses.";
+            }
+
+            // La periodicidad vacia es valida: significa que el procedimiento se aplica
+            // una unica vez en la vida del animal (CU22, curso alternativo 4b). Lo que
+            // no se admite es un numero negativo.
+            if (pPlan.PeriodicidadDias < PlanSanitario.SIN_PERIODICIDAD)
+            {
+                return "La periodicidad tiene que ser un numero positivo de dias, o quedar vacia.";
+            }
+
+            // El descorne no consume insumo (CU22, curso alternativo 4c). El resto de
+            // los procedimientos aplican un producto y sin el no se puede descontar del
+            // stock ni calcular el descarte de leche.
+            if (pPlan.TipoProcedimiento != PlanSanitario.DESCORNE && pPlan.Insumo == null)
+            {
+                return "El insumo es obligatorio salvo que el procedimiento sea un descorne.";
+            }
+
+            if (this.ExistePlanSanitario(pPlan.Nombre, pPlan.IdPlan))
+            {
+                return "Ya existe un plan sanitario con ese nombre.";
+            }
+
+            return "";
+        }
+
+        public bool AltaPlanSanitario(PlanSanitario pPlanNuevo)
+        {
+            if (this.ValidarPlanSanitario(pPlanNuevo) != "")
+            {
+                return false;
+            }
+
+            if (pPlanNuevo.TipoProcedimiento == PlanSanitario.DESCORNE)
+            {
+                pPlanNuevo.Insumo = null;
+            }
+
+            if (Persistencia.AltaPlanSanitario(pPlanNuevo))
+            {
+                mListaPlanes.Add(pPlanNuevo);
+                return true;
+            }
+            return false;
+
+        }
+
+        public bool ModificarPlanSanitario(PlanSanitario pPlan)
+        {
+            PlanSanitario unPlan = this.BuscarPlanSanitario(pPlan.IdPlan);
+            if (unPlan == null)
+            {
+                return false;
+            }
+
+            if (this.ValidarPlanSanitario(pPlan) != "")
+            {
+                return false;
+            }
+
+            if (pPlan.TipoProcedimiento == PlanSanitario.DESCORNE)
+            {
+                pPlan.Insumo = null;
+            }
+
+            if (!Persistencia.ModificarPlanSanitario(pPlan))
+            {
+                return false;
+            }
+
+            // La cache se actualiza recien cuando la escritura salio bien, y sobre el
+            // objeto que ya estaba en la lista: las vacunaciones, los tratamientos y los
+            // descornes ya cargados lo referencian y tienen que seguir viendo el mismo.
+            unPlan.Nombre = pPlan.Nombre;
+            unPlan.TipoProcedimiento = pPlan.TipoProcedimiento;
+            unPlan.PeriodicidadDias = pPlan.PeriodicidadDias;
+            unPlan.EdadInicioMeses = pPlan.EdadInicioMeses;
+            unPlan.Activo = pPlan.Activo;
+            unPlan.Insumo = pPlan.Insumo;
+            unPlan.Categorias = pPlan.Categorias;
+
+            return true;
+        }
+        #endregion
+
+        #region CALENDARIO SANITARIO
+        // CU23. El calendario no se almacena: es la diferencia entre lo que los planes
+        // activos exigen y lo que efectivamente se aplico, calculada en el momento de
+        // la consulta. Es el mismo calculo que va a alimentar el resumen diario del
+        // Modulo 6, para que las dos vistas no puedan discrepar.
+
+        // Paso 3: el animal queda alcanzado si esta activo, si pertenece a alguna de
+        // las categorias del plan -o el plan no declara ninguna, y entonces alcanza a
+        // todo el rodeo- y si supera la edad de inicio.
+        public bool PlanAlcanzaAnimal(PlanSanitario pPlan, Animal pAnimal)
+        {
+            if (pPlan == null || pAnimal == null || !pAnimal.Activo)
+            {
+                return false;
+            }
+
+            if (this.CalcularEdadMeses(pAnimal) < pPlan.EdadInicioMeses)
+            {
+                return false;
+            }
+
+            if (pPlan.Categorias.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (Categoria unaCategoria in pPlan.Categorias)
+            {
+                if (pAnimal.Categoria != null && pAnimal.Categoria.IdCategoria == unaCategoria.IdCategoria)
+                {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+
+        // Paso 4. La aplicacion se busca donde corresponde al tipo de procedimiento, y
+        // solo cuenta si declara explicitamente este plan: dos planes distintos pueden
+        // aplicar el mismo insumo, asi que inferirlo del producto seria adivinar.
+        public DateTime UltimaAplicacion(PlanSanitario pPlan, Animal pAnimal)
+        {
+            DateTime vUltima = DateTime.MinValue;
+
+            if (pPlan == null || pAnimal == null)
+            {
+                return vUltima;
+            }
+
+            if (pPlan.TipoProcedimiento == PlanSanitario.VACUNACION)
+            {
+                foreach (Vacunacion unaVacunacion in this.FiltrarVacunacionesXAnimal(pAnimal.IdAnimal))
+                {
+                    if (unaVacunacion.Plan != null && unaVacunacion.Plan.IdPlan == pPlan.IdPlan
+                        && unaVacunacion.FechaAplicacion > vUltima)
+                    {
+                        vUltima = unaVacunacion.FechaAplicacion;
+                    }
+                }
+            }
+            else if (pPlan.TipoProcedimiento == PlanSanitario.DESPARASITACION)
+            {
+                foreach (Tratamiento unTratamiento in this.FiltrarTratamientosXAnimal(pAnimal.IdAnimal))
+                {
+                    if (unTratamiento.Plan != null && unTratamiento.Plan.IdPlan == pPlan.IdPlan
+                        && unTratamiento.FechaInicio > vUltima)
+                    {
+                        vUltima = unTratamiento.FechaInicio;
+                    }
+                }
+            }
+            else
+            {
+                foreach (Descorne unDescorne in this.FiltrarDescornesXAnimal(pAnimal.IdAnimal))
+                {
+                    if (unDescorne.Plan != null && unDescorne.Plan.IdPlan == pPlan.IdPlan
+                        && unDescorne.Fecha > vUltima)
+                    {
+                        vUltima = unDescorne.Fecha;
+                    }
+                }
+            }
+            return vUltima;
+        }
+
+        // Paso 5. Nunca aplicado: vence el dia en que el animal alcanza la edad de
+        // inicio. Ya aplicado: la periodicidad se suma a la ultima aplicacion.
+        //
+        // DateTime.MinValue significa que no hay proxima aplicacion, y eso pasa cuando
+        // el plan no tiene periodicidad y ya se cumplio: el procedimiento de aplicacion
+        // unica no vuelve a pedirse (paso 6).
+        public DateTime ProximaAplicacion(PlanSanitario pPlan, Animal pAnimal)
+        {
+            if (pPlan == null || pAnimal == null)
+            {
+                return DateTime.MinValue;
+            }
+
+            DateTime vUltima = this.UltimaAplicacion(pPlan, pAnimal);
+
+            if (vUltima == DateTime.MinValue)
+            {
+                return pAnimal.FechaNacimiento.Date.AddMonths(pPlan.EdadInicioMeses);
+            }
+
+            if (pPlan.PeriodicidadDias <= PlanSanitario.SIN_PERIODICIDAD)
+            {
+                return DateTime.MinValue;
+            }
+
+            return vUltima.Date.AddDays(pPlan.PeriodicidadDias);
+        }
+
+        // Los animales alcanzados por el plan cuya proxima aplicacion esta vencida o
+        // cae dentro del horizonte de anticipacion.
+        public List<ProcedimientoPendiente> CalcularPendientes(PlanSanitario pPlan, int pAnticipacionDias)
+        {
+            List<ProcedimientoPendiente> _listaPendientes = new List<ProcedimientoPendiente>();
+
+            if (pPlan == null || !pPlan.Activo)
+            {
+                return _listaPendientes;
+            }
+
+            DateTime vLimite = DateTime.Now.Date.AddDays(pAnticipacionDias);
+
+            foreach (Animal unAnimal in this.ListarAnimales())
+            {
+                if (!this.PlanAlcanzaAnimal(pPlan, unAnimal))
+                {
+                    continue;
+                }
+
+                DateTime vProxima = this.ProximaAplicacion(pPlan, unAnimal);
+
+                if (vProxima == DateTime.MinValue || vProxima.Date > vLimite)
+                {
+                    continue;
+                }
+
+                _listaPendientes.Add(new ProcedimientoPendiente(unAnimal, pPlan,
+                    this.UltimaAplicacion(pPlan, unAnimal), vProxima));
+            }
+            return _listaPendientes;
+        }
+
+        // Paso 7: el cronograma completo del rodeo, ordenado por fecha. Los vencidos
+        // quedan primero porque su fecha ya paso.
+        public List<ProcedimientoPendiente> ObtenerCalendarioSanitario(int pAnticipacionDias)
+        {
+            List<ProcedimientoPendiente> _listaCalendario = new List<ProcedimientoPendiente>();
+
+            foreach (PlanSanitario unPlan in this.ListarPlanesActivos())
+            {
+                foreach (ProcedimientoPendiente unPendiente in this.CalcularPendientes(unPlan, pAnticipacionDias))
+                {
+                    this.InsertarPendienteOrdenado(_listaCalendario, unPendiente);
+                }
+            }
+            return _listaCalendario;
+        }
+
+        // Curso alternativo 7a: el usuario restringe el cronograma por tipo de
+        // procedimiento o por categoria. El tipo vacio y la categoria en cero son
+        // "todos".
+        public List<ProcedimientoPendiente> FiltrarCalendario(List<ProcedimientoPendiente> pCalendario,
+            string pTipoProcedimiento, int pIdCategoria)
+        {
+            List<ProcedimientoPendiente> _listaFiltrada = new List<ProcedimientoPendiente>();
+
+            foreach (ProcedimientoPendiente unPendiente in pCalendario)
+            {
+                if (pTipoProcedimiento != "" && unPendiente.Plan.TipoProcedimiento != pTipoProcedimiento)
+                {
+                    continue;
+                }
+
+                if (pIdCategoria != 0 && (unPendiente.Animal.Categoria == null
+                    || unPendiente.Animal.Categoria.IdCategoria != pIdCategoria))
+                {
+                    continue;
+                }
+
+                _listaFiltrada.Add(unPendiente);
+            }
+            return _listaFiltrada;
+        }
+
+        public bool EstaVencido(ProcedimientoPendiente pPendiente)
+        {
+            if (pPendiente != null && pPendiente.ProximaAplicacion.Date < DateTime.Now.Date)
+            {
+                return true;
+            }
+            return false;
+
+        }
+
+        public int DiasParaAplicar(ProcedimientoPendiente pPendiente)
+        {
+            if (pPendiente == null)
+            {
+                return 0;
+            }
+            return (int)(pPendiente.ProximaAplicacion.Date - DateTime.Now.Date).TotalDays;
+        }
+
+        // El cronograma se arma ordenado en lugar de ordenarlo al final: se recorre un
+        // plan por vez y cada pendiente entra en la posicion que le toca por fecha.
+        private void InsertarPendienteOrdenado(List<ProcedimientoPendiente> pLista,
+            ProcedimientoPendiente pPendiente)
+        {
+            int vPosicion = 0;
+
+            while (vPosicion < pLista.Count
+                && pLista[vPosicion].ProximaAplicacion.Date <= pPendiente.ProximaAplicacion.Date)
+            {
+                vPosicion = vPosicion + 1;
+            }
+            pLista.Insert(vPosicion, pPendiente);
         }
         #endregion
     }

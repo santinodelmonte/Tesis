@@ -4,15 +4,20 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesSanidad
 {
-    // Adelantado del Modulo 4 (CU20). Lo que interesa para el Modulo 2 es la fecha de
-    // fin de descarte: mientras no venza, la hembra tratada queda fuera del lote de
-    // ordenie de CU8.
+    // CU20. El tratamiento nace de un diagnostico pendiente o se aplica de forma
+    // preventiva sobre el animal (curso alternativo 2a). En los dos casos descuenta el
+    // producto del stock y fija hasta cuando hay que descartar la leche, que es lo que
+    // el paso 3 de CU8 usa para dejar a la hembra fuera del lote de ordenie.
     public class RegistrarTratamientoModel : PageModel
     {
         [BindProperty]
         public int idDiagnostico { get; set; } = 0;
         [BindProperty]
+        public string? numCaravana { get; set; } = "";
+        [BindProperty]
         public int idInsumo { get; set; } = 0;
+        [BindProperty]
+        public int idPlan { get; set; } = 0;
         [BindProperty]
         public DateTime fechaInicio { get; set; } = DateTime.Now;
         [BindProperty]
@@ -26,6 +31,8 @@ namespace Tesis.Pages.PagesSanidad
 
         public List<Diagnostico> diagnosticos = new List<Diagnostico>();
         public List<Insumo> insumos = new List<Insumo>();
+        public List<PlanSanitario> planes = new List<PlanSanitario>();
+        public List<Animal> animales = new List<Animal>();
 
         public void OnGet()
         {
@@ -62,6 +69,15 @@ namespace Tesis.Pages.PagesSanidad
                 return Page();
             }
 
+            // El tratamiento se aplica sobre un animal: si no viene de un diagnostico
+            // -o sea, es preventivo- hay que decir sobre cual.
+            if (this.ResolverAnimal(unaControladora) == null)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Seleccione el diagnostico a tratar, o la caravana del animal si el tratamiento es preventivo!");
+                return Page();
+            }
+
             if (diasDuracion <= 0)
             {
                 ModelState.AddModelError(string.Empty, "La duracion del tratamiento tiene que ser de al menos un dia!");
@@ -80,8 +96,9 @@ namespace Tesis.Pages.PagesSanidad
                 return Page();
             }
 
+            // Curso de excepcion 3a: sin stock suficiente el tratamiento no se guarda
             Insumo unInsumo = unaControladora.BuscarInsumo(idInsumo);
-            if (unInsumo != null && cantidadInsumo > unInsumo.StockActual)
+            if (unInsumo != null && !unaControladora.VerificarStock(idInsumo, cantidadInsumo))
             {
                 ModelState.AddModelError(string.Empty,
                     "No hay stock suficiente del producto: quedan " + unInsumo.StockActual.ToString("N2") + " unidades.");
@@ -112,17 +129,46 @@ namespace Tesis.Pages.PagesSanidad
                 return null;
             }
 
+            // El animal puede faltar todavia cuando se pide calcular el descarte, que
+            // solo depende del producto y de la duracion. Para guardar es obligatorio, y
+            // eso lo controlan el handler y la Controladora.
+            Animal unAnimal = this.ResolverAnimal(pControladoraDominio);
+
             // El diagnostico en nulo identifica al tratamiento preventivo, como la
-            // desparasitacion, que no se origina en un diagnostico.
+            // desparasitacion, que no se origina en un diagnostico. El plan en nulo, al
+            // tratamiento que no cumple ningun plan sanitario.
             Diagnostico unDiagnostico = pControladoraDominio.BuscarDiagnostico(idDiagnostico);
+            PlanSanitario unPlan = pControladoraDominio.BuscarPlanSanitario(idPlan);
 
             return new Tratamiento(0, fechaInicio, diasDuracion, dosisDiaria ?? "",
-                fechaFinDescarte, unDiagnostico, unInsumo);
+                fechaFinDescarte, unDiagnostico, unAnimal, unInsumo, unPlan);
+        }
+
+        // El animal sale del diagnostico elegido. Si no hay diagnostico, el tratamiento
+        // es preventivo y el animal es el que se selecciono por caravana.
+        private Animal ResolverAnimal(Controladora pControladoraDominio)
+        {
+            Diagnostico unDiagnostico = pControladoraDominio.BuscarDiagnostico(idDiagnostico);
+            if (unDiagnostico != null)
+            {
+                return unDiagnostico.Animal;
+            }
+
+            if (numCaravana == null || numCaravana == "")
+            {
+                return null;
+            }
+            return pControladoraDominio.BuscarAnimalXCaravana(numCaravana);
         }
 
         private void CargarListados(Controladora pControladoraDominio)
         {
             insumos = pControladoraDominio.ListarInsumosSanitarios();
+            animales = pControladoraDominio.ListarAnimales();
+
+            // Un tratamiento cumple un plan de desparasitacion: la vacunacion tiene su
+            // propia pantalla y el descorne no consume producto.
+            planes = pControladoraDominio.ListarPlanesXTipo(PlanSanitario.DESPARASITACION);
 
             // Solo los diagnosticos abiertos: no tiene sentido tratar uno resuelto
             diagnosticos = new List<Diagnostico>();
@@ -141,9 +187,15 @@ namespace Tesis.Pages.PagesSanidad
             int.TryParse(Request.Form["idDiagnostico"], out vIdDiagnostico);
             idDiagnostico = vIdDiagnostico;
 
+            numCaravana = Request.Form["numCaravana"];
+
             int vIdInsumo = 0;
             int.TryParse(Request.Form["idInsumo"], out vIdInsumo);
             idInsumo = vIdInsumo;
+
+            int vIdPlan = 0;
+            int.TryParse(Request.Form["idPlan"], out vIdPlan);
+            idPlan = vIdPlan;
 
             fechaInicio = Request.Form["fechaInicio"] != "" ? Convert.ToDateTime(Request.Form["fechaInicio"]) : DateTime.Now;
 

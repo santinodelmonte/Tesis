@@ -1,0 +1,97 @@
+@page
+@model Tesis.Pages.PagesInsumo.AlertasVencimientoModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Alertas de Vencimiento</h1>
+    <p class="text-center text-muted">
+        Partidas vencidas y próximas a vencer. El remanente se calcula imputando los
+        egresos del insumo a la partida que vence primero.
+    </p>
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="anticipacionDias">Ventana (dias):</label>
+                    <input type="number" min="1" id="anticipacionDias" name="anticipacionDias"
+                           class="form-control" value="@Model.anticipacionDias" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary form-control" asp-page-handler="Buscar">
+                        Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+    </form>
+    <hr />
+
+    @if (!Model.partidas.Any())
+    {
+        <div class="alert alert-success">
+            No hay partidas vencidas ni por vencer en los próximos
+            @Model.anticipacionDias días.
+        </div>
+    }
+    else
+    {
+        <p>@Model.partidas.Count partida(s) para revisar.</p>
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>Vencimiento</th>
+                    <th>Estado</th>
+                    <th>Insumo</th>
+                    <th>Tipo</th>
+                    <th>Partida ingresada</th>
+                    <th>Cantidad de la partida</th>
+                    <th>Remanente</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.partidas.Count; i++)
+                {
+                    <tr>
+                        <td>@Model.partidas[i].Partida.FechaVencimiento.ToShortDateString()</td>
+                        <td>
+                            @if (Model.vencidas[i])
+                            {
+                                <span class="badge bg-danger">
+                                    Vencida hace @(-Model.diasRestantes[i]) dias
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Vence en @Model.diasRestantes[i] dias
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @(Model.partidas[i].Partida.Insumo != null
+                                ? Model.partidas[i].Partida.Insumo.Nombre : "")
+                        </td>
+                        <td>
+                            @(Model.partidas[i].Partida.Insumo != null
+                                ? Model.partidas[i].Partida.Insumo.TipoInsumo : "")
+                        </td>
+                        <td>@Model.partidas[i].Partida.Fecha.ToShortDateString()</td>
+                        <td>@Model.partidas[i].Partida.Cantidad.ToString("N2")</td>
+                        <td>@Model.partidas[i].Remanente.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-warning" asp-page="./ListaInsumos">Volver</a>
+        </div>
+    </div>
+</div>

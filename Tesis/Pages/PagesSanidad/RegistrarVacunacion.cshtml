@@ -1,0 +1,128 @@
+@page
+@model Tesis.Pages.PagesSanidad.RegistrarVacunacionModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Registrar Vacunacion</h1>
+    <p class="text-muted">
+        La aplicación descuenta una dosis del stock. Si cumple un plan sanitario,
+        indicarlo es lo que hace que el calendario deje de pedirla.
+    </p>
+    <hr />
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="caravanaTexto">Caravana:</label>
+                    <div class="input-group">
+                        <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                        <input type="text" id="caravanaTexto" class="form-control" readonly
+                               value="@Model.numCaravana" />
+                        <button type="button" class="btn btn-secondary"
+                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Animal', '', true)">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="idInsumo">Vacuna aplicada:</label>
+                    <select id="idInsumo" name="idInsumo" asp-for="idInsumo" class="form-control">
+                        <option value="0">Seleccione una vacuna</option>
+                        @foreach (Dominio.Insumo vacuna in Model.vacunas)
+                        {
+                            <option value="@vacuna.IdInsumo">
+                                @vacuna.Nombre &mdash; stock @vacuna.StockActual.ToString("N2")
+                            </option>
+                        }
+                    </select>
+                    @if (!Model.vacunas.Any())
+                    {
+                        <small class="text-danger">
+                            No hay vacunas cargadas. Se dan de alta desde
+                            <a asp-page="/PagesInsumo/AltaInsumo">Insumos</a>.
+                        </small>
+                    }
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fechaAplicacion">Fecha de aplicacion:</label>
+                    <input type="date" id="fechaAplicacion" name="fechaAplicacion" class="form-control"
+                           value="@Model.fechaAplicacion.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="idPlan">Plan sanitario que cumple:</label>
+                    <select id="idPlan" name="idPlan" asp-for="idPlan" class="form-control">
+                        <option value="0">Fuera de plan</option>
+                        @foreach (Dominio.PlanSanitario plan in Model.planes)
+                        {
+                            <option value="@plan.IdPlan">@plan.Nombre</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-warning" asp-page="./ListaDiagnosticos">Volver</a>
+            </div>
+        </div>
+    </form>
+
+    <h5 class="mt-4">Ultimas vacunaciones</h5>
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Caravana</th>
+                <th>Vacuna</th>
+                <th>Plan</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.vacunaciones.Any())
+            {
+                @foreach (Dominio.Vacunacion vacunacion in Model.vacunaciones)
+                {
+                    <tr>
+                        <td>@vacunacion.FechaAplicacion.ToShortDateString()</td>
+                        <td>@(vacunacion.Animal != null ? vacunacion.Animal.NumCaravana : "")</td>
+                        <td>@(vacunacion.Insumo != null ? vacunacion.Insumo.Nombre : "")</td>
+                        <td>
+                            @if (vacunacion.Plan != null)
+                            {
+                                @vacunacion.Plan.Nombre
+                            }
+                            else
+                            {
+                                <span class="text-muted">Fuera de plan</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">No hay vacunaciones registradas</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<partial name="_SelectorAnimal" model="Model.animales" />

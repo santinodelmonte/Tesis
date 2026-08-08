@@ -1,0 +1,128 @@
+@page
+@model Tesis.Pages.PagesSanidad.ConfigurarPlanModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">
+        @(Model.idPlan == 0 ? "Nuevo Plan Sanitario" : "Modificar Plan Sanitario")
+    </h1>
+    <p class="text-muted">
+        El plan define qué procedimiento hay que repetir, cada cuánto y sobre qué
+        animales. El calendario sanitario se recalcula con la regla nueva apenas se guarda.
+    </p>
+    <hr />
+    <form method="post">
+        <input type="hidden" id="idPlan" name="idPlan" value="@Model.idPlan" />
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="nombre">Nombre del plan:</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control"
+                           maxlength="60" value="@Model.nombre" />
+                    <small class="text-muted">No puede repetirse.</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="tipoProcedimiento">Tipo de procedimiento:</label>
+                    <select id="tipoProcedimiento" name="tipoProcedimiento" asp-for="tipoProcedimiento"
+                            class="form-control" onchange="ajustarInsumo()">
+                        <option value="@Dominio.PlanSanitario.VACUNACION">@Dominio.PlanSanitario.VACUNACION</option>
+                        <option value="@Dominio.PlanSanitario.DESPARASITACION">@Dominio.PlanSanitario.DESPARASITACION</option>
+                        <option value="@Dominio.PlanSanitario.DESCORNE">@Dominio.PlanSanitario.DESCORNE</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group" id="fInsumo">
+                    <label for="idInsumo">Insumo a aplicar:</label>
+                    <select id="idInsumo" name="idInsumo" asp-for="idInsumo" class="form-control">
+                        <option value="0">Seleccione un insumo</option>
+                        @foreach (Dominio.Insumo insumo in Model.insumos)
+                        {
+                            <option value="@insumo.IdInsumo">@insumo.Nombre (@insumo.TipoInsumo)</option>
+                        }
+                    </select>
+                    <small class="text-muted">El descorne no consume insumo.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="periodicidadDias">Periodicidad (dias):</label>
+                    <input type="number" min="0" id="periodicidadDias" name="periodicidadDias"
+                           class="form-control" value="@Model.periodicidadDias" />
+                    <small class="text-muted">
+                        Cero o vacío: el procedimiento se aplica una única vez en la vida
+                        del animal.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="edadInicioMeses">Edad de inicio (meses):</label>
+                    <input type="number" min="1" id="edadInicioMeses" name="edadInicioMeses"
+                           class="form-control" value="@Model.edadInicioMeses" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="activo">Plan activo:</label>
+                    <input asp-for="activo" type="checkbox" class="form-check-input ms-2" id="activo" name="activo">
+                    <small class="text-muted d-block">
+                        Solo los planes activos generan pendientes.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>Categorias alcanzadas:</label>
+                    <div>
+                        @foreach (Dominio.Categoria categoria in Model.categorias)
+                        {
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="categorias"
+                                       id="categoria@(categoria.IdCategoria)" value="@categoria.IdCategoria"
+                                       checked="@Model.idsCategorias.Contains(categoria.IdCategoria)" />
+                                <label class="form-check-label" for="categoria@(categoria.IdCategoria)">
+                                    @categoria.Nombre
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    <small class="text-muted">
+                        Sin ninguna tildada, el plan alcanza a todo el rodeo.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-warning" asp-page="./ListaPlanes">Volver</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // El descorne no consume insumo: el selector se oculta cuando el procedimiento es
+    // ese, igual que hace el curso alternativo 4c del caso de uso.
+    function ajustarInsumo() {
+        var tipo = document.getElementById("tipoProcedimiento").value;
+        document.getElementById("fInsumo").style.display = tipo === "@Dominio.PlanSanitario.DESCORNE" ? "none" : "";
+    }
+
+    ajustarInsumo();
+</script>

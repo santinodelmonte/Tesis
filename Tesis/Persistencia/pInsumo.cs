@@ -52,14 +52,16 @@ namespace Tesis.Persistencia
             return pInsumo.IdInsumo > 0;
         }
 
-        // Solo el stock: el resto de los datos del insumo no cambia con un movimiento.
-        public bool ActualizarStock(int pIdInsumo, double pStockActual)
+        // El stock_actual no se escribe desde aca: lo mueven los ingresos y los egresos,
+        // que lo ajustan con la cuenta hecha en la base dentro de su propia transaccion.
+        // Lo unico que se configura a mano es el umbral (CU26).
+        public bool ModificarStockMinimo(int pIdInsumo, double pStockMinimo)
         {
-            string sql = "UPDATE insumos SET stock_actual = @stock_actual WHERE id_insumo = @id_insumo";
+            string sql = "UPDATE insumos SET stock_minimo = @stock_minimo WHERE id_insumo = @id_insumo";
 
             Dictionary<string, object?> parametros = new Dictionary<string, object?>
             {
-                { "@stock_actual", pStockActual },
+                { "@stock_minimo", pStockMinimo },
                 { "@id_insumo", pIdInsumo }
             };
 
