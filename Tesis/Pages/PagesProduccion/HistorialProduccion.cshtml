@@ -8,26 +8,29 @@
 <div class="text-left">
     <h1 class="display-4" style="font-size: 40px">Historial de Produccion</h1>
     <p class="text-muted">
-        La producción del establecimiento son los litros de los ordeñes por lote: la
-        leche completa que salió en cada turno. El control individual mide esa misma
-        leche vaca por vaca, así que es otra vista de lo mismo y no se suma.
+        La producción se resuelve turno por turno: si el turno tiene su ordeñe por lote,
+        son esos litros &mdash;que ya incluyen a las vacas medidas vaca por vaca&mdash;; y
+        si se anotó únicamente con controles individuales, es la suma de esos controles.
+        Lo que nunca se hace es sumar las dos cosas en un mismo turno, porque sería contar
+        dos veces la misma leche.
     </p>
 
-    @if (Model.turnosSinOrdenie.Any())
+    @if (Model.turnosSoloIndividual.Any())
     {
-        <div class="alert alert-warning">
-            <strong>Hay @Model.turnosSinOrdenie.Count turno(s) con control individual y sin
-            ordeñe de lote registrado.</strong>
-            Esa leche no está contada en la producción del establecimiento; probablemente
-            falte cargar el ordeñe.
+        <div class="alert alert-info">
+            <strong>@Model.turnosSoloIndividual.Count turno(s) anotado(s) únicamente vaca por
+            vaca.</strong>
+            Su producción está contada como la suma de lo medido. Si en alguno quedó una
+            vaca sin medir, esos litros no están en ningún lado: cargar el total del ordeñe
+            lo corrige.
             <ul class="mb-0 mt-2">
-                @foreach (Dominio.OrdenieLote faltante in Model.turnosSinOrdenie)
+                @foreach (Dominio.OrdenieLote turno in Model.turnosSoloIndividual)
                 {
                     <li>
-                        @faltante.Fecha.ToShortDateString() &mdash; @faltante.Turno:
-                        @faltante.Animales.Count animal(es) medido(s),
-                        @faltante.LitrosTotales.ToString("N2") litros.
-                        <a asp-page="./OrdenieLote">Registrar el ordeñe</a>
+                        @turno.Fecha.ToShortDateString() &mdash; @turno.Turno:
+                        @turno.Animales.Count animal(es) medido(s),
+                        @turno.LitrosTotales.ToString("N2") litros.
+                        <a asp-page="./OrdenieLote">Cargar el total del ordeñe</a>
                     </li>
                 }
             </ul>

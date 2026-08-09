@@ -16,6 +16,10 @@ namespace Tesis.Pages.PagesProduccion
         public double totalMensual = 0;
         public double totalLote = 0;
         public double totalIndividual = 0;
+
+        // Litros de los turnos que se anotaron solo vaca por vaca. Suman a la produccion
+        // del mes: son ordenies completos, anotados de otra manera.
+        public double totalSoloIndividual = 0;
         public int cantidadOrdeniesLote = 0;
         public int cantidadControles = 0;
 
@@ -41,13 +45,16 @@ namespace Tesis.Pages.PagesProduccion
             DateTime vDesde = new DateTime(anio, mes, 1);
             DateTime vHasta = vDesde.AddMonths(1).AddDays(-1);
 
-            // El volumen del mes es la leche que salio del tambo, o sea la suma de los
-            // ordenies por lote. El control individual se muestra al lado como
-            // referencia: es la porcion de esa misma leche que se midio vaca por vaca,
-            // no un volumen adicional.
+            // El volumen del mes es la leche que salio del tambo. Se arma turno por
+            // turno: el total del ordenie cuando esta cargado, y la suma de los controles
+            // cuando el turno se anoto unicamente vaca por vaca. El total medido en
+            // control individual se muestra aparte como referencia, porque en los turnos
+            // que si tienen ordenie por lote es una porcion de esos mismos litros.
             totalLote = unaControladora.CalcularProduccionEnRango(vDesde, vHasta, Controladora.MODALIDAD_LOTE);
             totalIndividual = unaControladora.CalcularProduccionEnRango(vDesde, vHasta, Controladora.MODALIDAD_INDIVIDUAL);
             totalMensual = unaControladora.CalcularProduccionMensual(mes, anio);
+
+            totalSoloIndividual = unaControladora.SumarLitrosSinOrdenieLote(vDesde, vHasta);
 
             cantidadOrdeniesLote = unaControladora.FiltrarOrdeniesLoteXFecha(vDesde, vHasta).Count;
             cantidadControles = unaControladora.FiltrarOrdeniesIndividualXFecha(vDesde, vHasta).Count;

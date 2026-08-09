@@ -61,29 +61,39 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="table-success">
+                <tr>
                     <td>
-                        <strong>Producción del establecimiento</strong>
+                        Ordeñes con total cargado
                         <br /><small class="text-muted">
-                            La leche que salió en los ordeñes del mes.
+                            Los litros del turno completo, incluidas las vacas que además se
+                            midieron una por una.
                         </small>
                     </td>
                     <td>@Model.cantidadOrdeniesLote ordeñe(s)</td>
-                    <td><strong>@Model.totalLote.ToString("N2")</strong></td>
+                    <td>@Model.totalLote.ToString("N2")</td>
                 </tr>
                 <tr>
                     <td>
-                        Medido en control individual
+                        Ordeñes anotados solo vaca por vaca
                         <br /><small class="text-muted">
-                            Parte de esos mismos litros, repartidos por animal. No se suma
-                            al total: es la porción de la producción que se midió vaca por
-                            vaca.
+                            Turnos sin total cargado: la producción es la suma de lo medido.
                         </small>
                     </td>
-                    <td>@Model.cantidadControles control(es)</td>
-                    <td>@Model.totalIndividual.ToString("N2")</td>
+                    <td>&mdash;</td>
+                    <td>@Model.totalSoloIndividual.ToString("N2")</td>
+                </tr>
+                <tr class="table-success">
+                    <td><strong>Producción del mes</strong></td>
+                    <td></td>
+                    <td><strong>@Model.totalMensual.ToString("N2")</strong></td>
                 </tr>
             </tbody>
         </table>
+        <p class="text-muted">
+            De esa producción, @Model.totalIndividual.ToString("N2") litros están medidos
+            vaca por vaca en @Model.cantidadControles control(es). No es un volumen aparte:
+            en los turnos con total cargado es una porción de esos mismos litros, y en los
+            turnos sin total es la producción misma.
+        </p>
     }
 </div>

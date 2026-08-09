@@ -40,27 +40,38 @@ Eso resultó peor que el problema que resolvía, por tres motivos:
 3. **La leche descartada contaba como producción.** Medir lo que dio una vaca en
    tratamiento sumaba esos litros al turno, cuando esa leche se tira.
 
-**Criterio actual.** `litros_totales` es la leche completa que salió en ese ordeñe,
-tal como se lee del tanque, y el control individual es la medición vaca por vaca de
-esa misma leche. **No se suman**: son dos vistas de lo mismo. La producción del
-establecimiento sale de los ordeñes por lote; el control individual alimenta la
-lactancia de cada vaca, los indicadores y el análisis de descarte.
+**Criterio actual.** El ordeñe individual no es otra fuente de leche: es el mismo
+ordeñe del turno, anotado vaca por vaca en lugar de con un solo número. De ahí que
+`litros_totales` sea la leche completa que salió en ese ordeñe, tal como se lee del
+tanque, incluidas las vacas que además se midieron una por una.
+
+La producción se resuelve **turno por turno**:
+
+- si el turno tiene su ordeñe por lote, la producción es ese total, que ya incluye a
+  las vacas controladas;
+- si el turno se anotó únicamente con controles individuales, la producción es la
+  suma de esos controles, porque el ordeñe ocurrió igual y esa leche salió.
+
+Lo que nunca se hace es sumar las dos cosas dentro de un mismo turno: eso contaría
+dos veces la leche de las vacas controladas. Ese —y sólo ése— es el sentido en que
+las dos fuentes "no se suman".
 
 Con eso desaparecen los tres problemas: no hay doble conteo posible, el orden de
 carga es indistinto y se guarda lo que se midió. La pantalla del ordeñe muestra los
 litros ya controlados del turno como referencia y rechaza que lo medido supere lo
 que entregó el tanque, que es la única relación que tiene que cumplirse.
 
-Como contrapartida, un turno con controles individuales y sin ordeñe de lote no
-aporta nada a la producción. El historial avisa cuando eso pasa, porque casi siempre
-significa que faltó cargar el ordeñe.
+El historial señala los turnos anotados sólo vaca por vaca. No son un faltante y su
+producción está contada: se marcan porque el dato es más frágil que la lectura del
+tanque —si una vaca no se midió, esos litros no quedan registrados en ningún lado—.
 
 **Corregir en el Proyecto.** 2.2.5.4, fila `ordenies_individual.id_ordenie_lote`:
 pasa a `Null`. Aclarar en 2.2.5.2 que `litros_totales` es el ordeñe completo del
-turno. Y reescribir la regla de negocio de **CU10 y CU11**: no hay una modalidad
-"Totales (Individual + Lote)" que sume las dos fuentes; hay producción del
-establecimiento —los lotes— y control individual, que es un subconjunto medido de
-esa misma leche.
+turno. Y reescribir la regla de negocio de **CU10 y CU11**: la consolidación no es
+una suma de dos fuentes, sino la resolución turno por turno descrita arriba. La
+modalidad "Totales (Individual + Lote)" desaparece; quedan la producción del
+establecimiento y la vista de control individual, que es la porción de esa leche
+medida animal por animal.
 
 ---
 

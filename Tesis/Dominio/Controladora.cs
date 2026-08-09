@@ -1714,16 +1714,19 @@ namespace Tesis.Dominio
         // Litros del turno: los del ordenie masivo mas los de las vacas que se
         // controlaron individualmente ese mismo dia y turno, que no estan incluidas en
         // litros_totales.
-        // Turnos que tienen controles individuales cargados pero ningun ordenie de lote
-        // registrado. Con el criterio nuevo -el lote es la produccion del
-        // establecimiento y el control individual es la medicion de esa misma leche-
-        // ese turno no aporta nada a la produccion, y eso casi siempre significa que
-        // falto cargar el ordenie.
+        // Turnos que se registraron unicamente con control individual, sin el total del
+        // ordenie. Su produccion es la suma de lo medido vaca por vaca y esta contada
+        // como tal, asi que no son un faltante: son otra forma de anotar el mismo
+        // ordenie.
+        //
+        // Se listan igual porque el dato es mas fragil que la lectura del tanque -si
+        // una vaca no se midio, esos litros no estan en ningun lado-, y porque saber
+        // que un turno no tiene total ayuda a interpretar los numeros del periodo.
         //
         // Se devuelven como OrdenieLote sin guardar -el identificador en cero- porque es
-        // exactamente lo que habria que registrar: la fecha, el turno, las vacas que se
-        // midieron y los litros que sumaron entre ellas.
-        public List<OrdenieLote> ListarTurnosSinOrdenieLote()
+        // exactamente eso: el ordenie del turno, reconstruido con las vacas medidas y
+        // los litros que sumaron entre ellas.
+        public List<OrdenieLote> ListarTurnosSoloConControlIndividual()
         {
             List<OrdenieLote> _listaFaltantes = new List<OrdenieLote>();
 
@@ -1872,6 +1875,23 @@ namespace Tesis.Dominio
         // contexto para la pantalla del ordenie por lote: sirve para comparar lo medido
         // vaca por vaca contra lo que dio el tanque, pero no se le resta ni se le suma
         // al lote, porque es la misma leche.
+        // Litros de los turnos que se registraron unicamente con control individual, o
+        // sea sin ordenie por lote cargado. Esos turnos son ordenies completos: la
+        // unica diferencia es como se anotaron, asi que su leche es produccion.
+        public double SumarLitrosSinOrdenieLote(DateTime pDesde, DateTime pHasta)
+        {
+            double vTotal = 0;
+
+            foreach (OrdenieIndividual unOrdenie in this.FiltrarOrdeniesIndividualXFecha(pDesde, pHasta))
+            {
+                if (this.BuscarOrdenieLoteXFechaTurno(unOrdenie.Fecha, unOrdenie.Turno) == null)
+                {
+                    vTotal = vTotal + unOrdenie.Litros;
+                }
+            }
+            return vTotal;
+        }
+
         public double SumarLitrosIndividualesDelTurno(DateTime pFecha, string pTurno)
         {
             double vTotal = 0;
@@ -1939,16 +1959,27 @@ namespace Tesis.Dominio
         {
             double vTotal = 0;
 
+            // La produccion se resuelve turno por turno. El ordenie individual no es
+            // otra fuente de leche: es el mismo ordenie del turno, anotado vaca por vaca
+            // en lugar de con un solo numero. Entonces, si el turno tiene su ordenie por
+            // lote, la produccion es ese total -que ya incluye a las vacas medidas-; y
+            // si se registro unicamente con controles individuales, la produccion es la
+            // suma de esos controles, porque el ordenie ocurrio igual.
+            //
+            // Lo que nunca se hace es sumar las dos cosas en un mismo turno: eso
+            // contaria dos veces la leche de las vacas controladas.
             if (pModalidad == MODALIDAD_LOTE)
             {
                 foreach (OrdenieLote unOrdenie in this.FiltrarOrdeniesLoteXFecha(pDesde, pHasta))
                 {
                     vTotal = vTotal + unOrdenie.LitrosTotales;
                 }
+
+                vTotal = vTotal + this.SumarLitrosSinOrdenieLote(pDesde, pHasta);
             }
 
-            // El control individual no se suma a lo anterior: es un subconjunto medido
-            // de la misma leche. Sirve para saber cuanto dieron las vacas controladas.
+            // La otra vista: cuanta leche se midio vaca por vaca en el periodo. Es una
+            // porcion de la produccion, no un volumen aparte.
             if (pModalidad == MODALIDAD_INDIVIDUAL)
             {
                 vTotal = vTotal + this.SumarLitros(this.FiltrarOrdeniesIndividualXFecha(pDesde, pHasta));

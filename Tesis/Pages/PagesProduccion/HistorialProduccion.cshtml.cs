@@ -20,17 +20,17 @@ namespace Tesis.Pages.PagesProduccion
         public List<OrdenieLote> ordeniesLote = new List<OrdenieLote>();
         public List<OrdenieIndividual> ordeniesIndividual = new List<OrdenieIndividual>();
 
-        // Turnos con control individual cargado y sin ordenie de lote. Como la
-        // produccion del establecimiento sale de los lotes, esos turnos no suman nada:
-        // casi siempre significa que falto cargar el ordenie.
-        public List<OrdenieLote> turnosSinOrdenie = new List<OrdenieLote>();
+        // Turnos anotados unicamente vaca por vaca, sin el total del ordenie. Su
+        // produccion cuenta -es la suma de lo medido-, pero el dato es mas fragil que la
+        // lectura del tanque, asi que la pantalla los senala.
+        public List<OrdenieLote> turnosSoloIndividual = new List<OrdenieLote>();
 
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
             unaControladora.ListarAnimales();
 
-            turnosSinOrdenie = unaControladora.ListarTurnosSinOrdenieLote();
+            turnosSoloIndividual = unaControladora.ListarTurnosSoloConControlIndividual();
         }
 
         public void OnPostBuscar()
@@ -38,7 +38,7 @@ namespace Tesis.Pages.PagesProduccion
             Controladora unaControladora = new Controladora();
             unaControladora.ListarAnimales();
 
-            turnosSinOrdenie = unaControladora.ListarTurnosSinOrdenieLote();
+            turnosSoloIndividual = unaControladora.ListarTurnosSoloConControlIndividual();
 
             this.LeerFormulario();
 
