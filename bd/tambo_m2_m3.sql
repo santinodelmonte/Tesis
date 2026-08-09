@@ -86,8 +86,9 @@ CREATE TABLE lactancias (
 -- ---------------------------------------------------------------------
 -- ordenies_lote
 -- Un unico registro por fecha y turno: esa es la clave alterna.
--- litros_totales son los litros del ordenie masivo del lote, sin la
--- leche de las vacas que se controlaron aparte (ver ordenies_individual).
+-- litros_totales es la leche completa que salio en ese ordenie, tal como
+-- se lee del tanque, incluida la de las vacas que ademas se midieron una
+-- por una (ver ordenies_individual).
 -- ---------------------------------------------------------------------
 CREATE TABLE ordenies_lote (
     id_ordenie_lote INT(11)      NOT NULL AUTO_INCREMENT,
@@ -115,12 +116,19 @@ CREATE TABLE ordenie_lote_animales (
 
 -- ---------------------------------------------------------------------
 -- ordenies_individual
--- id_ordenie_lote admite nulo, a diferencia de lo que declara 2.2.5.4.
--- El control individual es puntual y no exige que el ordenie del lote de
--- esa fecha y turno ya este cargado. Ademas es lo que hace correcta la
--- regla de negocio de CU10 y CU11, que suman las dos fuentes para obtener
--- el neto: los litros del control individual no estan incluidos en los
--- litros_totales del lote.
+-- El ordenie individual no es otra fuente de leche: es el mismo ordenie
+-- del turno, anotado vaca por vaca en lugar de con un solo numero. Sus
+-- litros ya estan dentro de los litros_totales del lote de esa fecha y
+-- turno, cuando ese lote existe.
+--
+-- id_ordenie_lote admite nulo, a diferencia de lo que declara 2.2.5.4,
+-- porque el control no exige que el total del ordenie ya este cargado.
+-- Cuando el lote no existe, la produccion de ese turno es la suma de sus
+-- controles individuales: el ordenie ocurrio igual, lo unico distinto es
+-- como se anoto. La produccion se resuelve asi turno por turno, y nunca
+-- sumando las dos cosas dentro del mismo turno, que contaria dos veces la
+-- leche de las vacas controladas. Esta explicado en el desvio D1 de
+-- docs/desvios-modulos-2-y-3.md.
 -- ---------------------------------------------------------------------
 -- Un animal tiene un solo control por fecha y turno: la carga a mano en un dia de
 -- control lechero es propensa a la doble carga y la base la tiene que rechazar.
