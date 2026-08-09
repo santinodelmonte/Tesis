@@ -1,0 +1,135 @@
+@page
+@model Tesis.Pages.PagesProduccion.ControlLecheroModel
+@{
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="text-left">
+    <h1 class="display-4" style="font-size: 40px">Control Lechero</h1>
+    <p class="text-muted">
+        Carga de todo el rodeo en una sola pantalla. Se completan los litros de las vacas
+        medidas y las demás se dejan en blanco: solo se guardan las que tengan valor.
+    </p>
+    <hr />
+
+    @if (Model.guardados > 0)
+    {
+        <div class="alert alert-success">
+            Se guardaron @Model.guardados control(es).
+        </div>
+    }
+
+    @if (Model.rechazados.Any())
+    {
+        <div class="alert alert-warning">
+            <strong>No se pudieron guardar estos animales:</strong>
+            @(string.Join(", ", Model.rechazados))
+            <br />
+            El motivo habitual es que ya tenían un control cargado en esa fecha y turno, o
+            que la lactancia no estaba abierta en esa fecha.
+        </div>
+    }
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fecha">Fecha del control:</label>
+                    <input type="date" id="fecha" name="fecha" class="form-control"
+                           value="@Model.fecha.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="turno">Turno:</label>
+                    <select id="turno" name="turno" asp-for="turno" class="form-control">
+                        @foreach (string unTurno in Model.turnos)
+                        {
+                            <option value="@unTurno">@unTurno</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="filtroCaravana">Buscar caravana en la lista:</label>
+                    <input type="text" id="filtroCaravana" class="form-control"
+                           onkeyup="filtrarControl()" placeholder="Escriba para filtrar" />
+                </div>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+
+        @if (!Model.vacasEnOrdenie.Any())
+        {
+            <div class="alert alert-info">
+                No hay vacas en ordeñe. Las lactancias se abren con el parto o a mano desde
+                <a asp-page="./AltaLactancia">Lactancias</a>.
+            </div>
+        }
+        else
+        {
+            <p>@Model.vacasEnOrdenie.Count vaca(s) en ordeñe.</p>
+            <table id="tablaControl" data-paginar="25" class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Caravana</th>
+                        <th>Categoria</th>
+                        <th>Partos</th>
+                        <th>Litros del control</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Dominio.Hembra vaca in Model.vacasEnOrdenie)
+                    {
+                        <tr data-caravana="@vaca.NumCaravana">
+                            <td>@vaca.NumCaravana</td>
+                            <td>@(vaca.Categoria != null ? vaca.Categoria.Nombre : "")</td>
+                            <td>@vaca.NumeroPartos</td>
+                            <td>
+                                <input type="number" step="0.01" min="0" class="form-control"
+                                       name="litros_@vaca.IdAnimal"
+                                       value="@(Model.litrosCargados.ContainsKey(vaca.IdAnimal) ? Model.litrosCargados[vaca.IdAnimal].ToString() : "")" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="row">
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-success" asp-page-handler="Guardar">
+                        Guardar controles
+                    </button>
+                    <a class="btn btn-info" asp-page="./OrdenieIndividual">Carga individual</a>
+                    <a class="btn btn-warning" asp-page="/Index">Volver</a>
+                </div>
+            </div>
+        }
+    </form>
+</div>
+
+<script>
+    // Filtro por caravana sobre la tabla de carga. Marca las filas descartadas para que
+    // el paginador reparta solo las que quedaron visibles.
+    function filtrarControl() {
+        var texto = document.getElementById("filtroCaravana").value.toLowerCase();
+        var tabla = document.getElementById("tablaControl");
+        var filas = tabla.tBodies[0].rows;
+
+        for (var i = 0; i < filas.length; i++) {
+            var caravana = filas[i].getAttribute("data-caravana").toLowerCase();
+            var mostrar = texto === "" || caravana.indexOf(texto) !== -1;
+
+            filas[i].setAttribute("data-filtrada", mostrar ? "0" : "1");
+            filas[i].style.display = mostrar ? "" : "none";
+        }
+
+        if (typeof paginarTabla === "function") {
+            paginarTabla(tabla);
+        }
+    }
+</script>

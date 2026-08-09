@@ -66,6 +66,26 @@ namespace Tesis.Dominio
         // animal este en condiciones de ser servido.
         public const int EDAD_MINIMA_CELO_MESES = 9;
 
+        // Largo estandar de una lactancia. No es una decision del establecimiento: es la
+        // referencia con la que se comparan las vacas entre si y con la que trabaja
+        // cualquier control lechero.
+        public const int DIAS_LACTANCIA_ESTANDAR = 305;
+
+        // Valores por defecto de los dos parametros de trabajo reproductivo. El periodo
+        // de espera voluntario son los dias posparto que se dejan pasar antes de volver
+        // a servir; el otro, cuando el tacto ya se puede hacer.
+        public const int DIAS_ESPERA_VOLUNTARIA = 45;
+        public const int DIAS_PARA_TACTO = 35;
+
+        // Criterios con los que el sistema propone revisar una vaca para descarte. No
+        // deciden nada: arman la lista que la encargada mira. Se dejan como constantes
+        // porque son un criterio de analisis y no una regla de manejo diaria.
+        public const double PORCENTAJE_PRODUCCION_BAJA = 0.7;
+        public const int SERVICIOS_SIN_PRENIEZ_DESCARTE = 3;
+        public const int DIAS_ABIERTOS_EXCESIVOS = 150;
+        public const int DIAGNOSTICOS_REPETIDOS_DESCARTE = 3;
+        public const int PARTOS_PARA_DESCARTE = 7;
+
         // Rango en el que una gestacion Holando puede terminar en un parto viable. Por
         // debajo del minimo es un aborto o un prematuro, y por encima del maximo la
         // fecha de servicio o la de parto estan mal cargadas. La gestacion normal son
@@ -192,7 +212,7 @@ namespace Tesis.Dominio
             return new Configuracion(0, DIAS_SECADO_ANTES_PARTO, EDAD_MINIMA_SERVICIO_HEMBRA_MESES,
                 EDAD_CAMBIO_CATEGORIA_MESES, LITROS_MAXIMOS_INDIVIDUAL, ORDENIES_POR_DIA,
                 DIAS_ANTICIPACION_SECADO, DIAS_ANTICIPACION_PARTO, DIAS_ANTICIPACION_SANITARIA,
-                DIAS_ANTICIPACION_VENCIMIENTO);
+                DIAS_ANTICIPACION_VENCIMIENTO, DIAS_ESPERA_VOLUNTARIA, DIAS_PARA_TACTO);
         }
 
         public Configuracion ObtenerConfiguracion()
@@ -245,6 +265,17 @@ namespace Tesis.Dominio
                 || pConfiguracion.DiasAnticipacionSanitaria > 365 || pConfiguracion.DiasAnticipacionVencimiento > 365)
             {
                 return "Las ventanas de anticipacion no pueden superar los 365 dias.";
+            }
+
+            if (pConfiguracion.DiasEsperaVoluntaria < 1 || pConfiguracion.DiasEsperaVoluntaria > 200)
+            {
+                return "El periodo de espera voluntario tiene que estar entre 1 y 200 dias.";
+            }
+
+            // Antes de los 25 dias no hay gestacion palpable ni ecografia confiable
+            if (pConfiguracion.DiasParaTacto < 25 || pConfiguracion.DiasParaTacto > 200)
+            {
+                return "Los dias para el tacto tienen que estar entre 25 y 200.";
             }
 
             return "";
@@ -1683,23 +1714,57 @@ namespace Tesis.Dominio
         // Litros del turno: los del ordenie masivo mas los de las vacas que se
         // controlaron individualmente ese mismo dia y turno, que no estan incluidas en
         // litros_totales.
-        public double CalcularTotalDiario(OrdenieLote pOrdenieLote)
+        // Turnos que se registraron unicamente con control individual, sin el total del
+        // ordenie. Su produccion es la suma de lo medido vaca por vaca y esta contada
+        // como tal, asi que no son un faltante: son otra forma de anotar el mismo
+        // ordenie.
+        //
+        // Se listan igual porque el dato es mas fragil que la lectura del tanque -si
+        // una vaca no se midio, esos litros no estan en ningun lado-, y porque saber
+        // que un turno no tiene total ayuda a interpretar los numeros del periodo.
+        //
+        // Se devuelven como OrdenieLote sin guardar -el identificador en cero- porque es
+        // exactamente eso: el ordenie del turno, reconstruido con las vacas medidas y
+        // los litros que sumaron entre ellas.
+        public List<OrdenieLote> ListarTurnosSoloConControlIndividual()
         {
-            if (pOrdenieLote == null)
-            {
-                return 0;
-            }
+            List<OrdenieLote> _listaFaltantes = new List<OrdenieLote>();
 
-            double vTotal = pOrdenieLote.LitrosTotales;
-
-            foreach (OrdenieIndividual unOrdenie in mListaOrdeniesIndividual)
+            foreach (OrdenieIndividual unOrdenie in this.ListarOrdeniesIndividual())
             {
-                if (unOrdenie.Fecha.Date == pOrdenieLote.Fecha.Date && unOrdenie.Turno == pOrdenieLote.Turno)
+                if (this.BuscarOrdenieLoteXFechaTurno(unOrdenie.Fecha, unOrdenie.Turno) != null)
                 {
-                    vTotal = vTotal + unOrdenie.Litros;
+                    continue;
+                }
+
+                OrdenieLote unFaltante = this.BuscarFaltante(_listaFaltantes, unOrdenie.Fecha, unOrdenie.Turno);
+
+                if (unFaltante == null)
+                {
+                    unFaltante = new OrdenieLote(0, unOrdenie.Fecha.Date, unOrdenie.Turno, 0, new List<Hembra>());
+                    _listaFaltantes.Add(unFaltante);
+                }
+
+                unFaltante.LitrosTotales = unFaltante.LitrosTotales + unOrdenie.Litros;
+
+                if (unOrdenie.Animal != null)
+                {
+                    unFaltante.Animales.Add(unOrdenie.Animal);
                 }
             }
-            return vTotal;
+            return _listaFaltantes;
+        }
+
+        private OrdenieLote BuscarFaltante(List<OrdenieLote> pLista, DateTime pFecha, string pTurno)
+        {
+            foreach (OrdenieLote unOrdenie in pLista)
+            {
+                if (unOrdenie.Fecha.Date == pFecha.Date && unOrdenie.Turno == pTurno)
+                {
+                    return unOrdenie;
+                }
+            }
+            return null;
         }
 
         public List<OrdenieLote> FiltrarOrdeniesLoteXFecha(DateTime pDesde, DateTime pHasta)
@@ -1806,8 +1871,27 @@ namespace Tesis.Dominio
             return null;
         }
 
-        // Litros ya cargados como control individual en ese turno. El ordenie por lote
-        // los necesita para poder descontarlos del total del tanque.
+        // Litros ya cargados como control individual en ese turno. Es informacion de
+        // contexto para la pantalla del ordenie por lote: sirve para comparar lo medido
+        // vaca por vaca contra lo que dio el tanque, pero no se le resta ni se le suma
+        // al lote, porque es la misma leche.
+        // Litros de los turnos que se registraron unicamente con control individual, o
+        // sea sin ordenie por lote cargado. Esos turnos son ordenies completos: la
+        // unica diferencia es como se anotaron, asi que su leche es produccion.
+        public double SumarLitrosSinOrdenieLote(DateTime pDesde, DateTime pHasta)
+        {
+            double vTotal = 0;
+
+            foreach (OrdenieIndividual unOrdenie in this.FiltrarOrdeniesIndividualXFecha(pDesde, pHasta))
+            {
+                if (this.BuscarOrdenieLoteXFechaTurno(unOrdenie.Fecha, unOrdenie.Turno) == null)
+                {
+                    vTotal = vTotal + unOrdenie.Litros;
+                }
+            }
+            return vTotal;
+        }
+
         public double SumarLitrosIndividualesDelTurno(DateTime pFecha, string pTurno)
         {
             double vTotal = 0;
@@ -1864,23 +1948,39 @@ namespace Tesis.Dominio
         // CU10. Las tres modalidades del historial. En "Totales" se suman las dos
         // fuentes sin miedo a duplicar: los litros del control individual no estan
         // incluidos en los del lote.
-        public const string MODALIDAD_INDIVIDUAL = "Individual";
+        // Las dos formas de mirar la produccion. No son dos sumandos: el ordenie por
+        // lote es la leche que salio del tambo -el tanque completo- y el control
+        // individual es la medicion, vaca por vaca, de ese mismo ordenie. Sumarlos
+        // contaria dos veces la misma leche.
         public const string MODALIDAD_LOTE = "Lote";
-        public const string MODALIDAD_TOTALES = "Totales";
+        public const string MODALIDAD_INDIVIDUAL = "Individual";
 
         public double CalcularProduccionEnRango(DateTime pDesde, DateTime pHasta, string pModalidad)
         {
             double vTotal = 0;
 
-            if (pModalidad == MODALIDAD_LOTE || pModalidad == MODALIDAD_TOTALES)
+            // La produccion se resuelve turno por turno. El ordenie individual no es
+            // otra fuente de leche: es el mismo ordenie del turno, anotado vaca por vaca
+            // en lugar de con un solo numero. Entonces, si el turno tiene su ordenie por
+            // lote, la produccion es ese total -que ya incluye a las vacas medidas-; y
+            // si se registro unicamente con controles individuales, la produccion es la
+            // suma de esos controles, porque el ordenie ocurrio igual.
+            //
+            // Lo que nunca se hace es sumar las dos cosas en un mismo turno: eso
+            // contaria dos veces la leche de las vacas controladas.
+            if (pModalidad == MODALIDAD_LOTE)
             {
                 foreach (OrdenieLote unOrdenie in this.FiltrarOrdeniesLoteXFecha(pDesde, pHasta))
                 {
                     vTotal = vTotal + unOrdenie.LitrosTotales;
                 }
+
+                vTotal = vTotal + this.SumarLitrosSinOrdenieLote(pDesde, pHasta);
             }
 
-            if (pModalidad == MODALIDAD_INDIVIDUAL || pModalidad == MODALIDAD_TOTALES)
+            // La otra vista: cuanta leche se midio vaca por vaca en el periodo. Es una
+            // porcion de la produccion, no un volumen aparte.
+            if (pModalidad == MODALIDAD_INDIVIDUAL)
             {
                 vTotal = vTotal + this.SumarLitros(this.FiltrarOrdeniesIndividualXFecha(pDesde, pHasta));
             }
@@ -1894,7 +1994,7 @@ namespace Tesis.Dominio
             DateTime vDesde = new DateTime(pAnio, pMes, 1);
             DateTime vHasta = vDesde.AddMonths(1).AddDays(-1);
 
-            return this.CalcularProduccionEnRango(vDesde, vHasta, MODALIDAD_TOTALES);
+            return this.CalcularProduccionEnRango(vDesde, vHasta, MODALIDAD_LOTE);
         }
         #endregion
 
@@ -3741,6 +3841,591 @@ namespace Tesis.Dominio
             unPlan.Categorias = pPlan.Categorias;
 
             return true;
+        }
+        #endregion
+
+        #region INDICADORES
+        // Los numeros con los que se sabe si el tambo va bien. Ninguno se almacena: se
+        // calculan sobre lo registrado, que es lo que corresponde a un dato derivado.
+
+        // Los controles de una lactancia agrupados por jornada y ordenados por fecha.
+        // Una vaca puede tener un control por turno el mismo dia; lo que interesa es lo
+        // que dio ese dia.
+        public List<ControlDiario> ListarControlesDiarios(Lactancia pLactancia)
+        {
+            List<ControlDiario> _listaControles = new List<ControlDiario>();
+
+            if (pLactancia == null)
+            {
+                return _listaControles;
+            }
+
+            foreach (OrdenieIndividual unOrdenie in this.FiltrarOrdeniesXLactancia(pLactancia.IdLactancia))
+            {
+                ControlDiario unControl = this.BuscarControlDiario(_listaControles, unOrdenie.Fecha);
+
+                if (unControl == null)
+                {
+                    unControl = new ControlDiario(unOrdenie.Fecha.Date, 0);
+                    this.InsertarControlOrdenado(_listaControles, unControl);
+                }
+                unControl.Litros = unControl.Litros + unOrdenie.Litros;
+            }
+            return _listaControles;
+        }
+
+        // Produccion estimada de la lactancia por el metodo de intervalos de control.
+        //
+        // Sumar los controles daria la leche de diez jornadas sueltas y no la de la
+        // lactancia: el control lechero se hace una vez por mes, asi que cada medicion
+        // representa a los dias que la rodean. Se multiplica el promedio de dos
+        // controles consecutivos por los dias que hay entre ellos, se agrega el tramo
+        // del parto al primer control y el del ultimo control al secado -o a hoy, si la
+        // vaca sigue en ordenie-.
+        //
+        // Es el mismo criterio con el que trabaja cualquier control lechero oficial.
+        public double EstimarProduccionLactancia(Lactancia pLactancia)
+        {
+            List<ControlDiario> _listaControles = this.ListarControlesDiarios(pLactancia);
+
+            if (_listaControles.Count == 0)
+            {
+                return 0;
+            }
+
+            double vTotal = 0;
+
+            // Del parto al primer control, con el valor de ese primer control
+            double vDiasIniciales = (_listaControles[0].Fecha.Date - pLactancia.FechaInicio.Date).TotalDays;
+            if (vDiasIniciales > 0)
+            {
+                vTotal = vTotal + _listaControles[0].Litros * vDiasIniciales;
+            }
+
+            for (int vIndice = 0; vIndice < _listaControles.Count - 1; vIndice = vIndice + 1)
+            {
+                double vDias = (_listaControles[vIndice + 1].Fecha.Date - _listaControles[vIndice].Fecha.Date).TotalDays;
+                double vPromedio = (_listaControles[vIndice].Litros + _listaControles[vIndice + 1].Litros) / 2;
+
+                vTotal = vTotal + vPromedio * vDias;
+            }
+
+            // Del ultimo control al cierre de la lactancia
+            ControlDiario unUltimo = _listaControles[_listaControles.Count - 1];
+            DateTime vFin = pLactancia.FechaSecado != DateTime.MinValue ? pLactancia.FechaSecado : DateTime.Now;
+            double vDiasFinales = (vFin.Date - unUltimo.Fecha.Date).TotalDays;
+
+            if (vDiasFinales > 0)
+            {
+                vTotal = vTotal + unUltimo.Litros * vDiasFinales;
+            }
+
+            return vTotal;
+        }
+
+        // Dias en leche: los que la vaca lleva en esta lactancia. Si ya se seco, los que
+        // duro.
+        public int DiasEnLeche(Lactancia pLactancia)
+        {
+            if (pLactancia == null)
+            {
+                return 0;
+            }
+
+            DateTime vFin = pLactancia.FechaSecado != DateTime.MinValue ? pLactancia.FechaSecado : DateTime.Now;
+            int vDias = (int)(vFin.Date - pLactancia.FechaInicio.Date).TotalDays;
+
+            return vDias < 0 ? 0 : vDias;
+        }
+
+        public double PromedioDiarioLactancia(Lactancia pLactancia)
+        {
+            int vDias = this.DiasEnLeche(pLactancia);
+
+            if (vDias <= 0)
+            {
+                return 0;
+            }
+            return this.EstimarProduccionLactancia(pLactancia) / vDias;
+        }
+
+        // Proyeccion a 305 dias: lo que la vaca daria si sostuviera hasta el final de la
+        // lactancia estandar el ultimo nivel de produccion controlado. Es una proyeccion
+        // lineal y por lo tanto optimista -la curva de lactancia baja sobre el final-,
+        // pero alcanza para comparar vacas entre si, que es para lo que se usa.
+        public double ProyectarProduccion305(Lactancia pLactancia)
+        {
+            double vEstimada = this.EstimarProduccionLactancia(pLactancia);
+            int vDias = this.DiasEnLeche(pLactancia);
+
+            if (vDias <= 0 || vDias >= DIAS_LACTANCIA_ESTANDAR)
+            {
+                return vEstimada;
+            }
+
+            List<ControlDiario> _listaControles = this.ListarControlesDiarios(pLactancia);
+            if (_listaControles.Count == 0)
+            {
+                return vEstimada;
+            }
+
+            double vUltimo = _listaControles[_listaControles.Count - 1].Litros;
+            return vEstimada + vUltimo * (DIAS_LACTANCIA_ESTANDAR - vDias);
+        }
+
+        public Parto UltimoParto(Hembra pHembra)
+        {
+            Parto unUltimo = null;
+
+            if (pHembra == null)
+            {
+                return null;
+            }
+
+            foreach (Parto unParto in this.FiltrarPartosXHembra(pHembra.IdAnimal))
+            {
+                if (unUltimo == null || unParto.FechaParto > unUltimo.FechaParto)
+                {
+                    unUltimo = unParto;
+                }
+            }
+            return unUltimo;
+        }
+
+        // Dias abiertos: los que pasan entre el parto y la concepcion. Es el indicador
+        // central de la eficiencia reproductiva, porque cada dia abierto de mas es un
+        // dia que la vaca pasa dando menos leche y sin preparar la lactancia siguiente.
+        //
+        // Mientras la vaca no queda prenada el numero sigue corriendo, y eso tambien es
+        // informacion: una vaca con muchos dias abiertos sin preniez es la que hay que
+        // mirar.
+        public int DiasAbiertos(Hembra pHembra)
+        {
+            Parto unParto = this.UltimoParto(pHembra);
+
+            if (unParto == null)
+            {
+                return 0;
+            }
+
+            DateTime vHasta = DateTime.Now;
+            Servicio unServicio = this.ServicioVigente(pHembra);
+
+            if (pHembra.EstadoReproductivo == Hembra.PRENADA && unServicio != null)
+            {
+                vHasta = unServicio.FechaServicio;
+            }
+
+            int vDias = (int)(vHasta.Date - unParto.FechaParto.Date).TotalDays;
+            return vDias < 0 ? 0 : vDias;
+        }
+
+        public bool TieneDiasAbiertosCerrados(Hembra pHembra)
+        {
+            if (pHembra != null && pHembra.EstadoReproductivo == Hembra.PRENADA)
+            {
+                return true;
+            }
+            return false;
+
+        }
+
+        // Intervalo entre partos: lo que tarda la vaca en volver a parir. El objetivo de
+        // un tambo esta alrededor de los trece meses; si se estira, la vaca produce
+        // menos leche por anio de vida.
+        public int IntervaloEntrePartos(Hembra pHembra)
+        {
+            Parto unUltimo = this.UltimoParto(pHembra);
+
+            if (unUltimo == null)
+            {
+                return 0;
+            }
+
+            Parto unAnterior = null;
+            foreach (Parto unParto in this.FiltrarPartosXHembra(pHembra.IdAnimal))
+            {
+                if (unParto.FechaParto < unUltimo.FechaParto
+                    && (unAnterior == null || unParto.FechaParto > unAnterior.FechaParto))
+                {
+                    unAnterior = unParto;
+                }
+            }
+
+            if (unAnterior == null)
+            {
+                return 0;
+            }
+            return (int)(unUltimo.FechaParto.Date - unAnterior.FechaParto.Date).TotalDays;
+        }
+
+        // Servicios que lleva la vaca desde su ultimo parto. Con tres o mas sin preniez,
+        // la vaca ya es cara.
+        public int ServiciosDesdeUltimoParto(Hembra pHembra)
+        {
+            Parto unParto = this.UltimoParto(pHembra);
+            DateTime vDesde = unParto != null ? unParto.FechaParto : DateTime.MinValue;
+            int vCantidad = 0;
+
+            foreach (Servicio unServicio in this.FiltrarServiciosXHembra(pHembra.IdAnimal))
+            {
+                if (unServicio.FechaServicio > vDesde)
+                {
+                    vCantidad = vCantidad + 1;
+                }
+            }
+            return vCantidad;
+        }
+
+        // Servicios por preniez del rodeo: cuantos servicios hicieron falta, en
+        // promedio, por cada preniez confirmada. Es lo que mide el gasto en pajuelas y
+        // el acierto en la deteccion de celo.
+        public double ServiciosPorPrenez()
+        {
+            int vServicios = 0;
+            int vPrenieces = 0;
+
+            foreach (Servicio unServicio in this.ListarServicios())
+            {
+                vServicios = vServicios + 1;
+
+                Tacto unTacto = this.UltimoTacto(unServicio);
+                if (unTacto != null && this.EsPositivo(unTacto))
+                {
+                    vPrenieces = vPrenieces + 1;
+                }
+            }
+
+            if (vPrenieces == 0)
+            {
+                return 0;
+            }
+            return (double)vServicios / vPrenieces;
+        }
+
+        public double PromedioDiasAbiertos()
+        {
+            int vTotal = 0;
+            int vCantidad = 0;
+
+            foreach (Hembra unaHembra in this.ListarHembras())
+            {
+                if (!unaHembra.Activo || this.UltimoParto(unaHembra) == null)
+                {
+                    continue;
+                }
+
+                vTotal = vTotal + this.DiasAbiertos(unaHembra);
+                vCantidad = vCantidad + 1;
+            }
+
+            if (vCantidad == 0)
+            {
+                return 0;
+            }
+            return (double)vTotal / vCantidad;
+        }
+
+        public double PromedioIntervaloEntrePartos()
+        {
+            int vTotal = 0;
+            int vCantidad = 0;
+
+            foreach (Hembra unaHembra in this.ListarHembras())
+            {
+                int vIntervalo = this.IntervaloEntrePartos(unaHembra);
+
+                if (vIntervalo > 0)
+                {
+                    vTotal = vTotal + vIntervalo;
+                    vCantidad = vCantidad + 1;
+                }
+            }
+
+            if (vCantidad == 0)
+            {
+                return 0;
+            }
+            return (double)vTotal / vCantidad;
+        }
+
+        // Promedio de litros por vaca y por dia del rodeo en ordenie. Es el numero que
+        // se mira todos los dias.
+        public double PromedioDiarioRodeo()
+        {
+            double vTotal = 0;
+            int vCantidad = 0;
+
+            foreach (Lactancia unaLactancia in this.ListarLactanciasActivas())
+            {
+                double vPromedio = this.PromedioDiarioLactancia(unaLactancia);
+
+                if (vPromedio > 0)
+                {
+                    vTotal = vTotal + vPromedio;
+                    vCantidad = vCantidad + 1;
+                }
+            }
+
+            if (vCantidad == 0)
+            {
+                return 0;
+            }
+            return vTotal / vCantidad;
+        }
+
+        public double PromedioDiasEnLeche()
+        {
+            int vTotal = 0;
+            int vCantidad = 0;
+
+            foreach (Lactancia unaLactancia in this.ListarLactanciasActivas())
+            {
+                vTotal = vTotal + this.DiasEnLeche(unaLactancia);
+                vCantidad = vCantidad + 1;
+            }
+
+            if (vCantidad == 0)
+            {
+                return 0;
+            }
+            return (double)vTotal / vCantidad;
+        }
+
+        public int ContarHembrasXEstadoProductivo(string pEstadoProductivo)
+        {
+            int vCantidad = 0;
+
+            foreach (Hembra unaHembra in this.ListarHembras())
+            {
+                if (unaHembra.Activo && unaHembra.EstadoProductivo == pEstadoProductivo)
+                {
+                    vCantidad = vCantidad + 1;
+                }
+            }
+            return vCantidad;
+        }
+
+        public int ContarHembrasXEstadoReproductivo(string pEstadoReproductivo)
+        {
+            int vCantidad = 0;
+
+            foreach (Hembra unaHembra in this.ListarHembras())
+            {
+                if (unaHembra.Activo && unaHembra.EstadoReproductivo == pEstadoReproductivo)
+                {
+                    vCantidad = vCantidad + 1;
+                }
+            }
+            return vCantidad;
+        }
+
+        private ControlDiario BuscarControlDiario(List<ControlDiario> pLista, DateTime pFecha)
+        {
+            foreach (ControlDiario unControl in pLista)
+            {
+                if (unControl.Fecha.Date == pFecha.Date)
+                {
+                    return unControl;
+                }
+            }
+            return null;
+        }
+
+        // Los controles se guardan ordenados por fecha ascendente: el calculo por
+        // intervalos recorre la lactancia de principio a fin.
+        private void InsertarControlOrdenado(List<ControlDiario> pLista, ControlDiario pControl)
+        {
+            int vPosicion = 0;
+
+            while (vPosicion < pLista.Count && pLista[vPosicion].Fecha.Date <= pControl.Fecha.Date)
+            {
+                vPosicion = vPosicion + 1;
+            }
+            pLista.Insert(vPosicion, pControl);
+        }
+        #endregion
+
+        #region LISTAS DE TRABAJO
+        // Las tres listas que arman el trabajo de la semana. Son filtros sobre datos que
+        // ya estan registrados: lo que aportan es no tener que acordarse animal por
+        // animal.
+
+        // Servicios que ya estan en condiciones de tactarse y todavia no tienen tacto.
+        // Es la lista con la que se arma la visita del veterinario.
+        public List<Servicio> ListarTactosPendientes()
+        {
+            List<Servicio> _listaPendientes = new List<Servicio>();
+            int vDiasParaTacto = this.Parametros().DiasParaTacto;
+
+            foreach (Hembra unaHembra in this.ListarHembras())
+            {
+                // Solo las servidas: la prenada ya se tacto y la vacia no tiene servicio
+                // pendiente de confirmar.
+                if (!unaHembra.Activo || unaHembra.EstadoReproductivo != Hembra.SERVIDA)
+                {
+                    continue;
+                }
+
+                Servicio unServicio = this.ServicioVigente(unaHembra);
+                if (unServicio == null || this.UltimoTacto(unServicio) != null)
+                {
+                    continue;
+                }
+
+                if (DateTime.Now.Date >= unServicio.FechaServicio.Date.AddDays(vDiasParaTacto))
+                {
+                    _listaPendientes.Add(unServicio);
+                }
+            }
+            return _listaPendientes;
+        }
+
+        // Vacas en condiciones de recibir servicio: las que ya pasaron el periodo de
+        // espera voluntario despues de parir, y las vaquillonas que alcanzaron la edad
+        // minima y nunca fueron servidas.
+        public List<Hembra> ListarVacasParaServir()
+        {
+            List<Hembra> _listaParaServir = new List<Hembra>();
+
+            foreach (Hembra unaHembra in this.ListarHembras())
+            {
+                if (this.EstaParaServir(unaHembra))
+                {
+                    _listaParaServir.Add(unaHembra);
+                }
+            }
+            return _listaParaServir;
+        }
+
+        public bool EstaParaServir(Hembra pHembra)
+        {
+            // Vacia quiere decir sin servicio vigente ni preniez confirmada
+            if (pHembra == null || !pHembra.Activo || pHembra.EstadoReproductivo != Hembra.VACIA)
+            {
+                return false;
+            }
+
+            Parto unParto = this.UltimoParto(pHembra);
+
+            // Nunca pario: es una vaquillona, y entra cuando alcanza la edad minima
+            if (unParto == null)
+            {
+                return this.CalcularEdadMeses(pHembra) >= this.Parametros().EdadMinimaServicioMeses;
+            }
+
+            return DateTime.Now.Date >= unParto.FechaParto.Date.AddDays(this.Parametros().DiasEsperaVoluntaria);
+        }
+
+        // Por que la vaca aparece en la lista, para que la pantalla lo muestre sin
+        // rehacer la cuenta.
+        public string MotivoParaServir(Hembra pHembra)
+        {
+            Parto unParto = this.UltimoParto(pHembra);
+
+            if (unParto == null)
+            {
+                return "Vaquillona de " + this.CalcularEdadMeses(pHembra) + " meses, sin servicios registrados";
+            }
+
+            int vDias = (int)(DateTime.Now.Date - unParto.FechaParto.Date).TotalDays;
+            return "Pario hace " + vDias + " dias";
+        }
+
+        // Vacas que conviene revisar para descarte. El sistema no decide: junta lo que
+        // ya sabe de cada una y muestra los motivos. La lista sale ordenada por cantidad
+        // de motivos, que es una forma simple de poner primero los casos mas claros.
+        public List<CandidataDescarte> ListarCandidatasDescarte()
+        {
+            List<CandidataDescarte> _listaCandidatas = new List<CandidataDescarte>();
+            double vPromedioRodeo = this.PromedioDiarioRodeo();
+
+            foreach (Hembra unaHembra in this.ListarHembras())
+            {
+                if (!unaHembra.Activo)
+                {
+                    continue;
+                }
+
+                List<string> _listaMotivos = this.MotivosDeDescarte(unaHembra, vPromedioRodeo);
+
+                if (_listaMotivos.Count > 0)
+                {
+                    this.InsertarCandidataOrdenada(_listaCandidatas,
+                        new CandidataDescarte(unaHembra, _listaMotivos));
+                }
+            }
+            return _listaCandidatas;
+        }
+
+        private List<string> MotivosDeDescarte(Hembra pHembra, double pPromedioRodeo)
+        {
+            List<string> _listaMotivos = new List<string>();
+
+            // Produccion muy por debajo del rodeo. Se compara contra la lactancia en
+            // curso, y solo si hay controles: sin control lechero no hay con que juzgar.
+            Lactancia unaLactancia = this.LactanciaActual(pHembra);
+            if (unaLactancia != null && pPromedioRodeo > 0)
+            {
+                double vPromedio = this.PromedioDiarioLactancia(unaLactancia);
+
+                if (vPromedio > 0 && vPromedio < pPromedioRodeo * PORCENTAJE_PRODUCCION_BAJA)
+                {
+                    _listaMotivos.Add("Produce " + vPromedio.ToString("N1") + " litros por dia, contra "
+                        + pPromedioRodeo.ToString("N1") + " del rodeo.");
+                }
+            }
+
+            int vServicios = this.ServiciosDesdeUltimoParto(pHembra);
+            if (vServicios >= SERVICIOS_SIN_PRENIEZ_DESCARTE && pHembra.EstadoReproductivo != Hembra.PRENADA)
+            {
+                _listaMotivos.Add(vServicios + " servicios desde el ultimo parto sin preniez confirmada.");
+            }
+
+            int vDiasAbiertos = this.DiasAbiertos(pHembra);
+            if (vDiasAbiertos > DIAS_ABIERTOS_EXCESIVOS && !this.TieneDiasAbiertosCerrados(pHembra))
+            {
+                _listaMotivos.Add(vDiasAbiertos + " dias abiertos.");
+            }
+
+            int vDiagnosticos = this.ContarDiagnosticosDelAnio(pHembra);
+            if (vDiagnosticos >= DIAGNOSTICOS_REPETIDOS_DESCARTE)
+            {
+                _listaMotivos.Add(vDiagnosticos + " diagnosticos sanitarios en el ultimo anio.");
+            }
+
+            if (pHembra.NumeroPartos >= PARTOS_PARA_DESCARTE)
+            {
+                _listaMotivos.Add(pHembra.NumeroPartos + " partos: es una vaca de edad avanzada.");
+            }
+
+            return _listaMotivos;
+        }
+
+        private int ContarDiagnosticosDelAnio(Hembra pHembra)
+        {
+            int vCantidad = 0;
+            DateTime vDesde = DateTime.Now.Date.AddYears(-1);
+
+            foreach (Diagnostico unDiagnostico in this.FiltrarDiagnosticosXAnimal(pHembra.IdAnimal))
+            {
+                if (unDiagnostico.FechaDiagnostico.Date >= vDesde)
+                {
+                    vCantidad = vCantidad + 1;
+                }
+            }
+            return vCantidad;
+        }
+
+        private void InsertarCandidataOrdenada(List<CandidataDescarte> pLista, CandidataDescarte pCandidata)
+        {
+            int vPosicion = 0;
+
+            while (vPosicion < pLista.Count && pLista[vPosicion].Motivos.Count >= pCandidata.Motivos.Count)
+            {
+                vPosicion = vPosicion + 1;
+            }
+            pLista.Insert(vPosicion, pCandidata);
         }
         #endregion
 

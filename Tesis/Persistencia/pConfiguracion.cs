@@ -32,7 +32,9 @@ namespace Tesis.Persistencia
                 int.Parse(fila["dias_anticipacion_secado"].ToString()),
                 int.Parse(fila["dias_anticipacion_parto"].ToString()),
                 int.Parse(fila["dias_anticipacion_sanitaria"].ToString()),
-                int.Parse(fila["dias_anticipacion_vencimiento"].ToString())
+                int.Parse(fila["dias_anticipacion_vencimiento"].ToString()),
+                int.Parse(fila["dias_espera_voluntaria"].ToString()),
+                int.Parse(fila["dias_para_tacto"].ToString())
                 );
         }
 
@@ -48,7 +50,9 @@ namespace Tesis.Persistencia
                 + "dias_anticipacion_secado = @dias_anticipacion_secado,"
                 + "dias_anticipacion_parto = @dias_anticipacion_parto,"
                 + "dias_anticipacion_sanitaria = @dias_anticipacion_sanitaria,"
-                + "dias_anticipacion_vencimiento = @dias_anticipacion_vencimiento "
+                + "dias_anticipacion_vencimiento = @dias_anticipacion_vencimiento,"
+                + "dias_espera_voluntaria = @dias_espera_voluntaria,"
+                + "dias_para_tacto = @dias_para_tacto "
                 + "WHERE id_configuracion = @id_configuracion";
 
             Dictionary<string, object?> parametros = new Dictionary<string, object?>
@@ -62,6 +66,8 @@ namespace Tesis.Persistencia
                 { "@dias_anticipacion_parto", pConfiguracion.DiasAnticipacionParto },
                 { "@dias_anticipacion_sanitaria", pConfiguracion.DiasAnticipacionSanitaria },
                 { "@dias_anticipacion_vencimiento", pConfiguracion.DiasAnticipacionVencimiento },
+                { "@dias_espera_voluntaria", pConfiguracion.DiasEsperaVoluntaria },
+                { "@dias_para_tacto", pConfiguracion.DiasParaTacto },
                 { "@id_configuracion", pConfiguracion.IdConfiguracion }
             };
 

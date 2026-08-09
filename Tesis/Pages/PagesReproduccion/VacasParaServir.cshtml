@@ -1,0 +1,88 @@
+@page
+@model Tesis.Pages.PagesReproduccion.VacasParaServirModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Vacas para Servir</h1>
+    <p class="text-center text-muted">
+        Hembras vacías que ya pasaron los @Model.diasEsperaVoluntaria días de espera
+        voluntaria posparto, y vaquillonas que alcanzaron la edad mínima de servicio. El
+        período de espera se configura en
+        <a asp-page="/PagesConfiguracion/Configuracion">Configuración</a>.
+    </p>
+
+    @if (!Model.paraServir.Any())
+    {
+        <div class="alert alert-success">
+            No hay hembras esperando servicio.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-primary">
+            <strong>@Model.paraServir.Count hembra(s) en condiciones de ser servidas.</strong>
+            Las de más días abiertos son las que más urge servir: cada día de más es leche
+            que la vaca no va a dar el año que viene.
+        </div>
+        <table data-paginar="10" class="table text-center">
+            <thead>
+                <tr>
+                    <th>Caravana</th>
+                    <th>Categoria</th>
+                    <th>Motivo</th>
+                    <th>Dias abiertos</th>
+                    <th>Ultimo celo detectado</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.paraServir.Count; i++)
+                {
+                    <tr>
+                        <td>@Model.paraServir[i].NumCaravana</td>
+                        <td>
+                            @(Model.paraServir[i].Categoria != null
+                                ? Model.paraServir[i].Categoria.Nombre : "")
+                        </td>
+                        <td>@Model.motivos[i]</td>
+                        <td>
+                            @if (Model.diasAbiertos[i] > 0)
+                            {
+                                <span class="badge @(Model.diasAbiertos[i] > 150 ? "bg-danger" : "bg-secondary")">
+                                    @Model.diasAbiertos[i]
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">&mdash;</span>
+                            }
+                        </td>
+                        <td>
+                            @if (Model.ultimoCelo[i] != "")
+                            {
+                                @Model.ultimoCelo[i]
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sin celos registrados</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-success btn-sm" asp-page="./RegistrarServicio"
+                               asp-route-caravana="@Model.paraServir[i].NumCaravana">
+                                Registrar Servicio
+                            </a>
+                            <a class="btn btn-secondary btn-sm" asp-page="./RegistrarCelo">Celo</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-warning" asp-page="/Index">Volver</a>
+        </div>
+    </div>
+</div>

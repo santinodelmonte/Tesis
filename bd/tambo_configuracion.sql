@@ -41,6 +41,8 @@ CREATE TABLE configuracion (
     dias_anticipacion_parto       INT(11)      NOT NULL DEFAULT 15,
     dias_anticipacion_sanitaria   INT(11)      NOT NULL DEFAULT 30,
     dias_anticipacion_vencimiento INT(11)      NOT NULL DEFAULT 30,
+    dias_espera_voluntaria        INT(11)      NOT NULL DEFAULT 45,
+    dias_para_tacto               INT(11)      NOT NULL DEFAULT 35,
     PRIMARY KEY (id_configuracion)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

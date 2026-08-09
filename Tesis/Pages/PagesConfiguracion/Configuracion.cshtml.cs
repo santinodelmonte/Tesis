@@ -26,6 +26,10 @@ namespace Tesis.Pages.PagesConfiguracion
         public int diasAnticipacionSanitaria { get; set; } = 0;
         [BindProperty]
         public int diasAnticipacionVencimiento { get; set; } = 0;
+        [BindProperty]
+        public int diasEsperaVoluntaria { get; set; } = 0;
+        [BindProperty]
+        public int diasParaTacto { get; set; } = 0;
 
         // Constantes que no se configuran: son biologia y no decisiones. Se muestran
         // para que quede claro que el sistema las usa y por que no estan editables.
@@ -74,7 +78,7 @@ namespace Tesis.Pages.PagesConfiguracion
             return new Configuracion(0, diasSecadoAntesParto, edadMinimaServicioMeses,
                 edadCambioCategoriaMeses, litrosMaximosIndividual, ordeniesPorDia,
                 diasAnticipacionSecado, diasAnticipacionParto, diasAnticipacionSanitaria,
-                diasAnticipacionVencimiento);
+                diasAnticipacionVencimiento, diasEsperaVoluntaria, diasParaTacto);
         }
 
         private void LeerConfiguracion(Configuracion pConfiguracion)
@@ -88,6 +92,8 @@ namespace Tesis.Pages.PagesConfiguracion
             diasAnticipacionParto = pConfiguracion.DiasAnticipacionParto;
             diasAnticipacionSanitaria = pConfiguracion.DiasAnticipacionSanitaria;
             diasAnticipacionVencimiento = pConfiguracion.DiasAnticipacionVencimiento;
+            diasEsperaVoluntaria = pConfiguracion.DiasEsperaVoluntaria;
+            diasParaTacto = pConfiguracion.DiasParaTacto;
         }
 
         private void LeerFormulario()
@@ -127,6 +133,14 @@ namespace Tesis.Pages.PagesConfiguracion
             int vVencimiento = 0;
             int.TryParse(Request.Form["diasAnticipacionVencimiento"], out vVencimiento);
             diasAnticipacionVencimiento = vVencimiento;
+
+            int vEspera = 0;
+            int.TryParse(Request.Form["diasEsperaVoluntaria"], out vEspera);
+            diasEsperaVoluntaria = vEspera;
+
+            int vTacto = 0;
+            int.TryParse(Request.Form["diasParaTacto"], out vTacto);
+            diasParaTacto = vTacto;
         }
     }
 }

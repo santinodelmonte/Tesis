@@ -34,31 +34,27 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="litrosTotales">Litros:</label>
+                    <label for="litrosTotales">Litros del ordeñe:</label>
                     <input type="number" step="0.01" min="0" id="litrosTotales" name="litrosTotales"
                            class="form-control" value="@Model.litrosTotales" />
+                    <small class="text-muted">
+                        Los litros completos del turno, tal como se leen del tanque.
+                    </small>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-9">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="litrosDelTanque"
-                           name="litrosDelTanque" value="true" checked="@Model.litrosDelTanque" />
-                    <label class="form-check-label" for="litrosDelTanque">
-                        Los litros son del <strong>tanque</strong> e incluyen la leche de las vacas
-                        con control individual de este turno.
-                    </label>
-                </div>
-                <small class="text-muted">
-                    El sistema guarda siempre los litros del ordeñe masivo. Si el número
-                    viene del tanque, le descuenta los controles individuales ya cargados
-                    de esa fecha y turno, para que el historial pueda sumar las dos
-                    fuentes sin contar esa leche dos veces. Destilde la casilla si el
-                    número que ingresa ya excluye a esas vacas.
-                </small>
+
+        @if (Model.litrosIndividualesDelTurno > 0)
+        {
+            <div class="alert alert-info">
+                Este turno ya tiene
+                <strong>@Model.litrosIndividualesDelTurno.ToString("N2") litros</strong>
+                cargados como control individual. No se descuentan: el control individual
+                mide, vaca por vaca, la misma leche que salió en este ordeñe. Sirve para
+                comparar &mdash;lo medido no puede dar más que lo que entregó el tanque&mdash;.
             </div>
-        </div>
+        }
+
         <hr />
 
         <h5>Animales del lote (@Model.animalesDelLote.Count en lactancia)</h5>

@@ -20,6 +20,14 @@ mysql -u root -p < bd/tambo_m4_m5.sql
 mysql -u root -p < bd/tambo_configuracion.sql
 ```
 
+Si la base ya tenía la tabla `configuracion` creada de antes, en lugar del script
+anterior hay que correr solo la actualización, que agrega los dos parámetros de
+trabajo reproductivo:
+
+```bash
+mysql -u root -p < bd/tambo_configuracion_actualizacion.sql
+```
+
 O abrirlos en MySQL Workbench y ejecutarlos enteros, uno después del otro. Cada
 script asume que los anteriores ya corrieron: las tablas nuevas tienen claves
 foráneas hacia `animales`, `hembras`, `machos` e `insumos`.
@@ -145,6 +153,7 @@ creada. Qué se configura y qué no está explicado en
 | `DIAS_ANTICIPACION_VENCIMIENTO` | 30 | Ventana de la alerta de vencimiento (CU28) |
 | `UNIDADES_POR_VACUNACION` | 1 | Dosis que consume una aplicación (CU21) |
 | `EDAD_MINIMA_CELO_MESES` | 9 | Edad a la que la hembra empieza a ciclar (CU14) |
+| `DIAS_LACTANCIA_ESTANDAR` | 305 | Referencia para proyectar la produccion de una lactancia |
 | `GESTACION_DIAS_MINIMA` | 240 | Piso de una gestación viable, para advertir en el parto |
 | `GESTACION_DIAS_MAXIMA` | 320 | Techo de una gestación normal, para advertir en el parto |
 

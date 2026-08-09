@@ -23,8 +23,10 @@
                 <th>Inicio</th>
                 <th>Secado</th>
                 <th>Fecha probable de parto</th>
+                <th>Dias en leche</th>
                 <th>Controles</th>
-                <th>Litros acumulados</th>
+                <th>Litros medidos</th>
+                <th>Produccion estimada</th>
                 <th>Estado</th>
             </tr>
         </thead>
@@ -57,8 +59,10 @@
                                 <span class="text-muted">&mdash;</span>
                             }
                         </td>
+                        <td>@Model.diasEnLeche[lactancia.IdLactancia]</td>
                         <td>@Model.controles[lactancia.IdLactancia]</td>
                         <td>@Model.produccion[lactancia.IdLactancia].ToString("N2")</td>
+                        <td>@Model.estimada[lactancia.IdLactancia].ToString("N0")</td>
                         <td>
                             @if (lactancia.FechaSecado == DateTime.MinValue)
                             {

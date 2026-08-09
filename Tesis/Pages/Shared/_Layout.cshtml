@@ -46,6 +46,7 @@
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/OrdenieLote">Ordeñe por Lote</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/OrdenieIndividual">Ordeñe Individual</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/ControlLechero">Control Lechero (carga masiva)</a></li>
                                     <li><hr class="dropdown-divider" /></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/HistorialProduccion">Historial de Produccion</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/MetricaMensual">Metrica Mensual</a></li>
@@ -61,6 +62,9 @@
                                 <a class="nav-link dropdown-toggle text-light" href="#" role="button"
                                    data-bs-toggle="dropdown" aria-expanded="false">Reproduccion</a>
                                 <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/VacasParaServir">Vacas para Servir</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/TactosPendientes">Tactos Pendientes</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarCelo">Registrar Celo</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/ListaCelos">Celos Detectados</a></li>
                                     <li><hr class="dropdown-divider" /></li>
@@ -104,6 +108,25 @@
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/AlertasVencimiento">Alertas de Vencimiento</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/HistorialMovimientos">Historial de Movimientos</a></li>
                                 </ul>
+                            </li>
+
+                            @* Indicadores del rodeo y apoyo a la decision *@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">Indicadores</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesIndicadores/Indicadores">Indicadores del Rodeo</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesIndicadores/CandidatasDescarte">Candidatas a Descarte</a></li>
+                                </ul>
+                            </li>
+
+                            @* Buscador de caravana: lleva directo a la ficha del animal *@
+                            <li class="nav-item">
+                                <form class="d-flex" method="get" asp-page="/PagesAnimal/DetalleAnimal">
+                                    <input class="form-control form-control-sm me-1" type="search"
+                                           name="caravana" placeholder="Caravana" aria-label="Buscar caravana" />
+                                    <button class="btn btn-sm btn-outline-light" type="submit">Ir</button>
+                                </form>
                             </li>
 
                             @* Parametros de manejo del establecimiento *@

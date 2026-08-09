@@ -14,13 +14,11 @@ namespace Tesis.Pages.PagesProduccion
         [BindProperty]
         public double litrosTotales { get; set; } = 0;
 
-        // Los litros que se leen del tanque incluyen la leche de las vacas que ademas
-        // se controlaron individualmente. Como el historial suma las dos fuentes, hay
-        // que descontarlas antes de guardar o esa leche se cuenta dos veces.
-        [BindProperty]
-        public bool litrosDelTanque { get; set; } = true;
-
-        // Litros ya cargados como control individual en la fecha y el turno elegidos
+        // Litros ya cargados como control individual en la fecha y el turno elegidos.
+        // Es informacion de contexto: se muestran para poder comparar lo medido vaca por
+        // vaca contra lo que dio el tanque, pero no se descuentan. Los litros del lote
+        // son la leche del ordenie completo, y el control individual mide esa misma
+        // leche repartida por animal.
         public double litrosIndividualesDelTurno = 0;
 
         // Hembras en lactancia que el sistema propone para el lote
@@ -173,7 +171,6 @@ namespace Tesis.Pages.PagesProduccion
             litrosTotales = vLitros;
 
             // El checkbox manda "true,false" cuando esta tildado
-            litrosDelTanque = Request.Form["litrosDelTanque"].ToString().Contains("true");
 
             seleccionados = new List<int>();
             foreach (string? vValor in Request.Form["animales"])

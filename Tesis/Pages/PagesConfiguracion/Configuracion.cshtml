@@ -90,6 +90,33 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="diasEsperaVoluntaria">Espera voluntaria posparto (dias):</label>
+                    <input type="number" min="1" max="200" id="diasEsperaVoluntaria"
+                           name="diasEsperaVoluntaria" class="form-control"
+                           value="@Model.diasEsperaVoluntaria" />
+                    <small class="text-muted">
+                        Días que se dejan pasar después del parto antes de volver a servir.
+                        De acá sale la lista de vacas para servir.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="diasParaTacto">Dias para el tacto:</label>
+                    <input type="number" min="25" max="200" id="diasParaTacto"
+                           name="diasParaTacto" class="form-control"
+                           value="@Model.diasParaTacto" />
+                    <small class="text-muted">
+                        A partir de cuántos días del servicio se puede tactar. De acá sale
+                        la lista de tactos pendientes.
+                    </small>
+                </div>
+            </div>
+        </div>
+
         <hr />
         <h5>Anticipacion de las alertas</h5>
         <div class="row">
