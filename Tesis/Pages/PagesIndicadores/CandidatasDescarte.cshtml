@@ -1,0 +1,83 @@
+@page
+@model Tesis.Pages.PagesIndicadores.CandidatasDescarteModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Candidatas a Descarte</h1>
+    <p class="text-center text-muted">
+        Vacas que conviene revisar. <strong>El sistema no decide nada</strong>: junta lo
+        que ya está registrado y muestra por qué cada una aparece en la lista. La decisión
+        es de quien conoce al animal.
+    </p>
+
+    <div class="alert alert-secondary">
+        <strong>Criterios aplicados.</strong> Una vaca aparece si cumple al menos uno:
+        <ul class="mb-0 mt-2">
+            <li>
+                Produce menos del @Model.porcentajeProduccionBaja&#37; del promedio del rodeo
+                (@Model.promedioRodeo.ToString("N1") litros por día sobre
+                @Model.totalEnRodeo vacas en ordeñe).
+            </li>
+            <li>@Model.serviciosSinPrenez servicios o más desde el último parto sin preñez confirmada.</li>
+            <li>Más de @Model.diasAbiertosExcesivos días abiertos sin quedar preñada.</li>
+            <li>@Model.diagnosticosRepetidos diagnósticos sanitarios o más en el último año.</li>
+            <li>@Model.partosParaDescarte partos o más.</li>
+        </ul>
+    </div>
+
+    @if (!Model.candidatas.Any())
+    {
+        <div class="alert alert-success">
+            Ninguna vaca del rodeo cumple los criterios de revisión.
+        </div>
+    }
+    else
+    {
+        <p>@Model.candidatas.Count vaca(s) para revisar, ordenadas por cantidad de motivos.</p>
+        <table data-paginar="10" class="table text-center">
+            <thead>
+                <tr>
+                    <th>Caravana</th>
+                    <th>Categoria</th>
+                    <th>Partos</th>
+                    <th>Estado</th>
+                    <th>Motivos</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Dominio.CandidataDescarte candidata in Model.candidatas)
+                {
+                    <tr>
+                        <td>@candidata.Hembra.NumCaravana</td>
+                        <td>@(candidata.Hembra.Categoria != null ? candidata.Hembra.Categoria.Nombre : "")</td>
+                        <td>@candidata.Hembra.NumeroPartos</td>
+                        <td>
+                            @candidata.Hembra.EstadoProductivo
+                            <br />
+                            <small class="text-muted">@candidata.Hembra.EstadoReproductivo</small>
+                        </td>
+                        <td class="text-left">
+                            <ul class="mb-0">
+                                @foreach (string motivo in candidata.Motivos)
+                                {
+                                    <li>@motivo</li>
+                                }
+                            </ul>
+                        </td>
+                        <td>
+                            <a class="btn btn-warning btn-sm" asp-page="/PagesAnimal/DetalleAnimal"
+                               asp-route-id="@candidata.Hembra.IdAnimal">Ver ficha</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-warning" asp-page="./Indicadores">Volver</a>
+        </div>
+    </div>
+</div>

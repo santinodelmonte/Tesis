@@ -155,6 +155,339 @@
             </div>
         }
 
+        @if (Model.finDescarte != DateTime.MinValue)
+        {
+            <div class="alert alert-danger mt-3">
+                <strong>Descarte de leche vigente hasta el @Model.finDescarte.ToShortDateString().</strong>
+                El animal queda fuera del lote de ordeñe hasta esa fecha.
+            </div>
+        }
+
+        @* ---------------- Productivo ---------------- *@
+        @if (Model.animal is Dominio.Hembra)
+        {
+            <hr />
+            <h4>Produccion</h4>
+
+            @if (Model.lactanciaActual != null)
+            {
+                <div class="row text-center mb-3">
+                    <div class="col">
+                        <div class="h4 mb-0">@Model.lactanciaActual.NumeroLactancia</div>
+                        <small class="text-muted">lactancia en curso</small>
+                    </div>
+                    <div class="col">
+                        <div class="h4 mb-0">@Model.diasEnLeche</div>
+                        <small class="text-muted">días en leche</small>
+                    </div>
+                    <div class="col">
+                        <div class="h4 mb-0">@Model.promedioDiario.ToString("N1")</div>
+                        <small class="text-muted">litros por día</small>
+                    </div>
+                    <div class="col">
+                        <div class="h4 mb-0">@Model.produccionEstimada.ToString("N0")</div>
+                        <small class="text-muted">litros estimados</small>
+                    </div>
+                    <div class="col">
+                        <div class="h4 mb-0">@Model.proyeccion305.ToString("N0")</div>
+                        <small class="text-muted">proyección a 305 días</small>
+                    </div>
+                </div>
+                <p class="text-muted">
+                    Lactancia iniciada el @Model.lactanciaActual.FechaInicio.ToShortDateString().
+                    La producción se estima por intervalos de control, no sumando los controles.
+                </p>
+
+                <h6>Controles de la lactancia en curso</h6>
+                <table data-paginar="10" class="table table-sm text-center">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Litros del dia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.controles.Any())
+                        {
+                            @foreach (Dominio.ControlDiario control in Model.controles)
+                            {
+                                <tr>
+                                    <td>@control.Fecha.ToShortDateString()</td>
+                                    <td>@control.Litros.ToString("N2")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="2">Todavia no tiene controles en esta lactancia</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">No tiene una lactancia en curso.</p>
+            }
+
+            <h6>Lactancias registradas</h6>
+            <table data-paginar="10" class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Numero</th>
+                        <th>Inicio</th>
+                        <th>Secado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.lactancias.Any())
+                    {
+                        @foreach (Dominio.Lactancia lactancia in Model.lactancias)
+                        {
+                            <tr>
+                                <td>@lactancia.NumeroLactancia</td>
+                                <td>@lactancia.FechaInicio.ToShortDateString()</td>
+                                <td>
+                                    @if (lactancia.FechaSecado != DateTime.MinValue)
+                                    {
+                                        @lactancia.FechaSecado.ToShortDateString()
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">En curso</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3">No tiene lactancias registradas</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @* ---------------- Reproductivo ---------------- *@
+            <hr />
+            <h4>Reproduccion</h4>
+            <div class="row text-center mb-3">
+                <div class="col">
+                    <div class="h4 mb-0">@((Model.animal as Dominio.Hembra).NumeroPartos)</div>
+                    <small class="text-muted">partos</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">
+                        @Model.diasAbiertos
+                        @if (!Model.diasAbiertosCerrados && Model.diasAbiertos > 0)
+                        {
+                            <small class="text-muted">*</small>
+                        }
+                    </div>
+                    <small class="text-muted">días abiertos</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">
+                        @(Model.intervaloEntrePartos > 0 ? Model.intervaloEntrePartos.ToString() : "—")
+                    </div>
+                    <small class="text-muted">días entre partos</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">@Model.serviciosDesdeParto</div>
+                    <small class="text-muted">servicios desde el parto</small>
+                </div>
+            </div>
+            @if (!Model.diasAbiertosCerrados && Model.diasAbiertos > 0)
+            {
+                <p class="text-muted">
+                    * Los días abiertos siguen corriendo: la vaca todavía no quedó preñada.
+                </p>
+            }
+
+            @if (Model.servicioVigente != null)
+            {
+                <p>
+                    <strong>Último servicio:</strong>
+                    @Model.servicioVigente.FechaServicio.ToShortDateString()
+                    (@Model.servicioVigente.TipoServicio) &mdash; parto probable
+                    @Model.servicioVigente.FechaProbableParto.ToShortDateString().
+                    @if (Model.ultimoTacto != null)
+                    {
+                        <text>
+                            Tacto del @Model.ultimoTacto.FechaTacto.ToShortDateString():
+                            <strong>@Model.ultimoTacto.Resultado</strong>.
+                        </text>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Sin tacto registrado</span>
+                    }
+                </p>
+            }
+
+            <h6>Partos</h6>
+            <table data-paginar="10" class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.partos.Any())
+                    {
+                        @foreach (Dominio.Parto parto in Model.partos)
+                        {
+                            <tr>
+                                <td>@parto.FechaParto.ToShortDateString()</td>
+                                <td>@parto.TipoParto</td>
+                                <td>@parto.Observaciones</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3">No tiene partos registrados</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @* ---------------- Sanitario ---------------- *@
+        <hr />
+        <h4>Sanidad</h4>
+
+        @if (Model.pendientesSanitarios.Any())
+        {
+            <div class="alert alert-warning">
+                <strong>Procedimientos pendientes según los planes sanitarios:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach (Dominio.ProcedimientoPendiente pendiente in Model.pendientesSanitarios)
+                    {
+                        <li>
+                            @pendiente.Plan.Nombre (@pendiente.Plan.TipoProcedimiento) &mdash;
+                            corresponde el @pendiente.ProximaAplicacion.ToShortDateString()
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <h6>Diagnosticos y tratamientos</h6>
+        <table data-paginar="10" class="table table-sm text-center">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Detalle</th>
+                    <th>Estado / Producto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.diagnosticos.Any() || Model.tratamientos.Any())
+                {
+                    @foreach (Dominio.Diagnostico diagnostico in Model.diagnosticos)
+                    {
+                        <tr>
+                            <td>@diagnostico.FechaDiagnostico.ToShortDateString()</td>
+                            <td>Diagnostico: @diagnostico.Enfermedad</td>
+                            <td>@diagnostico.Estado</td>
+                        </tr>
+                    }
+                    @foreach (Dominio.Tratamiento tratamiento in Model.tratamientos)
+                    {
+                        <tr>
+                            <td>@tratamiento.FechaInicio.ToShortDateString()</td>
+                            <td>
+                                Tratamiento de @tratamiento.DiasDuracion dias
+                                (@tratamiento.DosisDiaria)
+                            </td>
+                            <td>@(tratamiento.Insumo != null ? tratamiento.Insumo.Nombre : "")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3">Sin registros sanitarios</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h6>Vacunaciones y descornes</h6>
+        <table data-paginar="10" class="table table-sm text-center">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Procedimiento</th>
+                    <th>Plan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.vacunaciones.Any() || Model.descornes.Any())
+                {
+                    @foreach (Dominio.Vacunacion vacunacion in Model.vacunaciones)
+                    {
+                        <tr>
+                            <td>@vacunacion.FechaAplicacion.ToShortDateString()</td>
+                            <td>Vacunacion: @(vacunacion.Insumo != null ? vacunacion.Insumo.Nombre : "")</td>
+                            <td>@(vacunacion.Plan != null ? vacunacion.Plan.Nombre : "Fuera de plan")</td>
+                        </tr>
+                    }
+                    @foreach (Dominio.Descorne descorne in Model.descornes)
+                    {
+                        <tr>
+                            <td>@descorne.Fecha.ToShortDateString()</td>
+                            <td>Descorne: @descorne.Metodo</td>
+                            <td>@(descorne.Plan != null ? descorne.Plan.Nombre : "Fuera de plan")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3">Sin vacunaciones ni descornes registrados</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @* ---------------- Descendencia ---------------- *@
+        @if (Model.hijos.Any())
+        {
+            <hr />
+            <h4>Descendencia</h4>
+            <table data-paginar="10" class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th>Caravana</th>
+                        <th>Sexo</th>
+                        <th>Nacimiento</th>
+                        <th>Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Dominio.Animal hijo in Model.hijos)
+                    {
+                        <tr>
+                            <td>@hijo.NumCaravana</td>
+                            <td>@(hijo is Dominio.Hembra ? "Hembra" : "Macho")</td>
+                            <td>@hijo.FechaNacimiento.ToShortDateString()</td>
+                            <td>
+                                <a class="btn btn-warning btn-sm" asp-page="./DetalleAnimal"
+                                   asp-route-id="@hijo.IdAnimal">Ver ficha</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
     }
     else
     {

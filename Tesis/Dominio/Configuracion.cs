@@ -21,6 +21,8 @@ namespace Tesis.Dominio
         private int mDiasAnticipacionParto;
         private int mDiasAnticipacionSanitaria;
         private int mDiasAnticipacionVencimiento;
+        private int mDiasEsperaVoluntaria;
+        private int mDiasParaTacto;
 
         public int IdConfiguracion { get { return mIdConfiguracion; } set { mIdConfiguracion = value; } }
 
@@ -45,10 +47,20 @@ namespace Tesis.Dominio
         public int DiasAnticipacionSanitaria { get { return mDiasAnticipacionSanitaria; } set { mDiasAnticipacionSanitaria = value; } }
         public int DiasAnticipacionVencimiento { get { return mDiasAnticipacionVencimiento; } set { mDiasAnticipacionVencimiento = value; } }
 
+        // Dias posparto que el establecimiento deja pasar antes de volver a servir a la
+        // vaca. Es el periodo de espera voluntario: antes de eso el utero todavia se
+        // esta recuperando y el servicio rinde poco.
+        public int DiasEsperaVoluntaria { get { return mDiasEsperaVoluntaria; } set { mDiasEsperaVoluntaria = value; } }
+
+        // Dias despues del servicio a partir de los cuales el tacto ya se puede hacer.
+        // De aca sale la lista con la que se arma la visita del veterinario.
+        public int DiasParaTacto { get { return mDiasParaTacto; } set { mDiasParaTacto = value; } }
+
         public Configuracion(int pIdConfiguracion, int pDiasSecadoAntesParto,
             int pEdadMinimaServicioMeses, int pEdadCambioCategoriaMeses,
             double pLitrosMaximosIndividual, int pOrdeniesPorDia, int pDiasAnticipacionSecado,
-            int pDiasAnticipacionParto, int pDiasAnticipacionSanitaria, int pDiasAnticipacionVencimiento)
+            int pDiasAnticipacionParto, int pDiasAnticipacionSanitaria, int pDiasAnticipacionVencimiento,
+            int pDiasEsperaVoluntaria, int pDiasParaTacto)
         {
             mIdConfiguracion = pIdConfiguracion;
             mDiasSecadoAntesParto = pDiasSecadoAntesParto;
@@ -60,6 +72,8 @@ namespace Tesis.Dominio
             mDiasAnticipacionParto = pDiasAnticipacionParto;
             mDiasAnticipacionSanitaria = pDiasAnticipacionSanitaria;
             mDiasAnticipacionVencimiento = pDiasAnticipacionVencimiento;
+            mDiasEsperaVoluntaria = pDiasEsperaVoluntaria;
+            mDiasParaTacto = pDiasParaTacto;
         }
     }
 }

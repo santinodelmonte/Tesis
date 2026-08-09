@@ -1,0 +1,74 @@
+@page
+@model Tesis.Pages.PagesReproduccion.TactosPendientesModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Tactos Pendientes</h1>
+    <p class="text-center text-muted">
+        Servicios de hace @Model.diasParaTacto días o más que todavía no tienen tacto
+        registrado. La ventana se configura en
+        <a asp-page="/PagesConfiguracion/Configuracion">Configuración</a>.
+    </p>
+
+    @if (!Model.pendientes.Any())
+    {
+        <div class="alert alert-success">
+            No hay tactos pendientes: todos los servicios en espera fueron confirmados.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-primary">
+            <strong>@Model.pendientes.Count servicio(s) para tactar.</strong>
+        </div>
+        <table data-paginar="10" class="table text-center">
+            <thead>
+                <tr>
+                    <th>Caravana</th>
+                    <th>Fecha del servicio</th>
+                    <th>Dias transcurridos</th>
+                    <th>Tipo</th>
+                    <th>Reproductor</th>
+                    <th>Parto probable</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.pendientes.Count; i++)
+                {
+                    <tr>
+                        <td>@Model.pendientes[i].Animal.NumCaravana</td>
+                        <td>@Model.pendientes[i].FechaServicio.ToShortDateString()</td>
+                        <td>
+                            <span class="badge bg-primary">@Model.diasDesdeServicio[i] dias</span>
+                        </td>
+                        <td>@Model.pendientes[i].TipoServicio</td>
+                        <td>
+                            @if (Model.pendientes[i].Toro != null)
+                            {
+                                @Model.pendientes[i].Toro.NumCaravana
+                            }
+                            else if (Model.pendientes[i].Pajuela != null)
+                            {
+                                @Model.pendientes[i].Pajuela.Nombre
+                            }
+                        </td>
+                        <td>@Model.pendientes[i].FechaProbableParto.ToShortDateString()</td>
+                        <td>
+                            <a class="btn btn-success btn-sm" asp-page="./RegistrarTacto"
+                               asp-route-caravana="@Model.pendientes[i].Animal.NumCaravana">
+                                Registrar Tacto
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-warning" asp-page="/Index">Volver</a>
+        </div>
+    </div>
+</div>

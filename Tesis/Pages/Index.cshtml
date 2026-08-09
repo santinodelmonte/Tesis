@@ -1,10 +1,145 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Hoy en el tambo";
 }
 
 <div class="text-center mb-4">
-    <h1 class="display-4">¡Bienvenido a Gestion de Tambo!</h1>
-    <h4 class="display-5">Sistema de gestion productiva, reproductiva y sanitaria del rodeo.</h4>
+    <h1 class="display-4">Hoy en el tambo</h1>
+    <h5 class="text-muted">Lo que requiere atención, en un solo lugar.</h5>
 </div>
+
+@if (Model.sinDatos)
+{
+    <div class="alert alert-info">
+        <strong>Todavía no hay animales cargados.</strong>
+        El primer paso es dar de alta el rodeo desde
+        <a asp-page="/PagesAnimal/AltaAnimal">Animales &rarr; Agregar</a>. A las vacas que
+        ya estaban en ordeñe hay que abrirles la lactancia a mano desde
+        <a asp-page="/PagesProduccion/AltaLactancia">Producción &rarr; Lactancias</a>,
+        porque no tienen un parto registrado en el sistema.
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Reproducción</h5>
+
+                    <p class="mb-1">
+                        <span class="badge @(Model.vacasParaServir > 0 ? "bg-primary" : "bg-secondary")">
+                            @Model.vacasParaServir
+                        </span>
+                        <a asp-page="/PagesReproduccion/VacasParaServir">vaca(s) para servir</a>
+                    </p>
+                    <p class="mb-1">
+                        <span class="badge @(Model.tactosPendientes > 0 ? "bg-primary" : "bg-secondary")">
+                            @Model.tactosPendientes
+                        </span>
+                        <a asp-page="/PagesReproduccion/TactosPendientes">tacto(s) pendiente(s)</a>
+                    </p>
+                    <p class="mb-0">
+                        <span class="badge @(Model.partosProximos > 0 ? "bg-warning text-dark" : "bg-secondary")">
+                            @Model.partosProximos
+                        </span>
+                        <a asp-page="/PagesReproduccion/AlertasParto">parto(s) próximo(s)</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Producción</h5>
+
+                    <p class="mb-1">
+                        <span class="badge @(Model.secadosProximos > 0 ? "bg-warning text-dark" : "bg-secondary")">
+                            @Model.secadosProximos
+                        </span>
+                        <a asp-page="/PagesProduccion/AlertasSecado">secado(s) próximo(s)</a>
+                    </p>
+                    <p class="mb-1">
+                        <span class="badge @(Model.animalesEnDescarte > 0 ? "bg-danger" : "bg-secondary")">
+                            @Model.animalesEnDescarte
+                        </span>
+                        animal(es) con descarte de leche vigente
+                    </p>
+                    <p class="mb-0">
+                        <a asp-page="/PagesProduccion/ControlLechero">Cargar control lechero</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Sanidad e insumos</h5>
+
+                    <p class="mb-1">
+                        <span class="badge @(Model.procedimientosPendientes > 0 ? "bg-primary" : "bg-secondary")">
+                            @Model.procedimientosPendientes
+                        </span>
+                        <a asp-page="/PagesSanidad/CalendarioSanitario">procedimiento(s) pendiente(s)</a>
+                    </p>
+                    <p class="mb-1">
+                        <span class="badge @(Model.insumosCriticos > 0 ? "bg-danger" : "bg-secondary")">
+                            @Model.insumosCriticos
+                        </span>
+                        <a asp-page="/PagesInsumo/AlertasStock">insumo(s) en stock crítico</a>
+                    </p>
+                    <p class="mb-0">
+                        <span class="badge @(Model.partidasPorVencer > 0 ? "bg-warning text-dark" : "bg-secondary")">
+                            @Model.partidasPorVencer
+                        </span>
+                        <a asp-page="/PagesInsumo/AlertasVencimiento">partida(s) por vencer</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">El rodeo hoy</h5>
+            <div class="row text-center">
+                <div class="col">
+                    <div class="h3 mb-0">@Model.totalActivos</div>
+                    <small class="text-muted">animales activos</small>
+                </div>
+                <div class="col">
+                    <div class="h3 mb-0">@Model.enLactancia</div>
+                    <small class="text-muted">en ordeñe</small>
+                </div>
+                <div class="col">
+                    <div class="h3 mb-0">@Model.secas</div>
+                    <small class="text-muted">secas</small>
+                </div>
+                <div class="col">
+                    <div class="h3 mb-0">@Model.prenadas</div>
+                    <small class="text-muted">preñadas</small>
+                </div>
+                <div class="col">
+                    <div class="h3 mb-0">@Model.vacias</div>
+                    <small class="text-muted">vacías</small>
+                </div>
+                <div class="col">
+                    <div class="h3 mb-0">@Model.promedioDiarioRodeo.ToString("N1")</div>
+                    <small class="text-muted">litros por vaca y día</small>
+                </div>
+                <div class="col">
+                    <div class="h3 mb-0">@Model.promedioDiasEnLeche.ToString("N0")</div>
+                    <small class="text-muted">días en leche promedio</small>
+                </div>
+            </div>
+            <div class="text-right mt-3">
+                <a class="btn btn-primary btn-sm" asp-page="/PagesIndicadores/Indicadores">
+                    Ver indicadores del rodeo
+                </a>
+            </div>
+        </div>
+    </div>
+}

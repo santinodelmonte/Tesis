@@ -1,0 +1,184 @@
+@page
+@model Tesis.Pages.PagesIndicadores.IndicadoresModel
+@{
+}
+<div>
+    <h1 class="display-4 text-center">Indicadores del Rodeo</h1>
+    <p class="text-center text-muted">
+        Ninguno de estos números se guarda: se calculan sobre lo registrado cada vez que
+        se consulta la pantalla.
+    </p>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Reproductivos</h5>
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Días abiertos promedio
+                                    <br /><small class="text-muted">
+                                        Del parto a la concepción. Cada día de más es leche que
+                                        la vaca no da el año siguiente.
+                                    </small>
+                                </td>
+                                <td class="text-right h5">@Model.promedioDiasAbiertos.ToString("N0")</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Intervalo entre partos
+                                    <br /><small class="text-muted">
+                                        El objetivo de un tambo está alrededor de los 395 días.
+                                    </small>
+                                </td>
+                                <td class="text-right h5">@Model.promedioIntervaloPartos.ToString("N0")</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Servicios por preñez
+                                    <br /><small class="text-muted">
+                                        Cuántos servicios hacen falta por preñez confirmada.
+                                    </small>
+                                </td>
+                                <td class="text-right h5">@Model.serviciosPorPrenez.ToString("N2")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Productivos</h5>
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Litros por vaca y por día
+                                    <br /><small class="text-muted">
+                                        Promedio de las lactancias en curso, estimado por
+                                        intervalos de control.
+                                    </small>
+                                </td>
+                                <td class="text-right h5">@Model.promedioDiarioRodeo.ToString("N1")</td>
+                            </tr>
+                            <tr>
+                                <td>Días en leche promedio</td>
+                                <td class="text-right h5">@Model.promedioDiasEnLeche.ToString("N0")</td>
+                            </tr>
+                            <tr>
+                                <td>Vacas en ordeñe</td>
+                                <td class="text-right h5">@Model.enLactancia</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Composicion del rodeo</h5>
+            <div class="row text-center">
+                <div class="col">
+                    <div class="h4 mb-0">@Model.totalActivos</div>
+                    <small class="text-muted">activos</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">@Model.enLactancia</div>
+                    <small class="text-muted">en ordeñe</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">@Model.secas</div>
+                    <small class="text-muted">secas</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">@Model.sinLactancia</div>
+                    <small class="text-muted">sin lactancia</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">@Model.prenadas</div>
+                    <small class="text-muted">preñadas</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">@Model.servidas</div>
+                    <small class="text-muted">servidas</small>
+                </div>
+                <div class="col">
+                    <div class="h4 mb-0">@Model.vacias</div>
+                    <small class="text-muted">vacías</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5>Lactancias en curso</h5>
+    <p class="text-muted">
+        La producción se estima por el método de intervalos de control: como el control
+        lechero se hace una vez por mes, cada medición representa a los días que la
+        rodean. Sumar los controles daría la leche de unas pocas jornadas sueltas.
+        La proyección a @Model.diasLactanciaEstandar días supone que la vaca sostiene su
+        último nivel controlado, así que es optimista: sirve para comparar vacas entre
+        sí, no como pronóstico.
+    </p>
+    <table data-paginar="10" class="table text-center">
+        <thead>
+            <tr>
+                <th>Caravana</th>
+                <th>Lactancia</th>
+                <th>Dias en leche</th>
+                <th>Litros por dia</th>
+                <th>Produccion estimada</th>
+                <th>Proyeccion a @Model.diasLactanciaEstandar dias</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.lactanciasActivas.Any())
+            {
+                @for (int i = 0; i < Model.lactanciasActivas.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @(Model.lactanciasActivas[i].Animal != null
+                                ? Model.lactanciasActivas[i].Animal.NumCaravana : "")
+                        </td>
+                        <td>@Model.lactanciasActivas[i].NumeroLactancia</td>
+                        <td>@Model.diasEnLeche[i]</td>
+                        <td>
+                            @if (Model.promedioDiario[i] > 0)
+                            {
+                                <span class="badge @(Model.promedioDiario[i] < Model.promedioDiarioRodeo ? "bg-warning text-dark" : "bg-success")">
+                                    @Model.promedioDiario[i].ToString("N1")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sin controles</span>
+                            }
+                        </td>
+                        <td>@Model.produccionEstimada[i].ToString("N0")</td>
+                        <td>@Model.proyeccion305[i].ToString("N0")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">No hay lactancias en curso</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-sm-12 text-right">
+            <a class="btn btn-primary" asp-page="./CandidatasDescarte">Candidatas a descarte</a>
+            <a class="btn btn-warning" asp-page="/Index">Volver</a>
+        </div>
+    </div>
+</div>
