@@ -37,6 +37,15 @@ namespace Tesis.Pages.PagesReproduccion
         [BindProperty]
         public int idRazaCria2 { get; set; } = 0;
 
+        // Foto de cada cria. Es el momento en que el ternero se caravanea, asi que es
+        // el momento natural para sacarle la foto. Llega como texto por lo mismo que
+        // en el alta de animal: la pantalla reenvia el formulario para buscar la madre
+        // y para confirmar las advertencias, y un campo de archivo no sobrevive.
+        [BindProperty]
+        public string fotoCria { get; set; } = "";
+        [BindProperty]
+        public string fotoCria2 { get; set; } = "";
+
         // Lo tilda el boton "Registrar de todos modos": llega en verdadero solo cuando
         // el usuario ya vio las advertencias y decidio guardar igual.
         [BindProperty]
@@ -195,6 +204,18 @@ namespace Tesis.Pages.PagesReproduccion
                 return Page();
             }
 
+            // Las fotos se escriben recien aca, con las validaciones y las advertencias
+            // ya resueltas: antes de este punto la pantalla todavia puede volver sin
+            // guardar nada, y cada vuelta dejaria un archivo suelto.
+            _listaCrias[0].Foto = unaControladora.GuardarFotoAnimal(
+                Shared.CampoFotoModelo.Decodificar(fotoCria));
+
+            if (partoDoble)
+            {
+                _listaCrias[1].Foto = unaControladora.GuardarFotoAnimal(
+                    Shared.CampoFotoModelo.Decodificar(fotoCria2));
+            }
+
             // El parto actua sobre los dos ejes: cierra el reproductivo devolviendo la
             // hembra a vacia e inicia el productivo llevandola a lactancia. Ademas da de
             // alta las crias, cierra la lactancia anterior si habia quedado abierta y
@@ -202,6 +223,13 @@ namespace Tesis.Pages.PagesReproduccion
             if (unaControladora.AltaParto(unParto, _listaCrias))
             {
                 return Redirect("/PagesProduccion/ListaLactancias");
+            }
+
+            // El parto no se registro: las crias no existen y sus fotos tampoco tienen
+            // a quien pertenecer
+            foreach (Animal unaCria in _listaCrias)
+            {
+                unaControladora.BorrarFotoAnimal(unaCria.Foto);
             }
 
             ModelState.AddModelError(string.Empty, "No se pudo registrar el parto!");
@@ -298,6 +326,9 @@ namespace Tesis.Pages.PagesReproduccion
             int vIdPadre = 0;
             int.TryParse(Request.Form["idPadre"], out vIdPadre);
             idPadre = vIdPadre;
+
+            fotoCria = Request.Form["fotoCria"];
+            fotoCria2 = Request.Form["fotoCria2"];
 
             Macho unPadre = pControladoraDominio.BuscarMacho(idPadre);
             caravanaPadre = unPadre != null ? unPadre.NumCaravana : "";

@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Fotos de los animales. Las carga el usuario con el sistema andando: son datos
+# del establecimiento, no fuente, y se respaldan junto con la base.
+Tesis/wwwroot/fotos/

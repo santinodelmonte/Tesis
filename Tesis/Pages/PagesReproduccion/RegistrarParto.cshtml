@@ -4,6 +4,7 @@
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/fotoAnimal.js" asp-append-version="true"></script>
 }
 <div class="text-left">
     <h1 class="display-4" style="font-size: 40px">Registrar Parto</h1>
@@ -163,6 +164,19 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-6">
+                @* El ternero se caravanea al nacer: es el momento en que se le puede
+                   sacar la foto sin buscarlo despues en el rodeo *@
+                <partial name="_CampoFoto" model="@(new Tesis.Pages.Shared.CampoFotoModelo
+                         {
+                             Campo = "fotoCria",
+                             Etiqueta = "Foto de la cría:",
+                             Valor = Model.fotoCria,
+                             Ayuda = "Opcional. Se achica sola antes de subirse y se puede sacar con la cámara."
+                         })" />
+            </div>
+        </div>
         <p class="text-muted">
             La categoría de la cría (ternera o ternero) y su fecha de nacimiento las
             completa el sistema con la fecha del parto.
@@ -206,6 +220,15 @@
                             }
                         </select>
                     </div>
+                </div>
+                <div class="col-md-4">
+                    <partial name="_CampoFoto" model="@(new Tesis.Pages.Shared.CampoFotoModelo
+                             {
+                                 Campo = "fotoCria2",
+                                 Etiqueta = "Foto de la segunda cría:",
+                                 Valor = Model.fotoCria2,
+                                 Ayuda = "Opcional."
+                             })" />
                 </div>
             </div>
         </div>

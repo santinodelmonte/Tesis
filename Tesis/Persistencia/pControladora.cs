@@ -71,6 +71,18 @@ namespace Tesis.Persistencia
         {
             return new pAnimal().ReactivarAnimal(pIdAnimal);
         }
+
+        // La foto es un archivo, no una fila: se guarda en el disco y a la base va
+        // nada mas que su nombre.
+        public string GuardarFoto(byte[] pContenido)
+        {
+            return new pFotoAnimal().Guardar(pContenido);
+        }
+
+        public void BorrarFoto(string pNombreArchivo)
+        {
+            new pFotoAnimal().Borrar(pNombreArchivo);
+        }
         #endregion
 
         #region HEMBRAS

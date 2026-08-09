@@ -32,6 +32,16 @@ namespace Tesis.Pages.PagesAnimal
         [BindProperty]
         public bool enPie { get; set; } = false;
 
+        // Foto nueva, si se eligio una. Llega como texto por el mismo motivo que en el
+        // alta: el formulario se reenvia y un campo de archivo no sobrevive al reenvio.
+        [BindProperty]
+        public string foto { get; set; } = "";
+
+        // Lo tilda el boton "Quitar foto". Distingue "no toque la foto" -que deja la
+        // que estaba- de "borre la que tenia".
+        [BindProperty]
+        public bool fotoQuitar { get; set; } = false;
+
         // Lo tilda el boton "Guardar de todos modos": llega en verdadero solo cuando el
         // usuario ya vio las advertencias de genealogia y decidio guardar igual.
         [BindProperty]
@@ -148,10 +158,32 @@ namespace Tesis.Pages.PagesAnimal
                 return Page();
             }
 
+            // Que foto le queda al animal. Son tres casos: se eligio una nueva, se
+            // pidio quitar la que tenia, o no se toco y sigue la de antes. La imagen
+            // se escribe recien aca, con todas las validaciones pasadas.
+            string vFoto = animal != null ? animal.Foto : "";
+
+            byte[] vImagenNueva = Shared.CampoFotoModelo.Decodificar(foto);
+            if (vImagenNueva.Length > 0)
+            {
+                vFoto = unaControladora.GuardarFotoAnimal(vImagenNueva);
+            }
+            else if (fotoQuitar)
+            {
+                vFoto = "";
+            }
+
             if (unaControladora.ModificarAnimal(id, numCaravana, fechaNacimiento, unaRaza, unaCategoria,
-                unaMadre, unPadre, numeroPartos, enPie))
+                unaMadre, unPadre, numeroPartos, enPie, vFoto))
             {
                 return Redirect("./ListaAnimales");
+            }
+
+            // La modificacion no prospero: si se habia escrito una foto nueva, el
+            // animal sigue apuntando a la vieja y esta queda sin dueno.
+            if (vImagenNueva.Length > 0)
+            {
+                unaControladora.BorrarFotoAnimal(vFoto);
             }
 
             ModelState.AddModelError(string.Empty, "No se pudo modificar el animal. Verifique que el número de caravana no esté repetido!");
@@ -181,6 +213,9 @@ namespace Tesis.Pages.PagesAnimal
             numeroPartos = Request.Form["numeroPartos"] != "" ? Convert.ToInt32(Request.Form["numeroPartos"]) : 0;
             // El checkbox manda "true,false" cuando esta tildado
             enPie = Request.Form["enPie"].ToString().Contains("true");
+
+            foto = Request.Form["foto"];
+            fotoQuitar = Request.Form["fotoQuitar"].ToString().Contains("true");
 
             // Solo viaja cuando se apreto el boton de confirmacion: si el usuario
             // corrige un progenitor, las advertencias se evaluan de nuevo.

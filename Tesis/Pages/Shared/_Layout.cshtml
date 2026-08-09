@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Tesis.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico">
+    @* Hojas de estilo de una sola pantalla, para no cargarlas en todo el sitio *@
+    @await RenderSectionAsync("Estilos", required: false)
 </head>
 <body>
     <!-- Header -->
