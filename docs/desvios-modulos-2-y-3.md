@@ -22,12 +22,45 @@ pueden ser ciertas a la vez.
 
 **Resuelto.** `id_ordenie_lote` admite nulo. El control individual se registra por
 sí solo, sin exigir que el ordeñe del lote de esa fecha y turno ya esté cargado; si
-lo está, queda enganchado a él para poder reconstruir el turno. `litros_totales`
-del lote son los litros del ordeñe masivo, sin la leche de las vacas controladas
-aparte. Con eso, sumar las dos fuentes da el neto exacto y CU10 y CU11 cierran.
+lo está, queda enganchado a él para poder reconstruir el turno.
+
+**Sobre `litros_totales`, el criterio cambió.** La primera versión guardaba en el
+lote los litros del ordeñe masivo *sin* la leche de las vacas controladas aparte: la
+pantalla descontaba los controles individuales ya cargados, de manera que sumar las
+dos fuentes diera el neto exacto y CU10 y CU11 cerraran tal como están escritos.
+
+Eso resultó peor que el problema que resolvía, por tres motivos:
+
+1. **Dependía del orden de carga.** La resta ocurría al guardar el lote. Un control
+   individual cargado después ya no se descontaba de nada y se sumaba al total. En un
+   día de control lechero —donde se mide casi todo el rodeo— el volumen del turno
+   podía casi duplicarse, y nada recalculaba el lote.
+2. **Lo almacenado no era lo que nadie midió.** La usuaria leía 1.500 del tanque y en
+   la base quedaban 1.180: un número que no corresponde a ninguna lectura real.
+3. **La leche descartada contaba como producción.** Medir lo que dio una vaca en
+   tratamiento sumaba esos litros al turno, cuando esa leche se tira.
+
+**Criterio actual.** `litros_totales` es la leche completa que salió en ese ordeñe,
+tal como se lee del tanque, y el control individual es la medición vaca por vaca de
+esa misma leche. **No se suman**: son dos vistas de lo mismo. La producción del
+establecimiento sale de los ordeñes por lote; el control individual alimenta la
+lactancia de cada vaca, los indicadores y el análisis de descarte.
+
+Con eso desaparecen los tres problemas: no hay doble conteo posible, el orden de
+carga es indistinto y se guarda lo que se midió. La pantalla del ordeñe muestra los
+litros ya controlados del turno como referencia y rechaza que lo medido supere lo
+que entregó el tanque, que es la única relación que tiene que cumplirse.
+
+Como contrapartida, un turno con controles individuales y sin ordeñe de lote no
+aporta nada a la producción. El historial avisa cuando eso pasa, porque casi siempre
+significa que faltó cargar el ordeñe.
 
 **Corregir en el Proyecto.** 2.2.5.4, fila `ordenies_individual.id_ordenie_lote`:
-pasa a `Null`. Aclarar en 2.2.5.2 qué comprende `litros_totales`.
+pasa a `Null`. Aclarar en 2.2.5.2 que `litros_totales` es el ordeñe completo del
+turno. Y reescribir la regla de negocio de **CU10 y CU11**: no hay una modalidad
+"Totales (Individual + Lote)" que sume las dos fuentes; hay producción del
+establecimiento —los lotes— y control individual, que es un subconjunto medido de
+esa misma leche.
 
 ---
 

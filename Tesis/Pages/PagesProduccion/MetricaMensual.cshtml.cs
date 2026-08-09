@@ -41,9 +41,10 @@ namespace Tesis.Pages.PagesProduccion
             DateTime vDesde = new DateTime(anio, mes, 1);
             DateTime vHasta = vDesde.AddMonths(1).AddDays(-1);
 
-            // La regla de negocio es explicita: el mensual suma obligatoriamente las dos
-            // fuentes para no perder informacion. Se muestran ademas por separado para
-            // que se vea de donde sale el numero.
+            // El volumen del mes es la leche que salio del tambo, o sea la suma de los
+            // ordenies por lote. El control individual se muestra al lado como
+            // referencia: es la porcion de esa misma leche que se midio vaca por vaca,
+            // no un volumen adicional.
             totalLote = unaControladora.CalcularProduccionEnRango(vDesde, vHasta, Controladora.MODALIDAD_LOTE);
             totalIndividual = unaControladora.CalcularProduccionEnRango(vDesde, vHasta, Controladora.MODALIDAD_INDIVIDUAL);
             totalMensual = unaControladora.CalcularProduccionMensual(mes, anio);

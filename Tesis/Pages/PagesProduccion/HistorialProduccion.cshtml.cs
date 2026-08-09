@@ -8,7 +8,7 @@ namespace Tesis.Pages.PagesProduccion
     public class HistorialProduccionModel : PageModel
     {
         [BindProperty]
-        public string modalidad { get; set; } = Controladora.MODALIDAD_TOTALES;
+        public string modalidad { get; set; } = Controladora.MODALIDAD_LOTE;
         [BindProperty]
         public DateTime fechaDesde { get; set; } = DateTime.Now.AddDays(-30);
         [BindProperty]
@@ -20,16 +20,25 @@ namespace Tesis.Pages.PagesProduccion
         public List<OrdenieLote> ordeniesLote = new List<OrdenieLote>();
         public List<OrdenieIndividual> ordeniesIndividual = new List<OrdenieIndividual>();
 
+        // Turnos con control individual cargado y sin ordenie de lote. Como la
+        // produccion del establecimiento sale de los lotes, esos turnos no suman nada:
+        // casi siempre significa que falto cargar el ordenie.
+        public List<OrdenieLote> turnosSinOrdenie = new List<OrdenieLote>();
+
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
             unaControladora.ListarAnimales();
+
+            turnosSinOrdenie = unaControladora.ListarTurnosSinOrdenieLote();
         }
 
         public void OnPostBuscar()
         {
             Controladora unaControladora = new Controladora();
             unaControladora.ListarAnimales();
+
+            turnosSinOrdenie = unaControladora.ListarTurnosSinOrdenieLote();
 
             this.LeerFormulario();
 
@@ -40,19 +49,18 @@ namespace Tesis.Pages.PagesProduccion
                 return;
             }
 
-            if (modalidad != Controladora.MODALIDAD_INDIVIDUAL && modalidad != Controladora.MODALIDAD_LOTE
-                && modalidad != Controladora.MODALIDAD_TOTALES)
+            if (modalidad != Controladora.MODALIDAD_INDIVIDUAL && modalidad != Controladora.MODALIDAD_LOTE)
             {
                 ModelState.AddModelError(string.Empty, "Seleccione la modalidad de visualizacion!");
                 return;
             }
 
-            if (modalidad == Controladora.MODALIDAD_LOTE || modalidad == Controladora.MODALIDAD_TOTALES)
+            if (modalidad == Controladora.MODALIDAD_LOTE)
             {
                 ordeniesLote = unaControladora.FiltrarOrdeniesLoteXFecha(fechaDesde, fechaHasta);
             }
 
-            if (modalidad == Controladora.MODALIDAD_INDIVIDUAL || modalidad == Controladora.MODALIDAD_TOTALES)
+            if (modalidad == Controladora.MODALIDAD_INDIVIDUAL)
             {
                 ordeniesIndividual = unaControladora.FiltrarOrdeniesIndividualXFecha(fechaDesde, fechaHasta);
             }
@@ -65,7 +73,7 @@ namespace Tesis.Pages.PagesProduccion
 
         private void LeerFormulario()
         {
-            modalidad = Request.Form["modalidad"] != "" ? Request.Form["modalidad"] : Controladora.MODALIDAD_TOTALES;
+            modalidad = Request.Form["modalidad"] != "" ? Request.Form["modalidad"] : Controladora.MODALIDAD_LOTE;
             fechaDesde = Request.Form["fechaDesde"] != "" ? Convert.ToDateTime(Request.Form["fechaDesde"]) : DateTime.Now.AddDays(-30);
             fechaHasta = Request.Form["fechaHasta"] != "" ? Convert.ToDateTime(Request.Form["fechaHasta"]) : DateTime.Now;
         }

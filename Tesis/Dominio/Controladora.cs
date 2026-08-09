@@ -1714,23 +1714,54 @@ namespace Tesis.Dominio
         // Litros del turno: los del ordenie masivo mas los de las vacas que se
         // controlaron individualmente ese mismo dia y turno, que no estan incluidas en
         // litros_totales.
-        public double CalcularTotalDiario(OrdenieLote pOrdenieLote)
+        // Turnos que tienen controles individuales cargados pero ningun ordenie de lote
+        // registrado. Con el criterio nuevo -el lote es la produccion del
+        // establecimiento y el control individual es la medicion de esa misma leche-
+        // ese turno no aporta nada a la produccion, y eso casi siempre significa que
+        // falto cargar el ordenie.
+        //
+        // Se devuelven como OrdenieLote sin guardar -el identificador en cero- porque es
+        // exactamente lo que habria que registrar: la fecha, el turno, las vacas que se
+        // midieron y los litros que sumaron entre ellas.
+        public List<OrdenieLote> ListarTurnosSinOrdenieLote()
         {
-            if (pOrdenieLote == null)
-            {
-                return 0;
-            }
+            List<OrdenieLote> _listaFaltantes = new List<OrdenieLote>();
 
-            double vTotal = pOrdenieLote.LitrosTotales;
-
-            foreach (OrdenieIndividual unOrdenie in mListaOrdeniesIndividual)
+            foreach (OrdenieIndividual unOrdenie in this.ListarOrdeniesIndividual())
             {
-                if (unOrdenie.Fecha.Date == pOrdenieLote.Fecha.Date && unOrdenie.Turno == pOrdenieLote.Turno)
+                if (this.BuscarOrdenieLoteXFechaTurno(unOrdenie.Fecha, unOrdenie.Turno) != null)
                 {
-                    vTotal = vTotal + unOrdenie.Litros;
+                    continue;
+                }
+
+                OrdenieLote unFaltante = this.BuscarFaltante(_listaFaltantes, unOrdenie.Fecha, unOrdenie.Turno);
+
+                if (unFaltante == null)
+                {
+                    unFaltante = new OrdenieLote(0, unOrdenie.Fecha.Date, unOrdenie.Turno, 0, new List<Hembra>());
+                    _listaFaltantes.Add(unFaltante);
+                }
+
+                unFaltante.LitrosTotales = unFaltante.LitrosTotales + unOrdenie.Litros;
+
+                if (unOrdenie.Animal != null)
+                {
+                    unFaltante.Animales.Add(unOrdenie.Animal);
                 }
             }
-            return vTotal;
+            return _listaFaltantes;
+        }
+
+        private OrdenieLote BuscarFaltante(List<OrdenieLote> pLista, DateTime pFecha, string pTurno)
+        {
+            foreach (OrdenieLote unOrdenie in pLista)
+            {
+                if (unOrdenie.Fecha.Date == pFecha.Date && unOrdenie.Turno == pTurno)
+                {
+                    return unOrdenie;
+                }
+            }
+            return null;
         }
 
         public List<OrdenieLote> FiltrarOrdeniesLoteXFecha(DateTime pDesde, DateTime pHasta)
@@ -1837,8 +1868,10 @@ namespace Tesis.Dominio
             return null;
         }
 
-        // Litros ya cargados como control individual en ese turno. El ordenie por lote
-        // los necesita para poder descontarlos del total del tanque.
+        // Litros ya cargados como control individual en ese turno. Es informacion de
+        // contexto para la pantalla del ordenie por lote: sirve para comparar lo medido
+        // vaca por vaca contra lo que dio el tanque, pero no se le resta ni se le suma
+        // al lote, porque es la misma leche.
         public double SumarLitrosIndividualesDelTurno(DateTime pFecha, string pTurno)
         {
             double vTotal = 0;
@@ -1895,15 +1928,18 @@ namespace Tesis.Dominio
         // CU10. Las tres modalidades del historial. En "Totales" se suman las dos
         // fuentes sin miedo a duplicar: los litros del control individual no estan
         // incluidos en los del lote.
-        public const string MODALIDAD_INDIVIDUAL = "Individual";
+        // Las dos formas de mirar la produccion. No son dos sumandos: el ordenie por
+        // lote es la leche que salio del tambo -el tanque completo- y el control
+        // individual es la medicion, vaca por vaca, de ese mismo ordenie. Sumarlos
+        // contaria dos veces la misma leche.
         public const string MODALIDAD_LOTE = "Lote";
-        public const string MODALIDAD_TOTALES = "Totales";
+        public const string MODALIDAD_INDIVIDUAL = "Individual";
 
         public double CalcularProduccionEnRango(DateTime pDesde, DateTime pHasta, string pModalidad)
         {
             double vTotal = 0;
 
-            if (pModalidad == MODALIDAD_LOTE || pModalidad == MODALIDAD_TOTALES)
+            if (pModalidad == MODALIDAD_LOTE)
             {
                 foreach (OrdenieLote unOrdenie in this.FiltrarOrdeniesLoteXFecha(pDesde, pHasta))
                 {
@@ -1911,7 +1947,9 @@ namespace Tesis.Dominio
                 }
             }
 
-            if (pModalidad == MODALIDAD_INDIVIDUAL || pModalidad == MODALIDAD_TOTALES)
+            // El control individual no se suma a lo anterior: es un subconjunto medido
+            // de la misma leche. Sirve para saber cuanto dieron las vacas controladas.
+            if (pModalidad == MODALIDAD_INDIVIDUAL)
             {
                 vTotal = vTotal + this.SumarLitros(this.FiltrarOrdeniesIndividualXFecha(pDesde, pHasta));
             }
@@ -1925,7 +1963,7 @@ namespace Tesis.Dominio
             DateTime vDesde = new DateTime(pAnio, pMes, 1);
             DateTime vHasta = vDesde.AddMonths(1).AddDays(-1);
 
-            return this.CalcularProduccionEnRango(vDesde, vHasta, MODALIDAD_TOTALES);
+            return this.CalcularProduccionEnRango(vDesde, vHasta, MODALIDAD_LOTE);
         }
         #endregion
 

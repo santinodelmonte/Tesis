@@ -50,31 +50,38 @@
         <hr />
         <div class="alert alert-success">
             <h3 class="mb-0">@Model.totalMensual.ToString("N2") litros</h3>
-            <small>Volumen neto de @nombresMes[Model.mes - 1] de @Model.anio</small>
+            <small>Producción de @nombresMes[Model.mes - 1] de @Model.anio</small>
         </div>
         <table class="table text-center">
             <thead>
                 <tr>
-                    <th>Fuente</th>
+                    <th>Concepto</th>
                     <th>Registros</th>
                     <th>Litros</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Ordeñe por lote</td>
-                    <td>@Model.cantidadOrdeniesLote</td>
-                    <td>@Model.totalLote.ToString("N2")</td>
-                </tr>
-                <tr>
-                    <td>Controles individuales</td>
-                    <td>@Model.cantidadControles</td>
-                    <td>@Model.totalIndividual.ToString("N2")</td>
-                </tr>
                 <tr class="table-success">
-                    <td><strong>Total del mes</strong></td>
-                    <td>@(Model.cantidadOrdeniesLote + Model.cantidadControles)</td>
-                    <td><strong>@Model.totalMensual.ToString("N2")</strong></td>
+                    <td>
+                        <strong>Producción del establecimiento</strong>
+                        <br /><small class="text-muted">
+                            La leche que salió en los ordeñes del mes.
+                        </small>
+                    </td>
+                    <td>@Model.cantidadOrdeniesLote ordeñe(s)</td>
+                    <td><strong>@Model.totalLote.ToString("N2")</strong></td>
+                </tr>
+                <tr>
+                    <td>
+                        Medido en control individual
+                        <br /><small class="text-muted">
+                            Parte de esos mismos litros, repartidos por animal. No se suma
+                            al total: es la porción de la producción que se midió vaca por
+                            vaca.
+                        </small>
+                    </td>
+                    <td>@Model.cantidadControles control(es)</td>
+                    <td>@Model.totalIndividual.ToString("N2")</td>
                 </tr>
             </tbody>
         </table>

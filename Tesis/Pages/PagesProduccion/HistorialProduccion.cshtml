@@ -7,6 +7,32 @@
 }
 <div class="text-left">
     <h1 class="display-4" style="font-size: 40px">Historial de Produccion</h1>
+    <p class="text-muted">
+        La producción del establecimiento son los litros de los ordeñes por lote: la
+        leche completa que salió en cada turno. El control individual mide esa misma
+        leche vaca por vaca, así que es otra vista de lo mismo y no se suma.
+    </p>
+
+    @if (Model.turnosSinOrdenie.Any())
+    {
+        <div class="alert alert-warning">
+            <strong>Hay @Model.turnosSinOrdenie.Count turno(s) con control individual y sin
+            ordeñe de lote registrado.</strong>
+            Esa leche no está contada en la producción del establecimiento; probablemente
+            falte cargar el ordeñe.
+            <ul class="mb-0 mt-2">
+                @foreach (Dominio.OrdenieLote faltante in Model.turnosSinOrdenie)
+                {
+                    <li>
+                        @faltante.Fecha.ToShortDateString() &mdash; @faltante.Turno:
+                        @faltante.Animales.Count animal(es) medido(s),
+                        @faltante.LitrosTotales.ToString("N2") litros.
+                        <a asp-page="./OrdenieLote">Registrar el ordeñe</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
     <hr />
     <form method="post">
         <div class="row">
@@ -14,9 +40,8 @@
                 <div class="form-group">
                     <label for="modalidad">Modalidad:</label>
                     <select id="modalidad" name="modalidad" asp-for="modalidad" class="form-control">
-                        <option value="@Dominio.Controladora.MODALIDAD_INDIVIDUAL">Individual</option>
-                        <option value="@Dominio.Controladora.MODALIDAD_LOTE">Por Lote</option>
-                        <option value="@Dominio.Controladora.MODALIDAD_TOTALES">Totales (Individual + Lote)</option>
+                        <option value="@Dominio.Controladora.MODALIDAD_LOTE">Produccion del establecimiento</option>
+                        <option value="@Dominio.Controladora.MODALIDAD_INDIVIDUAL">Control individual</option>
                     </select>
                 </div>
             </div>
