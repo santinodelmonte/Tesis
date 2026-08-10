@@ -66,7 +66,8 @@ Las dos necesitaron dos parámetros nuevos en la configuración:
 | `dias_para_tacto` | 35 | Desde cuándo el tacto ya se puede hacer |
 
 Si la base ya tenía la tabla `configuracion` creada, hay que correr
-`bd/tambo_configuracion_actualizacion.sql`. En una base nueva no hace falta.
+`bd/tambo_configuracion_actualizacion.sql`. En una base nueva no hace falta: tanto
+`bd/tambo.sql` como `bd/tambo_configuracion.sql` ya crean las dos columnas.
 
 ---
 
