@@ -69,6 +69,39 @@ en memoria.
   completa esa columna en los tratamientos ya cargados que venían de un diagnóstico.
   Está explicado en `docs/desvios-modulos-4-y-5.md`.
 
+## 1.a. Datos de prueba
+
+`tambo_datos_prueba.sql` carga un rodeo chico pero completo para poder recorrer el
+sistema sin tener que dar de alta todo a mano. Se corre después de `tambo.sql`:
+
+```bash
+mysql -u root -p < bd/tambo_datos_prueba.sql
+```
+
+Son 21 animales del establecimiento más 3 toros de catálogo que sólo aportan
+pajuelas, una semana de ordeñes con dos controles lecheros, la reproducción en
+marcha —servicios, tactos, partos y celos—, los cinco planes sanitarios con sus
+aplicaciones y el stock con sus movimientos.
+
+Los datos no son al azar: la fecha probable de parto es siempre la del servicio más
+283 días, el estado de cada hembra se corresponde con su último tacto, el número de
+partos coincide con la lactancia abierta, la raza de cada cría sale de la de sus
+padres y el `stock_actual` de cada insumo es exactamente el ingreso menos los
+egresos que dejó cada aplicación. Las dos consultas del final del script comprueban
+lo último y que los controles individuales del 05/08 sumen el total del lote de ese
+día: las dos tienen que devolver cero filas.
+
+La fecha de referencia es **2026-08-09**, y el juego está armado para que parado en
+ese día haya trabajo pendiente en todos los tableros: una vaca con descarte de leche
+vigente y fuera del lote de ordeñe, dos partos próximos, un tacto atrasado, tres
+vacas en condiciones de servicio, un ternero sin descornar, dos insumos bajo el
+mínimo y dos partidas por vencer. Vale la pena tenerlo en cuenta al mirar las
+alertas: corriendo el script mucho después de esa fecha, los vencimientos y los
+partos próximos ya habrán pasado.
+
+El script empieza vaciando las tablas de datos, así que se puede volver a correr.
+No toca razas, categorías ni la fila de configuración, que las deja `tambo.sql`.
+
 ## 1.b. Carga inicial del rodeo
 
 Las vacas que ya estaban en ordeñe cuando arranca el sistema no tienen un parto
