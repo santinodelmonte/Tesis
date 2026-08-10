@@ -1,0 +1,60 @@
+@model Tesis.Pages.Shared.CampoFotoModelo
+@{
+    // Los tres controles cuelgan del nombre del campo para que se puedan poner dos
+    // en la misma pantalla -el parto doble tiene una foto por cria- sin chocar.
+    string _campo = Model.Campo;
+
+    // Que mostrar en el recuadro. Si ya se pidio quitar la foto, la guardada no se
+    // muestra aunque siga existiendo: el recuadro tiene que reflejar como va a quedar
+    // el animal. La imagen recien elegida la dibuja el JS al cargar la pagina, por
+    // eso aca solo se contempla la que estaba guardada.
+    bool _tieneFoto = Model.FotoActual != "" && !Model.Quitar;
+}
+
+<div class="form-group">
+    <label for="@(_campo)Archivo">@Model.Etiqueta</label>
+
+    <div class="foto-control">
+        <div class="foto-marco">
+            @* La vista previa arranca con la foto guardada y la reemplaza el JS
+               apenas se elige otra. Sin foto la etiqueta va sin src: un src vacio
+               hace que el navegador vuelva a pedir la propia pagina. *@
+            @if (_tieneFoto)
+            {
+                <img id="vista_@_campo" class="foto-vista" alt="Foto del animal"
+                     src="@Model.FotoActual" style="display: block" />
+            }
+            else
+            {
+                <img id="vista_@_campo" class="foto-vista" alt="Foto del animal" style="display: none" />
+            }
+            <div id="vacio_@_campo" class="foto-vacia" style="@(_tieneFoto ? "display: none" : "display: flex")">
+                Sin foto
+            </div>
+        </div>
+
+        <div class="foto-acciones">
+            @* capture deja que el celular ofrezca la camara ademas de la galeria *@
+            <input type="file" class="form-control form-control-sm" id="@(_campo)Archivo"
+                   accept="image/*" capture="environment"
+                   onchange="prepararFoto(this, '@_campo')" />
+
+            <button type="button" class="btn btn-outline-secondary btn-sm mt-2"
+                    id="quitar_@_campo" onclick="quitarFoto('@_campo')"
+                    style="@(_tieneFoto ? "display: inline-block" : "display: none")">
+                Quitar foto
+            </button>
+
+            <div class="form-text">@Model.Ayuda</div>
+        </div>
+    </div>
+
+    @* La imagen ya achicada viaja aca adentro, como texto. Asi sobrevive a los
+       reenvios del formulario, que vacian el campo de archivo. El data-foto lo usa
+       fotoAnimal.js para volver a dibujar la vista previa al cargar la pagina. *@
+    <input type="hidden" id="@_campo" name="@_campo" value="@Model.Valor" data-foto="1" />
+
+    @* Solo se completa si se aprieta "Quitar foto": distingue "no toque la foto" de
+       "borre la que estaba" *@
+    <input type="hidden" id="@(_campo)Quitar" name="@(_campo)Quitar" value="@(Model.Quitar ? "true" : "false")" />
+</div>

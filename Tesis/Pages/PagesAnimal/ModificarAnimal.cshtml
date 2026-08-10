@@ -4,6 +4,7 @@
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/fotoAnimal.js" asp-append-version="true"></script>
 }
 <div class="text-left">
     <h1 class="display-4" style="font-size: 40px">Modificar Animal</h1>
@@ -113,6 +114,20 @@
                         @* La clase cancel hace que jQuery Validation no bloquee este envio *@
                         <button type="submit" class="btn btn-info mt-2 cancel" asp-page-handler="CalcularCategoria">Calcular Categoria</button>
                     </div>
+                </div>
+
+                <div class="col-md-4">
+                    @* Elegir una foto nueva reemplaza la que tenia. Sin tocar nada, la
+                       foto guardada queda como esta. *@
+                    <partial name="_CampoFoto" model="@(new Tesis.Pages.Shared.CampoFotoModelo
+                             {
+                                 Campo = "foto",
+                                 Etiqueta = "Foto del animal:",
+                                 Valor = Model.foto,
+                                 Quitar = Model.fotoQuitar,
+                                 FotoActual = Dominio.Controladora.UrlFoto(Model.animal),
+                                 Ayuda = "Opcional. Elegir una foto nueva reemplaza la anterior."
+                             })" />
                 </div>
 
             </div>

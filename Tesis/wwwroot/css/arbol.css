@@ -1,0 +1,238 @@
+/* ====================================================================
+   Arbol genealogico
+
+   Formato de pedigri: el animal a la izquierda y las generaciones
+   creciendo hacia la derecha. Es el unico sentido que escala cuando se
+   despliegan muchas generaciones, porque el arbol crece a lo ancho, que
+   es donde el navegador ya sabe desplazar.
+
+   Las llaves que unen a cada animal con sus dos progenitores no se
+   dibujan con bordes fijos sino que las coloca arbol.js despues de
+   armar el arbol, midiendo donde quedo cada nodo.
+
+   La alternativa era repartir el alto en partes iguales entre la madre
+   y el padre, que deja la geometria resuelta en CSS. Se probo y no
+   sirve: cuando una rama tiene cuatro generaciones cargadas y la otra
+   ninguna -que es el caso normal, porque de la linea materna siempre se
+   sabe mas-, la rama corta se lleva la mitad del alto en blanco y el
+   arbol queda con agujeros enormes. Midiendo, cada rama ocupa lo que
+   necesita.
+   ==================================================================== */
+
+.linaje-marco {
+  overflow: auto;
+  padding: 1rem 0.5rem;
+  background-color: #fbfbfa;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.5rem;
+  /* Alto de trabajo: el arbol se desplaza adentro y no empuja la pagina */
+  max-height: 75vh;
+}
+
+/* El zoom se aplica aca. Anclado a la izquierda para que al alejar la
+   vista el animal consultado no se escape del borde. */
+.linaje-lienzo {
+  transform-origin: 0 0;
+  /* El ancho tiene que salir del contenido y no de la caja que lo
+     contiene, o las generaciones lejanas se apilarian en vez de
+     ensancharlo */
+  width: max-content;
+}
+
+/* --------------------------------------------------------------
+   Estructura
+   -------------------------------------------------------------- */
+
+.linaje-rama {
+  display: flex;
+  align-items: center;
+}
+
+.linaje-progenitores {
+  display: flex;
+  flex-direction: column;
+  /* Deja lugar para la llave que une al animal con sus progenitores */
+  margin-left: 28px;
+  position: relative;
+}
+
+/* Tramo vertical de la llave: va del centro de la madre al del padre.
+   El alto y la posicion los pone arbol.js. */
+.linaje-union {
+  position: absolute;
+  left: -14px;
+  width: 0;
+  border-left: 2px solid #c7ccd1;
+}
+
+/* Tramos horizontales: el que sale del animal hacia la llave y los dos
+   que entran a cada progenitor. Tambien los coloca arbol.js. */
+.linaje-brazo {
+  position: absolute;
+  height: 0;
+  border-top: 2px solid #c7ccd1;
+}
+
+/* --------------------------------------------------------------
+   El nodo
+   -------------------------------------------------------------- */
+
+.linaje-nodo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* Ancho fijo: el parentesco mas largo -"Ascendiente de 6ª generacion"- tiene que
+     entrar sin cortarse, y todos los nodos iguales hacen que las columnas de cada
+     generacion queden alineadas */
+  width: 250px;
+  padding: 0.4rem 0.5rem;
+  margin: 0.25rem 0;
+  background-color: #fff;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-left: 4px solid #adb5bd;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.linaje-nodo:hover {
+  border-color: #0d6efd;
+  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.2);
+}
+
+/* El borde izquierdo dice el sexo de un vistazo, sin tener que leer */
+.linaje-nodo-hembra { border-left-color: #d63384; }
+.linaje-nodo-macho { border-left-color: #0d6efd; }
+
+/* El animal por el que se consulto */
+.linaje-nodo-raiz {
+  border-color: #198754;
+  background-color: #f2f9f5;
+}
+
+/* El que esta abierto en el panel lateral */
+.linaje-nodo-elegido {
+  outline: 2px solid #0d6efd;
+  outline-offset: 1px;
+}
+
+/* El animal dado de baja se muestra igual -sigue siendo parte del
+   linaje- pero apagado */
+.linaje-nodo-inactivo .linaje-foto,
+.linaje-nodo-inactivo .linaje-caravana {
+  opacity: 0.55;
+}
+
+/* El progenitor que no esta registrado. Es dato: ahi se corta lo que el
+   establecimiento sabe de ese animal. */
+.linaje-nodo-vacio {
+  width: 250px;
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  border: 1px dashed var(--bs-border-color, #dee2e6);
+  border-radius: 0.4rem;
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: 0.8rem;
+  text-align: center;
+  background-color: #fdfdfd;
+}
+
+.linaje-foto {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  background-color: #f1f3f5;
+}
+
+/* Reemplazo de la foto: la inicial del sexo sobre el color que le
+   corresponde. Sin foto el nodo tiene que seguir leyendose. */
+.linaje-foto-vacia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.linaje-foto-vacia-hembra { background-color: #d63384; }
+.linaje-foto-vacia-macho { background-color: #0d6efd; }
+
+.linaje-datos {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.linaje-caravana {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* El parentesco se parte en dos renglones en lugar de cortarse con
+   puntos suspensivos: "Bisabuela (linea materna) · Holando" no entra en
+   un renglon de este ancho, y cortado no se entiende de quien se trata,
+   que es justamente lo que el arbol tiene que decir. */
+.linaje-detalle {
+  font-size: 0.72rem;
+  line-height: 1.2;
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+/* Boton para seguir desplegando la ascendencia de ese animal */
+.linaje-expandir {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  line-height: 1;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #495057;
+  background-color: #f1f3f5;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.linaje-expandir:hover {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+/* --------------------------------------------------------------
+   Panel lateral
+   -------------------------------------------------------------- */
+
+.linaje-panel-foto {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.linaje-panel-foto-vacia {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--bs-border-color, #dee2e6);
+  border-radius: 0.5rem;
+  color: var(--bs-secondary-color, #6c757d);
+  background-color: #f8f9fa;
+}
+
+/* En pantalla chica el arbol necesita todo el ancho posible */
+@media (max-width: 575px) {
+  .linaje-nodo,
+  .linaje-nodo-vacio {
+    width: 190px;
+  }
+}

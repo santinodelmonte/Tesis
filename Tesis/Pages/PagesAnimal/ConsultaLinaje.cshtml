@@ -2,8 +2,15 @@
 @model Tesis.Pages.PagesAnimal.ConsultaLinajeModel
 @{
 }
+@section Estilos {
+    <link rel="stylesheet" href="~/css/arbol.css" asp-append-version="true" />
+}
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
+    @if (Model.animal != null)
+    {
+        <script src="~/js/arbol.js" asp-append-version="true"></script>
+    }
 }
 <div class="text-left">
     <h1 class="display-4" style="font-size: 40px">Consultar Linaje y Registro Genealogico</h1>
@@ -38,69 +45,192 @@
 
     @if (Model.animal != null)
     {
-        <h4>Arbol genealogico de @Model.animal.NumCaravana</h4>
-        <table class="table text-center">
-            <thead>
-                <tr>
-                    <th>Nivel</th>
-                    <th>Parentesco</th>
-                    <th>Caravana</th>
-                    <th>Sexo</th>
-                    <th>Raza</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>0</td>
-                    <td>Animal</td>
-                    <td>@Model.animal.NumCaravana</td>
-                    <td>@(Model.animal is Dominio.Hembra ? "Hembra" : "Macho")</td>
-                    <td>@(Model.animal.Raza != null ? Model.animal.Raza.Nombre : "")</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Madre</td>
-                    <td>@(Model.animal.Madre != null ? Model.animal.Madre.NumCaravana : "Desconocido / No registrado")</td>
-                    <td>Hembra</td>
-                    <td>@(Model.animal.Madre != null && Model.animal.Madre.Raza != null ? Model.animal.Madre.Raza.Nombre : "")</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Padre</td>
-                    <td>@(Model.animal.Padre != null ? Model.animal.Padre.NumCaravana : "Desconocido / No registrado")</td>
-                    <td>Macho</td>
-                    <td>@(Model.animal.Padre != null && Model.animal.Padre.Raza != null ? Model.animal.Padre.Raza.Nombre : "")</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Abuela materna</td>
-                    <td>@(Model.animal.Madre != null && Model.animal.Madre.Madre != null ? Model.animal.Madre.Madre.NumCaravana : "Desconocido / No registrado")</td>
-                    <td>Hembra</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Abuelo materno</td>
-                    <td>@(Model.animal.Madre != null && Model.animal.Madre.Padre != null ? Model.animal.Madre.Padre.NumCaravana : "Desconocido / No registrado")</td>
-                    <td>Macho</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Abuela paterna</td>
-                    <td>@(Model.animal.Padre != null && Model.animal.Padre.Madre != null ? Model.animal.Padre.Madre.NumCaravana : "Desconocido / No registrado")</td>
-                    <td>Hembra</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Abuelo paterno</td>
-                    <td>@(Model.animal.Padre != null && Model.animal.Padre.Padre != null ? Model.animal.Padre.Padre.NumCaravana : "Desconocido / No registrado")</td>
-                    <td>Macho</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+            <h4 class="mb-0">Arbol genealogico de @Model.animal.NumCaravana</h4>
+
+            <div class="btn-toolbar gap-2">
+                @* Solo tiene sentido ofrecer desplegar si hay mas de lo que ya se ve *@
+                @if (Model.generaciones > 2)
+                {
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="desplegarTodo()">
+                        Desplegar las @Model.generaciones generaciones
+                    </button>
+                }
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="contraerTodo()">Contraer</button>
+
+                <div class="btn-group btn-group-sm" role="group" aria-label="Zoom">
+                    <button type="button" class="btn btn-outline-secondary" onclick="acercarArbol(-0.15)" title="Alejar">−</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="restablecerZoom()" id="linajeZoom" title="Restablecer el zoom">100%</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="acercarArbol(0.15)" title="Acercar">+</button>
+                </div>
+
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="botonTabla" onclick="alternarTabla()">
+                    Ver como tabla
+                </button>
+            </div>
+        </div>
+
+        <p class="text-muted small mb-2">
+            El animal está a la izquierda y las generaciones crecen hacia la derecha:
+            arriba la línea materna y abajo la paterna. Pulse un animal para ver sus
+            datos, o el <strong>+</strong> para seguir desplegando su ascendencia.
+        </p>
+
+        @* Solo se ve cuando el usuario recentro el arbol en un ancestro *@
+        <div class="alert alert-info py-2" id="linajeAviso" style="display: none">
+            El árbol está centrado en <strong id="linajeAvisoAnimal"></strong>, no en el
+            animal consultado.
+            <button type="button" class="btn btn-sm btn-outline-dark ms-2" onclick="volverAlAnimalConsultado()">
+                Volver a @Model.animal.NumCaravana
+            </button>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <div class="linaje-marco">
+                    <div class="linaje-lienzo" id="linajeLienzo"></div>
+                </div>
+            </div>
+
+            @* Panel lateral: los datos del animal que se pulso, sin salir del arbol *@
+            <div class="col-lg-4">
+                <div class="card position-sticky" style="top: 1rem">
+                    <div class="card-body">
+                        <p class="text-muted mb-0" id="panelVacio">
+                            Pulse un animal del árbol para ver su ficha resumida acá.
+                        </p>
+
+                        <div id="panelDatos" style="display: none">
+                            <img id="panelFoto" class="linaje-panel-foto mb-2" alt="Foto del animal" style="display: none" />
+                            <div id="panelFotoVacia" class="linaje-panel-foto-vacia mb-2">Sin foto cargada</div>
+
+                            <h5 class="mb-0" id="panelCaravana"></h5>
+                            <p class="text-muted small mb-2" id="panelParentesco"></p>
+
+                            <table class="table table-sm mb-2">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" class="fw-normal text-muted">Sexo</th>
+                                        <td id="panelSexo"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" class="fw-normal text-muted">Raza</th>
+                                        <td id="panelRaza"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" class="fw-normal text-muted">Categoria</th>
+                                        <td id="panelCategoria"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" class="fw-normal text-muted">Nacimiento</th>
+                                        <td id="panelNacimiento"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" class="fw-normal text-muted">Edad</th>
+                                        <td id="panelEdad"></td>
+                                    </tr>
+                                    <tr id="panelFilaPartos">
+                                        <th scope="row" class="fw-normal text-muted">Partos</th>
+                                        <td id="panelPartos"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" class="fw-normal text-muted">Condicion</th>
+                                        <td id="panelCondicion"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" class="fw-normal text-muted">Estado</th>
+                                        <td><span id="panelEstado" class="badge bg-success"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <a class="btn btn-primary btn-sm" id="panelFicha" href="#">Ver ficha completa</a>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="panelCentrar">
+                                Centrar el árbol aquí
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* La ascendencia entera, para que la dibuje el navegador. El serializador ya
+           escapo lo que hiciera falta, por eso puede ir sin volver a codificar. *@
+        <script id="datosArbol" type="application/json">@Html.Raw(Model.arbolJson)</script>
+
+        @* -------- Vista de tabla --------
+           Sigue estando: es la que se imprime como registro genealogico y la que
+           muestra el dato crudo. Arranca oculta porque el arbol es la vista principal. *@
+        <div id="linajeTabla" style="display: none">
+            <hr />
+            <h5>Registro genealogico de @Model.animal.NumCaravana</h5>
+            <table class="table text-center">
+                <thead>
+                    <tr>
+                        <th>Nivel</th>
+                        <th>Parentesco</th>
+                        <th>Caravana</th>
+                        <th>Sexo</th>
+                        <th>Raza</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>Animal</td>
+                        <td>@Model.animal.NumCaravana</td>
+                        <td>@(Model.animal is Dominio.Hembra ? "Hembra" : "Macho")</td>
+                        <td>@(Model.animal.Raza != null ? Model.animal.Raza.Nombre : "")</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Madre</td>
+                        <td>@(Model.animal.Madre != null ? Model.animal.Madre.NumCaravana : "Desconocido / No registrado")</td>
+                        <td>Hembra</td>
+                        <td>@(Model.animal.Madre != null && Model.animal.Madre.Raza != null ? Model.animal.Madre.Raza.Nombre : "")</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Padre</td>
+                        <td>@(Model.animal.Padre != null ? Model.animal.Padre.NumCaravana : "Desconocido / No registrado")</td>
+                        <td>Macho</td>
+                        <td>@(Model.animal.Padre != null && Model.animal.Padre.Raza != null ? Model.animal.Padre.Raza.Nombre : "")</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Abuela materna</td>
+                        <td>@(Model.animal.Madre != null && Model.animal.Madre.Madre != null ? Model.animal.Madre.Madre.NumCaravana : "Desconocido / No registrado")</td>
+                        <td>Hembra</td>
+                        <td>@(Model.animal.Madre != null && Model.animal.Madre.Madre != null && Model.animal.Madre.Madre.Raza != null ? Model.animal.Madre.Madre.Raza.Nombre : "")</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Abuelo materno</td>
+                        <td>@(Model.animal.Madre != null && Model.animal.Madre.Padre != null ? Model.animal.Madre.Padre.NumCaravana : "Desconocido / No registrado")</td>
+                        <td>Macho</td>
+                        <td>@(Model.animal.Madre != null && Model.animal.Madre.Padre != null && Model.animal.Madre.Padre.Raza != null ? Model.animal.Madre.Padre.Raza.Nombre : "")</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Abuela paterna</td>
+                        <td>@(Model.animal.Padre != null && Model.animal.Padre.Madre != null ? Model.animal.Padre.Madre.NumCaravana : "Desconocido / No registrado")</td>
+                        <td>Hembra</td>
+                        <td>@(Model.animal.Padre != null && Model.animal.Padre.Madre != null && Model.animal.Padre.Madre.Raza != null ? Model.animal.Padre.Madre.Raza.Nombre : "")</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Abuelo paterno</td>
+                        <td>@(Model.animal.Padre != null && Model.animal.Padre.Padre != null ? Model.animal.Padre.Padre.NumCaravana : "Desconocido / No registrado")</td>
+                        <td>Macho</td>
+                        <td>@(Model.animal.Padre != null && Model.animal.Padre.Padre != null && Model.animal.Padre.Padre.Raza != null ? Model.animal.Padre.Padre.Raza.Nombre : "")</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="text-muted small">
+                La tabla llega hasta los abuelos. Las generaciones anteriores se
+                consultan en el árbol.
+            </p>
+        </div>
     }
 
 </div>

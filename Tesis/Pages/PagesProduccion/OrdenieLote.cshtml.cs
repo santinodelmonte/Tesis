@@ -84,16 +84,14 @@ namespace Tesis.Pages.PagesProduccion
                 return Page();
             }
 
-            // Lo que se guarda es la leche completa del turno, tal como se lee del
-            // tanque, incluida la de las vacas que ademas se midieron una por una. Los
-            // controles individuales no se descuentan: miden esa misma leche repartida
-            // por animal.
+            // Lo que se guarda es el ordenie completo del turno, tal como salio del
+            // tanque. El control individual no se descuenta: mide esa misma leche
+            // repartida vaca por vaca, y las dos fuentes no se suman nunca.
+            litrosIndividualesDelTurno = unaControladora.SumarLitrosIndividualesDelTurno(fecha, turno);
             double vLitrosDelLote = litrosTotales;
 
             // Justamente por eso el control individual no puede dar mas que el tanque:
             // seria medir por animal mas leche de la que salio del ordenie.
-            litrosIndividualesDelTurno = unaControladora.SumarLitrosIndividualesDelTurno(fecha, turno);
-
             if (litrosIndividualesDelTurno > vLitrosDelLote)
             {
                 ModelState.AddModelError(string.Empty,

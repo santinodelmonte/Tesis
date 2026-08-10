@@ -30,6 +30,13 @@ namespace Tesis.Pages.PagesAnimal
         [BindProperty]
         public bool enPie { get; set; } = false;
 
+        // La foto llega como texto -el navegador ya la achico y la codifico- y no como
+        // archivo adjunto. El motivo esta explicado en wwwroot/js/fotoAnimal.js: esta
+        // pantalla reenvia el formulario para calcular la categoria y para confirmar
+        // las advertencias, y un campo de archivo se vacia en cada reenvio.
+        [BindProperty]
+        public string foto { get; set; } = "";
+
         // Lo tilda el boton "Guardar de todos modos": llega en verdadero solo cuando el
         // usuario ya vio las advertencias de genealogia y decidio guardar igual.
         [BindProperty]
@@ -141,6 +148,11 @@ namespace Tesis.Pages.PagesAnimal
                 unAnimal.Categoria = unaControladora.CalcularCategoria(unAnimal);
             }
 
+            // La imagen se escribe recien aca, con todas las validaciones pasadas: si
+            // se guardara antes, cada intento fallido dejaria un archivo suelto.
+            unAnimal.Foto = unaControladora.GuardarFotoAnimal(
+                Shared.CampoFotoModelo.Decodificar(foto));
+
             if (unAnimal.Categoria != null && unAnimal.Raza != null)
             {
                 if (unaControladora.AltaAnimal(unAnimal))
@@ -148,6 +160,9 @@ namespace Tesis.Pages.PagesAnimal
                     return Redirect("/PagesAnimal/ListaAnimales");
                 }
             }
+
+            // El alta no prospero: el archivo que se acaba de escribir no tiene dueno
+            unaControladora.BorrarFotoAnimal(unAnimal.Foto);
 
             ModelState.AddModelError(string.Empty, "No se pudo registrar el animal!");
             return Page();
@@ -166,6 +181,8 @@ namespace Tesis.Pages.PagesAnimal
             numeroPartos = Request.Form["numeroPartos"] != "" ? Convert.ToInt32(Request.Form["numeroPartos"]) : 0;
             // El checkbox manda "true,false" cuando esta tildado
             enPie = Request.Form["enPie"].ToString().Contains("true");
+
+            foto = Request.Form["foto"];
 
             // Solo viaja cuando se apreto el boton de confirmacion: si el usuario
             // corrige un progenitor, las advertencias se evaluan de nuevo.

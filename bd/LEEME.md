@@ -43,10 +43,25 @@ actualización, que agrega los dos parámetros de trabajo reproductivo:
 mysql -u root -p < bd/tambo_configuracion_actualizacion.sql
 ```
 
+Y si la base ya existía antes de que el animal tuviera foto, hay que agregarle la
+columna. No hace falta en una base nueva: tanto `tambo.sql` como `tambo_m0_m1.sql`
+ya la crean.
+
+```bash
+mysql -u root -p < bd/tambo_foto_animal.sql
+```
+
 `tambo_m0_m1.sql` crea la base `tambo`, las cinco tablas del Módulo 1 (`razas`,
 `categorias`, `animales`, `hembras`, `machos`) y carga las razas y categorías
 semilla. El Módulo 0 no necesita tablas: las credenciales son fijas y se validan
 en memoria.
+
+**Sobre la foto del animal:** la columna `foto` de `animales` guarda el nombre del
+archivo, no la imagen. Las imágenes viven en `Tesis/wwwroot/fotos`, así que **esa
+carpeta hay que respaldarla aparte del dump de la base**: un dump solo no alcanza
+para restaurar el sistema completo. La carpeta no se versiona —son datos del
+establecimiento, no fuente— y la crea el sistema al arrancar si no existe. Está
+explicado en `docs/foto-del-animal-y-arbol-genealogico.md`.
 
 `tambo_m2_m3.sql` agrega:
 

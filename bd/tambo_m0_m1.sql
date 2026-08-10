@@ -51,6 +51,9 @@ CREATE TABLE animales (
     activo           TINYINT(1)   NOT NULL DEFAULT 1,
     fecha_baja       DATE         NULL,
     motivo_baja      VARCHAR(100) NULL,
+    -- Nombre del archivo de la foto dentro de wwwroot/fotos. La imagen no se
+    -- guarda en la base: aca queda nada mas que como se llama el archivo.
+    foto             VARCHAR(120) NULL,
     id_raza          INT(11)      NOT NULL,
     id_categoria     INT(11)      NOT NULL,
     id_madre         INT(11)      NULL,
