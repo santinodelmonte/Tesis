@@ -16,7 +16,7 @@ namespace Tesis.Persistencia
             // Se traen los id de hembras y machos para saber por que tabla esta
             // especializado cada animal, en lugar de deducirlo de un campo en NULL.
             string sql = "SELECT a.id_animal, a.num_caravana, a.fecha_nacimiento, a.activo, a.fecha_baja, " +
-                "a.motivo_baja, a.id_raza, a.id_categoria, a.id_madre, a.id_padre, " +
+                "a.motivo_baja, a.foto, a.id_raza, a.id_categoria, a.id_madre, a.id_padre, " +
                 "h.id_animal AS id_hembra, m.id_animal AS id_macho, " +
                 "h.numero_partos, h.estado_productivo, h.estado_reproductivo, m.en_pie " +
                 "FROM animales a " +
@@ -65,6 +65,9 @@ namespace Tesis.Persistencia
                         fila["en_pie"] != DBNull.Value && Convert.ToBoolean(fila["en_pie"])); // Si es NULL, usa false
                 }
 
+                // La foto no va en el constructor: es opcional y se completa aparte
+                unAnimal.Foto = fila["foto"] != DBNull.Value ? fila["foto"].ToString() : "";
+
                 lista.Add(unAnimal);
             }
 
@@ -94,8 +97,8 @@ namespace Tesis.Persistencia
         // alta la cria dentro de su propia transaccion. Por eso el comando y sus
         // parametros se declaran una sola vez aca.
         public const string SQL_ALTA = "INSERT INTO animales (num_caravana, fecha_nacimiento, activo, fecha_baja, " +
-            "motivo_baja, id_raza, id_categoria, id_madre, id_padre) " +
-            "VALUES (@num_caravana, @fecha_nacimiento, @activo, NULL, NULL, " +
+            "motivo_baja, foto, id_raza, id_categoria, id_madre, id_padre) " +
+            "VALUES (@num_caravana, @fecha_nacimiento, @activo, NULL, NULL, @foto, " +
             "@id_raza, @id_categoria, @id_madre, @id_padre)";
 
         public static Dictionary<string, object?> ParametrosAlta(Animal pAnimal)
@@ -105,6 +108,8 @@ namespace Tesis.Persistencia
                 { "@num_caravana", pAnimal.NumCaravana },
                 { "@fecha_nacimiento", pAnimal.FechaNacimiento.Date },
                 { "@activo", pAnimal.Activo ? 1 : 0 },
+                // El animal sin foto guarda NULL, no la cadena vacia
+                { "@foto", pAnimal.TieneFoto ? (object)pAnimal.Foto : null },
                 { "@id_raza", pAnimal.Raza.IdRaza },
                 { "@id_categoria", pAnimal.Categoria.IdCategoria },
                 { "@id_madre", pAnimal.Madre != null ? (object)pAnimal.Madre.IdAnimal : null },
@@ -162,6 +167,7 @@ namespace Tesis.Persistencia
             string sql = "UPDATE animales SET "
                 + "num_caravana = @num_caravana,"
                 + "fecha_nacimiento = @fecha_nacimiento,"
+                + "foto = @foto,"
                 + "id_raza = @id_raza,"
                 + "id_categoria = @id_categoria,"
                 + "id_madre = @id_madre,"
@@ -172,6 +178,7 @@ namespace Tesis.Persistencia
             {
                 { "@num_caravana", pAnimal.NumCaravana },
                 { "@fecha_nacimiento", pAnimal.FechaNacimiento.Date },
+                { "@foto", pAnimal.TieneFoto ? (object)pAnimal.Foto : null },
                 { "@id_raza", pAnimal.Raza.IdRaza },
                 { "@id_categoria", pAnimal.Categoria.IdCategoria },
                 { "@id_madre", pAnimal.Madre != null ? (object)pAnimal.Madre.IdAnimal : null },

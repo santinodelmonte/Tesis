@@ -488,9 +488,12 @@ namespace Tesis.Dominio
         // Ademas de los datos del animal recibe los de su especializacion: el numero
         // de partos de la hembra y el en pie del macho, que CU3 pide poder corregir
         // y que ademas determinan la categoria.
+        //
+        // La foto llega ya resuelta: la pantalla manda el nombre del archivo nuevo si
+        // se cargo uno, vacio si se pidio quitarla, o el que ya tenia si no se toco.
         public bool ModificarAnimal(int pIdAnimal, string pNumCaravana, DateTime pFechaNacimiento,
             Raza pRaza, Categoria pCategoria, Hembra pMadre, Macho pPadre,
-            int pNumeroPartos, bool pEnPie)
+            int pNumeroPartos, bool pEnPie, string pFoto)
         {
             Animal unAnimal = this.BuscarAnimal(pIdAnimal);
             if (unAnimal == null)
@@ -516,10 +519,18 @@ namespace Tesis.Dominio
             // esta guardado.
             Animal unAnimalNuevo = this.CopiarAnimal(unAnimal, pNumCaravana, pFechaNacimiento,
                 pRaza, pCategoria, pMadre, pPadre, pNumeroPartos, pEnPie);
+            unAnimalNuevo.Foto = pFoto ?? "";
 
             if (!Persistencia.ModificarAnimal(unAnimalNuevo))
             {
                 return false;
+            }
+
+            // La foto vieja se borra recien cuando la nueva quedo guardada: si la
+            // escritura fallaba, el animal se quedaba sin imagen y sin archivo.
+            if (unAnimal.Foto != unAnimalNuevo.Foto)
+            {
+                Persistencia.BorrarFoto(unAnimal.Foto);
             }
 
             unAnimal.NumCaravana = pNumCaravana;
@@ -528,6 +539,7 @@ namespace Tesis.Dominio
             unAnimal.Categoria = pCategoria;
             unAnimal.Madre = pMadre;
             unAnimal.Padre = pPadre;
+            unAnimal.Foto = unAnimalNuevo.Foto;
 
             if (unAnimal is Hembra)
             {
@@ -581,16 +593,27 @@ namespace Tesis.Dominio
             Raza pRaza, Categoria pCategoria, Hembra pMadre, Macho pPadre,
             int pNumeroPartos, bool pEnPie)
         {
+            Animal unAnimalNuevo;
+
             if (pAnimal is Hembra)
             {
                 Hembra unaHembra = (Hembra)pAnimal;
-                return new Hembra(pAnimal.IdAnimal, pNumCaravana, pFechaNacimiento, pAnimal.Activo,
+                unAnimalNuevo = new Hembra(pAnimal.IdAnimal, pNumCaravana, pFechaNacimiento, pAnimal.Activo,
                     pAnimal.FechaBaja, pAnimal.MotivoBaja, pRaza, pCategoria, pMadre, pPadre,
                     pNumeroPartos, unaHembra.EstadoProductivo, unaHembra.EstadoReproductivo);
             }
+            else
+            {
+                unAnimalNuevo = new Macho(pAnimal.IdAnimal, pNumCaravana, pFechaNacimiento, pAnimal.Activo,
+                    pAnimal.FechaBaja, pAnimal.MotivoBaja, pRaza, pCategoria, pMadre, pPadre, pEnPie);
+            }
 
-            return new Macho(pAnimal.IdAnimal, pNumCaravana, pFechaNacimiento, pAnimal.Activo,
-                pAnimal.FechaBaja, pAnimal.MotivoBaja, pRaza, pCategoria, pMadre, pPadre, pEnPie);
+            // La copia arrastra la foto del original. El unico que la cambia es
+            // ModificarAnimal, que la pisa despues con la que mando la pantalla: asi
+            // una actualizacion de categoria no le borra la imagen al animal.
+            unAnimalNuevo.Foto = pAnimal.Foto;
+
+            return unAnimalNuevo;
         }
 
         public bool BajaAnimal(string pNumCaravana, string pMotivoBaja)
@@ -632,6 +655,32 @@ namespace Tesis.Dominio
             }
             return false;
 
+        }
+
+        // Guarda la imagen y devuelve el nombre del archivo, que es lo que despues se
+        // escribe en la columna foto del animal. Devuelve vacio si el contenido no es
+        // una imagen valida: la foto es opcional y el alta no se cae por eso.
+        public string GuardarFotoAnimal(byte[] pContenido)
+        {
+            return Persistencia.GuardarFoto(pContenido);
+        }
+
+        // Borra un archivo que quedo sin dueno: la foto que se guardo para un alta que
+        // despues no prospero.
+        public void BorrarFotoAnimal(string pNombreArchivo)
+        {
+            Persistencia.BorrarFoto(pNombreArchivo);
+        }
+
+        // Direccion con la que la pantalla le pide la foto al servidor. Vacio cuando el
+        // animal no tiene ninguna, que es la senal para dibujar la silueta de reemplazo.
+        public static string UrlFoto(Animal pAnimal)
+        {
+            if (pAnimal == null || !pAnimal.TieneFoto)
+            {
+                return "";
+            }
+            return "/" + pFotoAnimal.CARPETA + "/" + pAnimal.Foto;
         }
 
         // Si el animal integraba el rodeo en esa fecha. Un animal dado de baja no puede

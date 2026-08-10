@@ -7,6 +7,41 @@
     <hr />
     @if (Model.animal != null)
     {
+        @* La foto va arriba de todo: es la pantalla que se mira parado frente a la
+           vaca y sirve para confirmar que la caravana es la del animal que se tiene
+           adelante *@
+        <div class="d-flex align-items-start gap-3 mb-3">
+            @if (Model.animal.TieneFoto)
+            {
+                <img class="foto-ficha" src="@Dominio.Controladora.UrlFoto(Model.animal)"
+                     alt="Foto de @Model.animal.NumCaravana" />
+            }
+            else
+            {
+                <div class="foto-ficha-vacia">Sin foto</div>
+            }
+            <div>
+                <div class="display-6">@Model.animal.NumCaravana</div>
+                <div class="text-muted">
+                    @(Model.animal is Dominio.Hembra ? "Hembra" : "Macho")
+                    @* El espacio va adentro de la etiqueta text: Razor descarta el que
+                       queda suelto entre el cierre del if y lo que sigue *@
+                    @if (Model.animal.Categoria != null)
+                    {
+                        <text> &middot; @Model.animal.Categoria.Nombre</text>
+                    }
+                    @if (Model.animal.Raza != null)
+                    {
+                        <text> &middot; @Model.animal.Raza.Nombre</text>
+                    }
+                </div>
+                <a class="btn btn-outline-secondary btn-sm mt-2" asp-page="./ModificarAnimal"
+                   asp-route-id="@Model.animal.IdAnimal">
+                    @(Model.animal.TieneFoto ? "Cambiar foto" : "Agregar foto")
+                </a>
+            </div>
+        </div>
+
         <dl class="row">
             <dt class="col-sm-2">
                 Numero de Caravana
@@ -125,7 +160,10 @@
             <div class="col-sm-12">
                 <a class="btn btn-primary" asp-page="./ListaAnimales">Volver</a>
                 <a class="btn btn-primary" asp-page="./ModificarAnimal" asp-route-id="@Model.animal.IdAnimal">Modificar</a>
-                <a class="btn btn-secondary" asp-page="./ConsultaLinaje">Ver Linaje</a>
+                @* Se le pasa la caravana para que el arbol se dibuje directo, sin
+                   tener que volver a elegir el animal en el selector *@
+                <a class="btn btn-secondary" asp-page="./ConsultaLinaje"
+                   asp-route-caravana="@Model.animal.NumCaravana">Ver Linaje</a>
 
                 @if (Model.animal.Activo)
                 {

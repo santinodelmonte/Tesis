@@ -4,6 +4,7 @@
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/fotoAnimal.js" asp-append-version="true"></script>
 }
 <div class="text-left">
     <h1 class="display-4" style="font-size: 40px">Agregar Animal</h1>
@@ -85,6 +86,18 @@
                     @* La clase cancel hace que jQuery Validation no bloquee este envio *@
                     <button type="submit" class="btn btn-info mt-2 cancel" asp-page-handler="CalcularCategoria">Calcular Categoria</button>
                 </div>
+            </div>
+
+            <div class="col-md-4">
+                @* La foto es opcional: identifica al animal en la ficha y en el arbol
+                   genealogico, donde la caravana sola no dice mucho *@
+                <partial name="_CampoFoto" model="@(new Tesis.Pages.Shared.CampoFotoModelo
+                         {
+                             Campo = "foto",
+                             Etiqueta = "Foto del animal:",
+                             Valor = Model.foto,
+                             Ayuda = "Opcional. Se achica sola antes de subirse y se puede sacar con la camara."
+                         })" />
             </div>
 
         </div>
