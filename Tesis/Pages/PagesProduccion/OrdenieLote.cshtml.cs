@@ -41,6 +41,10 @@ namespace Tesis.Pages.PagesProduccion
             Controladora unaControladora = new Controladora();
             this.CargarListados(unaControladora);
 
+            // Con la fecha y el turno propuestos, para que el aviso de contexto ya se
+            // vea al entrar y no recien despues de intentar guardar
+            litrosIndividualesDelTurno = unaControladora.SumarLitrosIndividualesDelTurno(fecha, turno);
+
             // Al entrar vienen tildados todos los que el sistema propone
             foreach (Hembra unaHembra in animalesDelLote)
             {
@@ -80,24 +84,23 @@ namespace Tesis.Pages.PagesProduccion
                 return Page();
             }
 
-            // Lo que se guarda son siempre los litros del ordeñe masivo, sin la leche
-            // de las vacas controladas aparte: asi el historial puede sumar las dos
-            // fuentes sin contar nada dos veces.
-            litrosIndividualesDelTurno = unaControladora.SumarLitrosIndividualesDelTurno(fecha, turno);
+            // Lo que se guarda es la leche completa del turno, tal como se lee del
+            // tanque, incluida la de las vacas que ademas se midieron una por una. Los
+            // controles individuales no se descuentan: miden esa misma leche repartida
+            // por animal.
             double vLitrosDelLote = litrosTotales;
 
-            if (litrosDelTanque)
-            {
-                vLitrosDelLote = litrosTotales - litrosIndividualesDelTurno;
+            // Justamente por eso el control individual no puede dar mas que el tanque:
+            // seria medir por animal mas leche de la que salio del ordenie.
+            litrosIndividualesDelTurno = unaControladora.SumarLitrosIndividualesDelTurno(fecha, turno);
 
-                if (vLitrosDelLote <= 0)
-                {
-                    ModelState.AddModelError(string.Empty,
-                        "Los controles individuales de ese turno ya suman " +
-                        litrosIndividualesDelTurno.ToString("N2") + " litros, igual o más que el total del tanque. " +
-                        "Revise el total, o marque que los litros son sólo del ordeñe masivo.");
-                    return Page();
-                }
+            if (litrosIndividualesDelTurno > vLitrosDelLote)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Los controles individuales de ese turno ya suman " +
+                    litrosIndividualesDelTurno.ToString("N2") + " litros, más que el total del ordeñe. " +
+                    "Revise el total del tanque o los controles cargados.");
+                return Page();
             }
 
             // Los animales del lote salen de lo que quedo tildado, que puede no ser lo
@@ -169,8 +172,6 @@ namespace Tesis.Pages.PagesProduccion
             double vLitros = 0;
             double.TryParse(Request.Form["litrosTotales"], out vLitros);
             litrosTotales = vLitros;
-
-            // El checkbox manda "true,false" cuando esta tildado
 
             seleccionados = new List<int>();
             foreach (string? vValor in Request.Form["animales"])
