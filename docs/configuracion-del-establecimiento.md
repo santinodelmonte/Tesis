@@ -66,7 +66,8 @@ agregar un parámetro nuevo requiere un `ALTER TABLE`; con nueve parámetros est
 barato.
 
 El script es `bd/tambo_configuracion.sql` e incluye la fila inicial con los valores por
-defecto.
+defecto. Una base creada con `bd/tambo.sql`, el script único, ya trae la tabla y esa
+fila.
 
 ---
 

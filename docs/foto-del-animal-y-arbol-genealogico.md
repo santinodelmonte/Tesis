@@ -84,8 +84,8 @@ ALTER TABLE animales ADD COLUMN foto VARCHAR(120) NULL AFTER motivo_baja;
 ```
 
 Está en `bd/tambo_foto_animal.sql`, que **solo hay que correr si la base ya existía**.
-Una base nueva ya trae la columna, porque `tambo_m0_m1.sql` la crea junto con el resto
-de la tabla.
+Una base nueva ya trae la columna: la crean tanto `tambo.sql` —el script único de
+creación— como `tambo_m0_m1.sql`, junto con el resto de la tabla.
 
 **Corregir en el Proyecto.** Sumar el campo foto a la entidad Animal del modelo de
 datos y al flujo de CU2, CU3 y CU18, y aclarar en el plan de respaldo que la carpeta

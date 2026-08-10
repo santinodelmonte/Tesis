@@ -2,42 +2,54 @@
 
 ## 1. Crear la base
 
-Con MySQL instalado y corriendo, ejecutar los scripts **en orden** desde la consola:
+Con MySQL instalado y corriendo, alcanza con un solo script:
+
+```bash
+mysql -u root -p < bd/tambo.sql
+```
+
+O abrirlo en MySQL Workbench y ejecutarlo entero. Crea la base `tambo` con las
+veintidós tablas de los Módulos 0 a 5 más la de configuración, y carga las razas,
+las categorías y la fila de parámetros del establecimiento.
+
+**El script empieza borrando la base `tambo` si ya existe, con todos sus datos.**
+Eso es lo que le permite dejar siempre el mismo esquema por más veces que se
+corra. Para conservar lo que haya cargado, respaldar antes:
+
+```bash
+mysqldump -u root -p tambo > respaldo_tambo.sql
+```
+
+### Los scripts por módulo
+
+`tambo.sql` reemplaza a la secuencia de scripts por módulo, que quedan como el
+registro de cómo se fue entregando cada uno y son los que citan los documentos de
+`docs/`. Sirven igual —corridos en orden dejan la misma base—, pero para poner en
+marcha una instalación no hacen falta:
 
 ```bash
 mysql -u root -p < bd/tambo_m0_m1.sql
-```
-
-```bash
 mysql -u root -p < bd/tambo_m2_m3.sql
-```
-
-```bash
 mysql -u root -p < bd/tambo_m4_m5.sql
-```
-
-```bash
 mysql -u root -p < bd/tambo_configuracion.sql
 ```
 
-Si la base ya tenía la tabla `configuracion` creada de antes, en lugar del script
-anterior hay que correr solo la actualización, que agrega los dos parámetros de
-trabajo reproductivo:
+Cada uno asume que los anteriores ya corrieron: las tablas nuevas tienen claves
+foráneas hacia `animales`, `hembras`, `machos` e `insumos`. Si la base ya tenía la
+tabla `configuracion` creada de antes, en lugar del último hay que correr solo la
+actualización, que agrega los dos parámetros de trabajo reproductivo:
 
 ```bash
 mysql -u root -p < bd/tambo_configuracion_actualizacion.sql
 ```
 
 Y si la base ya existía antes de que el animal tuviera foto, hay que agregarle la
-columna. Una base recién creada con los scripts de arriba ya la trae:
+columna. No hace falta en una base nueva: tanto `tambo.sql` como `tambo_m0_m1.sql`
+ya la crean.
 
 ```bash
 mysql -u root -p < bd/tambo_foto_animal.sql
 ```
-
-O abrirlos en MySQL Workbench y ejecutarlos enteros, uno después del otro. Cada
-script asume que los anteriores ya corrieron: las tablas nuevas tienen claves
-foráneas hacia `animales`, `hembras`, `machos` e `insumos`.
 
 `tambo_m0_m1.sql` crea la base `tambo`, las cinco tablas del Módulo 1 (`razas`,
 `categorias`, `animales`, `hembras`, `machos`) y carga las razas y categorías
