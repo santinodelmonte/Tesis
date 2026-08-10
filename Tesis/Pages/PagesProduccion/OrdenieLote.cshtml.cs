@@ -41,6 +41,10 @@ namespace Tesis.Pages.PagesProduccion
             Controladora unaControladora = new Controladora();
             this.CargarListados(unaControladora);
 
+            // Con la fecha y el turno propuestos, para que el aviso de contexto ya se
+            // vea al entrar y no recien despues de intentar guardar
+            litrosIndividualesDelTurno = unaControladora.SumarLitrosIndividualesDelTurno(fecha, turno);
+
             // Al entrar vienen tildados todos los que el sistema propone
             foreach (Hembra unaHembra in animalesDelLote)
             {
@@ -85,6 +89,17 @@ namespace Tesis.Pages.PagesProduccion
             // repartida vaca por vaca, y las dos fuentes no se suman nunca.
             litrosIndividualesDelTurno = unaControladora.SumarLitrosIndividualesDelTurno(fecha, turno);
             double vLitrosDelLote = litrosTotales;
+
+            // Justamente por eso el control individual no puede dar mas que el tanque:
+            // seria medir por animal mas leche de la que salio del ordenie.
+            if (litrosIndividualesDelTurno > vLitrosDelLote)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Los controles individuales de ese turno ya suman " +
+                    litrosIndividualesDelTurno.ToString("N2") + " litros, más que el total del ordeñe. " +
+                    "Revise el total del tanque o los controles cargados.");
+                return Page();
+            }
 
             // Los animales del lote salen de lo que quedo tildado, que puede no ser lo
             // que propuso el sistema: el paso 4 del caso de uso permite sacar los que no
