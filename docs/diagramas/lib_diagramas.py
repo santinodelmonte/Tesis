@@ -90,6 +90,7 @@ class Diagrama:
         self.titulo = titulo
         self.figuras = []
         self.vinculos = []
+        self.mensajes = []
         self._n = 0
 
     def _ident(self):
@@ -128,6 +129,14 @@ class Diagrama:
              desde='centro', hasta='centro'):
         self.vinculos.append(
             Vinculo(origen, destino, texto, punteado, flecha, desde, hasta))
+
+    def flecha_mensaje(self, origen, destino, y, texto, retorno=False):
+        """Mensaje horizontal entre dos lineas de vida, a la altura indicada.
+
+        Los diagramas de secuencia no encajan en el modelo de figuras unidas por
+        sus bordes: el mensaje va a una altura propia, sobre las lineas de vida.
+        """
+        self.mensajes.append((origen, destino, y, texto, retorno))
 
 
 # --------------------------------------------------------------------------- SVG
@@ -227,6 +236,25 @@ def a_svg(diagrama):
                         cx, cabeza + 34, cx - 13, cabeza + 54,
                         cx, cabeza + 34, cx + 13, cabeza + 54, BORDE))
             _texto_svg(p, cx, f.y + f.alto + 14, partir(f.texto, 150, 11), 11)
+
+    # Mensajes de los diagramas de secuencia: flechas horizontales sobre las lineas
+    # de vida, con la etiqueta encima.
+    for origen, destino, y, texto, retorno in diagrama.mensajes:
+        x1 = origen.x + origen.ancho / 2.0
+        x2 = destino.x + destino.ancho / 2.0
+        guion = ' stroke-dasharray="5 4"' if retorno else ''
+        if origen is destino:
+            # Auto-mensaje: la validacion que la Controladora resuelve sin salir de
+            # si misma. Se dibuja como el bucle habitual de UML.
+            p.append('<path d="M %.1f %.1f h 34 v 22 h -34" fill="none" stroke="%s" '
+                     'stroke-width="1.2" marker-end="url(#punta)"%s/>'
+                     % (x1, y, BORDE, guion))
+            _texto_svg(p, x1 + 42, y + 11, [texto], 10, ancla='start')
+        else:
+            p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
+                     'stroke-width="1.2" marker-end="url(#punta)"%s/>'
+                     % (x1, y, x2, y, BORDE, guion))
+            _texto_svg(p, (x1 + x2) / 2.0, y - 10, [texto], 10)
 
     p.insert(1, '<defs><marker id="punta" markerWidth="9" markerHeight="9" '
                 'refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" '
