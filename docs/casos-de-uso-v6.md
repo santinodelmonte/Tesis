@@ -5,13 +5,13 @@ Generado desde `casos_de_uso_parte1.py` y `casos_de_uso_parte2.py`. No editar a 
 ## Listado
 
 
-**Modulo 0: Seguridad, Acceso y Configuracion**
+**Módulo 0: Seguridad, Acceso y Configuración**
 
 - CU 1 — Iniciar Sesión (Log In)
 - CU 2 — Cerrar Sesión
 - CU 3 — Configurar Parámetros del Establecimiento
 
-**Modulo 1: Gestion de Animales y Genetica**
+**Módulo 1: Gestión de Animales y Genética**
 
 - CU 4 — Registrar Alta de Animal
 - CU 5 — Modificar Datos de Animal
@@ -22,7 +22,7 @@ Generado desde `casos_de_uso_parte1.py` y `casos_de_uso_parte2.py`. No editar a 
 - CU 10 — Buscar y Filtrar Animales del Rodeo
 - CU 11 — Consultar Ficha Integral del Animal
 
-**Modulo 2: Control de Produccion**
+**Módulo 2: Control de Producción**
 
 - CU 12 — Registrar Ordeñe por Lote
 - CU 13 — Registrar Control Lechero
@@ -33,7 +33,7 @@ Generado desde `casos_de_uso_parte1.py` y `casos_de_uso_parte2.py`. No editar a 
 - CU 18 — Abrir Lactancia Manualmente
 - CU 19 — Corregir o Eliminar Registro de Producción
 
-**Modulo 3: Gestion Reproductiva**
+**Módulo 3: Gestión Reproductiva**
 
 - CU 20 — Registrar Detección de Celo
 - CU 21 — Registrar Servicio
@@ -43,7 +43,7 @@ Generado desde `casos_de_uso_parte1.py` y `casos_de_uso_parte2.py`. No editar a 
 - CU 25 — Consultar Listas de Trabajo Reproductivas
 - CU 26 — Corregir o Eliminar Evento Reproductivo
 
-**Modulo 4: Gestion Sanitaria**
+**Módulo 4: Gestión Sanitaria**
 
 - CU 27 — Registrar Diagnóstico o Revisación
 - CU 28 — Registrar Tratamiento Sanitario
@@ -54,7 +54,7 @@ Generado desde `casos_de_uso_parte1.py` y `casos_de_uso_parte2.py`. No editar a 
 - CU 33 — Cerrar Diagnóstico
 - CU 34 — Corregir o Eliminar Evento Sanitario
 
-**Modulo 5: Control de Insumos y Stock**
+**Módulo 5: Control de Insumos y Stock**
 
 - CU 35 — Registrar Alta e Ingreso de Insumo
 - CU 36 — Configurar Umbral de Stock Mínimo
@@ -62,14 +62,14 @@ Generado desde `casos_de_uso_parte1.py` y `casos_de_uso_parte2.py`. No editar a 
 - CU 38 — Consultar Alertas de Vencimiento de Insumos
 - CU 39 — Consultar Historial de Movimientos de Stock
 
-**Modulo 6: Tablero, Indicadores y Apoyo a la Decision**
+**Módulo 6: Tablero, Indicadores y Apoyo a la Decisión**
 
 - CU 40 — Consultar Tablero de Inicio
 - CU 41 — Consultar Indicadores del Rodeo
 - CU 42 — Consultar Candidatas a Descarte
 - CU 43 — Buscar Animal por Caravana
 
-**Modulo 7: Reportes y Notificaciones**
+**Módulo 7: Reportes y Notificaciones**
 
 - CU 44 — Generar Reporte Productivo
 - CU 45 — Generar Reporte Sanitario
@@ -81,7 +81,7 @@ Generado desde `casos_de_uso_parte1.py` y `casos_de_uso_parte2.py`. No editar a 
 ---
 
 
-## Modulo 0: Seguridad, Acceso y Configuracion
+## Módulo 0: Seguridad, Acceso y Configuración
 
 ### CU 1 — Iniciar Sesión (Log In)
 
@@ -179,7 +179,7 @@ Curso Básico:
 
 1. El usuario ingresa a la sección “Configuración”.
 
-2. El sistema despliega el formulario con los valores vigentes de cada parámetro: días de secado previos al parto, edad mínima al servicio, edad de cambio de categoría, litros máximos por control individual, cantidad de ordeñes diarios, y los días de anticipación de los avisos de secado, de parto, del calendario sanitario y de vencimiento de insumos.
+2. El sistema despliega el formulario con los valores vigentes de cada uno de los once parámetros: días de secado previos al parto, edad mínima al servicio, edad de cambio de categoría, litros máximos por control individual, cantidad de ordeñes diarios, espera voluntaria posparto, días para el tacto, y los días de anticipación de los avisos de secado, de parto, del calendario sanitario y de vencimiento de insumos.
 
 3. El usuario modifica los valores que correspondan y presiona “Guardar”.
 
@@ -200,7 +200,7 @@ Validaciones: Todos los parámetros son obligatorios y numéricos. Cada uno tien
 Frecuencia de Uso: Baja, al poner el sistema en marcha y ante cambios de criterio de manejo.
 
 
-## Modulo 1: Gestion de Animales y Genetica
+## Módulo 1: Gestión de Animales y Genética
 
 ### CU 4 — Registrar Alta de Animal
 
@@ -523,7 +523,7 @@ Validaciones: —
 Frecuencia de Uso: Alta, es la pantalla de consulta habitual del sistema.
 
 
-## Modulo 2: Control de Produccion
+## Módulo 2: Control de Producción
 
 ### CU 12 — Registrar Ordeñe por Lote
 
@@ -848,7 +848,7 @@ Validaciones: Las mismas del registro original.
 Frecuencia de Uso: Baja, ante errores de carga.
 
 
-## Modulo 3: Gestion Reproductiva
+## Módulo 3: Gestión Reproductiva
 
 ### CU 20 — Registrar Detección de Celo
 
@@ -1090,9 +1090,9 @@ Curso Básico:
 
 1. El usuario accede a “Tactos Pendientes” o a “Vacas para Servir”.
 
-2. En la primera, el sistema selecciona los servicios vigentes cuya preñez no fue confirmada ni descartada y sobre los que ya transcurrió el plazo habitual para tactar.
+2. En la primera, el sistema selecciona los servicios vigentes cuya preñez no fue confirmada ni descartada y sobre los que ya transcurrieron los días para el tacto configurados.
 
-3. En la segunda, el sistema selecciona las hembras activas que están en condiciones de recibir servicio.
+3. En la segunda, el sistema selecciona las hembras activas que están en condiciones de recibir servicio, es decir aquellas que superaron la espera voluntaria posparto configurada.
 
 4. El sistema despliega cada lista indicando, para cada animal, el motivo por el cual figura.
 
@@ -1102,7 +1102,7 @@ Cursos de Excepción: —
 
 Post-condición: El usuario conoce el trabajo reproductivo pendiente sin que se altere ningún registro.
 
-Reglas de Negocio: Una hembra está para servir si alcanzó la edad mínima al servicio, no está preñada y no tiene un servicio a la espera de tacto. El motivo se muestra en texto: el sistema informa, no decide.
+Reglas de Negocio: Una hembra está para servir si alcanzó la edad mínima al servicio, no está preñada y no tiene un servicio a la espera de tacto; si además parió, debe haber superado la espera voluntaria posparto. Los dos plazos son parámetros configurables (RF0.3). El motivo se muestra en texto: el sistema informa, no decide.
 
 Validaciones: —
 
@@ -1149,7 +1149,7 @@ Validaciones: Las mismas del registro original.
 Frecuencia de Uso: Baja, ante errores de carga.
 
 
-## Modulo 4: Gestion Sanitaria
+## Módulo 4: Gestión Sanitaria
 
 ### CU 27 — Registrar Diagnóstico o Revisación
 
@@ -1488,7 +1488,7 @@ Validaciones: Las mismas del registro original.
 Frecuencia de Uso: Baja, ante errores de carga.
 
 
-## Modulo 5: Control de Insumos y Stock
+## Módulo 5: Control de Insumos y Stock
 
 ### CU 35 — Registrar Alta e Ingreso de Insumo
 
@@ -1689,7 +1689,7 @@ Validaciones: El rango de fechas debe ser válido, con fecha de inicio anterior 
 Frecuencia de Uso: Media, ante auditorías de inventario o control de consumos.
 
 
-## Modulo 6: Tablero, Indicadores y Apoyo a la Decision
+## Módulo 6: Tablero, Indicadores y Apoyo a la Decisión
 
 ### CU 40 — Consultar Tablero de Inicio
 
@@ -1844,7 +1844,7 @@ Validaciones: El número de caravana es obligatorio.
 Frecuencia de Uso: Alta, es el atajo de consulta del sistema.
 
 
-## Modulo 7: Reportes y Notificaciones
+## Módulo 7: Reportes y Notificaciones
 
 ### CU 44 — Generar Reporte Productivo
 

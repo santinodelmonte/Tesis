@@ -9,8 +9,11 @@ import copy
 from docx import Document
 from docx.oxml.ns import qn
 
-RUTA_ENTRADA = 'Anteproyecto_v5.docx'
-RUTA_SALIDA = 'Anteproyecto_v6.docx'
+import os
+AQUI = os.path.dirname(os.path.abspath(__file__))
+RAIZ = os.path.dirname(AQUI)
+RUTA_ENTRADA = os.path.join(RAIZ, 'Anteproyecto_v5.docx')
+RUTA_SALIDA = os.path.join(RAIZ, 'Anteproyecto_v6.docx')
 
 doc = Document(RUTA_ENTRADA)
 BULLET = '●​ '
@@ -109,9 +112,10 @@ clonar_despues(
     p, 'RF0.3 Configuración de parámetros de manejo:',
     'El sistema debe permitir configurar los parámetros de manejo del establecimiento '
     '—días de secado previos al parto, edad mínima al servicio, edad de cambio de '
-    'categoría, litros máximos admitidos por control, cantidad de ordeñes diarios y la '
-    'anticipación de cada aviso—, validando que cada valor quede dentro de su rango '
-    'admitido y aplicando valores por defecto mientras no se configuren.')
+    'categoría, litros máximos admitidos por control, cantidad de ordeñes diarios, '
+    'espera voluntaria posparto, días para el tacto y la anticipación de cada uno de '
+    'los cuatro avisos—, validando que cada valor quede dentro de su rango admitido y '
+    'aplicando valores por defecto mientras no se configuren.')
 
 
 # ------------------------------------------------------ Modulo 1: animales y genetica

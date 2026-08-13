@@ -31,7 +31,7 @@ desde cualquier pantalla.
 
 **RF0.3 Configuración de parámetros de manejo** (nuevo). El sistema debe permitir
 configurar los parámetros de manejo del establecimiento, validando que cada uno quede
-dentro de su rango admitido. Son nueve, con estos valores por defecto:
+dentro de su rango admitido. Son once, con estos valores por defecto:
 
 | Parámetro | Por defecto |
 |---|---|
@@ -40,6 +40,8 @@ dentro de su rango admitido. Son nueve, con estos valores por defecto:
 | Edad de cambio de categoría | 12 meses |
 | Litros máximos por control individual | 100 |
 | Ordeñes por día | 2 |
+| Espera voluntaria posparto | 45 días |
+| Días para el tacto | 35 días |
 | Anticipación del aviso de secado | 15 días |
 | Anticipación del aviso de parto | 15 días |
 | Anticipación del calendario sanitario | 30 días |

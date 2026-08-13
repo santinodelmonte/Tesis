@@ -6,14 +6,14 @@ requerimiento son los de la v6 del anteproyecto.
 """
 
 MODULOS = {
-    0: 'Modulo 0: Seguridad, Acceso y Configuracion',
-    1: 'Modulo 1: Gestion de Animales y Genetica',
-    2: 'Modulo 2: Control de Produccion',
-    3: 'Modulo 3: Gestion Reproductiva',
-    4: 'Modulo 4: Gestion Sanitaria',
-    5: 'Modulo 5: Control de Insumos y Stock',
-    6: 'Modulo 6: Tablero, Indicadores y Apoyo a la Decision',
-    7: 'Modulo 7: Reportes y Notificaciones',
+    0: 'Módulo 0: Seguridad, Acceso y Configuración',
+    1: 'Módulo 1: Gestión de Animales y Genética',
+    2: 'Módulo 2: Control de Producción',
+    3: 'Módulo 3: Gestión Reproductiva',
+    4: 'Módulo 4: Gestión Sanitaria',
+    5: 'Módulo 5: Control de Insumos y Stock',
+    6: 'Módulo 6: Tablero, Indicadores y Apoyo a la Decisión',
+    7: 'Módulo 7: Reportes y Notificaciones',
 }
 
 CASOS = [
@@ -92,11 +92,12 @@ dict(
         'sistema tiene configurado.',
     curso=[
         'El usuario ingresa a la sección “Configuración”.',
-        'El sistema despliega el formulario con los valores vigentes de cada parámetro: '
-        'días de secado previos al parto, edad mínima al servicio, edad de cambio de '
-        'categoría, litros máximos por control individual, cantidad de ordeñes diarios, y '
-        'los días de anticipación de los avisos de secado, de parto, del calendario '
-        'sanitario y de vencimiento de insumos.',
+        'El sistema despliega el formulario con los valores vigentes de cada uno de los '
+        'once parámetros: días de secado previos al parto, edad mínima al servicio, edad '
+        'de cambio de categoría, litros máximos por control individual, cantidad de '
+        'ordeñes diarios, espera voluntaria posparto, días para el tacto, y los días de '
+        'anticipación de los avisos de secado, de parto, del calendario sanitario y de '
+        'vencimiento de insumos.',
         'El usuario modifica los valores que correspondan y presiona “Guardar”.',
         'El sistema valida que cada valor se encuentre dentro de su rango admitido.',
         'El sistema almacena la configuración y confirma la operación.',
@@ -904,10 +905,11 @@ dict(
     curso=[
         'El usuario accede a “Tactos Pendientes” o a “Vacas para Servir”.',
         'En la primera, el sistema selecciona los servicios vigentes cuya preñez no fue '
-        'confirmada ni descartada y sobre los que ya transcurrió el plazo habitual para '
-        'tactar.',
+        'confirmada ni descartada y sobre los que ya transcurrieron los días para el tacto '
+        'configurados.',
         'En la segunda, el sistema selecciona las hembras activas que están en condiciones '
-        'de recibir servicio.',
+        'de recibir servicio, es decir aquellas que superaron la espera voluntaria '
+        'posparto configurada.',
         'El sistema despliega cada lista indicando, para cada animal, el motivo por el cual '
         'figura.',
     ],
@@ -917,8 +919,10 @@ dict(
     postcondicion='El usuario conoce el trabajo reproductivo pendiente sin que se altere '
         'ningún registro.',
     reglas='Una hembra está para servir si alcanzó la edad mínima al servicio, no está '
-        'preñada y no tiene un servicio a la espera de tacto. El motivo se muestra en '
-        'texto: el sistema informa, no decide.',
+        'preñada y no tiene un servicio a la espera de tacto; si además parió, debe haber '
+        'superado la espera voluntaria posparto. Los dos plazos son parámetros '
+        'configurables (RF0.3). El motivo se muestra en texto: el sistema informa, no '
+        'decide.',
     validaciones='—',
     frecuencia='Alta, de revisión cotidiana.',
 ),

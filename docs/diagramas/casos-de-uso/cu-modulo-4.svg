@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="765" height="782" viewBox="0 0 765 782">
+<defs><marker id="punta" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#40484f" stroke-width="1.2"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="382.5" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Módulo 4: Gestión Sanitaria</text>
+<rect x="205.0" y="46.0" width="290.0" height="672.0" fill="#ffffff" stroke="#40484f" stroke-width="1.5"/>
+<text x="350.0" y="66.0" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Sistema de Gestión de Tambo</text>
+<line x1="105.0" y1="406.0" x2="225.0" y2="114.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="105.0" y1="406.0" x2="225.0" y2="194.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="105.0" y1="406.0" x2="225.0" y2="274.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="105.0" y1="406.0" x2="225.0" y2="354.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="105.0" y1="406.0" x2="225.0" y2="434.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="105.0" y1="406.0" x2="225.0" y2="514.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="105.0" y1="406.0" x2="225.0" y2="594.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="105.0" y1="406.0" x2="225.0" y2="674.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="475.0" y1="194.0" x2="535.0" y2="111.0" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<text x="505.0" y="144.5" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">«include»</text>
+<circle cx="85.0" cy="378.0" r="10" fill="#f4f6f8" stroke="#40484f" stroke-width="1.4"/>
+<path d="M 85.0 388.0 L 85.0 412.0 M 69.0 396.0 L 101.0 396.0 M 85.0 412.0 L 72.0 432.0 M 85.0 412.0 L 98.0 432.0" stroke="#40484f" stroke-width="1.4" fill="none"/>
+<text x="85.0" y="460.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Encargada del sector</text>
+<ellipse cx="350.0" cy="114.0" rx="125.0" ry="28.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="350.0" y="107.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU27 — Registrar Diagnóstico o</text>
+<text x="350.0" y="120.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Revisación</text>
+<ellipse cx="350.0" cy="194.0" rx="125.0" ry="28.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="350.0" y="187.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU28 — Registrar Tratamiento</text>
+<text x="350.0" y="200.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Sanitario</text>
+<ellipse cx="350.0" cy="274.0" rx="125.0" ry="28.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="350.0" y="274.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU29 — Registrar Vacunación</text>
+<ellipse cx="350.0" cy="354.0" rx="125.0" ry="28.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="350.0" y="354.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU30 — Configurar Plan Sanitario</text>
+<ellipse cx="350.0" cy="434.0" rx="125.0" ry="28.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="350.0" y="427.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU31 — Consultar Calendario</text>
+<text x="350.0" y="440.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Sanitario</text>
+<ellipse cx="350.0" cy="514.0" rx="125.0" ry="28.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="350.0" y="507.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU32 — Registrar Procedimiento de</text>
+<text x="350.0" y="520.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Descorne</text>
+<ellipse cx="350.0" cy="594.0" rx="125.0" ry="28.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="350.0" y="594.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU33 — Cerrar Diagnóstico</text>
+<ellipse cx="350.0" cy="674.0" rx="125.0" ry="28.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="350.0" y="667.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU34 — Corregir o Eliminar Evento</text>
+<text x="350.0" y="680.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Sanitario</text>
+<ellipse cx="637.5" cy="111.0" rx="102.5" ry="25.0" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="637.5" y="111.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Descontar Insumo de Stock</text>
+</svg>
