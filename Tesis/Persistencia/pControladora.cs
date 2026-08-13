@@ -157,6 +157,11 @@ namespace Tesis.Persistencia
         {
             return new pOrdenieLote().ModificarOrdenieLote(pOrdenieLote);
         }
+
+        public bool EliminarOrdenieLote(int pIdOrdenieLote)
+        {
+            return new pOrdenieLote().EliminarOrdenieLote(pIdOrdenieLote);
+        }
         #endregion
 
         #region ORDENIES INDIVIDUALES
@@ -170,6 +175,16 @@ namespace Tesis.Persistencia
         public bool AltaOrdenieIndividual(OrdenieIndividual pOrdenie)
         {
             return new pOrdenieIndividual().AltaOrdenieIndividual(pOrdenie);
+        }
+
+        public bool ModificarOrdenieIndividual(OrdenieIndividual pOrdenie)
+        {
+            return new pOrdenieIndividual().ModificarOrdenieIndividual(pOrdenie);
+        }
+
+        public bool EliminarOrdenieIndividual(int pIdOrdenieInd)
+        {
+            return new pOrdenieIndividual().EliminarOrdenieIndividual(pIdOrdenieInd);
         }
         #endregion
 

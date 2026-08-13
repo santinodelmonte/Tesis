@@ -1,49 +1,88 @@
 @page
 @model Tesis.Pages.PagesProduccion.OrdenieIndividualModel
 @{
+    ViewData["Title"] = Model.esCorreccion ? "Corregir control" : "Control de una vaca";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
 <div class="panel-formulario">
-    <h1>Registrar Ordeñe Individual</h1>
-    <p class="text-muted">
-        El control individual es puntual: convive con el registro por lote y se imputa
-        a la lactancia vigente del animal.
-    </p>
+    @if (Model.esCorreccion)
+    {
+        <h1>Corregir Control Individual</h1>
+        <p class="text-muted">
+            Se corrigen los litros. La fecha, el turno y el animal identifican al control:
+            si lo que está mal es alguno de esos tres, el camino es eliminarlo desde el
+            historial y volver a cargarlo.
+        </p>
+    }
+    else
+    {
+        <h1>Control de una Vaca</h1>
+        <p class="text-muted">
+            La carga puntual del control lechero: la vaca que faltó el día del control, una
+            medición suelta o una carga retroactiva. Para medir todo el rodeo de una vez está
+            el <a asp-page="./ControlLechero">control lechero</a>. Los dos guardan lo mismo:
+            lo que dio ese animal en ese turno, imputado a la lactancia de esa fecha.
+        </p>
+    }
     <hr />
     <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
         <div class="row">
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="turno">Turno:</label>
-                    <select id="turno" name="turno" asp-for="turno" class="form-control">
-                        @foreach (string unTurno in Model.turnos)
-                        {
-                            <option value="@unTurno">@unTurno</option>
-                        }
-                    </select>
+                    @if (Model.esCorreccion)
+                    {
+                        <input type="text" id="turno" class="form-control" readonly value="@Model.turno" />
+                    }
+                    else
+                    {
+                        <select id="turno" name="turno" asp-for="turno" class="form-control">
+                            @foreach (string unTurno in Model.turnos)
+                            {
+                                <option value="@unTurno">@unTurno</option>
+                            }
+                        </select>
+                    }
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="fecha">Fecha:</label>
-                    <input type="date" id="fecha" name="fecha" class="form-control"
-                           value="@Model.fecha.ToString("yyyy-MM-dd")" />
+                    @if (Model.esCorreccion)
+                    {
+                        <input type="text" id="fecha" class="form-control" readonly
+                               value="@Model.fecha.ToShortDateString()" />
+                    }
+                    else
+                    {
+                        <input type="date" id="fecha" name="fecha" class="form-control"
+                               value="@Model.fecha.ToString("yyyy-MM-dd")" />
+                    }
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="caravanaTexto">Caravana:</label>
-                    <div class="input-group">
-                        <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                    @if (Model.esCorreccion)
+                    {
                         <input type="text" id="caravanaTexto" class="form-control" readonly
                                value="@Model.numCaravana" />
-                        <button type="button" class="btn btn-secondary"
-                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
-                            Buscar
-                        </button>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="input-group">
+                            <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
+                            <input type="text" id="caravanaTexto" class="form-control" readonly
+                                   value="@Model.numCaravana" />
+                            <button type="button" class="btn btn-secondary"
+                                    onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
+                                Buscar
+                            </button>
+                        </div>
+                    }
                 </div>
             </div>
             <div class="col-md-3">
@@ -58,14 +97,23 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-outline-secondary" asp-page="./OrdenieLote">Ordeñe por Lote</a>
-                <a class="btn btn-warning" asp-page="./HistorialProduccion">Historial</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    @(Model.esCorreccion ? "Guardar corrección" : "Guardar")
+                </button>
+                @if (Model.esCorreccion)
+                {
+                    <a class="btn btn-outline-secondary" asp-page="./HistorialProduccion">Cancelar</a>
+                }
+                else
+                {
+                    <a class="btn btn-outline-secondary" asp-page="./ControlLechero">Control lechero</a>
+                    <a class="btn btn-warning" asp-page="./HistorialProduccion">Historial</a>
+                }
             </div>
         </div>
     </form>
 
-    @if (Model.ultimosControles.Any())
+    @if (!Model.esCorreccion && Model.ultimosControles.Any())
     {
         <hr />
         <h2 class="h5">Controles de los ultimos siete dias</h2>
@@ -95,4 +143,7 @@
     }
 </div>
 
-<partial name="_SelectorAnimal" model="Model.animales" />
+@if (!Model.esCorreccion)
+{
+    <partial name="_SelectorAnimal" model="Model.animales" />
+}

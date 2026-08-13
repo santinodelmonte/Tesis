@@ -4,10 +4,10 @@ namespace Tesis.Pages.Shared
     // _AccionesRegistro.cshtml.
     //
     // Es un modelo de pantalla y no de negocio, como CampoFotoModelo: vive en Pages y
-    // no en Dominio. Existe porque los ocho listados de Reproduccion y Sanidad
+    // no en Dominio. Existe porque los listados de Reproduccion, Sanidad y Produccion
     // muestran exactamente los mismos dos botones con exactamente el mismo
-    // comportamiento, y repetir ese bloque ocho veces significaba que arreglarlo en
-    // uno no lo arreglaba en los otros siete.
+    // comportamiento, y repetir ese bloque diez veces significaba que arreglarlo en
+    // uno no lo arreglaba en los otros nueve.
     public class AccionesRegistroModelo
     {
         // Pantalla que edita el registro. Es la misma que lo da de alta: recibe el
@@ -26,14 +26,30 @@ namespace Tesis.Pages.Shared
         // al usuario: es el que dice que hay que sacar primero.
         public string MotivoBloqueo { get; set; } = "";
 
+        // Manejador que atiende la baja. Se puede cambiar porque el historial de
+        // produccion tiene dos listados eliminables en la misma pantalla -el ordenie
+        // por lote y el control individual- y cada uno necesita el suyo.
+        public string Handler { get; set; } = "Eliminar";
+
+        // Que se deshace al borrar, para el pedido de confirmacion. Lo normal en
+        // Reproduccion y Sanidad es que el borrado arrastre estado y stock; los
+        // registros de produccion no arrastran nada y decir que si seria mentirle al
+        // usuario justo cuando esta por confirmar algo irreversible.
+        public string Consecuencia { get; set; } =
+            "Los efectos que dejo -el estado del animal, el stock consumido- se deshacen solos.";
+
+        // Datos que la baja tiene que devolver a la pantalla que la pidio. El historial
+        // de produccion los usa para no perder el rango de fechas consultado: sin esto
+        // el listado vuelve vacio y hay que volver a buscar.
+        public Dictionary<string, string> CamposOcultos { get; set; } = new Dictionary<string, string>();
+
         // Texto del pedido de confirmacion, ya armado.
         public string TextoConfirmacion
         {
             get
             {
-                return "Se va a eliminar " + Descripcion
-                    + ". Los efectos que dejo -el estado del animal, el stock consumido- se deshacen solos. "
-                    + "Esta accion no se puede deshacer.";
+                return "Se va a eliminar " + Descripcion + ". " + Consecuencia
+                    + " Esta accion no se puede deshacer.";
             }
         }
     }

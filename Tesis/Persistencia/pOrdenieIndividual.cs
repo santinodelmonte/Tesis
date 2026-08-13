@@ -52,6 +52,31 @@ namespace Tesis.Persistencia
             return pOrdenie.IdOrdenieInd > 0;
         }
 
+        // La correccion reescribe unicamente los litros. La fecha, el turno y el animal
+        // son la clave alterna del control: cambiarlos no es corregir este registro, es
+        // borrarlo y cargar otro, que ademas es lo que la persona entiende que hizo
+        // cuando anoto el control en la vaca de al lado.
+        public bool ModificarOrdenieIndividual(OrdenieIndividual pOrdenie)
+        {
+            string sql = "UPDATE ordenies_individual SET litros = @litros " +
+                "WHERE id_ordenie_ind = @id_ordenie_ind";
+
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@litros", pOrdenie.Litros },
+                { "@id_ordenie_ind", pOrdenie.IdOrdenieInd }
+            };
+
+            return Conexion.EjecutarComando(sql, parametros);
+        }
+
+        public bool EliminarOrdenieIndividual(int pIdOrdenieInd)
+        {
+            return Conexion.EjecutarComando(
+                "DELETE FROM ordenies_individual WHERE id_ordenie_ind = @id_ordenie_ind",
+                new Dictionary<string, object?> { { "@id_ordenie_ind", pIdOrdenieInd } });
+        }
+
         private Hembra BuscarHembra(List<Hembra> pLista, int pIdAnimal)
         {
             foreach (Hembra unaHembra in pLista)

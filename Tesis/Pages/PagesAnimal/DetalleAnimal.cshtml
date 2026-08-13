@@ -236,7 +236,14 @@
                     La producción se estima por intervalos de control, no sumando los controles.
                 </p>
 
-                <h3 class="h6">Controles de la lactancia en curso</h3>
+                @* La acción que propone lo que se está mirando: parado frente a la vaca,
+                   cargarle el control es lo que sigue. No es un acceso repetido al menú,
+                   porque llega con la caravana ya elegida. *@
+                <h3 class="h6">
+                    Controles de la lactancia en curso
+                    <a class="btn btn-outline-secondary btn-sm" asp-page="/PagesProduccion/OrdenieIndividual"
+                       asp-route-caravana="@Model.animal.NumCaravana">Cargar control</a>
+                </h3>
                 <table data-paginar="10" class="table table-sm">
                     <thead>
                         <tr>

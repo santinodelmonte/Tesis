@@ -1769,6 +1769,54 @@ namespace Tesis.Dominio
 
         }
 
+        // La baja del ordenie del turno. Nunca se bloquea: el lote no deduce ningun
+        // estado, no consume stock y lo unico que lo referencia son los controles
+        // individuales de ese turno, que sobreviven solos.
+        //
+        // Borrarlo es decir "ese ordenie no se cargo", y hace falta para el caso que la
+        // correccion no cubre: el turno cargado en la fecha equivocada. La fecha y el
+        // turno son clave alterna, asi que no se pueden reescribir; el unico camino es
+        // dar de baja y volver a cargar.
+        public string ValidarEliminarOrdenieLote(int pIdOrdenieLote)
+        {
+            this.Refrescar();
+
+            if (this.BuscarOrdenieLote(pIdOrdenieLote) == null)
+            {
+                return "El ordeñe que se quiere eliminar ya no existe!";
+            }
+            return "";
+        }
+
+        public bool EliminarOrdenieLote(int pIdOrdenieLote)
+        {
+            if (this.ValidarEliminarOrdenieLote(pIdOrdenieLote) != "")
+            {
+                return false;
+            }
+
+            OrdenieLote unOrdenie = this.BuscarOrdenieLote(pIdOrdenieLote);
+
+            if (Persistencia.EliminarOrdenieLote(pIdOrdenieLote))
+            {
+                // Los controles de ese turno quedan como los que se cargan antes que el
+                // total: medidos, contados y sin lote al que engancharse.
+                foreach (OrdenieIndividual unControl in mListaOrdeniesIndividual)
+                {
+                    if (unControl.OrdenieLote != null
+                        && unControl.OrdenieLote.IdOrdenieLote == pIdOrdenieLote)
+                    {
+                        unControl.OrdenieLote = null;
+                    }
+                }
+
+                mListaOrdeniesLote.Remove(unOrdenie);
+                return true;
+            }
+            return false;
+
+        }
+
         // Litros del turno: los del ordenie masivo mas los de las vacas que se
         // controlaron individualmente ese mismo dia y turno, que no estan incluidas en
         // litros_totales.
@@ -1927,6 +1975,94 @@ namespace Tesis.Dominio
                 }
             }
             return null;
+        }
+
+        // Correccion del control ya cargado. Se reescriben los litros y nada mas.
+        //
+        // La fecha, el turno y el animal son la clave alterna del control: cambiarlos no
+        // es corregir este registro sino cargar otro distinto, y el caso real que hay
+        // detras -"lo anote en la vaca de al lado"- se resuelve mejor con la baja, que
+        // es lo que la persona entiende que tiene que deshacer.
+        //
+        // Hace falta por lo mismo que ModificarOrdenieLote: BuscarOrdenieIndividualX
+        // FechaTurno impide volver a cargar el mismo animal en la misma fecha y turno,
+        // asi que sin correccion un error de tipeo quedaba fijo para siempre. Y acá pesa
+        // mas que en el lote, porque estos litros alimentan la produccion de la
+        // lactancia, la proyeccion a 305 dias y el criterio de produccion baja de las
+        // candidatas a descarte: un cero de mas mueve decisiones sobre el animal.
+        public string ValidarModificarOrdenieIndividual(int pIdOrdenieInd, double pLitros)
+        {
+            this.Refrescar();
+
+            if (this.BuscarOrdenieIndividual(pIdOrdenieInd) == null)
+            {
+                return "El control que se quiere corregir ya no existe!";
+            }
+
+            if (!this.ValidarLitrosIndividual(pLitros))
+            {
+                return "Los litros tienen que ser un valor positivo y no pueden superar los "
+                    + this.Parametros().LitrosMaximosIndividual.ToString("N2") + " litros por control!";
+            }
+            return "";
+        }
+
+        public bool ModificarOrdenieIndividual(int pIdOrdenieInd, double pLitros)
+        {
+            if (this.ValidarModificarOrdenieIndividual(pIdOrdenieInd, pLitros) != "")
+            {
+                return false;
+            }
+
+            OrdenieIndividual unOrdenie = this.BuscarOrdenieIndividual(pIdOrdenieInd);
+
+            OrdenieIndividual unOrdenieNuevo = new OrdenieIndividual(unOrdenie.IdOrdenieInd,
+                unOrdenie.Fecha, unOrdenie.Turno, pLitros, unOrdenie.Animal,
+                unOrdenie.Lactancia, unOrdenie.OrdenieLote);
+
+            if (Persistencia.ModificarOrdenieIndividual(unOrdenieNuevo))
+            {
+                unOrdenie.Litros = pLitros;
+                return true;
+            }
+            return false;
+
+        }
+
+        // El control individual no se bloquea nunca. No deduce ningun estado, no
+        // consume stock y ningun otro registro lo referencia: lo unico que sale de el
+        // son sumas, y las sumas se rehacen solas con los controles que quedan.
+        //
+        // Al reves, borrarlos destraba: EliminarParto se niega mientras la lactancia que
+        // el parto abrio tenga ordenies cargados, asi que sacar el control mal cargado
+        // es justamente el paso previo que ese mensaje pide.
+        public string ValidarEliminarOrdenieIndividual(int pIdOrdenieInd)
+        {
+            this.Refrescar();
+
+            if (this.BuscarOrdenieIndividual(pIdOrdenieInd) == null)
+            {
+                return "El control que se quiere eliminar ya no existe!";
+            }
+            return "";
+        }
+
+        public bool EliminarOrdenieIndividual(int pIdOrdenieInd)
+        {
+            if (this.ValidarEliminarOrdenieIndividual(pIdOrdenieInd) != "")
+            {
+                return false;
+            }
+
+            OrdenieIndividual unOrdenie = this.BuscarOrdenieIndividual(pIdOrdenieInd);
+
+            if (Persistencia.EliminarOrdenieIndividual(pIdOrdenieInd))
+            {
+                mListaOrdeniesIndividual.Remove(unOrdenie);
+                return true;
+            }
+            return false;
+
         }
 
         // Litros ya cargados como control individual en ese turno. Es informacion de
@@ -3953,8 +4089,12 @@ namespace Tesis.Dominio
 
                 if (_listaOrdenies.Count > 0)
                 {
+                    // Ahora que el control individual se puede dar de baja, el aviso
+                    // dice donde: sin eso queda en "no se puede" y el usuario no tiene
+                    // como avanzar, que es justo lo que este mensaje existe para evitar.
                     return "La lactancia que abrio este parto tiene " + _listaOrdenies.Count
-                        + " control(es) de ordenie cargado(s): deshacer el parto borraria esa produccion!";
+                        + " control(es) de ordenie cargado(s): deshacer el parto borraria esa produccion. "
+                        + "Eliminelos primero desde el historial de produccion!";
                 }
             }
 

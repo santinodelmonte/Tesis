@@ -28,8 +28,15 @@
 
     @if (Model.MotivoBloqueo == "")
     {
-        <form method="post" asp-page-handler="Eliminar" asp-route-id="@Model.Id"
+        <form method="post" asp-page-handler="@Model.Handler" asp-route-id="@Model.Id"
               data-confirmar="@Model.TextoConfirmacion">
+            @* Contexto que la pantalla necesita recuperar despues de la baja, como el
+               rango de fechas del historial de produccion. Vacio en los ocho listados
+               de Reproduccion y Sanidad, que se recargan solos. *@
+            @foreach (string unCampo in Model.CamposOcultos.Keys)
+            {
+                <input type="hidden" name="@unCampo" value="@Model.CamposOcultos[unCampo]" />
+            }
             <button type="submit" class="btn btn-outline-danger btn-sm">
                 <svg class="ico" aria-hidden="true"><use href="@vIconos#eliminar"></use></svg>
                 Eliminar

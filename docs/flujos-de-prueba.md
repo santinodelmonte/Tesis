@@ -194,30 +194,7 @@ sacar a la `133` del lote y guardar. El registro tiene que quedar con una vaca m
 
 ---
 
-## 7. Ordeñe individual
-
-**Pasos.** **Produccion → Ordeñe Individual**.
-
-| Campo | Dato |
-|---|---|
-| Fecha | `2026-08-10` |
-| Turno | Turno 2 |
-| Caravana | `130` |
-| Litros | `8.90` |
-
-**Esperado.** Guarda y se ve en el historial de producción de `130`.
-
-**Variantes que tienen que fallar.**
-
-- Repetir el mismo animal, fecha y turno → avisa que ya hay un control cargado, con
-  los litros que tiene.
-- Caravana `136` (vaca seca) → *"El animal no se encuentra en lactancia: su estado
-  productivo es Seca."*.
-- Litros `250` → supera el máximo por control configurado (100 litros) y lo rechaza.
-
----
-
-## 8. Control lechero (carga masiva)
+## 7. Control lechero (carga masiva)
 
 **Pasos.** **Produccion → Control Lechero (carga masiva)**.
 
@@ -248,7 +225,33 @@ litros de al menos un animal!"*. Fecha futura → la rechaza.
 
 ---
 
-## 9. Historial y métrica mensual
+## 8. Control de una vaca (carga puntual)
+
+**Pasos.** **Produccion → Control Lechero → Cargar una sola vaca**. Ya no hay entrada
+propia en el menú: es la variante puntual del control lechero y se llega desde
+adentro, o desde el botón "Cargar control" de la ficha del animal, que además llega
+con la caravana ya elegida.
+
+| Campo | Dato |
+|---|---|
+| Fecha | `2026-08-10` |
+| Turno | Turno 2 |
+| Caravana | `130` |
+| Litros | `8.90` |
+
+**Esperado.** Guarda y se ve en el historial de producción de `130`.
+
+**Variantes que tienen que fallar.**
+
+- Repetir el mismo animal, fecha y turno → avisa que ya hay un control cargado, con
+  los litros que tiene.
+- Caravana `136` (vaca seca) → *"El animal no se encuentra en lactancia: su estado
+  productivo es Seca."*.
+- Litros `250` → supera el máximo por control configurado (100 litros) y lo rechaza.
+
+---
+
+## 9. Historial: consulta, corrección y baja
 
 - **Produccion → Historial de Produccion**, rango `2026-07-01` a `2026-08-11`, por
   lote: tiene que mostrar los catorce ordeñes del juego de datos más los que se
@@ -258,6 +261,36 @@ litros de al menos un animal!"*. Fecha futura → la rechaza.
 - **Produccion → Metrica Mensual**, mes `Agosto` año `2026`: total del mes, promedio
   por ordeñe y promedio por vaca. La leche del 05/08 no se tiene que contar dos veces
   (ese día hay lote y controles individuales del mismo ordeñe).
+
+Los dos registros de Producción se corrigen y se dan de baja desde acá, que es su
+listado. Hay que buscar primero: los botones salen sobre las filas del rango
+consultado, y después de borrar la consulta se rehace sola con el mismo rango.
+
+**Corregir un control individual.** Modalidad *Control individual*, rango que incluya
+el `2026-08-11`. Editar el control de la `108` y cambiar `15.00` por `1.50`.
+
+**Esperado.** Fecha, turno y caravana se ven pero no se pueden tocar: identifican al
+control. Al guardar, la ficha de la `108` muestra la producción estimada de la
+lactancia y la proyección a 305 días más bajas que antes.
+
+**Variante que tiene que fallar.** Poner `250` litros → supera el máximo por control
+configurado y lo rechaza con el tope en el mensaje.
+
+**Eliminar un control individual.** Borrar el control de la `133` del `2026-08-10`,
+Turno 2. La confirmación tiene que nombrar la caravana, la fecha, el turno y los
+litros.
+
+**Esperado.** Desaparece de la lista y de la ficha del animal. Volver a cargarlo con
+esa misma fecha y turno desde *Cargar una sola vaca* ahora funciona: antes la clave
+alterna lo impedía y no había forma de arreglarlo.
+
+**Eliminar un ordeñe por lote.** Modalidad *Producción del establecimiento*, borrar
+el ordeñe del `2026-08-10` Turno 1.
+
+**Esperado.** Los controles individuales de ese turno **siguen estando** —son
+mediciones válidas por sí solas— y el turno pasa a aparecer en el aviso de arriba
+como *"anotado únicamente vaca por vaca"*. El acumulado del período baja hasta la
+suma de esos controles.
 
 ---
 
