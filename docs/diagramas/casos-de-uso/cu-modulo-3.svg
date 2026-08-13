@@ -12,7 +12,7 @@
 <line x1="105.0" y1="366.0" x2="225.0" y2="514.0" stroke="#40484f" stroke-width="1.2"/>
 <line x1="105.0" y1="366.0" x2="225.0" y2="594.0" stroke="#40484f" stroke-width="1.2"/>
 <line x1="475.0" y1="194.0" x2="535.0" y2="111.0" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
-<text x="505.0" y="144.5" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">«include»</text>
+<text x="497.8" y="154.5" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">«include»</text>
 <circle cx="85.0" cy="338.0" r="10" fill="#f4f6f8" stroke="#40484f" stroke-width="1.4"/>
 <path d="M 85.0 348.0 L 85.0 372.0 M 69.0 356.0 L 101.0 356.0 M 85.0 372.0 L 72.0 392.0 M 85.0 372.0 L 98.0 392.0" stroke="#40484f" stroke-width="1.4" fill="none"/>
 <text x="85.0" y="420.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Encargada del sector</text>

@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1358" height="807" viewBox="0 0 1358 807">
+<defs><marker id="punta" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#40484f" stroke-width="1.2"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="679.0" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Diagrama de Persistencia — clases de acceso a datos</text>
+<line x1="240.0" y1="123.5" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="240.0" y1="247.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="240.0" y1="348.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="240.0" y1="449.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="240.0" y1="550.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="240.0" y1="681.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="502.0" y1="93.5" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="502.0" y1="209.5" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="502.0" y1="325.5" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="502.0" y1="449.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="502.0" y1="587.5" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="502.0" y1="718.5" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="764.0" y1="101.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="764.0" y1="217.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="764.0" y1="348.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="764.0" y1="471.5" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="764.0" y1="565.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="764.0" y1="673.5" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="1026.0" y1="116.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="1026.0" y1="247.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<line x1="1026.0" y1="363.0" x2="1118.0" y2="398.5" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#punta)"/>
+<rect x="1118.0" y="358.5" width="210.0" height="80.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="1223.0" y="384.8" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pConexion — Abrir, Cerrar,</text>
+<text x="1223.0" y="398.5" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">EjecutarComando,</text>
+<text x="1223.0" y="412.2" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">EjecutarConsulta</text>
+<rect x="30.0" y="56.0" width="210.0" height="135.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 80.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="80.0" x2="240.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="135.0" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pAnimal</text>
+<text x="37.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarAnimales()</text>
+<text x="37.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosAlta()</text>
+<text x="37.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaAnimal()</text>
+<text x="37.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosModificar()</text>
+<text x="37.0" y="151.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarAnimal()</text>
+<text x="37.0" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">BajaAnimal()</text>
+<text x="37.0" y="181.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ReactivarAnimal()</text>
+<rect x="30.0" y="217.0" width="210.0" height="60.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 241.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="241.0" x2="240.0" y2="241.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="135.0" y="229.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pCategoria</text>
+<text x="37.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarCategorias()</text>
+<text x="37.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaCategoria()</text>
+<rect x="30.0" y="303.0" width="210.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 327.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="327.0" x2="240.0" y2="327.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="135.0" y="315.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pCelo</text>
+<text x="37.0" y="338.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarCelos()</text>
+<text x="37.0" y="353.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaCelo()</text>
+<text x="37.0" y="368.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarCelo()</text>
+<text x="37.0" y="383.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarCelo()</text>
+<rect x="30.0" y="419.0" width="210.0" height="60.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 443.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="443.0" x2="240.0" y2="443.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="135.0" y="431.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pConfiguracion</text>
+<text x="37.0" y="454.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ObtenerConfiguracion()</text>
+<text x="37.0" y="469.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarConfiguracion()</text>
+<rect x="30.0" y="505.0" width="210.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 529.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="529.0" x2="240.0" y2="529.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="135.0" y="517.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pDescorne</text>
+<text x="37.0" y="540.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarDescornes()</text>
+<text x="37.0" y="555.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaDescorne()</text>
+<text x="37.0" y="570.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarDescorne()</text>
+<text x="37.0" y="585.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarDescorne()</text>
+<rect x="30.0" y="621.0" width="210.0" height="120.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 645.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="645.0" x2="240.0" y2="645.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="135.0" y="633.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pDiagnostico</text>
+<text x="37.0" y="656.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarDiagnosticos()</text>
+<text x="37.0" y="671.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaDiagnostico()</text>
+<text x="37.0" y="686.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosModificarEstado()</text>
+<text x="37.0" y="701.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarDiagnostico()</text>
+<text x="37.0" y="716.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarDiagnostico()</text>
+<text x="37.0" y="731.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarDiagnostico()</text>
+<rect x="292.0" y="56.0" width="210.0" height="75.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 293.0 80.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="292.0" y1="80.0" x2="502.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="397.0" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pFotoAnimal</text>
+<text x="299.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Configurar()</text>
+<text x="299.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Guardar()</text>
+<text x="299.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Borrar()</text>
+<rect x="292.0" y="157.0" width="210.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 293.0 181.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="292.0" y1="181.0" x2="502.0" y2="181.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="397.0" y="169.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pHembra</text>
+<text x="299.0" y="192.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosAlta()</text>
+<text x="299.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarHembras()</text>
+<text x="299.0" y="222.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaHembra()</text>
+<text x="299.0" y="237.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosModificar()</text>
+<text x="299.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarHembra()</text>
+<rect x="292.0" y="288.0" width="210.0" height="75.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 293.0 312.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="292.0" y1="312.0" x2="502.0" y2="312.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="397.0" y="300.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pInsumo</text>
+<text x="299.0" y="323.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarInsumos()</text>
+<text x="299.0" y="338.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaInsumo()</text>
+<text x="299.0" y="353.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarStockMinimo()</text>
+<rect x="292.0" y="389.0" width="210.0" height="120.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 293.0 413.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="292.0" y1="413.0" x2="502.0" y2="413.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="397.0" y="401.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pLactancia</text>
+<text x="299.0" y="424.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarLactancias()</text>
+<text x="299.0" y="439.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosAlta()</text>
+<text x="299.0" y="454.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaLactancia()</text>
+<text x="299.0" y="469.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosModificar()</text>
+<text x="299.0" y="484.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarLactancia()</text>
+<text x="299.0" y="499.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">RegistrarSecado()</text>
+<rect x="292.0" y="535.0" width="210.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 293.0 559.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="292.0" y1="559.0" x2="502.0" y2="559.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="397.0" y="547.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pMacho</text>
+<text x="299.0" y="570.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosAlta()</text>
+<text x="299.0" y="585.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarMachos()</text>
+<text x="299.0" y="600.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaMacho()</text>
+<text x="299.0" y="615.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosModificar()</text>
+<text x="299.0" y="630.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarMacho()</text>
+<rect x="292.0" y="666.0" width="210.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 293.0 690.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="292.0" y1="690.0" x2="502.0" y2="690.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="397.0" y="678.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pMovimientoStock</text>
+<text x="299.0" y="701.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarMovimientos()</text>
+<text x="299.0" y="716.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosAlta()</text>
+<text x="299.0" y="731.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AsentarEnTransaccion()</text>
+<text x="299.0" y="746.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AsentarEnTransaccion()</text>
+<text x="299.0" y="761.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">RegistrarIngreso()</text>
+<rect x="554.0" y="56.0" width="210.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 555.0 80.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="554.0" y1="80.0" x2="764.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="659.0" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pOrdenieIndividual</text>
+<text x="561.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarOrdeniesIndividual()</text>
+<text x="561.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaOrdenieIndividual()</text>
+<text x="561.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarOrdenieIndividual()</text>
+<text x="561.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarOrdenieIndividual()</text>
+<rect x="554.0" y="172.0" width="210.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 555.0 196.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="554.0" y1="196.0" x2="764.0" y2="196.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="659.0" y="184.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pOrdenieLote</text>
+<text x="561.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarOrdeniesLote()</text>
+<text x="561.0" y="222.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaOrdenieLote()</text>
+<text x="561.0" y="237.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarOrdenieLote()</text>
+<text x="561.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarOrdenieLote()</text>
+<rect x="554.0" y="288.0" width="210.0" height="120.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 555.0 312.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="554.0" y1="312.0" x2="764.0" y2="312.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="659.0" y="300.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pParto</text>
+<text x="561.0" y="323.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarPartos()</text>
+<text x="561.0" y="338.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaParto()</text>
+<text x="561.0" y="353.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosAlta()</text>
+<text x="561.0" y="368.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosModificar()</text>
+<text x="561.0" y="383.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarParto()</text>
+<text x="561.0" y="398.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarParto()</text>
+<rect x="554.0" y="434.0" width="210.0" height="75.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 555.0 458.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="554.0" y1="458.0" x2="764.0" y2="458.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="659.0" y="446.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pPlanSanitario</text>
+<text x="561.0" y="469.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarPlanes()</text>
+<text x="561.0" y="484.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaPlan()</text>
+<text x="561.0" y="499.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarPlan()</text>
+<rect x="554.0" y="535.0" width="210.0" height="60.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 555.0 559.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="554.0" y1="559.0" x2="764.0" y2="559.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="659.0" y="547.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pRaza</text>
+<text x="561.0" y="570.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarRazas()</text>
+<text x="561.0" y="585.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaRaza()</text>
+<rect x="554.0" y="621.0" width="210.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 555.0 645.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="554.0" y1="645.0" x2="764.0" y2="645.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="659.0" y="633.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pServicio</text>
+<text x="561.0" y="656.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarServicios()</text>
+<text x="561.0" y="671.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaServicio()</text>
+<text x="561.0" y="686.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosModificar()</text>
+<text x="561.0" y="701.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarServicio()</text>
+<text x="561.0" y="716.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarServicio()</text>
+<rect x="816.0" y="56.0" width="210.0" height="120.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 817.0 80.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="816.0" y1="80.0" x2="1026.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="921.0" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pTacto</text>
+<text x="823.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarTactos()</text>
+<text x="823.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosAlta()</text>
+<text x="823.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaTacto()</text>
+<text x="823.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ParametrosModificar()</text>
+<text x="823.0" y="151.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarTacto()</text>
+<text x="823.0" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarTacto()</text>
+<rect x="816.0" y="202.0" width="210.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 817.0 226.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="816.0" y1="226.0" x2="1026.0" y2="226.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="921.0" y="214.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pTratamiento</text>
+<text x="823.0" y="237.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarTratamientos()</text>
+<text x="823.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaTratamiento()</text>
+<text x="823.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarTratamiento()</text>
+<text x="823.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarTratamiento()</text>
+<rect x="816.0" y="318.0" width="210.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 817.0 342.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="816.0" y1="342.0" x2="1026.0" y2="342.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="921.0" y="330.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pVacunacion</text>
+<text x="823.0" y="353.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ListarVacunaciones()</text>
+<text x="823.0" y="368.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">AltaVacunacion()</text>
+<text x="823.0" y="383.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ModificarVacunacion()</text>
+<text x="823.0" y="398.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">EliminarVacunacion()</text>
+</svg>

@@ -175,7 +175,10 @@ def a_svg(diagrama):
         p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
                  'stroke-width="1.2"%s%s/>' % (x1, y1, x2, y2, BORDE, guion, punta))
         if v.texto:
-            _texto_svg(p, (x1 + x2) / 2.0, (y1 + y2) / 2.0 - 8, [v.texto], 10)
+            # A media linea la etiqueta suele caer encima de la figura de destino;
+            # a poco mas de un tercio queda en el tramo despejado.
+            _texto_svg(p, x1 + 0.38 * (x2 - x1), y1 + 0.38 * (y2 - y1) - 8,
+                       [v.texto], 10)
 
     for f in diagrama.figuras:
         if f.clase == 'marco':
