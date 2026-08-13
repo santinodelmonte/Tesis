@@ -113,6 +113,17 @@ class Diagrama:
     def caja(self, x, y, ancho, alto, texto, **estilo):
         return self.agregar('caja', x, y, ancho, alto, texto, **estilo)
 
+    def tabla(self, x, y, titulo, filas, ancho=210, alto_fila=15, alto_titulo=24,
+              **estilo):
+        """Caja con encabezado y una linea por fila. Sirve para el MER y para las
+        clases de los diagramas de dominio y persistencia."""
+        alto = alto_titulo + max(1, len(filas)) * alto_fila + 6
+        figura = self.agregar('tabla', x, y, ancho, alto, titulo, **estilo)
+        figura.filas = filas
+        figura.alto_fila = alto_fila
+        figura.alto_titulo = alto_titulo
+        return figura
+
     def unir(self, origen, destino, texto='', punteado=False, flecha=False,
              desde='centro', hasta='centro'):
         self.vinculos.append(
@@ -182,6 +193,25 @@ def a_svg(diagrama):
                         BORDE))
             _texto_svg(p, cx, cy, partir(f.texto, f.ancho, 11), 11,
                        f.estilo.get('negrita', False))
+        elif f.clase == 'tabla':
+            relleno = f.estilo.get('relleno', RELLENO)
+            p.append('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="3" '
+                     'fill="#ffffff" stroke="%s" stroke-width="1.3"/>'
+                     % (f.x, f.y, f.ancho, f.alto, BORDE))
+            p.append('<path d="M %.1f %.1f h %.1f v %.1f h %.1f Z" fill="%s"/>'
+                     % (f.x + 1, f.y + f.alto_titulo, f.ancho - 2, -f.alto_titulo + 2,
+                        -f.ancho + 2, relleno))
+            p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
+                     'stroke-width="1.3"/>'
+                     % (f.x, f.y + f.alto_titulo, f.x + f.ancho,
+                        f.y + f.alto_titulo, BORDE))
+            _texto_svg(p, cx, f.y + f.alto_titulo / 2.0, [f.texto], 11.5, True)
+            for i, fila in enumerate(f.filas):
+                etiqueta, marca = fila if isinstance(fila, tuple) else (fila, '')
+                y_fila = f.y + f.alto_titulo + 4 + i * f.alto_fila + f.alto_fila / 2.0
+                _texto_svg(p, f.x + 7, y_fila, [etiqueta], 9.5, ancla='start')
+                if marca:
+                    _texto_svg(p, f.x + f.ancho - 7, y_fila, [marca], 8.5, True, 'end')
         elif f.clase == 'actor':
             cabeza = f.y + 12
             p.append('<circle cx="%.1f" cy="%.1f" r="10" fill="%s" stroke="%s" '
@@ -211,6 +241,8 @@ ESTILOS = {
              'verticalAlign=top;fontStyle=1;',
     'actor': 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;'
              'outlineConnect=0;fillColor=#f4f6f8;strokeColor=#40484f;',
+    'tabla': 'rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#40484f;'
+             'align=left;verticalAlign=top;spacingLeft=6;spacingTop=2;fontSize=10;',
 }
 
 
@@ -228,7 +260,17 @@ def a_drawio(diagrama):
     ordenadas = ([f for f in diagrama.figuras if f.clase == 'marco'] +
                  [f for f in diagrama.figuras if f.clase != 'marco'])
     for f in ordenadas:
-        celda = ET.SubElement(raiz, 'mxCell', id=f.id, value=f.texto,
+        valor = f.texto
+        if f.clase == 'tabla':
+            # draw.io interpreta el valor como HTML: el encabezado en negrita y una
+            # linea por columna, que es la forma en que se edita comodo despues.
+            filas = []
+            for fila in f.filas:
+                etiqueta, marca = fila if isinstance(fila, tuple) else (fila, '')
+                filas.append(html.escape(etiqueta) +
+                             ('  <i>%s</i>' % html.escape(marca) if marca else ''))
+            valor = '<b>%s</b><hr>%s' % (html.escape(f.texto), '<br>'.join(filas))
+        celda = ET.SubElement(raiz, 'mxCell', id=f.id, value=valor,
                               style=ESTILOS[f.clase], vertex='1', parent='1')
         ET.SubElement(celda, 'mxGeometry', x=str(f.x), y=str(f.y),
                       width=str(f.ancho), height=str(f.alto), **{'as': 'geometry'})
