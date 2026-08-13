@@ -1,0 +1,339 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1335" height="957" viewBox="0 0 1335 957">
+<defs><marker id="punta" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#40484f" stroke-width="1.2"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="667.5" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Modelo Entidad-Relación — Sistema de Gestión de Tambo</text>
+<line x1="137.5" y1="258.0" x2="137.5" y2="131.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="137.5" y1="258.0" x2="137.5" y2="232.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="137.5" y1="453.0" x2="137.5" y2="479.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="137.5" y1="453.0" x2="137.5" y2="595.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="137.5" y1="479.0" x2="137.5" y2="453.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="137.5" y1="595.0" x2="137.5" y2="453.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="295.0" y1="123.5" x2="245.0" y2="625.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="402.5" y1="217.0" x2="402.5" y2="191.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="295.0" y1="438.0" x2="245.0" y2="524.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="402.5" y1="640.0" x2="402.5" y2="614.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="295.0" y1="670.0" x2="245.0" y2="524.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="295.0" y1="793.5" x2="245.0" y2="524.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="402.5" y1="726.0" x2="402.5" y2="498.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="402.5" y1="726.0" x2="402.5" y2="614.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="560.0" y1="101.0" x2="245.0" y2="524.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="560.0" y1="247.0" x2="245.0" y2="524.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="560.0" y1="247.0" x2="245.0" y2="625.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="560.0" y1="247.0" x2="510.0" y2="123.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="667.5" y1="348.0" x2="667.5" y2="322.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="560.0" y1="531.5" x2="245.0" y2="524.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="825.0" y1="123.5" x2="510.0" y2="123.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="932.5" y1="217.0" x2="932.5" y2="191.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="825.0" y1="247.0" x2="245.0" y2="194.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="560.0" y1="662.5" x2="245.0" y2="355.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="560.0" y1="831.0" x2="245.0" y2="355.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="667.5" y1="741.0" x2="667.5" y2="715.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="560.0" y1="831.0" x2="510.0" y2="123.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="775.0" y1="831.0" x2="825.0" y2="123.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="825.0" y1="355.5" x2="245.0" y2="355.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="825.0" y1="355.5" x2="510.0" y2="123.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="932.5" y1="303.0" x2="932.5" y2="191.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="825.0" y1="494.0" x2="245.0" y2="355.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="932.5" y1="434.0" x2="932.5" y2="191.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="1197.5" y1="172.0" x2="1197.5" y2="146.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="1090.0" y1="247.0" x2="245.0" y2="355.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="1090.0" y1="247.0" x2="510.0" y2="123.5" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<rect x="30.0" y="56.0" width="215.0" height="75.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 80.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="80.0" x2="245.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="137.5" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">razas</text>
+<text x="37.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_raza</text>
+<text x="238.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="37.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">nombre</text>
+<text x="238.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="37.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">descripcion</text>
+<rect x="30.0" y="157.0" width="215.0" height="75.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 181.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="181.0" x2="245.0" y2="181.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="137.5" y="169.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">categorias</text>
+<text x="37.0" y="192.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_categoria</text>
+<text x="238.0" y="192.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="37.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">nombre</text>
+<text x="238.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="37.0" y="222.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">descripcion</text>
+<rect x="30.0" y="258.0" width="215.0" height="195.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 282.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="282.0" x2="245.0" y2="282.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="137.5" y="270.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">animales</text>
+<text x="37.0" y="293.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="238.0" y="293.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="37.0" y="308.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">num_caravana</text>
+<text x="238.0" y="308.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="37.0" y="323.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_nacimiento</text>
+<text x="37.0" y="338.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">activo</text>
+<text x="37.0" y="353.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_baja</text>
+<text x="37.0" y="368.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">motivo_baja</text>
+<text x="37.0" y="383.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">foto</text>
+<text x="37.0" y="398.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_raza</text>
+<text x="238.0" y="398.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="37.0" y="413.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_categoria</text>
+<text x="238.0" y="413.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="37.0" y="428.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_madre</text>
+<text x="238.0" y="428.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="37.0" y="443.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_padre</text>
+<text x="238.0" y="443.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="30.0" y="479.0" width="215.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 503.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="503.0" x2="245.0" y2="503.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="137.5" y="491.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">hembras</text>
+<text x="37.0" y="514.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="238.0" y="514.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK, FK</text>
+<text x="37.0" y="529.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">numero_partos</text>
+<text x="37.0" y="544.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">estado_productivo</text>
+<text x="37.0" y="559.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">estado_reproductivo</text>
+<rect x="30.0" y="595.0" width="215.0" height="60.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 619.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="619.0" x2="245.0" y2="619.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="137.5" y="607.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">machos</text>
+<text x="37.0" y="630.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="238.0" y="630.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK, FK</text>
+<text x="37.0" y="645.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">en_pie</text>
+<rect x="295.0" y="56.0" width="215.0" height="135.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 296.0 80.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="295.0" y1="80.0" x2="510.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="402.5" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">insumos</text>
+<text x="302.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
+<text x="503.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="302.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">nombre</text>
+<text x="302.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_insumo</text>
+<text x="302.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">stock_actual</text>
+<text x="302.0" y="151.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">stock_minimo</text>
+<text x="302.0" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">periodo_descarte_dias</text>
+<text x="302.0" y="181.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_macho</text>
+<text x="503.0" y="181.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="295.0" y="217.0" width="215.0" height="135.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 296.0 241.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="295.0" y1="241.0" x2="510.0" y2="241.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="402.5" y="229.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">movimientos_stock</text>
+<text x="302.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_movimiento</text>
+<text x="503.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="302.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_movimiento</text>
+<text x="302.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">cantidad</text>
+<text x="302.0" y="297.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha</text>
+<text x="302.0" y="312.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_vencimiento</text>
+<text x="302.0" y="327.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">motivo</text>
+<text x="302.0" y="342.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
+<text x="503.0" y="342.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="295.0" y="378.0" width="215.0" height="120.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 296.0 402.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="295.0" y1="402.0" x2="510.0" y2="402.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="402.5" y="390.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">lactancias</text>
+<text x="302.0" y="413.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_lactancia</text>
+<text x="503.0" y="413.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="302.0" y="428.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">numero_lactancia</text>
+<text x="302.0" y="443.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_inicio</text>
+<text x="302.0" y="458.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_secado</text>
+<text x="302.0" y="473.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_probable_parto</text>
+<text x="302.0" y="488.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="503.0" y="488.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="295.0" y="524.0" width="215.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 296.0 548.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="295.0" y1="548.0" x2="510.0" y2="548.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="402.5" y="536.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">ordenies_lote</text>
+<text x="302.0" y="559.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_ordenie_lote</text>
+<text x="503.0" y="559.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="302.0" y="574.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha</text>
+<text x="503.0" y="574.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="302.0" y="589.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">turno</text>
+<text x="503.0" y="589.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="302.0" y="604.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">litros_totales</text>
+<rect x="295.0" y="640.0" width="215.0" height="60.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 296.0 664.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="295.0" y1="664.0" x2="510.0" y2="664.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="402.5" y="652.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">ordenie_lote_animales</text>
+<text x="302.0" y="675.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_ordenie_lote</text>
+<text x="503.0" y="675.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK, FK</text>
+<text x="302.0" y="690.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="503.0" y="690.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK, FK</text>
+<rect x="295.0" y="726.0" width="215.0" height="135.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 296.0 750.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="295.0" y1="750.0" x2="510.0" y2="750.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="402.5" y="738.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">ordenies_individual</text>
+<text x="302.0" y="761.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_ordenie_ind</text>
+<text x="503.0" y="761.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="302.0" y="776.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha</text>
+<text x="503.0" y="776.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="302.0" y="791.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">turno</text>
+<text x="503.0" y="791.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="302.0" y="806.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">litros</text>
+<text x="302.0" y="821.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="503.0" y="821.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="302.0" y="836.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_lactancia</text>
+<text x="503.0" y="836.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="302.0" y="851.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_ordenie_lote</text>
+<text x="503.0" y="851.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="560.0" y="56.0" width="215.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 561.0 80.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="560.0" y1="80.0" x2="775.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="667.5" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">celos</text>
+<text x="567.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_celo</text>
+<text x="768.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="567.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha</text>
+<text x="567.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">observaciones</text>
+<text x="567.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="768.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="560.0" y="172.0" width="215.0" height="150.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 561.0 196.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="560.0" y1="196.0" x2="775.0" y2="196.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="667.5" y="184.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">servicios</text>
+<text x="567.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_servicio</text>
+<text x="768.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="567.0" y="222.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_servicio</text>
+<text x="567.0" y="237.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_servicio</text>
+<text x="567.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_probable_parto</text>
+<text x="567.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">observaciones</text>
+<text x="567.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="768.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="567.0" y="297.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_macho</text>
+<text x="768.0" y="297.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="567.0" y="312.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
+<text x="768.0" y="312.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="560.0" y="348.0" width="215.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 561.0 372.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="560.0" y1="372.0" x2="775.0" y2="372.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="667.5" y="360.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">tactos</text>
+<text x="567.0" y="383.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_tacto</text>
+<text x="768.0" y="383.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="567.0" y="398.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_tacto</text>
+<text x="567.0" y="413.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">resultado</text>
+<text x="567.0" y="428.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">observaciones</text>
+<text x="567.0" y="443.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_servicio</text>
+<text x="768.0" y="443.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="560.0" y="479.0" width="215.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 561.0 503.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="560.0" y1="503.0" x2="775.0" y2="503.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="667.5" y="491.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">partos</text>
+<text x="567.0" y="514.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_parto</text>
+<text x="768.0" y="514.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="567.0" y="529.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_parto</text>
+<text x="567.0" y="544.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_parto</text>
+<text x="567.0" y="559.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">observaciones</text>
+<text x="567.0" y="574.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="768.0" y="574.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="560.0" y="610.0" width="215.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 561.0 634.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="560.0" y1="634.0" x2="775.0" y2="634.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="667.5" y="622.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">diagnosticos</text>
+<text x="567.0" y="645.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_diagnostico</text>
+<text x="768.0" y="645.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="567.0" y="660.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_diagnostico</text>
+<text x="567.0" y="675.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">enfermedad</text>
+<text x="567.0" y="690.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">estado</text>
+<text x="567.0" y="705.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="768.0" y="705.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="560.0" y="741.0" width="215.0" height="180.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 561.0 765.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="560.0" y1="765.0" x2="775.0" y2="765.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="667.5" y="753.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">tratamientos</text>
+<text x="567.0" y="776.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_tratamiento</text>
+<text x="768.0" y="776.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="567.0" y="791.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_inicio</text>
+<text x="567.0" y="806.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_duracion</text>
+<text x="567.0" y="821.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dosis_diaria</text>
+<text x="567.0" y="836.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">cantidad_insumo</text>
+<text x="567.0" y="851.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="768.0" y="851.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="567.0" y="866.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_fin_descarte</text>
+<text x="567.0" y="881.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_diagnostico</text>
+<text x="768.0" y="881.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="567.0" y="896.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
+<text x="768.0" y="896.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="567.0" y="911.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_plan</text>
+<text x="768.0" y="911.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="825.0" y="56.0" width="215.0" height="135.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 826.0 80.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="825.0" y1="80.0" x2="1040.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="932.5" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">planes_sanitarios</text>
+<text x="832.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_plan</text>
+<text x="1033.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="832.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">nombre</text>
+<text x="1033.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="832.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_procedimiento</text>
+<text x="832.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">periodicidad_dias</text>
+<text x="832.0" y="151.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">edad_inicio_meses</text>
+<text x="832.0" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">activo</text>
+<text x="832.0" y="181.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
+<text x="1033.0" y="181.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="825.0" y="217.0" width="215.0" height="60.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 826.0 241.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="825.0" y1="241.0" x2="1040.0" y2="241.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="932.5" y="229.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">plan_categorias</text>
+<text x="832.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_plan</text>
+<text x="1033.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK, FK</text>
+<text x="832.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_categoria</text>
+<text x="1033.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK, FK</text>
+<rect x="825.0" y="303.0" width="215.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 826.0 327.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="825.0" y1="327.0" x2="1040.0" y2="327.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="932.5" y="315.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">vacunaciones</text>
+<text x="832.0" y="338.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_vacunacion</text>
+<text x="1033.0" y="338.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="832.0" y="353.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_aplicacion</text>
+<text x="832.0" y="368.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="1033.0" y="368.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="832.0" y="383.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
+<text x="1033.0" y="383.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="832.0" y="398.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_plan</text>
+<text x="1033.0" y="398.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="825.0" y="434.0" width="215.0" height="120.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 826.0 458.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="825.0" y1="458.0" x2="1040.0" y2="458.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="932.5" y="446.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">descornes</text>
+<text x="832.0" y="469.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_descorne</text>
+<text x="1033.0" y="469.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="832.0" y="484.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha</text>
+<text x="832.0" y="499.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">metodo</text>
+<text x="832.0" y="514.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">observaciones</text>
+<text x="832.0" y="529.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="1033.0" y="529.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="832.0" y="544.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_plan</text>
+<text x="1033.0" y="544.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<rect x="825.0" y="580.0" width="215.0" height="210.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 826.0 604.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="825.0" y1="604.0" x2="1040.0" y2="604.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="932.5" y="592.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">configuracion</text>
+<text x="832.0" y="615.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_configuracion</text>
+<text x="1033.0" y="615.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="832.0" y="630.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_secado_antes_parto</text>
+<text x="832.0" y="645.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">edad_minima_servicio_meses</text>
+<text x="832.0" y="660.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">edad_cambio_categoria_meses</text>
+<text x="832.0" y="675.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">litros_maximos_individual</text>
+<text x="832.0" y="690.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ordenies_por_dia</text>
+<text x="832.0" y="705.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_anticipacion_secado</text>
+<text x="832.0" y="720.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_anticipacion_parto</text>
+<text x="832.0" y="735.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_anticipacion_sanitaria</text>
+<text x="832.0" y="750.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_anticipacion_vencimiento</text>
+<text x="832.0" y="765.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_espera_voluntaria</text>
+<text x="832.0" y="780.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_para_tacto</text>
+<rect x="1090.0" y="56.0" width="215.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 1091.0 80.0 h 213.0 v -22.0 h -213.0 Z" fill="#e6e8ea"/>
+<line x1="1090.0" y1="80.0" x2="1305.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="1197.5" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">preferencias_notificacion</text>
+<text x="1097.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_preferencia</text>
+<text x="1298.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="1097.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_alerta</text>
+<text x="1298.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
+<text x="1097.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">activa</text>
+<text x="1097.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">destinatario</text>
+<rect x="1090.0" y="172.0" width="215.0" height="150.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 1091.0 196.0 h 213.0 v -22.0 h -213.0 Z" fill="#e6e8ea"/>
+<line x1="1090.0" y1="196.0" x2="1305.0" y2="196.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="1197.5" y="184.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">alertas</text>
+<text x="1097.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_alerta</text>
+<text x="1298.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="1097.0" y="222.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_alerta</text>
+<text x="1097.0" y="237.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_generacion</text>
+<text x="1097.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">mensaje</text>
+<text x="1097.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">enviada</text>
+<text x="1097.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_preferencia</text>
+<text x="1298.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="1097.0" y="297.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="1298.0" y="297.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="1097.0" y="312.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
+<text x="1298.0" y="312.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+</svg>

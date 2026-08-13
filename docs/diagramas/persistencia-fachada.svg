@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="490" viewBox="0 0 720 490">
+<defs><marker id="punta" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#40484f" stroke-width="1.2"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="360.0" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Diagrama de Persistencia — fachada pControladora</text>
+<line x1="410.0" y1="101.0" x2="350.0" y2="221.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="350.0" y1="221.0" x2="410.0" y2="204.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<text x="372.8" y="206.5" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">delega en</text>
+<line x1="550.0" y1="243.0" x2="550.0" y2="276.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<text x="550.0" y="247.5" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">ejecuta</text>
+<rect x="30.0" y="56.0" width="320.0" height="330.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 31.0 80.0 h 318.0 v -22.0 h -318.0 Z" fill="#f4f6f8"/>
+<line x1="30.0" y1="80.0" x2="350.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="190.0" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pControladora</text>
+<text x="37.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Configuracion</text>
+<text x="37.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Razas</text>
+<text x="37.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Categorias</text>
+<text x="37.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Animales</text>
+<text x="37.0" y="151.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Hembras</text>
+<text x="37.0" y="166.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Machos</text>
+<text x="37.0" y="181.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Lactancias</text>
+<text x="37.0" y="196.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Ordenies Por Lote</text>
+<text x="37.0" y="211.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Ordenies Individuales</text>
+<text x="37.0" y="226.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Celos</text>
+<text x="37.0" y="241.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Servicios</text>
+<text x="37.0" y="256.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Tactos</text>
+<text x="37.0" y="271.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Partos</text>
+<text x="37.0" y="286.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Insumos</text>
+<text x="37.0" y="301.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Movimientos De Stock</text>
+<text x="37.0" y="316.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Planes Sanitarios</text>
+<text x="37.0" y="331.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Vacunaciones</text>
+<text x="37.0" y="346.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Descornes</text>
+<text x="37.0" y="361.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Diagnosticos</text>
+<text x="37.0" y="376.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Tratamientos</text>
+<rect x="410.0" y="70.0" width="280.0" height="62.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="550.0" y="101.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Controladora (única que la invoca)</text>
+<rect x="410.0" y="165.0" width="280.0" height="78.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="550.0" y="197.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Clases de acceso a datos pAnimal, pHembra,</text>
+<text x="550.0" y="210.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pServicio, …</text>
+<rect x="410.0" y="276.0" width="280.0" height="58.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="550.0" y="305.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pConexion (MySQL)</text>
+</svg>
