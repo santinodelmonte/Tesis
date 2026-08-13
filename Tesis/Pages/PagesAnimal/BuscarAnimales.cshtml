@@ -3,8 +3,8 @@
 @{
     Dominio.Controladora unaControladora = new Dominio.Controladora();
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Buscar y Filtrar Animales del Rodeo</h1>
+<div class="panel-formulario">
+    <h1>Buscar y Filtrar Animales del Rodeo</h1>
     <hr />
     <form method="post">
 
@@ -93,7 +93,7 @@
                             <label for="numCaravana">Numero de Caravana:</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="numCaravana" name="numCaravana" value="@Model.numCaravana" placeholder="Coincidencia parcial, ej: 00">
-                                <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('numCaravana','numCaravana','Buscar Animal','',true)">Elegir de la lista</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="abrirSelectorAnimal('numCaravana','numCaravana','Buscar Animal','',true)">Elegir de la lista</button>
                             </div>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
 
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-info" id="btnFiltrar" asp-page-handler="FiltrarAnimales">Aplicar filtros</button>
+                <button type="submit" class="btn btn-outline-secondary" id="btnFiltrar" asp-page-handler="FiltrarAnimales">Aplicar filtros</button>
                 <button type="submit" class="btn btn-secondary" asp-page-handler="LimpiarFiltros">Limpiar</button>
                 <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
             </div>
@@ -114,15 +114,15 @@
     </form>
     <hr />
 
-    <h4>
+    <h2 class="h5">
         Resultado: @Model.animales.Count animales
         @if (!Model.filtrado)
         {
             <small class="text-muted">(rodeo activo, sin filtros aplicados)</small>
         }
-    </h4>
+    </h2>
 
-    <table data-paginar="10" class="table text-center">
+    <table data-paginar="10" class="table">
         <thead>
             <tr>
                 <th>Caravana</th>

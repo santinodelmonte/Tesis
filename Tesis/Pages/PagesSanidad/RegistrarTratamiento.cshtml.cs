@@ -8,8 +8,13 @@ namespace Tesis.Pages.PagesSanidad
     // preventiva sobre el animal (curso alternativo 2a). En los dos casos descuenta el
     // producto del stock y fija hasta cuando hay que descartar la leche, que es lo que
     // el paso 3 de CU8 usa para dejar a la hembra fuera del lote de ordenie.
+    //
+    // La misma pantalla da de alta y corrige: con id en cero es un alta, con un
+    // identificador se abre con el tratamiento cargado.
     public class RegistrarTratamientoModel : PageModel
     {
+        [BindProperty]
+        public int id { get; set; } = 0;
         [BindProperty]
         public int idDiagnostico { get; set; } = 0;
         [BindProperty]
@@ -34,10 +39,54 @@ namespace Tesis.Pages.PagesSanidad
         public List<PlanSanitario> planes = new List<PlanSanitario>();
         public List<Animal> animales = new List<Animal>();
 
-        public void OnGet()
+        public bool esCorreccion { get { return id > 0; } }
+
+        public IActionResult OnGet(int id)
         {
             Controladora unaControladora = new Controladora();
             this.CargarListados(unaControladora);
+
+            if (id > 0)
+            {
+                Tratamiento unTratamiento = unaControladora.BuscarTratamiento(id);
+                if (unTratamiento == null)
+                {
+                    return Redirect("./ListaTratamientos");
+                }
+
+                this.id = id;
+                idDiagnostico = unTratamiento.Diagnostico != null
+                    ? unTratamiento.Diagnostico.IdDiagnostico : 0;
+                numCaravana = unTratamiento.Animal != null ? unTratamiento.Animal.NumCaravana : "";
+                idInsumo = unTratamiento.Insumo != null ? unTratamiento.Insumo.IdInsumo : 0;
+                idPlan = unTratamiento.Plan != null ? unTratamiento.Plan.IdPlan : 0;
+                fechaInicio = unTratamiento.FechaInicio;
+                diasDuracion = unTratamiento.DiasDuracion;
+                dosisDiaria = unTratamiento.DosisDiaria;
+                cantidadInsumo = unTratamiento.CantidadInsumo;
+                fechaFinDescarte = unTratamiento.FechaFinDescarte;
+
+                // El diagnostico que origino el tratamiento puede estar resuelto y por
+                // eso fuera de la lista de candidatos. Se agrega: corregir la dosis no
+                // tiene por que desvincularlo de su diagnostico.
+                if (unTratamiento.Diagnostico != null && !this.EstaEnLaLista(unTratamiento.Diagnostico))
+                {
+                    diagnosticos.Add(unTratamiento.Diagnostico);
+                }
+            }
+            return Page();
+        }
+
+        private bool EstaEnLaLista(Diagnostico pDiagnostico)
+        {
+            foreach (Diagnostico unDiagnostico in diagnosticos)
+            {
+                if (unDiagnostico.IdDiagnostico == pDiagnostico.IdDiagnostico)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         // La fecha de fin de descarte se propone sumando los dias del tratamiento y el
@@ -62,6 +111,11 @@ namespace Tesis.Pages.PagesSanidad
             Controladora unaControladora = new Controladora();
             this.CargarListados(unaControladora);
             this.LeerFormulario();
+
+            if (id > 0)
+            {
+                return this.Corregir(unaControladora);
+            }
 
             if (idInsumo == 0)
             {
@@ -114,10 +168,39 @@ namespace Tesis.Pages.PagesSanidad
 
             if (unaControladora.AltaTratamiento(unTratamiento, cantidadInsumo))
             {
-                return Redirect("./ListaDiagnosticos");
+                return Redirect("./ListaTratamientos");
             }
 
             ModelState.AddModelError(string.Empty, "No se pudo registrar el tratamiento!");
+            return Page();
+        }
+
+        // La correccion recalcula el descarte de leche y mueve el stock: devuelve lo que
+        // este tratamiento habia consumido y descuenta lo nuevo. De las dos cosas se
+        // ocupa la Controladora.
+        private IActionResult Corregir(Controladora pControladoraDominio)
+        {
+            Animal unAnimal = this.ResolverAnimal(pControladoraDominio);
+            int vIdAnimal = unAnimal != null ? unAnimal.IdAnimal : 0;
+
+            string vMotivo = pControladoraDominio.ValidarModificarTratamiento(id, fechaInicio,
+                diasDuracion, dosisDiaria ?? "", cantidadInsumo, idDiagnostico, vIdAnimal,
+                idInsumo, idPlan);
+
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
+
+            if (pControladoraDominio.ModificarTratamiento(id, fechaInicio, diasDuracion,
+                dosisDiaria ?? "", cantidadInsumo, fechaFinDescarte, idDiagnostico, vIdAnimal,
+                idInsumo, idPlan))
+            {
+                return Redirect("./ListaTratamientos");
+            }
+
+            ModelState.AddModelError(string.Empty, "No se pudo corregir el tratamiento!");
             return Page();
         }
 
@@ -140,7 +223,7 @@ namespace Tesis.Pages.PagesSanidad
             Diagnostico unDiagnostico = pControladoraDominio.BuscarDiagnostico(idDiagnostico);
             PlanSanitario unPlan = pControladoraDominio.BuscarPlanSanitario(idPlan);
 
-            return new Tratamiento(0, fechaInicio, diasDuracion, dosisDiaria ?? "",
+            return new Tratamiento(0, fechaInicio, diasDuracion, dosisDiaria ?? "", cantidadInsumo,
                 fechaFinDescarte, unDiagnostico, unAnimal, unInsumo, unPlan);
         }
 
@@ -183,6 +266,10 @@ namespace Tesis.Pages.PagesSanidad
 
         private void LeerFormulario()
         {
+            int vId = 0;
+            int.TryParse(Request.Form["id"], out vId);
+            id = vId;
+
             int vIdDiagnostico = 0;
             int.TryParse(Request.Form["idDiagnostico"], out vIdDiagnostico);
             idDiagnostico = vIdDiagnostico;

@@ -4,7 +4,8 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesReproduccion
 {
-    // Historial de servicios con el resultado del ultimo tacto de cada uno
+    // Historial de servicios con el resultado del ultimo tacto de cada uno, y la
+    // pantalla desde la que se los gestiona: registrar, corregir y eliminar.
     public class ListaServiciosModel : PageModel
     {
         public List<Servicio> servicios = new List<Servicio>();
@@ -15,6 +16,11 @@ namespace Tesis.Pages.PagesReproduccion
 
         // Servicios sobre los que todavia tiene sentido ajustar la fecha de parto
         public List<int> conPrenezVigente = new List<int>();
+
+        // Motivo por el que cada servicio no se puede eliminar, vacio si se puede. Se
+        // calcula al armar el listado y no al apretar el boton: la persona tiene que
+        // ver antes de intentar que ese servicio tiene tactos colgando.
+        public Dictionary<int, string> bloqueos = new Dictionary<int, string>();
 
         public void OnGet()
         {
@@ -28,7 +34,6 @@ namespace Tesis.Pages.PagesReproduccion
         public IActionResult OnPostAjustarFechaParto(int id)
         {
             Controladora unaControladora = new Controladora();
-            unaControladora.ListarAnimales();
 
             DateTime vFechaProbableParto = DateTime.MinValue;
             if (Request.Form["fechaProbableParto"] != "")
@@ -54,6 +59,28 @@ namespace Tesis.Pages.PagesReproduccion
             return RedirectToPage();
         }
 
+        public IActionResult OnPostEliminar(int id)
+        {
+            Controladora unaControladora = new Controladora();
+
+            string vMotivo = unaControladora.ValidarEliminarServicio(id);
+            if (vMotivo != "")
+            {
+                this.CargarListado(unaControladora);
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
+
+            if (!unaControladora.EliminarServicio(id))
+            {
+                this.CargarListado(unaControladora);
+                ModelState.AddModelError(string.Empty, "No se pudo eliminar el servicio!");
+                return Page();
+            }
+
+            return RedirectToPage();
+        }
+
         private void CargarListado(Controladora pControladoraDominio)
         {
             servicios = pControladoraDominio.ListarServicios();
@@ -62,6 +89,8 @@ namespace Tesis.Pages.PagesReproduccion
             {
                 ultimosTactos.Add(unServicio.IdServicio, pControladoraDominio.UltimoTacto(unServicio));
                 toros.Add(unServicio.IdServicio, pControladoraDominio.ToroDelServicio(unServicio));
+                bloqueos.Add(unServicio.IdServicio,
+                    pControladoraDominio.ValidarEliminarServicio(unServicio.IdServicio));
             }
 
             foreach (Servicio unServicio in pControladoraDominio.ListarServiciosConPrenez())

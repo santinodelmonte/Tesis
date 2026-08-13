@@ -1,0 +1,695 @@
+/* =====================================================================
+   Tema del sistema
+
+   Esta hoja define de qué está hecho el sistema visualmente: los colores,
+   la tipografía, el espaciado y la densidad. No describe ninguna pantalla
+   en particular; eso vive en site.css. La separación es a propósito: si
+   más adelante hay que cambiar el verde de la marca, se cambia acá y baja
+   solo a todo el sistema.
+
+   Se carga después de Bootstrap y antes de site.css.
+
+   Bootstrap 5.3 define sus componentes con variables CSS locales
+   (--bs-btn-bg y compañía), así que se los puede retematizar sin
+   recompilar Sass y sin pelear con !important: alcanza con darle otro
+   valor a esas variables en la clase que corresponde.
+
+   Los contrastes están verificados contra WCAG 2.1 AA y anotados al lado
+   de cada color. La tabla completa está en
+   docs/estilos-y-accesibilidad.md.
+   ===================================================================== */
+
+:root {
+    /* --- Verde de campo: el color de la marca y de la acción principal ---
+       Se eligió un verde profundo y poco saturado, no el verde "de
+       agroquímica". El motivo práctico pesa más que el estético: el
+       sistema ya usa rojo para lo crítico, ámbar para lo que está por
+       vencer y azul para lo informativo, así que la marca tenía que
+       ocupar un lugar del círculo cromático que no compitiera con
+       ninguno de esos tres. */
+    --tambo-verde-50: #f1f7f4;
+    --tambo-verde-100: #dceBe3;
+    --tambo-verde-200: #b9d7c8;
+    --tambo-verde-500: #2e7d5b;
+    --tambo-verde-600: #256a4c; /* 6.47:1 sobre blanco: AA en texto normal */
+    --tambo-verde-700: #1c5139;
+    --tambo-verde-800: #143b29;
+
+    /* --- Neutros levemente fríos ---
+       Un gris puro al lado de un verde se ve sucio. Estos llevan una
+       pizca de azul, que los emparenta con el verde y hace que el
+       conjunto se lea como una paleta y no como dos. */
+    --tambo-gris-25: #f8fafb;  /* fondo de la aplicación */
+    --tambo-gris-50: #f1f4f6;
+    --tambo-gris-100: #e7ecef;
+    --tambo-gris-200: #d9e0e5; /* bordes */
+    --tambo-gris-400: #94a3b0;
+    --tambo-gris-600: #5a6672; /* 5.87:1 sobre blanco: AA, apto para texto secundario */
+    --tambo-gris-900: #1b2733; /* texto principal */
+
+    /* --- Estados ---
+       Cada uno con su versión sólida, para texto e íconos sobre fondo
+       claro, y su versión suave, para el fondo de un aviso o una etiqueta.
+       Ninguna versión suave se usa nunca para texto. */
+    --tambo-rojo: #b42318;        /* 6.58:1 sobre blanco */
+    --tambo-rojo-suave: #fef3f2;
+    --tambo-rojo-borde: #fecdca;
+    --tambo-ambar: #b54708;       /* 5.43:1 sobre blanco */
+    --tambo-ambar-suave: #fffaeb;
+    --tambo-ambar-borde: #fedf89;
+    --tambo-ambar-texto: #93370d; /* 6.63:1 sobre --tambo-ambar-suave */
+    --tambo-azul: #175cd3;        /* 5.99:1 sobre blanco */
+    --tambo-azul-suave: #eff6ff;
+    --tambo-azul-borde: #b2ddff;
+
+    /* --- Tipografía ---
+       La fuente del sistema operativo: se ve nativa en cada dispositivo,
+       carga instantáneo y no suma un solo archivo al repositorio. Lo que
+       hace que se vea cuidada no es la familia sino la escala, el peso y
+       el interlineado, que sí están definidos a mano.
+
+       Las medidas van en rem para que respeten el tamaño de letra que la
+       persona tenga configurado en el navegador, que es un criterio de
+       accesibilidad. */
+    --tambo-fuente: system-ui, -apple-system, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    --tambo-fuente-numeros: ui-monospace, "Cascadia Mono", "Segoe UI Mono",
+        Consolas, monospace;
+
+    --tambo-texto-xs: 0.75rem;
+    --tambo-texto-sm: 0.8125rem;
+    --tambo-texto-base: 0.9375rem;
+    --tambo-texto-lg: 1.0625rem;
+    --tambo-titulo-sm: 1.125rem;
+    --tambo-titulo: 1.375rem;
+    --tambo-titulo-lg: 1.75rem;
+
+    /* --- Formas y profundidad ---
+       Sombras muy tenues y de una sola dirección. Un sistema de gestión se
+       mira ocho horas por día: cada sombra marcada es ruido acumulado. */
+    --tambo-radio-sm: 6px;
+    --tambo-radio: 10px;
+    --tambo-radio-lg: 14px;
+    --tambo-sombra-sm: 0 1px 2px rgba(27, 39, 51, 0.06);
+    --tambo-sombra: 0 1px 3px rgba(27, 39, 51, 0.08), 0 1px 2px rgba(27, 39, 51, 0.04);
+
+    /* --- Densidad ---
+       El valor por defecto es el compacto, para mouse: en una pantalla de
+       PC se ve la mayor cantidad de filas posible, que es lo que pide
+       quien usa el sistema todo el día. Más abajo, en la consulta de
+       puntero grueso, estas mismas variables se agrandan. */
+    --tambo-fila-y: 0.45rem;
+    --tambo-fila-x: 0.75rem;
+    --tambo-control-alto: 2.25rem;
+    --tambo-toque-minimo: 0;
+}
+
+/* =====================================================================
+   Bootstrap retematizado
+   ===================================================================== */
+
+:root {
+    --bs-body-bg: var(--tambo-gris-25);
+    --bs-body-color: var(--tambo-gris-900);
+    --bs-body-font-family: var(--tambo-fuente);
+    --bs-body-font-size: var(--tambo-texto-base);
+    --bs-body-line-height: 1.55;
+    --bs-border-color: var(--tambo-gris-200);
+    --bs-border-radius: var(--tambo-radio);
+    --bs-border-radius-sm: var(--tambo-radio-sm);
+    --bs-border-radius-lg: var(--tambo-radio-lg);
+
+    --bs-primary: var(--tambo-verde-600);
+    --bs-primary-rgb: 37, 106, 76;
+    --bs-secondary-color: var(--tambo-gris-600);
+
+    --bs-link-color: var(--tambo-verde-700);
+    --bs-link-color-rgb: 28, 81, 57;
+    --bs-link-hover-color: var(--tambo-verde-800);
+
+    --bs-danger: var(--tambo-rojo);
+    --bs-danger-rgb: 180, 35, 24;
+    --bs-warning: var(--tambo-ambar);
+    --bs-info: var(--tambo-azul);
+    --bs-success: var(--tambo-verde-600);
+}
+
+html {
+    /* Bootstrap y el sistema trabajan sobre 16px, que es el valor con el
+       que el navegador viene configurado. La regla anterior lo bajaba a
+       14px, lo que además de achicar todo rompía la equivalencia entre
+       rem y la preferencia del usuario. */
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--tambo-fuente);
+    font-size: var(--tambo-texto-base);
+    color: var(--tambo-gris-900);
+    background-color: var(--tambo-gris-25);
+    /* La regla anterior reservaba 60px abajo para un pie que no existe */
+    margin-bottom: 0;
+}
+
+/* --- Escala de títulos ---
+   Se define acá y no pantalla por pantalla. Antes cada pantalla ponía
+   .display-4 con un font-size en línea, que es lo que hacía imposible
+   cambiar el tamaño de los títulos desde un solo lado. */
+h1, .h1 { font-size: var(--tambo-titulo-lg); }
+h2, .h2 { font-size: var(--tambo-titulo); }
+h3, .h3 { font-size: var(--tambo-titulo); }
+h4, .h4 { font-size: var(--tambo-titulo-sm); }
+h5, .h5 { font-size: var(--tambo-texto-lg); }
+h6, .h6 { font-size: var(--tambo-texto-base); }
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--tambo-gris-900);
+}
+
+/* Los números de una planilla se comparan de arriba abajo, así que las
+   cifras tienen que ocupar todas el mismo ancho. */
+.tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+}
+
+small, .small { font-size: var(--tambo-texto-sm); }
+
+.text-muted {
+    /* El gris de Bootstrap no llega a 4.5:1 sobre el fondo claro. Este sí:
+       5.87:1. Es el cambio que más veces se repite en el sistema, porque
+       .text-muted aparece 135 veces. */
+    color: var(--tambo-gris-600) !important;
+}
+
+/* =====================================================================
+   Foco visible
+
+   Criterio 2.4.7 de WCAG. Un anillo de dos capas -claro adentro, verde
+   afuera- para que se vea tanto sobre fondo claro como sobre el verde de
+   un botón lleno.
+
+   Se usa :focus-visible y no :focus para que el anillo aparezca al
+   navegar con teclado y no al hacer clic con el mouse, que es lo que hace
+   que un foco marcado moleste y termine desactivado.
+   ===================================================================== */
+
+*:focus {
+    outline: none;
+}
+
+*:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible {
+    outline: 3px solid var(--tambo-verde-600);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px var(--tambo-verde-100);
+}
+
+/* El foco del teclado dentro de la barra superior, que es verde oscuro */
+.barra-superior *:focus-visible {
+    outline-color: #ffffff;
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.25);
+}
+
+/* Enlace que salta directo al contenido. Está escondido hasta que recibe
+   el foco: es lo primero que encuentra alguien que navega con teclado, y
+   le evita recorrer las treinta y pico de entradas del menú en cada
+   pantalla. Criterio 2.4.1. */
+.salto-contenido {
+    position: absolute;
+    left: 0.5rem;
+    top: -100px;
+    z-index: 1080;
+    padding: 0.6rem 1rem;
+    background: var(--tambo-verde-700);
+    color: #ffffff;
+    border-radius: var(--tambo-radio-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.15s ease-in-out;
+}
+
+.salto-contenido:focus {
+    top: 0.5rem;
+    color: #ffffff;
+}
+
+/* =====================================================================
+   Botones
+
+   El color vuelve a significar algo:
+     primary   la acción principal de la pantalla (guardar, registrar)
+     danger    la que destruye algo (eliminar)
+     outline   todo lo demás: volver, cancelar, ir a otro lado
+
+   Antes "Volver" era amarillo y "Guardar" verde brillante, con lo que el
+   amarillo -que en el resto del sistema significa "está por vencer"- no
+   quería decir nada.
+   ===================================================================== */
+
+.btn {
+    --bs-btn-font-weight: 500;
+    --bs-btn-padding-y: 0.4rem;
+    --bs-btn-padding-x: 0.85rem;
+    --bs-btn-font-size: var(--tambo-texto-base);
+    --bs-btn-border-radius: var(--tambo-radio-sm);
+    min-height: var(--tambo-toque-minimo);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.btn-sm {
+    --bs-btn-padding-y: 0.25rem;
+    --bs-btn-padding-x: 0.6rem;
+    --bs-btn-font-size: var(--tambo-texto-sm);
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--tambo-verde-600);
+    --bs-btn-border-color: var(--tambo-verde-600);
+    --bs-btn-hover-bg: var(--tambo-verde-700);
+    --bs-btn-hover-border-color: var(--tambo-verde-700);
+    --bs-btn-active-bg: var(--tambo-verde-800);
+    --bs-btn-active-border-color: var(--tambo-verde-800);
+    --bs-btn-disabled-bg: var(--tambo-verde-200);
+    --bs-btn-disabled-border-color: var(--tambo-verde-200);
+    --bs-btn-disabled-color: var(--tambo-verde-800);
+}
+
+.btn-success {
+    /* Queda igual que la principal a propósito: en un sistema cuya marca
+       ya es verde, un segundo verde para "guardar" no agrega significado,
+       solo confusión. Se mantiene la clase para no romper las pantallas
+       que todavía la usan. */
+    --bs-btn-bg: var(--tambo-verde-600);
+    --bs-btn-border-color: var(--tambo-verde-600);
+    --bs-btn-hover-bg: var(--tambo-verde-700);
+    --bs-btn-hover-border-color: var(--tambo-verde-700);
+    --bs-btn-active-bg: var(--tambo-verde-800);
+    --bs-btn-active-border-color: var(--tambo-verde-800);
+}
+
+.btn-danger {
+    --bs-btn-bg: var(--tambo-rojo);
+    --bs-btn-border-color: var(--tambo-rojo);
+    --bs-btn-hover-bg: #8f1c13;
+    --bs-btn-hover-border-color: #8f1c13;
+    --bs-btn-active-bg: #7a180f;
+    --bs-btn-active-border-color: #7a180f;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--tambo-verde-700);
+    --bs-btn-border-color: var(--tambo-verde-600);
+    --bs-btn-hover-bg: var(--tambo-verde-600);
+    --bs-btn-hover-border-color: var(--tambo-verde-600);
+    --bs-btn-active-bg: var(--tambo-verde-700);
+    --bs-btn-active-border-color: var(--tambo-verde-700);
+}
+
+.btn-outline-danger {
+    --bs-btn-color: var(--tambo-rojo);
+    --bs-btn-border-color: var(--tambo-rojo-borde);
+    --bs-btn-hover-bg: var(--tambo-rojo);
+    --bs-btn-hover-border-color: var(--tambo-rojo);
+}
+
+.btn-secondary,
+.btn-outline-secondary {
+    --bs-btn-color: var(--tambo-gris-900);
+    --bs-btn-bg: #ffffff;
+    --bs-btn-border-color: var(--tambo-gris-200);
+    --bs-btn-hover-color: var(--tambo-gris-900);
+    --bs-btn-hover-bg: var(--tambo-gris-50);
+    --bs-btn-hover-border-color: var(--tambo-gris-400);
+    --bs-btn-active-bg: var(--tambo-gris-100);
+    --bs-btn-active-border-color: var(--tambo-gris-400);
+}
+
+/* Las clases que quedaron de la etapa en que el color no significaba
+   nada. Se neutralizan para que una pantalla que todavía no se revisó no
+   se vea fuera de lugar, en vez de dejarlas gritando en amarillo. */
+.btn-warning,
+.btn-info {
+    --bs-btn-color: var(--tambo-gris-900);
+    --bs-btn-bg: #ffffff;
+    --bs-btn-border-color: var(--tambo-gris-200);
+    --bs-btn-hover-color: var(--tambo-gris-900);
+    --bs-btn-hover-bg: var(--tambo-gris-50);
+    --bs-btn-hover-border-color: var(--tambo-gris-400);
+    --bs-btn-active-bg: var(--tambo-gris-100);
+}
+
+/* =====================================================================
+   Formularios
+   ===================================================================== */
+
+.form-control,
+.form-select {
+    font-size: var(--tambo-texto-base);
+    padding: 0.4rem 0.7rem;
+    min-height: var(--tambo-toque-minimo);
+    border-color: var(--tambo-gris-200);
+    border-radius: var(--tambo-radio-sm);
+    color: var(--tambo-gris-900);
+    background-color: #ffffff;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--tambo-verde-500);
+    box-shadow: 0 0 0 3px var(--tambo-verde-100);
+}
+
+.form-control::placeholder {
+    color: var(--tambo-gris-400);
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: var(--tambo-gris-50);
+    color: var(--tambo-gris-600);
+}
+
+label,
+.form-label {
+    font-size: var(--tambo-texto-sm);
+    font-weight: 600;
+    color: var(--tambo-gris-900);
+    margin-bottom: 0.25rem;
+}
+
+/* El sistema todavía usa .form-group, que es de Bootstrap 4 y en la 5 no
+   existe: quedaba sin ninguna separación entre un campo y el siguiente. */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-check-input {
+    border-color: var(--tambo-gris-400);
+}
+
+.form-check-input:checked {
+    background-color: var(--tambo-verde-600);
+    border-color: var(--tambo-verde-600);
+}
+
+/* El texto de error de validación. Que sea rojo no alcanza: el criterio
+   1.4.1 pide que el color no sea el único medio, por eso además va en
+   negrita y con un símbolo delante. */
+.validation,
+.field-validation-error,
+.text-danger {
+    color: var(--tambo-rojo) !important;
+    font-size: var(--tambo-texto-sm);
+}
+
+.validation:not(:empty)::before,
+.field-validation-error:not(:empty)::before {
+    content: "⚠ ";
+    font-weight: 700;
+}
+
+/* =====================================================================
+   Tablas
+
+   El aspecto de planilla: encabezado tenue, filas separadas por una línea
+   fina y resaltado al pasar por encima. La tabla se dibuja como una
+   superficie con borde redondeado sin necesidad de envolverla en un div,
+   que es lo que permite no tocar las treinta y cuatro pantallas que la
+   usan.
+   ===================================================================== */
+
+.table {
+    --bs-table-bg: #ffffff;
+    --bs-table-color: var(--tambo-gris-900);
+    --bs-table-border-color: var(--tambo-gris-100);
+    --bs-table-hover-bg: var(--tambo-verde-50);
+    font-size: var(--tambo-texto-base);
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 1.25rem;
+}
+
+.table > thead > tr > th {
+    background-color: var(--tambo-gris-50);
+    color: var(--tambo-gris-600);
+    font-size: var(--tambo-texto-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--tambo-gris-200);
+    padding: 0.6rem var(--tambo-fila-x);
+}
+
+.table > tbody > tr > td {
+    padding: var(--tambo-fila-y) var(--tambo-fila-x);
+    border-bottom: 1px solid var(--tambo-gris-100);
+    vertical-align: middle;
+}
+
+.table > tbody > tr:last-child > td {
+    border-bottom: 0;
+}
+
+.table > tbody > tr:hover > td {
+    background-color: var(--tambo-verde-50);
+}
+
+/* El marco redondeado, dibujado sobre las celdas de los extremos porque
+   una tabla no acepta border-radius directamente. */
+.table {
+    border: 1px solid var(--tambo-gris-200);
+    border-radius: var(--tambo-radio);
+    overflow: hidden;
+    box-shadow: var(--tambo-sombra-sm);
+}
+
+.table > thead > tr > th:first-child { border-top-left-radius: var(--tambo-radio); }
+.table > thead > tr > th:last-child { border-top-right-radius: var(--tambo-radio); }
+
+/* Los botones de corrección de cada fila */
+.acciones-fila {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* La columna de acciones se queda con lo justo que necesita y le deja el
+   resto del ancho a los datos. Sin esto, una tabla de ocho columnas le
+   asigna un ancho repartido por igual, los dos botones no entran en una
+   línea, se parten en dos y cada fila pasa de 45 a 78 píxeles de alto: en
+   una pantalla se ven la mitad de los animales.
+
+   width:1% con nowrap es la forma de decirle a la tabla "dale a esta
+   columna el mínimo que necesite". El uno por ciento no se cumple nunca:
+   el ancho del contenido manda. */
+@media (min-width: 768px) {
+    .table > tbody > tr > td:last-child,
+    .table > thead > tr > th:last-child {
+        width: 1%;
+        white-space: nowrap;
+    }
+
+    .acciones-fila {
+        flex-wrap: nowrap;
+    }
+}
+
+/* =====================================================================
+   Avisos y etiquetas de estado
+
+   Los tres significados que el sistema ya usaba, ahora con un contraste
+   verificado y con un ícono además del color, para no depender del color
+   solo (criterio 1.4.1).
+   ===================================================================== */
+
+.alert {
+    border-radius: var(--tambo-radio);
+    border-width: 1px;
+    padding: 0.75rem 1rem;
+    font-size: var(--tambo-texto-base);
+}
+
+.alert-info,
+.alert-primary {
+    --bs-alert-bg: var(--tambo-azul-suave);
+    --bs-alert-border-color: var(--tambo-azul-borde);
+    --bs-alert-color: #0b4a9e;
+}
+
+.alert-warning {
+    --bs-alert-bg: var(--tambo-ambar-suave);
+    --bs-alert-border-color: var(--tambo-ambar-borde);
+    --bs-alert-color: var(--tambo-ambar-texto);
+}
+
+.alert-danger {
+    --bs-alert-bg: var(--tambo-rojo-suave);
+    --bs-alert-border-color: var(--tambo-rojo-borde);
+    --bs-alert-color: #912018;
+}
+
+.alert-success {
+    --bs-alert-bg: var(--tambo-verde-50);
+    --bs-alert-border-color: var(--tambo-verde-200);
+    --bs-alert-color: var(--tambo-verde-800);
+}
+
+.alert-light,
+.alert-secondary {
+    --bs-alert-bg: var(--tambo-gris-50);
+    --bs-alert-border-color: var(--tambo-gris-200);
+    --bs-alert-color: var(--tambo-gris-900);
+}
+
+.badge {
+    font-size: var(--tambo-texto-xs);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 0.3em 0.6em;
+    border-radius: 999px;
+}
+
+/* Las etiquetas de estado van en versión suave: son decenas por pantalla
+   y una tabla llena de pastillas saturadas es ilegible. */
+.badge.bg-success {
+    background-color: var(--tambo-verde-100) !important;
+    color: var(--tambo-verde-800);
+}
+
+.badge.bg-danger {
+    background-color: var(--tambo-rojo-suave) !important;
+    color: #912018;
+    border: 1px solid var(--tambo-rojo-borde);
+}
+
+.badge.bg-warning {
+    background-color: #fef0c7 !important;
+    color: var(--tambo-ambar-texto) !important;
+    border: 1px solid var(--tambo-ambar-borde);
+}
+
+.badge.bg-primary {
+    background-color: var(--tambo-azul-suave) !important;
+    color: #0b4a9e;
+    border: 1px solid var(--tambo-azul-borde);
+}
+
+.badge.bg-secondary {
+    background-color: var(--tambo-gris-100) !important;
+    color: var(--tambo-gris-600);
+}
+
+/* =====================================================================
+   Tarjetas y ventanas
+   ===================================================================== */
+
+.card {
+    --bs-card-border-color: var(--tambo-gris-200);
+    --bs-card-border-radius: var(--tambo-radio);
+    --bs-card-bg: #ffffff;
+    box-shadow: var(--tambo-sombra-sm);
+}
+
+.card-title {
+    font-size: var(--tambo-texto-lg);
+    font-weight: 600;
+}
+
+.modal-content {
+    border: 0;
+    border-radius: var(--tambo-radio-lg);
+    box-shadow: 0 20px 40px rgba(27, 39, 51, 0.18);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--tambo-gris-100);
+}
+
+/* =====================================================================
+   Densidad al tacto
+
+   La consulta pointer:coarse identifica al dedo, no al ancho de pantalla:
+   una tablet apaisada de 1024px se toca igual que un celular, y una
+   ventana angosta en una PC se sigue usando con mouse. Distinguir por
+   dispositivo de entrada y no por tamaño es lo que hace que el criterio
+   2.5.5 se cumpla donde tiene que cumplirse.
+
+   44px es el mínimo recomendado para un objetivo táctil.
+   ===================================================================== */
+
+@media (pointer: coarse) {
+    :root {
+        --tambo-fila-y: 0.7rem;
+        --tambo-fila-x: 0.85rem;
+        --tambo-control-alto: 2.75rem;
+        --tambo-toque-minimo: 44px;
+    }
+
+    .btn,
+    .btn-sm {
+        --bs-btn-padding-y: 0.55rem;
+        --bs-btn-padding-x: 0.9rem;
+        --bs-btn-font-size: var(--tambo-texto-base);
+    }
+
+    .form-control,
+    .form-select {
+        /* 16px evita que el navegador del celular haga zoom al enfocar un
+           campo, que es lo que descoloca el formulario entero */
+        font-size: 1rem;
+        padding: 0.6rem 0.75rem;
+    }
+
+    .form-check-input {
+        width: 1.35em;
+        height: 1.35em;
+        margin-top: 0.15em;
+    }
+
+    /* Los enlaces sueltos dentro de una tabla también son objetivos
+       táctiles */
+    .table a:not(.btn) {
+        display: inline-block;
+        min-height: 44px;
+        line-height: 44px;
+    }
+}
+
+/* Quien pidió menos movimiento no debería recibir ninguno. Criterio 2.3.3 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Modo de alto contraste de Windows: los bordes que dibujamos con color
+   de fondo desaparecen, así que se reponen con el color del sistema. */
+@media (forced-colors: active) {
+    .btn,
+    .table,
+    .card,
+    .form-control {
+        border: 1px solid;
+    }
+}

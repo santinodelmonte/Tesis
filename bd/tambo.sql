@@ -395,17 +395,24 @@ CREATE TABLE diagnosticos (
 --
 -- id_plan admite nulo cuando el tratamiento se registra fuera de todo
 -- plan sanitario.
+--
+-- cantidad_insumo es cuanto producto consumio la aplicacion. Antes vivia
+-- solo en el movimiento de stock, que no dice de que tratamiento salio:
+-- al corregir o eliminar el tratamiento no habia forma de saber cuanto
+-- devolverle al inventario. Queda en cero en los tratamientos anteriores
+-- a la columna, y esos no devuelven nada.
 -- ---------------------------------------------------------------------
 CREATE TABLE tratamientos (
-    id_tratamiento     INT(11)     NOT NULL AUTO_INCREMENT,
-    fecha_inicio       DATE        NOT NULL,
-    dias_duracion      INT(11)     NOT NULL,
-    dosis_diaria       VARCHAR(60) NOT NULL,
-    id_animal          INT(11)     NULL,
-    fecha_fin_descarte DATE        NULL,
-    id_diagnostico     INT(11)     NULL,
-    id_insumo          INT(11)     NOT NULL,
-    id_plan            INT(11)     NULL,
+    id_tratamiento     INT(11)       NOT NULL AUTO_INCREMENT,
+    fecha_inicio       DATE          NOT NULL,
+    dias_duracion      INT(11)       NOT NULL,
+    dosis_diaria       VARCHAR(60)   NOT NULL,
+    cantidad_insumo    DECIMAL(10,2) NOT NULL DEFAULT 0,
+    id_animal          INT(11)       NULL,
+    fecha_fin_descarte DATE          NULL,
+    id_diagnostico     INT(11)       NULL,
+    id_insumo          INT(11)       NOT NULL,
+    id_plan            INT(11)       NULL,
     PRIMARY KEY (id_tratamiento),
     FOREIGN KEY (id_animal) REFERENCES animales (id_animal),
     FOREIGN KEY (id_diagnostico) REFERENCES diagnosticos (id_diagnostico),

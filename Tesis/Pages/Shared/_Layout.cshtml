@@ -1,11 +1,138 @@
+@*
+    Disposición general del sistema.
+
+    El menú es una columna lateral. Con seis módulos, la barra superior de
+    desplegables que había antes obligaba a abrir uno para saber dónde estaba
+    parado uno, y la misma pantalla aparecía repetida en varios desplegables
+    porque no había un único lugar natural para ella.
+
+    El menú está definido como datos y no como marcado: cada sección es una
+    lista de ítems, y cada ítem son las pantallas que lo dejan marcado. La
+    primera de esas pantallas es a la que lleva, y las demás son las que
+    cuelgan de ella -estando en "Registrar celo" el que corresponde marcar es
+    "Celos", que es de donde se llegó-. Verlas todas juntas en una lista es lo
+    que deja comprobar de un vistazo que ninguna pantalla quedó sin lugar o en
+    dos lugares a la vez, y agregar una entrada es una línea.
+*@
+@{
+    string vPaginaActual = ViewContext.RouteData.Values["page"] as string ?? "";
+
+    var vSecciones = new[]
+    {
+        new
+        {
+            Titulo = "Pendientes y alertas",
+            Icono = "pendientes",
+            Id = "seccionPendientes",
+            Items = new[]
+            {
+                new { Texto = "Vacas para servir", Paginas = new[] { "/PagesReproduccion/VacasParaServir" } },
+                new { Texto = "Tactos pendientes", Paginas = new[] { "/PagesReproduccion/TactosPendientes" } },
+                new { Texto = "Partos próximos", Paginas = new[] { "/PagesReproduccion/AlertasParto" } },
+                new { Texto = "Secados próximos", Paginas = new[] { "/PagesProduccion/AlertasSecado" } },
+                new { Texto = "Calendario sanitario", Paginas = new[] { "/PagesSanidad/CalendarioSanitario" } },
+                new { Texto = "Stock crítico", Paginas = new[] { "/PagesInsumo/AlertasStock" } },
+                new { Texto = "Partidas por vencer", Paginas = new[] { "/PagesInsumo/AlertasVencimiento" } }
+            }
+        },
+        new
+        {
+            Titulo = "Animales",
+            Icono = "animales",
+            Id = "seccionAnimales",
+            Items = new[]
+            {
+                new { Texto = "Rodeo", Paginas = new[] { "/PagesAnimal/ListaAnimales", "/PagesAnimal/AltaAnimal", "/PagesAnimal/ModificarAnimal", "/PagesAnimal/BajaAnimal", "/PagesAnimal/DetalleAnimal" } },
+                new { Texto = "Buscar y filtrar", Paginas = new[] { "/PagesAnimal/BuscarAnimales" } },
+                new { Texto = "Linaje", Paginas = new[] { "/PagesAnimal/ConsultaLinaje" } },
+                new { Texto = "Consanguinidad", Paginas = new[] { "/PagesAnimal/VerificarConsanguinidad" } }
+            }
+        },
+        new
+        {
+            Titulo = "Producción",
+            Icono = "produccion",
+            Id = "seccionProduccion",
+            Items = new[]
+            {
+                new { Texto = "Ordeñe por lote", Paginas = new[] { "/PagesProduccion/OrdenieLote", "/PagesProduccion/ModificarOrdenieLote" } },
+                new { Texto = "Ordeñe individual", Paginas = new[] { "/PagesProduccion/OrdenieIndividual" } },
+                new { Texto = "Control lechero", Paginas = new[] { "/PagesProduccion/ControlLechero" } },
+                new { Texto = "Lactancias", Paginas = new[] { "/PagesProduccion/ListaLactancias", "/PagesProduccion/AltaLactancia", "/PagesProduccion/RegistrarSecado" } },
+                new { Texto = "Historial de producción", Paginas = new[] { "/PagesProduccion/HistorialProduccion" } },
+                new { Texto = "Métrica mensual", Paginas = new[] { "/PagesProduccion/MetricaMensual" } }
+            }
+        },
+        new
+        {
+            Titulo = "Reproducción",
+            Icono = "reproduccion",
+            Id = "seccionReproduccion",
+            Items = new[]
+            {
+                new { Texto = "Celos", Paginas = new[] { "/PagesReproduccion/ListaCelos", "/PagesReproduccion/RegistrarCelo" } },
+                new { Texto = "Servicios", Paginas = new[] { "/PagesReproduccion/ListaServicios", "/PagesReproduccion/RegistrarServicio" } },
+                new { Texto = "Tactos", Paginas = new[] { "/PagesReproduccion/ListaTactos", "/PagesReproduccion/RegistrarTacto" } },
+                new { Texto = "Partos", Paginas = new[] { "/PagesReproduccion/ListaPartos", "/PagesReproduccion/RegistrarParto", "/PagesReproduccion/ModificarParto" } }
+            }
+        },
+        new
+        {
+            Titulo = "Sanidad",
+            Icono = "sanidad",
+            Id = "seccionSanidad",
+            Items = new[]
+            {
+                new { Texto = "Diagnósticos", Paginas = new[] { "/PagesSanidad/ListaDiagnosticos", "/PagesSanidad/RegistrarDiagnostico" } },
+                new { Texto = "Tratamientos", Paginas = new[] { "/PagesSanidad/ListaTratamientos", "/PagesSanidad/RegistrarTratamiento" } },
+                new { Texto = "Vacunaciones", Paginas = new[] { "/PagesSanidad/ListaVacunaciones", "/PagesSanidad/RegistrarVacunacion" } },
+                new { Texto = "Descornes", Paginas = new[] { "/PagesSanidad/ListaDescornes", "/PagesSanidad/RegistrarDescorne" } },
+                new { Texto = "Planes sanitarios", Paginas = new[] { "/PagesSanidad/ListaPlanes", "/PagesSanidad/ConfigurarPlan" } }
+            }
+        },
+        new
+        {
+            Titulo = "Insumos",
+            Icono = "insumos",
+            Id = "seccionInsumos",
+            Items = new[]
+            {
+                new { Texto = "Insumos y stock", Paginas = new[] { "/PagesInsumo/ListaInsumos", "/PagesInsumo/AltaInsumo", "/PagesInsumo/IngresoStock", "/PagesInsumo/ConfigurarStockMinimo" } },
+                new { Texto = "Movimientos", Paginas = new[] { "/PagesInsumo/HistorialMovimientos" } }
+            }
+        },
+        new
+        {
+            Titulo = "Indicadores",
+            Icono = "indicadores",
+            Id = "seccionIndicadores",
+            Items = new[]
+            {
+                new { Texto = "Indicadores del rodeo", Paginas = new[] { "/PagesIndicadores/Indicadores" } },
+                new { Texto = "Candidatas a descarte", Paginas = new[] { "/PagesIndicadores/CandidatasDescarte" } }
+            }
+        }
+    };
+
+    bool vAutenticado = User.Identity != null && User.Identity.IsAuthenticated;
+
+    // El sprite de íconos. La dirección se resuelve acá y no con "~/" en cada
+    // uso porque el tilde solo lo traduce ASP.NET en una lista fija de
+    // atributos, y el href de <use> no está en esa lista: quedaría escrito tal
+    // cual y ningún ícono se vería.
+    string vIconos = Url.Content("~/img/iconos.svg");
+}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Gestion de Tambo</title>
+    <meta name="theme-color" content="#1c5139" />
+    <title>@ViewData["Title"] - Gestión de Tambo</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* tema.css define colores, tipografía y densidad; site.css los usa *@
+    <link rel="stylesheet" href="~/css/tema.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Tesis.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico">
@@ -13,157 +140,128 @@
     @await RenderSectionAsync("Estilos", required: false)
 </head>
 <body>
-    <!-- Header -->
+    @* Lo primero que encuentra quien navega con teclado: le evita recorrer las
+       treinta y pico de entradas del menú en cada pantalla. Criterio 2.4.1 *@
+    <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">
-                    Gestion de Tambo
+        <nav class="navbar barra-superior navbar-dark" aria-label="Barra superior">
+            <div class="container-fluid gap-2">
+                @if (vAutenticado)
+                {
+                    <button class="btn btn-outline-light btn-sm d-lg-none" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#menuLateral"
+                            aria-controls="menuLateral" aria-expanded="false"
+                            aria-label="Abrir el menú de navegación">
+                        <svg class="ico ico-lg" aria-hidden="true"><use href="@vIconos#menu"></use></svg>
+                    </button>
+                }
+
+                <a class="navbar-brand me-auto" asp-area="" asp-page="/Index">
+                    <svg class="ico ico-lg" aria-hidden="true"><use href="@vIconos#produccion"></use></svg>
+                    Gestión de Tambo
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    @* El menu del sistema solo se muestra con la sesion iniciada *@
-                    <ul class="navbar-nav ms-auto">
-                        @if (User.Identity != null && User.Identity.IsAuthenticated)
-                        {
-                            @* Modulo 1: Gestion de Animales y Genetica *@
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">Animales</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesAnimal/ListaAnimales">Lista de Animales</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesAnimal/BuscarAnimales">Buscar y Filtrar</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesAnimal/ConsultaLinaje">Consultar Linaje</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesAnimal/VerificarConsanguinidad">Verificar Consanguinidad</a></li>
-                                </ul>
-                            </li>
 
-                            @* Modulo 2: Control de Produccion *@
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">Produccion</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/OrdenieLote">Ordeñe por Lote</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/OrdenieIndividual">Ordeñe Individual</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/ControlLechero">Control Lechero (carga masiva)</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/HistorialProduccion">Historial de Produccion</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/MetricaMensual">Metrica Mensual</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/ListaLactancias">Lactancias</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/RegistrarSecado">Registrar Secado</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesProduccion/AlertasSecado">Alertas de Secado</a></li>
-                                </ul>
-                            </li>
+                @if (vAutenticado)
+                {
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        @* Buscador de caravana: lleva directo a la ficha del animal *@
+                        <form class="d-flex" method="get" asp-page="/PagesAnimal/DetalleAnimal" role="search">
+                            <label class="visually-hidden" for="buscarCaravana">Buscar por caravana</label>
+                            <input class="form-control form-control-sm me-1 buscador-caravana" type="search"
+                                   id="buscarCaravana" name="caravana" placeholder="Caravana" />
+                            <button class="btn btn-sm btn-outline-light" type="submit">
+                                <svg class="ico" aria-hidden="true"><use href="@vIconos#buscar"></use></svg>
+                                <span class="visually-hidden">Buscar</span>
+                            </button>
+                        </form>
 
-                            @* Modulo 3: Gestion Reproductiva *@
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">Reproduccion</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/VacasParaServir">Vacas para Servir</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/TactosPendientes">Tactos Pendientes</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarCelo">Registrar Celo</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/ListaCelos">Celos Detectados</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarServicio">Registrar Servicio</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/ListaServicios">Servicios</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarTacto">Registrar Tacto</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/AlertasParto">Alertas de Parto</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesReproduccion/RegistrarParto">Registrar Parto</a></li>
-                                </ul>
-                            </li>
+                        <span class="navbar-text small d-none d-sm-inline">@User.Identity.Name</span>
 
-                            @* Modulo 4: Gestion Sanitaria *@
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">Sanidad</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/ListaDiagnosticos">Ficha Sanitaria</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarDiagnostico">Registrar Diagnostico</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarTratamiento">Registrar Tratamiento</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarVacunacion">Registrar Vacunacion</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/RegistrarDescorne">Registrar Descorne</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/ListaPlanes">Planes Sanitarios</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesSanidad/CalendarioSanitario">Calendario Sanitario</a></li>
-                                </ul>
-                            </li>
-
-                            @* Modulo 5: Control de Insumos y Stock *@
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">Insumos</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/ListaInsumos">Lista de Insumos</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/AltaInsumo">Agregar Insumo</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/IngresoStock">Ingreso de Stock</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/ConfigurarStockMinimo">Configurar Stock Minimo</a></li>
-                                    <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/AlertasStock">Alertas de Stock Critico</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/AlertasVencimiento">Alertas de Vencimiento</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesInsumo/HistorialMovimientos">Historial de Movimientos</a></li>
-                                </ul>
-                            </li>
-
-                            @* Indicadores del rodeo y apoyo a la decision *@
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-light" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">Indicadores</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesIndicadores/Indicadores">Indicadores del Rodeo</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-page="/PagesIndicadores/CandidatasDescarte">Candidatas a Descarte</a></li>
-                                </ul>
-                            </li>
-
-                            @* Buscador de caravana: lleva directo a la ficha del animal *@
-                            <li class="nav-item">
-                                <form class="d-flex" method="get" asp-page="/PagesAnimal/DetalleAnimal">
-                                    <input class="form-control form-control-sm me-1" type="search"
-                                           name="caravana" placeholder="Caravana" aria-label="Buscar caravana" />
-                                    <button class="btn btn-sm btn-outline-light" type="submit">Ir</button>
-                                </form>
-                            </li>
-
-                            @* Parametros de manejo del establecimiento *@
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-page="/PagesConfiguracion/Configuracion">Configuracion</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <span class="nav-link text-light">@User.Identity.Name</span>
-                            </li>
-                            <li class="nav-item">
-                                <form method="post" asp-page="/PagesSeguridad/Login" asp-page-handler="Salir">
-                                    <button type="submit" class="nav-link btn btn-link text-light">Cerrar Sesion</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-page="/PagesSeguridad/Login">Iniciar Sesion</a>
-                            </li>
-                        }
-                    </ul>
-                </div>
+                        <form method="post" asp-page="/PagesSeguridad/Login" asp-page-handler="Salir">
+                            @* En pantalla chica queda solo el ícono, pero el
+                               nombre accesible lo sigue dando el aria-label *@
+                            <button type="submit" class="btn btn-sm btn-outline-light"
+                                    aria-label="Cerrar sesión">
+                                <svg class="ico" aria-hidden="true"><use href="@vIconos#salir"></use></svg>
+                                <span class="d-none d-sm-inline">Cerrar sesión</span>
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn btn-sm btn-outline-light" asp-area="" asp-page="/PagesSeguridad/Login">
+                        Iniciar sesión
+                    </a>
+                }
             </div>
         </nav>
     </header>
 
-    <!-- Main Content -->
-    <div class="container my-4">
-        <main role="main" class="pb-3">
+    <div class="disposicion">
+        @if (vAutenticado)
+        {
+            <nav class="menu-lateral collapse d-lg-block" id="menuLateral" aria-label="Menú principal">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link @(vPaginaActual == "/Index" ? "activo" : "")"
+                           aria-current="@(vPaginaActual == "/Index" ? "page" : null)"
+                           asp-area="" asp-page="/Index">
+                            <svg class="ico" aria-hidden="true"><use href="@vIconos#hoy"></use></svg>
+                            Hoy en el tambo
+                        </a>
+                    </li>
+                </ul>
+
+                @foreach (var seccion in vSecciones)
+                {
+                    bool vSeccionActiva = seccion.Items.Any(i => i.Paginas.Contains(vPaginaActual));
+
+                    <div class="menu-seccion">
+                        <button class="menu-titulo @(vSeccionActiva ? "activa" : "")" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#@seccion.Id"
+                                aria-controls="@seccion.Id"
+                                aria-expanded="@(vSeccionActiva ? "true" : "false")">
+                            <svg class="ico" aria-hidden="true"><use href="@vIconos#@seccion.Icono"></use></svg>
+                            @seccion.Titulo
+                            <svg class="ico ico-flecha" aria-hidden="true"><use href="@vIconos#desplegar"></use></svg>
+                        </button>
+                        <div class="collapse @(vSeccionActiva ? "show" : "")" id="@seccion.Id">
+                            <ul class="nav flex-column">
+                                @foreach (var item in seccion.Items)
+                                {
+                                    bool vItemActivo = item.Paginas.Contains(vPaginaActual);
+
+                                    <li class="nav-item">
+                                        <a class="nav-link @(vItemActivo ? "activo" : "")"
+                                           aria-current="@(vItemActivo ? "page" : null)"
+                                           asp-page="@item.Paginas[0]">@item.Texto</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+
+                <ul class="nav flex-column menu-pie">
+                    <li class="nav-item">
+                        <a class="nav-link @(vPaginaActual == "/PagesConfiguracion/Configuracion" ? "activo" : "")"
+                           aria-current="@(vPaginaActual == "/PagesConfiguracion/Configuracion" ? "page" : null)"
+                           asp-page="/PagesConfiguracion/Configuracion">
+                            <svg class="ico" aria-hidden="true"><use href="@vIconos#configuracion"></use></svg>
+                            Configuración
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+
+        @* tabindex -1 para que el salto de arriba pueda dejar el foco acá *@
+        <main role="main" class="contenido" id="contenido" tabindex="-1">
             @RenderBody()
         </main>
     </div>
-
 
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -171,6 +269,10 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @* Pagina sola cualquier tabla que declare data-paginar *@
     <script src="~/js/paginador.js" asp-append-version="true"></script>
+    @* Vuelve tarjetas las tablas en pantalla angosta, sin tocar las pantallas *@
+    <script src="~/js/tablaMovil.js" asp-append-version="true"></script>
+    @* Pide confirmación en cualquier formulario que declare data-confirmar *@
+    <script src="~/js/confirmacion.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

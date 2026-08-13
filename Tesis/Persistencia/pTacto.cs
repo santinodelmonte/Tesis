@@ -92,6 +92,97 @@ namespace Tesis.Persistencia
             }
         }
 
+        public const string SQL_MODIFICAR = "UPDATE tactos SET "
+            + "fecha_tacto = @fecha_tacto,"
+            + "resultado = @resultado,"
+            + "observaciones = @observaciones,"
+            + "id_servicio = @id_servicio "
+            + "WHERE id_tacto = @id_tacto";
+
+        public static Dictionary<string, object?> ParametrosModificar(Tacto pTacto)
+        {
+            return new Dictionary<string, object?>
+            {
+                { "@fecha_tacto", pTacto.FechaTacto.Date },
+                { "@resultado", pTacto.Resultado },
+                { "@observaciones", pTacto.Observaciones },
+                { "@id_servicio", pTacto.Servicio.IdServicio },
+                { "@id_tacto", pTacto.IdTacto }
+            };
+        }
+
+        // Corregir el resultado de un tacto es la correccion mas cara del modulo:
+        // cambia si la vaca esta prenada o vacia, y con eso si sigue en la lista para
+        // servir, si aparece en las alertas de parto y con que fecha se la seca.
+        //
+        // Las hembras y las lactancias van en lista porque el tacto se puede haber
+        // anotado en el servicio equivocado: al pasarlo al que corresponde, las dos
+        // vacas cambian de estado. Llegan con los valores que el dominio dedujo de los
+        // tactos que quedan.
+        public bool ModificarTacto(Tacto pTacto, List<Hembra> pHembrasActualizadas,
+            List<Lactancia> pLactanciasActualizadas)
+        {
+            return this.Escribir(SQL_MODIFICAR, ParametrosModificar(pTacto), pHembrasActualizadas,
+                pLactanciasActualizadas, "Error al modificar el tacto");
+        }
+
+        // Al eliminar el tacto la hembra vuelve al estado que le dan los tactos que le
+        // quedan a ese servicio: servida si no queda ninguno. La fecha probable de
+        // parto proyectada sobre la lactancia se recalcula igual, porque es la que
+        // dispara la alerta de secado.
+        public bool EliminarTacto(int pIdTacto, List<Hembra> pHembrasActualizadas,
+            List<Lactancia> pLactanciasActualizadas)
+        {
+            return this.Escribir("DELETE FROM tactos WHERE id_tacto = @id_tacto",
+                new Dictionary<string, object?> { { "@id_tacto", pIdTacto } },
+                pHembrasActualizadas, pLactanciasActualizadas, "Error al eliminar el tacto");
+        }
+
+        // La correccion y el borrado escriben lo mismo detras del tacto -las hembras y
+        // sus lactancias en curso-, asi que comparten la transaccion y solo cambia el
+        // comando de adelante.
+        private bool Escribir(string pSql, Dictionary<string, object?> pParametros,
+            List<Hembra> pHembrasActualizadas, List<Lactancia> pLactanciasActualizadas,
+            string pMensajeError)
+        {
+            using (MySqlConnection conexion = Conexion.AbrirConexion())
+            {
+                using (MySqlTransaction transaccion = conexion.BeginTransaction())
+                {
+                    try
+                    {
+                        Conexion.EjecutarComandoEnTransaccion(pSql, pParametros, conexion, transaccion);
+
+                        if (pHembrasActualizadas != null)
+                        {
+                            foreach (Hembra unaHembra in pHembrasActualizadas)
+                            {
+                                Conexion.EjecutarComandoEnTransaccion(pHembra.SQL_MODIFICAR,
+                                    pHembra.ParametrosModificar(unaHembra), conexion, transaccion);
+                            }
+                        }
+
+                        if (pLactanciasActualizadas != null)
+                        {
+                            foreach (Lactancia unaLactancia in pLactanciasActualizadas)
+                            {
+                                Conexion.EjecutarComandoEnTransaccion(pLactancia.SQL_MODIFICAR,
+                                    pLactancia.ParametrosModificar(unaLactancia), conexion, transaccion);
+                            }
+                        }
+
+                        transaccion.Commit();
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        transaccion.Rollback();
+                        throw new Exception(pMensajeError, e);
+                    }
+                }
+            }
+        }
+
         private Servicio BuscarServicio(List<Servicio> pLista, int pIdServicio)
         {
             foreach (Servicio unServicio in pLista)

@@ -6,8 +6,8 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/fotoAnimal.js" asp-append-version="true"></script>
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Agregar Animal</h1>
+<div class="panel-formulario">
+    <h1>Agregar Animal</h1>
     <hr />
     <form method="post">
         <div class="row">
@@ -51,7 +51,7 @@
                     <label for="txtMadre">Madre:</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="txtMadre" value="@Model.caravanaMadre" placeholder="Sin registrar" readonly>
-                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idMadre','txtMadre','Seleccionar Madre','H',false)">Buscar</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="abrirSelectorAnimal('idMadre','txtMadre','Seleccionar Madre','H',false)">Buscar</button>
                     </div>
                     <input type="hidden" id="idMadre" name="idMadre" value="@Model.idMadre" />
                 </div>
@@ -59,7 +59,7 @@
                     <label for="txtPadre">Padre:</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="txtPadre" value="@Model.caravanaPadre" placeholder="Sin registrar" readonly>
-                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idPadre','txtPadre','Seleccionar Padre','M',false)">Buscar</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="abrirSelectorAnimal('idPadre','txtPadre','Seleccionar Padre','M',false)">Buscar</button>
                     </div>
                     <input type="hidden" id="idPadre" name="idPadre" value="@Model.idPadre" />
                 </div>
@@ -84,7 +84,7 @@
                     </select>
                     <span class="validation" asp-validation-for="idCategoria"></span>
                     @* La clase cancel hace que jQuery Validation no bloquee este envio *@
-                    <button type="submit" class="btn btn-info mt-2 cancel" asp-page-handler="CalcularCategoria">Calcular Categoria</button>
+                    <button type="submit" class="btn btn-outline-secondary mt-2 cancel" asp-page-handler="CalcularCategoria">Calcular Categoria</button>
                 </div>
             </div>
 
@@ -128,7 +128,7 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="AgregarAnimal">Agregar</button>
+                <button type="submit" class="btn btn-primary" asp-page-handler="AgregarAnimal">Agregar</button>
                 <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
             </div>
         </div>

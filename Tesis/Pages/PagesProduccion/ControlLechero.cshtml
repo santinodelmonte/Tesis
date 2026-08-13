@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Control Lechero</h1>
+<div class="panel-formulario">
+    <h1>Control Lechero</h1>
     <p class="text-muted">
         Carga de todo el rodeo en una sola pantalla. Se completan los litros de las vacas
         medidas y las demás se dejan en blanco: solo se guardan las que tengan valor.
@@ -73,7 +73,7 @@
         else
         {
             <p>@Model.vacasEnOrdenie.Count vaca(s) en ordeñe.</p>
-            <table id="tablaControl" data-paginar="25" class="table table-sm text-center">
+            <table id="tablaControl" data-paginar="25" class="table table-sm">
                 <thead>
                     <tr>
                         <th>Caravana</th>
@@ -101,10 +101,10 @@
 
             <div class="row">
                 <div class="mt-2">
-                    <button type="submit" class="btn btn-success" asp-page-handler="Guardar">
+                    <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
                         Guardar controles
                     </button>
-                    <a class="btn btn-info" asp-page="./OrdenieIndividual">Carga individual</a>
+                    <a class="btn btn-outline-secondary" asp-page="./OrdenieIndividual">Carga individual</a>
                     <a class="btn btn-warning" asp-page="/Index">Volver</a>
                 </div>
             </div>

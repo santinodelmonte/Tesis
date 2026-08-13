@@ -126,6 +126,144 @@ namespace Tesis.Persistencia
             };
         }
 
+        public const string SQL_MODIFICAR = "UPDATE partos SET "
+            + "fecha_parto = @fecha_parto,"
+            + "tipo_parto = @tipo_parto,"
+            + "observaciones = @observaciones "
+            + "WHERE id_parto = @id_parto";
+
+        public static Dictionary<string, object?> ParametrosModificar(Parto pParto)
+        {
+            return new Dictionary<string, object?>
+            {
+                { "@fecha_parto", pParto.FechaParto.Date },
+                { "@tipo_parto", pParto.TipoParto },
+                { "@observaciones", pParto.Observaciones },
+                { "@id_parto", pParto.IdParto }
+            };
+        }
+
+        // La correccion del parto no cambia de madre: para eso esta el borrado. Si se
+        // corrige la fecha, arrastra a las lactancias que el parto habia movido -la que
+        // abrio empieza ese dia y la anterior quedo secada ese dia- y a las crias, que
+        // nacieron ese dia. Las dos listas pueden venir vacias cuando solo se corrigio
+        // el tipo o las observaciones.
+        public bool ModificarParto(Parto pParto, List<Lactancia> pLactanciasActualizadas,
+            List<Animal> pListaCrias)
+        {
+            using (MySqlConnection conexion = Conexion.AbrirConexion())
+            {
+                using (MySqlTransaction transaccion = conexion.BeginTransaction())
+                {
+                    try
+                    {
+                        Conexion.EjecutarComandoEnTransaccion(SQL_MODIFICAR,
+                            ParametrosModificar(pParto), conexion, transaccion);
+
+                        if (pLactanciasActualizadas != null)
+                        {
+                            foreach (Lactancia unaLactancia in pLactanciasActualizadas)
+                            {
+                                Conexion.EjecutarComandoEnTransaccion(pLactancia.SQL_MODIFICAR,
+                                    pLactancia.ParametrosModificar(unaLactancia), conexion, transaccion);
+                            }
+                        }
+
+                        if (pListaCrias != null)
+                        {
+                            foreach (Animal unaCria in pListaCrias)
+                            {
+                                Conexion.EjecutarComandoEnTransaccion(pAnimal.SQL_MODIFICAR,
+                                    pAnimal.ParametrosModificar(unaCria), conexion, transaccion);
+                            }
+                        }
+
+                        transaccion.Commit();
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        transaccion.Rollback();
+                        throw new Exception("Error al modificar el parto", e);
+                    }
+                }
+            }
+        }
+
+        // Deshacer un parto es deshacer todo lo que el alta habia dejado, en el orden
+        // inverso: se borran las crias y la lactancia que abrio, se reabre la que el
+        // parto habia cerrado y la madre vuelve a tener un parto menos, con el estado
+        // y la categoria que le corresponden. El dominio ya verifico que no haya
+        // ordenies imputados a esa lactancia ni registros colgando de las crias: si
+        // los hubiera, el borrado no llega hasta aca.
+        //
+        // Las crias se borran de animales y no de hembras ni de machos: la
+        // especializacion cae sola por el ON DELETE CASCADE del esquema.
+        public bool EliminarParto(int pIdParto, List<Animal> pListaCrias, Lactancia pLactanciaDelParto,
+            Hembra pMadreActualizada, Lactancia pLactanciaReabierta)
+        {
+            using (MySqlConnection conexion = Conexion.AbrirConexion())
+            {
+                using (MySqlTransaction transaccion = conexion.BeginTransaction())
+                {
+                    try
+                    {
+                        Conexion.EjecutarComandoEnTransaccion(
+                            "DELETE FROM partos WHERE id_parto = @id_parto",
+                            new Dictionary<string, object?> { { "@id_parto", pIdParto } },
+                            conexion, transaccion);
+
+                        if (pLactanciaDelParto != null)
+                        {
+                            Conexion.EjecutarComandoEnTransaccion(
+                                "DELETE FROM lactancias WHERE id_lactancia = @id_lactancia",
+                                new Dictionary<string, object?> { { "@id_lactancia", pLactanciaDelParto.IdLactancia } },
+                                conexion, transaccion);
+                        }
+
+                        if (pListaCrias != null)
+                        {
+                            foreach (Animal unaCria in pListaCrias)
+                            {
+                                Conexion.EjecutarComandoEnTransaccion(
+                                    "DELETE FROM animales WHERE id_animal = @id_animal",
+                                    new Dictionary<string, object?> { { "@id_animal", unaCria.IdAnimal } },
+                                    conexion, transaccion);
+                            }
+                        }
+
+                        // La lactancia anterior que el parto habia cerrado vuelve a
+                        // quedar abierta: si no, la vaca queda sin ninguna en curso y
+                        // los ordenies del dia no se pueden imputar a ningun lado.
+                        if (pLactanciaReabierta != null)
+                        {
+                            Conexion.EjecutarComandoEnTransaccion(pLactancia.SQL_MODIFICAR,
+                                pLactancia.ParametrosModificar(pLactanciaReabierta), conexion, transaccion);
+                        }
+
+                        if (pMadreActualizada != null)
+                        {
+                            Conexion.EjecutarComandoEnTransaccion(pHembra.SQL_MODIFICAR,
+                                pHembra.ParametrosModificar(pMadreActualizada), conexion, transaccion);
+
+                            // La categoria vive en animales: una vaca que se queda sin
+                            // partos vuelve a ser novilla.
+                            Conexion.EjecutarComandoEnTransaccion(pAnimal.SQL_MODIFICAR,
+                                pAnimal.ParametrosModificar(pMadreActualizada), conexion, transaccion);
+                        }
+
+                        transaccion.Commit();
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        transaccion.Rollback();
+                        throw new Exception("Error al eliminar el parto", e);
+                    }
+                }
+            }
+        }
+
         private Hembra BuscarHembra(List<Hembra> pLista, int pIdAnimal)
         {
             foreach (Hembra unaHembra in pLista)

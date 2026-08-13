@@ -1,0 +1,72 @@
+@page
+@model Tesis.Pages.PagesSanidad.ListaDescornesModel
+@{
+    ViewData["Title"] = "Descornes";
+}
+<div>
+    <div class="encabezado-pagina">
+        <div>
+            <h1>Descornes</h1>
+            <small class="text-muted">@Model.descornes.Count procedimientos registrados.</small>
+        </div>
+        <a class="btn btn-primary" asp-page="./RegistrarDescorne">Registrar descorne</a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
+
+    <table data-paginar="10" class="table align-middle">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Caravana</th>
+                <th>Metodo</th>
+                <th>Plan</th>
+                <th>Observaciones</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.descornes.Any())
+            {
+                @foreach (Dominio.Descorne descorne in Model.descornes)
+                {
+                    <tr>
+                        <td>@descorne.Fecha.ToShortDateString()</td>
+                        <td>@(descorne.Animal != null ? descorne.Animal.NumCaravana : "")</td>
+                        <td>@descorne.Metodo</td>
+                        <td>
+                            @if (descorne.Plan != null)
+                            {
+                                @descorne.Plan.Nombre
+                            }
+                            else
+                            {
+                                <span class="text-muted">Fuera de plan</span>
+                            }
+                        </td>
+                        <td>@descorne.Observaciones</td>
+                        <td>
+                            <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                {
+                                    PaginaEditar = "./RegistrarDescorne",
+                                    Id = descorne.IdDescorne,
+                                    Descripcion = "el descorne del " + descorne.Fecha.ToShortDateString()
+                                        + " de la caravana "
+                                        + (descorne.Animal != null ? descorne.Animal.NumCaravana : "")
+                                })" />
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">No hay descornes registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

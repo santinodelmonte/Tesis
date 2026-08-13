@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Ingreso de Stock</h1>
+<div class="panel-formulario">
+    <h1>Registrar Ingreso de Stock</h1>
     <hr />
     <form method="post">
         <div class="row">
@@ -59,7 +59,7 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="RegistrarIngreso">Registrar Ingreso</button>
+                <button type="submit" class="btn btn-primary" asp-page-handler="RegistrarIngreso">Registrar Ingreso</button>
                 <a class="btn btn-warning" asp-page="./ListaInsumos">Volver</a>
             </div>
         </div>
@@ -68,11 +68,11 @@
     @if (Model.movimientos.Any())
     {
         <hr />
-        <h5>
+        <h2 class="h5">
             Ultimos movimientos
-            <a class="btn btn-info btn-sm ms-2" asp-page="./HistorialMovimientos">Ver historial completo</a>
-        </h5>
-        <table data-paginar="10" class="table table-sm text-center">
+            <a class="btn btn-outline-secondary btn-sm ms-2" asp-page="./HistorialMovimientos">Ver historial completo</a>
+        </h2>
+        <table data-paginar="10" class="table table-sm">
             <thead>
                 <tr>
                     <th>Fecha</th>

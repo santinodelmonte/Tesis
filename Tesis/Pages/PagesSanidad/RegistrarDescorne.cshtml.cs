@@ -6,8 +6,13 @@ namespace Tesis.Pages.PagesSanidad
 {
     // CU24. El descorne no consume insumo y es de aplicacion unica: una vez
     // registrado, el plan de descorne deja de exigirlo para ese animal.
+    //
+    // La misma pantalla da de alta y corrige: con id en cero es un alta, con un
+    // identificador se abre con el descorne cargado.
     public class RegistrarDescorneModel : PageModel
     {
+        [BindProperty]
+        public int id { get; set; } = 0;
         [BindProperty]
         public string? numCaravana { get; set; } = "";
         [BindProperty]
@@ -23,10 +28,29 @@ namespace Tesis.Pages.PagesSanidad
         public List<PlanSanitario> planes = new List<PlanSanitario>();
         public List<Descorne> descornes = new List<Descorne>();
 
-        public void OnGet()
+        public bool esCorreccion { get { return id > 0; } }
+
+        public IActionResult OnGet(int id)
         {
             Controladora unaControladora = new Controladora();
             this.CargarListados(unaControladora);
+
+            if (id > 0)
+            {
+                Descorne unDescorne = unaControladora.BuscarDescorne(id);
+                if (unDescorne == null)
+                {
+                    return Redirect("./ListaDescornes");
+                }
+
+                this.id = id;
+                numCaravana = unDescorne.Animal != null ? unDescorne.Animal.NumCaravana : "";
+                fecha = unDescorne.Fecha;
+                metodo = unDescorne.Metodo;
+                observaciones = unDescorne.Observaciones;
+                idPlan = unDescorne.Plan != null ? unDescorne.Plan.IdPlan : 0;
+            }
+            return Page();
         }
 
         public IActionResult OnPostGuardar()
@@ -34,6 +58,11 @@ namespace Tesis.Pages.PagesSanidad
             Controladora unaControladora = new Controladora();
             this.CargarListados(unaControladora);
             this.LeerFormulario();
+
+            if (id > 0)
+            {
+                return this.Corregir(unaControladora);
+            }
 
             if (numCaravana == null || numCaravana == "")
             {
@@ -68,10 +97,39 @@ namespace Tesis.Pages.PagesSanidad
 
             if (unaControladora.AltaDescorne(unDescorne))
             {
-                return Redirect("./ListaDiagnosticos");
+                return Redirect("./ListaDescornes");
             }
 
             ModelState.AddModelError(string.Empty, "No se pudo registrar el descorne!");
+            return Page();
+        }
+
+        // La unicidad se sigue controlando, pero salteando este mismo registro: si no,
+        // el descorne se bloquearia a si mismo apenas se le quiere arreglar la fecha.
+        private IActionResult Corregir(Controladora pControladoraDominio)
+        {
+            Animal unAnimal = numCaravana != null && numCaravana != ""
+                ? pControladoraDominio.BuscarAnimalXCaravana(numCaravana)
+                : null;
+
+            int vIdAnimal = unAnimal != null ? unAnimal.IdAnimal : 0;
+
+            string vMotivo = pControladoraDominio.ValidarModificarDescorne(id, fecha, metodo,
+                vIdAnimal, idPlan);
+
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
+
+            if (pControladoraDominio.ModificarDescorne(id, fecha, metodo, observaciones ?? "",
+                vIdAnimal, idPlan))
+            {
+                return Redirect("./ListaDescornes");
+            }
+
+            ModelState.AddModelError(string.Empty, "No se pudo corregir el descorne!");
             return Page();
         }
 
@@ -84,6 +142,10 @@ namespace Tesis.Pages.PagesSanidad
 
         private void LeerFormulario()
         {
+            int vId = 0;
+            int.TryParse(Request.Form["id"], out vId);
+            id = vId;
+
             numCaravana = Request.Form["numCaravana"];
             fecha = Request.Form["fecha"] != "" ? Convert.ToDateTime(Request.Form["fecha"]) : DateTime.Now;
             metodo = Request.Form["metodo"] != "" ? Request.Form["metodo"] : Descorne.PASTA_CAUSTICA;

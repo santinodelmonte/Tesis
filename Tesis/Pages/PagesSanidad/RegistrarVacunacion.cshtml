@@ -1,18 +1,37 @@
 @page
 @model Tesis.Pages.PagesSanidad.RegistrarVacunacionModel
 @{
+    ViewData["Title"] = Model.esCorreccion ? "Corregir vacunación" : "Registrar vacunación";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Vacunacion</h1>
+@*
+    El listado de aplicaciones que esta pantalla mostraba abajo se mudo a
+    ListaVacunaciones, que es de donde ahora se llega hasta aca. El formulario se
+    queda solo con lo suyo.
+*@
+<div class="panel-formulario">
+    <h1>
+        @(Model.esCorreccion ? "Corregir Vacunacion" : "Registrar Vacunacion")
+    </h1>
     <p class="text-muted">
         La aplicación descuenta una dosis del stock. Si cumple un plan sanitario,
         indicarlo es lo que hace que el calendario deje de pedirla.
     </p>
     <hr />
+
+    @if (Model.esCorreccion)
+    {
+        <div class="alert alert-info">
+            <strong>Se está corrigiendo una vacunación ya registrada.</strong>
+            Si se cambia la vacuna, el sistema devuelve la dosis anterior al stock y
+            descuenta la nueva, dejando los dos movimientos asentados en el historial.
+        </div>
+    }
+
     <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
         <div class="row">
             <div class="col-md-3">
                 <div class="form-group">
@@ -77,52 +96,13 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-warning" asp-page="./ListaDiagnosticos">Volver</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    @(Model.esCorreccion ? "Guardar cambios" : "Guardar")
+                </button>
+                <a class="btn btn-outline-secondary" asp-page="./ListaVacunaciones">Cancelar</a>
             </div>
         </div>
     </form>
-
-    <h5 class="mt-4">Ultimas vacunaciones</h5>
-    <table data-paginar="10" class="table text-center">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Caravana</th>
-                <th>Vacuna</th>
-                <th>Plan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.vacunaciones.Any())
-            {
-                @foreach (Dominio.Vacunacion vacunacion in Model.vacunaciones)
-                {
-                    <tr>
-                        <td>@vacunacion.FechaAplicacion.ToShortDateString()</td>
-                        <td>@(vacunacion.Animal != null ? vacunacion.Animal.NumCaravana : "")</td>
-                        <td>@(vacunacion.Insumo != null ? vacunacion.Insumo.Nombre : "")</td>
-                        <td>
-                            @if (vacunacion.Plan != null)
-                            {
-                                @vacunacion.Plan.Nombre
-                            }
-                            else
-                            {
-                                <span class="text-muted">Fuera de plan</span>
-                            }
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4">No hay vacunaciones registradas</td>
-                </tr>
-            }
-        </tbody>
-    </table>
 </div>
 
 <partial name="_SelectorAnimal" model="Model.animales" />

@@ -1,0 +1,115 @@
+@page
+@model Tesis.Pages.PagesSanidad.ListaTratamientosModel
+@{
+    ViewData["Title"] = "Tratamientos";
+}
+<div>
+    <div class="encabezado-pagina">
+        <div>
+            <h1>Tratamientos</h1>
+            <small class="text-muted">@Model.tratamientos.Count tratamientos registrados.</small>
+        </div>
+        <a class="btn btn-primary" asp-page="./RegistrarTratamiento">Registrar tratamiento</a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
+
+    @if (Model.animalesEnDescarte.Any())
+    {
+        <div class="alert alert-warning">
+            <strong>Descarte de leche vigente.</strong>
+            Estos animales quedan fuera del lote de ordeñe hasta la fecha indicada.
+            <ul class="mb-0 mt-2">
+                @foreach (Dominio.Animal animal in Model.animalesEnDescarte)
+                {
+                    <li>
+                        @animal.NumCaravana &mdash; hasta
+                        @Model.descartesVigentes[animal.IdAnimal].ToShortDateString()
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+
+    <table data-paginar="10" class="table align-middle">
+        <thead>
+            <tr>
+                <th>Inicio</th>
+                <th>Caravana</th>
+                <th>Origen</th>
+                <th>Insumo</th>
+                <th>Duracion</th>
+                <th>Dosis diaria</th>
+                <th>Unidades</th>
+                <th>Plan</th>
+                <th>Descarte hasta</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.tratamientos.Any())
+            {
+                @foreach (Dominio.Tratamiento tratamiento in Model.tratamientos)
+                {
+                    <tr>
+                        <td>@tratamiento.FechaInicio.ToShortDateString()</td>
+                        <td>@(tratamiento.Animal != null ? tratamiento.Animal.NumCaravana : "")</td>
+                        <td>
+                            @if (tratamiento.Diagnostico != null)
+                            {
+                                @tratamiento.Diagnostico.Enfermedad
+                            }
+                            else
+                            {
+                                <span class="text-muted">Preventivo</span>
+                            }
+                        </td>
+                        <td>@(tratamiento.Insumo != null ? tratamiento.Insumo.Nombre : "")</td>
+                        <td>@tratamiento.DiasDuracion dias</td>
+                        <td>@tratamiento.DosisDiaria</td>
+                        <td>@tratamiento.CantidadInsumo.ToString("N2")</td>
+                        <td>
+                            @if (tratamiento.Plan != null)
+                            {
+                                @tratamiento.Plan.Nombre
+                            }
+                            else
+                            {
+                                <span class="text-muted">Fuera de plan</span>
+                            }
+                        </td>
+                        <td>
+                            @if (tratamiento.FechaFinDescarte != DateTime.MinValue)
+                            {
+                                @tratamiento.FechaFinDescarte.ToShortDateString()
+                            }
+                            else
+                            {
+                                <span class="text-muted">No obliga</span>
+                            }
+                        </td>
+                        <td>
+                            <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                {
+                                    PaginaEditar = "./RegistrarTratamiento",
+                                    Id = tratamiento.IdTratamiento,
+                                    Descripcion = "el tratamiento del " + tratamiento.FechaInicio.ToShortDateString()
+                                        + " de la caravana "
+                                        + (tratamiento.Animal != null ? tratamiento.Animal.NumCaravana : "")
+                                })" />
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10">No hay tratamientos registrados</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

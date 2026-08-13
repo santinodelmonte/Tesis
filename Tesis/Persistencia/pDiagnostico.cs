@@ -64,6 +64,39 @@ namespace Tesis.Persistencia
                 ParametrosModificarEstado(pIdDiagnostico, pEstado));
         }
 
+        // La correccion completa, para cuando lo que esta mal no es el estado sino la
+        // enfermedad, la fecha o el animal al que se le anoto.
+        public bool ModificarDiagnostico(Diagnostico pDiagnostico)
+        {
+            string sql = "UPDATE diagnosticos SET "
+                + "fecha_diagnostico = @fecha_diagnostico,"
+                + "enfermedad = @enfermedad,"
+                + "estado = @estado,"
+                + "id_animal = @id_animal "
+                + "WHERE id_diagnostico = @id_diagnostico";
+
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@fecha_diagnostico", pDiagnostico.FechaDiagnostico.Date },
+                { "@enfermedad", pDiagnostico.Enfermedad },
+                { "@estado", pDiagnostico.Estado },
+                { "@id_animal", pDiagnostico.Animal.IdAnimal },
+                { "@id_diagnostico", pDiagnostico.IdDiagnostico }
+            };
+
+            return Conexion.EjecutarComando(sql, parametros);
+        }
+
+        // El diagnostico no se elimina si tiene tratamientos colgados: eso lo controla
+        // el dominio, que le pide al usuario que elimine antes esos tratamientos. Aca
+        // ya llega con el camino despejado y es una sola escritura.
+        public bool EliminarDiagnostico(int pIdDiagnostico)
+        {
+            return Conexion.EjecutarComando(
+                "DELETE FROM diagnosticos WHERE id_diagnostico = @id_diagnostico",
+                new Dictionary<string, object?> { { "@id_diagnostico", pIdDiagnostico } });
+        }
+
         private Animal BuscarEnLista(List<Animal> pLista, int pIdAnimal)
         {
             foreach (Animal unAnimal in pLista)

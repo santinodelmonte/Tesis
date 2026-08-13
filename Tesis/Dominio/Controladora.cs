@@ -1178,10 +1178,19 @@ namespace Tesis.Dominio
         private Hembra CopiarHembra(Hembra pHembra, int pNumeroPartos, string pEstadoProductivo,
             string pEstadoReproductivo)
         {
-            return new Hembra(pHembra.IdAnimal, pHembra.NumCaravana, pHembra.FechaNacimiento,
-                pHembra.Activo, pHembra.FechaBaja, pHembra.MotivoBaja, pHembra.Raza,
-                pHembra.Categoria, pHembra.Madre, pHembra.Padre, pNumeroPartos,
+            Hembra unaHembraNueva = new Hembra(pHembra.IdAnimal, pHembra.NumCaravana,
+                pHembra.FechaNacimiento, pHembra.Activo, pHembra.FechaBaja, pHembra.MotivoBaja,
+                pHembra.Raza, pHembra.Categoria, pHembra.Madre, pHembra.Padre, pNumeroPartos,
                 pEstadoProductivo, pEstadoReproductivo);
+
+            // La copia arrastra la foto, por el mismo motivo que CopiarAnimal. La
+            // mayoria de las escrituras que usan esta copia tocan solo la tabla de
+            // hembras, donde la foto no vive, pero el borrado del parto tambien
+            // reescribe la fila de animales para devolverle la categoria a la madre: sin
+            // esta linea, deshacer un parto le borraria la foto a la vaca.
+            unaHembraNueva.Foto = pHembra.Foto;
+
+            return unaHembraNueva;
         }
 
         // RF2.12: lo disparan el parto, que inicia la lactancia, y el secado, que la cierra.
@@ -2047,6 +2056,288 @@ namespace Tesis.Dominio
         }
         #endregion
 
+        #region CORRECCION DE REGISTROS
+        // Los registros de reproduccion y sanidad son hechos: pasaron una sola vez y en
+        // un momento determinado. Por eso el sistema no los preveia modificables. Pero
+        // el que los carga es una persona que trabaja con las manos ocupadas, y una
+        // caravana mal tecleada o un resultado de tacto invertido no se puede quedar
+        // adentro del sistema para siempre.
+        //
+        // La correccion se apoya en dos ideas, que son las que evitan que arreglar un
+        // dato rompa otros tres:
+        //
+        // 1. El estado derivado no se deshace, se vuelve a deducir. El sistema no
+        //    guarda "en que estado estaba la vaca antes de este tacto" para poder
+        //    revertirlo: despues de cada correccion mira los registros que quedaron y
+        //    deduce de cero el estado que corresponde. Asi corregir un registro viejo
+        //    no pisa lo que dicen los mas nuevos, que es exactamente lo que pasaria
+        //    con un deshacer paso a paso.
+        //
+        // 2. Lo que tiene algo colgando no se borra: se avisa que hay que sacar eso
+        //    primero. Un servicio con tactos, un diagnostico con tratamientos. El
+        //    usuario deshace en el orden inverso al que cargo, que es el orden en el
+        //    que se acuerda de lo que hizo.
+        //
+        // El borrado es fisico. La alternativa -marcar el registro como anulado y
+        // dejarlo- obligaria a filtrarlo en las cuarenta y pico de consultas que
+        // recorren estas listas, y bastaria con olvidarse el filtro en una sola para
+        // que un indicador empiece a mentir sin que nadie lo note.
+
+        // El estado reproductivo que le corresponde a la hembra segun los hechos que
+        // quedan registrados: su ultimo parto, el servicio posterior a ese parto y el
+        // ultimo tacto de ese servicio.
+        //
+        // Los tres identificadores son los del registro que se esta por eliminar, para
+        // que la deduccion lo ignore aunque todavia figure en la cache. Van en cero
+        // cuando no hay nada que ignorar, que es el caso de las modificaciones.
+        private string EstadoReproductivoDeducido(Hembra pHembra, int pIdServicioIgnorado,
+            int pIdTactoIgnorado, int pIdPartoIgnorado)
+        {
+            if (pHembra == null)
+            {
+                return Hembra.VACIA;
+            }
+
+            Servicio unServicioVigente = this.ServicioVigente(pHembra, pIdServicioIgnorado,
+                pIdPartoIgnorado);
+
+            // Sin servicio posterior al ultimo parto la hembra esta vacia: es el estado
+            // con el que queda la recien parida y con el que llega la vaquillona que
+            // todavia no se sirvio.
+            if (unServicioVigente == null)
+            {
+                return Hembra.VACIA;
+            }
+
+            Tacto unUltimoTacto = this.UltimoTacto(unServicioVigente, pIdTactoIgnorado);
+
+            // El dudoso no define nada: la hembra sigue servida a la espera del control
+            // siguiente. Es el mismo criterio del alta del tacto.
+            if (unUltimoTacto == null || unUltimoTacto.Resultado == Tacto.DUDOSA)
+            {
+                return Hembra.SERVIDA;
+            }
+
+            if (unUltimoTacto.Resultado == Tacto.PRENADA)
+            {
+                return Hembra.PRENADA;
+            }
+            return Hembra.VACIA;
+        }
+
+        // La hembra con el estado reproductivo que le queda despues de la correccion, o
+        // nulo si no cambia. Devolver nulo es lo que le permite a la persistencia
+        // saltearse la escritura: la mayoria de las correcciones -una observacion, una
+        // fecha- no mueven ningun estado.
+        private Hembra HembraRecalculada(Hembra pHembra, int pIdServicioIgnorado,
+            int pIdTactoIgnorado, int pIdPartoIgnorado)
+        {
+            if (pHembra == null)
+            {
+                return null;
+            }
+
+            string vEstadoNuevo = this.EstadoReproductivoDeducido(pHembra, pIdServicioIgnorado,
+                pIdTactoIgnorado, pIdPartoIgnorado);
+
+            if (vEstadoNuevo == pHembra.EstadoReproductivo)
+            {
+                return null;
+            }
+
+            return this.CopiarHembra(pHembra, pHembra.NumeroPartos, pHembra.EstadoProductivo,
+                vEstadoNuevo);
+        }
+
+        // La lactancia en curso con la fecha probable de parto que le corresponde
+        // despues de la correccion, o nulo si no cambia. La fecha es la del servicio
+        // vigente cuando la hembra queda prenada, y ninguna cuando no.
+        //
+        // Es de donde CU13 saca la fecha recomendada de secado. Una correccion que la
+        // dejara vieja secaria vacas por una preniez que ya no existe, o dejaria de
+        // avisar por una que si.
+        private Lactancia LactanciaRecalculada(Hembra pHembra, int pIdServicioIgnorado,
+            int pIdTactoIgnorado, int pIdPartoIgnorado)
+        {
+            Lactancia unaLactancia = this.LactanciaActual(pHembra);
+            if (unaLactancia == null)
+            {
+                return null;
+            }
+
+            DateTime vFechaProbableParto = DateTime.MinValue;
+
+            if (this.EstadoReproductivoDeducido(pHembra, pIdServicioIgnorado, pIdTactoIgnorado,
+                pIdPartoIgnorado) == Hembra.PRENADA)
+            {
+                Servicio unServicioVigente = this.ServicioVigente(pHembra, pIdServicioIgnorado,
+                    pIdPartoIgnorado);
+
+                if (unServicioVigente != null)
+                {
+                    vFechaProbableParto = unServicioVigente.FechaProbableParto;
+                }
+            }
+
+            if (unaLactancia.FechaProbableParto.Date == vFechaProbableParto.Date)
+            {
+                return null;
+            }
+
+            return this.CopiarLactancia(unaLactancia, unaLactancia.FechaSecado, vFechaProbableParto);
+        }
+
+        // El contra-movimiento que devuelve al stock lo que habia consumido un registro
+        // que se elimina o se corrige.
+        //
+        // Es un ingreso sin fecha de vencimiento a proposito: no es una partida nueva
+        // que entra al deposito, es producto que en realidad nunca salio. Sin
+        // vencimiento no aparece en las alertas de CU28, que es lo correcto, porque el
+        // producto sigue estando en el envase de la partida original.
+        //
+        // El egreso original no se borra. El historial de movimientos tiene que poder
+        // explicar por que el saldo del 12 de marzo era el que era, y para eso el error
+        // y su correccion tienen que estar los dos.
+        private MovimientoStock Devolucion(Insumo pInsumo, double pCantidad, string pMotivo)
+        {
+            if (pInsumo == null || pCantidad <= 0)
+            {
+                return null;
+            }
+
+            return new MovimientoStock(0, MovimientoStock.INGRESO, pCantidad, DateTime.Now,
+                DateTime.MinValue, pMotivo, pInsumo);
+        }
+
+        // El egreso que deja el consumo nuevo cuando una correccion cambia el producto
+        // aplicado o la cantidad.
+        private MovimientoStock Consumo(Insumo pInsumo, double pCantidad, DateTime pFecha, string pMotivo)
+        {
+            if (pInsumo == null || pCantidad <= 0)
+            {
+                return null;
+            }
+
+            return new MovimientoStock(0, MovimientoStock.EGRESO, pCantidad, pFecha,
+                DateTime.MinValue, pMotivo, pInsumo);
+        }
+
+        // Arma la lista de movimientos que va a la persistencia salteando los nulos,
+        // que son los casos en que no hay nada que devolver ni que consumir.
+        private List<MovimientoStock> ArmarMovimientos(MovimientoStock pDevolucion,
+            MovimientoStock pConsumo)
+        {
+            List<MovimientoStock> _listaMovimientos = new List<MovimientoStock>();
+
+            if (pDevolucion != null)
+            {
+                _listaMovimientos.Add(pDevolucion);
+            }
+
+            if (pConsumo != null)
+            {
+                _listaMovimientos.Add(pConsumo);
+            }
+            return _listaMovimientos;
+        }
+
+        // Las hembras que una correccion puede dejar con otro estado: la que tenia el
+        // registro y la que pasa a tenerlo. Cuando la correccion no cambio de animal
+        // las dos son la misma y la lista queda con una sola.
+        private List<Hembra> HembrasAfectadas(Hembra pAnterior, Hembra pNueva)
+        {
+            List<Hembra> _listaAfectadas = new List<Hembra>();
+
+            if (pAnterior != null)
+            {
+                _listaAfectadas.Add(pAnterior);
+            }
+
+            if (pNueva != null && (pAnterior == null || pNueva.IdAnimal != pAnterior.IdAnimal))
+            {
+                _listaAfectadas.Add(pNueva);
+            }
+            return _listaAfectadas;
+        }
+
+        // Por cada hembra afectada, el estado reproductivo y la fecha probable de parto
+        // de la lactancia que le quedan despues de la correccion. A las listas de
+        // salida solo entran las que efectivamente cambian: lo que no cambio no se
+        // reescribe.
+        private void RecalcularHembras(List<Hembra> pAfectadas, int pIdServicioIgnorado,
+            int pIdTactoIgnorado, int pIdPartoIgnorado, List<Hembra> pHembrasActualizadas,
+            List<Lactancia> pLactanciasActualizadas)
+        {
+            foreach (Hembra unaHembra in pAfectadas)
+            {
+                Hembra unaHembraNueva = this.HembraRecalculada(unaHembra, pIdServicioIgnorado,
+                    pIdTactoIgnorado, pIdPartoIgnorado);
+
+                if (unaHembraNueva != null)
+                {
+                    pHembrasActualizadas.Add(unaHembraNueva);
+                }
+
+                Lactancia unaLactanciaNueva = this.LactanciaRecalculada(unaHembra, pIdServicioIgnorado,
+                    pIdTactoIgnorado, pIdPartoIgnorado);
+
+                if (unaLactanciaNueva != null)
+                {
+                    pLactanciasActualizadas.Add(unaLactanciaNueva);
+                }
+            }
+        }
+
+        // Vuelca a la cache los estados recalculados, una vez que la escritura salio
+        // bien. Hasta aca las copias eran objetos aparte, para no dejar la cache
+        // adelantada a la base si la transaccion se caia.
+        private void AplicarRecalculoEnCache(List<Hembra> pHembrasActualizadas,
+            List<Lactancia> pLactanciasActualizadas)
+        {
+            foreach (Hembra unaHembraNueva in pHembrasActualizadas)
+            {
+                Hembra unaHembra = this.BuscarHembra(unaHembraNueva.IdAnimal);
+                if (unaHembra != null)
+                {
+                    unaHembra.NumeroPartos = unaHembraNueva.NumeroPartos;
+                    unaHembra.EstadoProductivo = unaHembraNueva.EstadoProductivo;
+                    unaHembra.EstadoReproductivo = unaHembraNueva.EstadoReproductivo;
+                }
+            }
+
+            foreach (Lactancia unaLactanciaNueva in pLactanciasActualizadas)
+            {
+                Lactancia unaLactancia = this.BuscarLactancia(unaLactanciaNueva.IdLactancia);
+                if (unaLactancia != null)
+                {
+                    unaLactancia.FechaInicio = unaLactanciaNueva.FechaInicio;
+                    unaLactancia.FechaSecado = unaLactanciaNueva.FechaSecado;
+                    unaLactancia.FechaProbableParto = unaLactanciaNueva.FechaProbableParto;
+                }
+            }
+        }
+
+        // Aplica en la cache los movimientos que se acaban de asentar, para que el
+        // stock que ve la pantalla despues de la correccion sea el nuevo y no el que
+        // habia al empezar la peticion.
+        private void AplicarMovimientosEnCache(List<MovimientoStock> pMovimientos)
+        {
+            foreach (MovimientoStock unMovimiento in pMovimientos)
+            {
+                if (unMovimiento.Insumo == null)
+                {
+                    continue;
+                }
+
+                unMovimiento.Insumo.StockActual = unMovimiento.TipoMovimiento == MovimientoStock.INGRESO
+                    ? unMovimiento.Insumo.StockActual + unMovimiento.Cantidad
+                    : unMovimiento.Insumo.StockActual - unMovimiento.Cantidad;
+
+                this.AgregarMovimientoOrdenado(unMovimiento);
+            }
+        }
+        #endregion
+
         #region CELOS
         public List<Celo> ListarCelos()
         {
@@ -2110,6 +2401,82 @@ namespace Tesis.Dominio
             if (Persistencia.AltaCelo(pCelo))
             {
                 mListaCelos.Add(pCelo);
+                return true;
+            }
+            return false;
+
+        }
+
+        // La correccion revalida con la misma regla del alta: un celo corregido tiene
+        // que seguir siendo un celo posible -la hembra en edad de ciclar, la fecha no
+        // futura, el animal activo a esa fecha-, si no el error se cambia por otro.
+        public string ValidarModificarCelo(int pIdCelo, DateTime pFecha, int pIdHembra)
+        {
+            this.Refrescar();
+
+            if (this.BuscarCelo(pIdCelo) == null)
+            {
+                return "El celo que se quiere corregir ya no existe!";
+            }
+
+            Hembra unaHembra = this.BuscarHembra(pIdHembra);
+            if (unaHembra == null)
+            {
+                return "Hay que indicar la hembra en celo!";
+            }
+
+            return this.ValidarCelo(new Celo(pIdCelo, pFecha, "", unaHembra));
+        }
+
+        public bool ModificarCelo(int pIdCelo, DateTime pFecha, string pObservaciones, int pIdHembra)
+        {
+            if (this.ValidarModificarCelo(pIdCelo, pFecha, pIdHembra) != "")
+            {
+                return false;
+            }
+
+            Celo unCelo = this.BuscarCelo(pIdCelo);
+            Hembra unaHembra = this.BuscarHembra(pIdHembra);
+            Celo unCeloNuevo = new Celo(pIdCelo, pFecha, pObservaciones, unaHembra);
+
+            if (Persistencia.ModificarCelo(unCeloNuevo))
+            {
+                unCelo.Fecha = pFecha;
+                unCelo.Observaciones = pObservaciones;
+                unCelo.Animal = unaHembra;
+                return true;
+            }
+            return false;
+
+        }
+
+        // El celo es el unico registro de reproduccion que no se bloquea nunca: no mueve
+        // el estado de la hembra, no consume stock y ningun otro registro lo referencia.
+        // Anotarlo es dejar constancia de que se vio a la vaca en celo, y borrarlo es
+        // decir que no se la vio.
+        public string ValidarEliminarCelo(int pIdCelo)
+        {
+            this.Refrescar();
+
+            if (this.BuscarCelo(pIdCelo) == null)
+            {
+                return "El celo que se quiere eliminar ya no existe!";
+            }
+            return "";
+        }
+
+        public bool EliminarCelo(int pIdCelo)
+        {
+            if (this.ValidarEliminarCelo(pIdCelo) != "")
+            {
+                return false;
+            }
+
+            Celo unCelo = this.BuscarCelo(pIdCelo);
+
+            if (Persistencia.EliminarCelo(pIdCelo))
+            {
+                mListaCelos.Remove(unCelo);
                 return true;
             }
             return false;
@@ -2195,6 +2562,23 @@ namespace Tesis.Dominio
         // registrar, o una cadena vacia si esta bien.
         public string ValidarServicio(Servicio pServicio)
         {
+            return this.ValidarServicio(pServicio, 0);
+        }
+
+        // La misma validacion, con el identificador del servicio que se esta
+        // corrigiendo. En cero es la del alta. Con un identificador hay dos reglas que
+        // se evaluan distinto, porque son las que un servicio ya registrado viola
+        // contra si mismo:
+        //
+        //   - la preniez de la hembra se mira ignorando este servicio. Si la vaca esta
+        //     prenada por el servicio que se quiere corregir, corregirlo es justamente
+        //     lo que hay que poder hacer.
+        //   - el stock de la pajuela solo se exige cuando la correccion cambia de
+        //     pajuela. La que ya se habia descontado no se vuelve a descontar, y
+        //     exigirle stock impediria corregirle la fecha al ultimo servicio hecho con
+        //     la ultima pajuela de una partida.
+        private string ValidarServicio(Servicio pServicio, int pIdServicioIgnorado)
+        {
             if (pServicio.Animal == null)
             {
                 return "Hay que indicar la hembra que recibe el servicio!";
@@ -2225,7 +2609,11 @@ namespace Tesis.Dominio
 
             // Servir una hembra prenada le provoca el aborto. Si la preniez estaba mal
             // confirmada, el camino es registrar el tacto vacio y despues el servicio.
-            if (pServicio.Animal.EstadoReproductivo == Hembra.PRENADA)
+            string vEstadoReproductivo = pIdServicioIgnorado == 0
+                ? pServicio.Animal.EstadoReproductivo
+                : this.EstadoReproductivoDeducido(pServicio.Animal, pIdServicioIgnorado, 0, 0);
+
+            if (vEstadoReproductivo == Hembra.PRENADA)
             {
                 return "El animal figura prenado: servirlo le provoca el aborto. "
                     + "Si la preniez estaba mal confirmada, registre primero un tacto con resultado vacia!";
@@ -2258,8 +2646,14 @@ namespace Tesis.Dominio
                 {
                     return "La inseminacion artificial necesita una pajuela del stock!";
                 }
-                // Curso de excepcion 5a
-                if (pServicio.Pajuela.StockActual < 1)
+                // Curso de excepcion 5a. La pajuela que este servicio ya tenia
+                // descontada no se vuelve a descontar, asi que tampoco se le exige
+                // stock: solo se controla cuando la correccion cambia de pajuela.
+                Servicio unServicioActual = this.BuscarServicio(pIdServicioIgnorado);
+                bool vMismaPajuela = unServicioActual != null && unServicioActual.Pajuela != null
+                    && unServicioActual.Pajuela.IdInsumo == pServicio.Pajuela.IdInsumo;
+
+                if (!vMismaPajuela && pServicio.Pajuela.StockActual < 1)
                 {
                     return "La pajuela seleccionada no tiene stock disponible!";
                 }
@@ -2333,54 +2727,238 @@ namespace Tesis.Dominio
 
         }
 
-        // Curso alternativo 7a de CU15: el usuario ajusta la fecha probable de parto
-        // que propuso el sistema.
+        // Curso alternativo 7a de CU15: el usuario ajusta la fecha probable de parto que
+        // propuso el sistema. Es la correccion mas frecuente y por eso el listado la
+        // ofrece a mano, pero por dentro es la correccion completa dejando el resto de
+        // los campos como estaban.
         public bool ModificarServicio(int pIdServicio, DateTime pFechaProbableParto)
         {
+            this.Refrescar();
+
+            Servicio unServicio = this.BuscarServicio(pIdServicio);
+            if (unServicio == null || unServicio.Animal == null)
+            {
+                return false;
+            }
+
+            return this.ModificarServicio(pIdServicio, unServicio.TipoServicio,
+                unServicio.FechaServicio, pFechaProbableParto, unServicio.Observaciones,
+                unServicio.Animal.IdAnimal,
+                unServicio.Toro != null ? unServicio.Toro.IdAnimal : 0,
+                unServicio.Pajuela != null ? unServicio.Pajuela.IdInsumo : 0);
+        }
+
+        // Lo que impide corregir el servicio, o una cadena vacia si se puede. Ademas de
+        // las reglas del alta hay dos que solo existen en la correccion, y las dos
+        // vienen del tacto: el control se hace sobre un servicio concreto de un animal
+        // concreto, asi que ni el animal ni la fecha pueden quedar en contra de un
+        // tacto ya registrado.
+        public string ValidarModificarServicio(int pIdServicio, string pTipoServicio,
+            DateTime pFechaServicio, DateTime pFechaProbableParto, int pIdHembra,
+            int pIdToro, int pIdPajuela)
+        {
+            this.Refrescar();
+
             Servicio unServicio = this.BuscarServicio(pIdServicio);
             if (unServicio == null)
             {
-                return false;
+                return "El servicio que se quiere corregir ya no existe!";
             }
 
-            if (pFechaProbableParto <= unServicio.FechaServicio)
+            Hembra unaHembra = this.BuscarHembra(pIdHembra);
+            if (unaHembra == null)
             {
-                return false;
+                return "Hay que indicar la hembra que recibe el servicio!";
             }
 
-            Servicio unServicioNuevo = new Servicio(unServicio.IdServicio, unServicio.TipoServicio,
-                unServicio.FechaServicio, pFechaProbableParto, unServicio.Observaciones,
-                unServicio.Animal, unServicio.Toro, unServicio.Pajuela);
+            List<Tacto> _listaTactos = this.FiltrarTactosXServicio(pIdServicio);
 
-            // La fecha recomendada de secado se calcula sobre la lactancia, no sobre el
-            // servicio. Si la correccion no baja tambien a la lactancia, ajustar la fecha
-            // probable de parto no cambia nada en las alertas de secado.
-            //
-            // Solo se propaga cuando la preniez en curso es la de este servicio: ajustar
-            // un servicio viejo no tiene que tocar la proyeccion vigente.
-            Servicio unServicioVigente = this.ServicioVigente(unServicio.Animal);
-            Lactancia unaLactancia = this.LactanciaActual(unServicio.Animal);
-            Lactancia unaLactanciaNueva = null;
-
-            if (unaLactancia != null && unServicioVigente != null
-                && unServicioVigente.IdServicio == unServicio.IdServicio
-                && unServicio.Animal.EstadoReproductivo == Hembra.PRENADA)
+            // Pasar el servicio a otro animal dejaria esos controles confirmando la
+            // preniez de una vaca que nunca fue servida.
+            if (_listaTactos.Count > 0 && unServicio.Animal != null
+                && unaHembra.IdAnimal != unServicio.Animal.IdAnimal)
             {
-                unaLactanciaNueva = this.CopiarLactancia(unaLactancia, unaLactancia.FechaSecado,
-                    pFechaProbableParto);
+                return "El servicio tiene " + _listaTactos.Count + " tacto(s) registrado(s) sobre la caravana "
+                    + unServicio.Animal.NumCaravana + ": para pasarlo a otro animal hay que eliminar "
+                    + "antes esos tactos!";
             }
 
-            if (Persistencia.ModificarServicio(unServicioNuevo, unaLactanciaNueva))
+            // El tacto se hace despues del servicio, nunca antes
+            foreach (Tacto unTacto in _listaTactos)
             {
-                unServicio.FechaProbableParto = pFechaProbableParto;
-                if (unaLactanciaNueva != null)
+                if (unTacto.FechaTacto.Date < pFechaServicio.Date)
                 {
-                    unaLactancia.FechaProbableParto = pFechaProbableParto;
+                    return "El servicio tiene un tacto del " + unTacto.FechaTacto.ToShortDateString()
+                        + ": la fecha del servicio no puede ser posterior a la del tacto!";
                 }
+            }
+
+            if (pFechaProbableParto.Date <= pFechaServicio.Date)
+            {
+                return "La fecha probable de parto tiene que ser posterior a la del servicio!";
+            }
+
+            Servicio unServicioNuevo = new Servicio(pIdServicio, pTipoServicio, pFechaServicio,
+                pFechaProbableParto, "", unaHembra, this.BuscarMacho(pIdToro),
+                this.BuscarInsumo(pIdPajuela));
+
+            return this.ValidarServicio(unServicioNuevo, pIdServicio);
+        }
+
+        // La correccion completa del servicio. Vuelve a escribir todos los campos y
+        // arrastra los tres efectos que el alta habia dejado: el estado reproductivo de
+        // la hembra, la fecha probable de parto proyectada sobre la lactancia en curso
+        // y, si cambio la pajuela, el stock.
+        public bool ModificarServicio(int pIdServicio, string pTipoServicio, DateTime pFechaServicio,
+            DateTime pFechaProbableParto, string pObservaciones, int pIdHembra, int pIdToro,
+            int pIdPajuela)
+        {
+            if (this.ValidarModificarServicio(pIdServicio, pTipoServicio, pFechaServicio,
+                pFechaProbableParto, pIdHembra, pIdToro, pIdPajuela) != "")
+            {
+                return false;
+            }
+
+            Servicio unServicio = this.BuscarServicio(pIdServicio);
+            Hembra unaHembraAnterior = unServicio.Animal;
+            Insumo unaPajuelaAnterior = unServicio.Pajuela;
+
+            Hembra unaHembra = this.BuscarHembra(pIdHembra);
+            Macho unToro = this.BuscarMacho(pIdToro);
+            Insumo unaPajuela = this.BuscarInsumo(pIdPajuela);
+
+            Servicio unServicioNuevo = new Servicio(pIdServicio, pTipoServicio, pFechaServicio,
+                pFechaProbableParto, pObservaciones, unaHembra, unToro, unaPajuela);
+
+            // Los datos nuevos se vuelcan a la cache antes de deducir los estados. La
+            // deduccion mira los registros que hay, no un historial de cambios, asi que
+            // para saber como queda la hembra despues de la correccion el servicio ya
+            // tiene que ser el corregido. Si la escritura falla se vuelve atras.
+            Servicio unServicioAnterior = this.CopiarServicio(unServicio);
+            this.VolcarServicio(unServicioNuevo, unServicio);
+
+            List<Hembra> _listaHembras = new List<Hembra>();
+            List<Lactancia> _listaLactancias = new List<Lactancia>();
+            this.RecalcularHembras(this.HembrasAfectadas(unaHembraAnterior, unaHembra), 0, 0, 0,
+                _listaHembras, _listaLactancias);
+
+            List<MovimientoStock> _listaMovimientos = this.MovimientosPorCambioDeInsumo(
+                unaPajuelaAnterior, unaPajuela, 1, 1, pFechaServicio,
+                "Ajuste por correccion del servicio de la caravana " + unaHembra.NumCaravana,
+                "Inseminación de la caravana " + unaHembra.NumCaravana);
+
+            try
+            {
+                if (Persistencia.ModificarServicio(unServicioNuevo, _listaLactancias,
+                    _listaHembras, _listaMovimientos))
+                {
+                    this.AplicarRecalculoEnCache(_listaHembras, _listaLactancias);
+                    this.AplicarMovimientosEnCache(_listaMovimientos);
+                    return true;
+                }
+
+                this.VolcarServicio(unServicioAnterior, unServicio);
+                return false;
+            }
+            catch (Exception)
+            {
+                this.VolcarServicio(unServicioAnterior, unServicio);
+                throw;
+            }
+        }
+
+        // Lo que impide eliminar el servicio, o una cadena vacia si se puede. El unico
+        // bloqueo es el tacto: un control de gestacion sin el servicio que lo origino
+        // no significa nada, y borrarlos en cascada seria borrar el trabajo del
+        // veterinario sin avisar.
+        public string ValidarEliminarServicio(int pIdServicio)
+        {
+            this.Refrescar();
+
+            if (this.BuscarServicio(pIdServicio) == null)
+            {
+                return "El servicio que se quiere eliminar ya no existe!";
+            }
+
+            List<Tacto> _listaTactos = this.FiltrarTactosXServicio(pIdServicio);
+            if (_listaTactos.Count > 0)
+            {
+                return "El servicio tiene " + _listaTactos.Count + " tacto(s) registrado(s): "
+                    + "elimine primero esos tactos desde Reproduccion, Tactos!";
+            }
+            return "";
+        }
+
+        // El borrado deja a la hembra con el estado que le dan los servicios que le
+        // quedan y devuelve al stock la pajuela que en realidad nunca se uso.
+        public bool EliminarServicio(int pIdServicio)
+        {
+            if (this.ValidarEliminarServicio(pIdServicio) != "")
+            {
+                return false;
+            }
+
+            Servicio unServicio = this.BuscarServicio(pIdServicio);
+
+            List<Hembra> _listaHembras = new List<Hembra>();
+            List<Lactancia> _listaLactancias = new List<Lactancia>();
+            this.RecalcularHembras(this.HembrasAfectadas(unServicio.Animal, null), pIdServicio, 0, 0,
+                _listaHembras, _listaLactancias);
+
+            List<MovimientoStock> _listaMovimientos = this.ArmarMovimientos(
+                this.Devolucion(unServicio.Pajuela, 1,
+                    "Devolucion por eliminacion del servicio del "
+                    + unServicio.FechaServicio.ToShortDateString()),
+                null);
+
+            if (Persistencia.EliminarServicio(pIdServicio, _listaLactancias, _listaHembras,
+                _listaMovimientos))
+            {
+                mListaServicios.Remove(unServicio);
+                this.AplicarRecalculoEnCache(_listaHembras, _listaLactancias);
+                this.AplicarMovimientosEnCache(_listaMovimientos);
                 return true;
             }
             return false;
 
+        }
+
+        // Los movimientos que deja un cambio de producto o de cantidad: se devuelve lo
+        // que se habia consumido y se descuenta lo nuevo. Cuando el producto y la
+        // cantidad quedan iguales no hay nada que mover, que es el caso habitual.
+        private List<MovimientoStock> MovimientosPorCambioDeInsumo(Insumo pInsumoAnterior,
+            Insumo pInsumoNuevo, double pCantidadAnterior, double pCantidadNueva, DateTime pFecha,
+            string pMotivoDevolucion, string pMotivoConsumo)
+        {
+            bool vMismoInsumo = pInsumoAnterior != null && pInsumoNuevo != null
+                && pInsumoAnterior.IdInsumo == pInsumoNuevo.IdInsumo;
+
+            if (vMismoInsumo && pCantidadAnterior == pCantidadNueva)
+            {
+                return new List<MovimientoStock>();
+            }
+
+            return this.ArmarMovimientos(
+                this.Devolucion(pInsumoAnterior, pCantidadAnterior, pMotivoDevolucion),
+                this.Consumo(pInsumoNuevo, pCantidadNueva, pFecha, pMotivoConsumo));
+        }
+
+        private Servicio CopiarServicio(Servicio pServicio)
+        {
+            return new Servicio(pServicio.IdServicio, pServicio.TipoServicio, pServicio.FechaServicio,
+                pServicio.FechaProbableParto, pServicio.Observaciones, pServicio.Animal,
+                pServicio.Toro, pServicio.Pajuela);
+        }
+
+        private void VolcarServicio(Servicio pOrigen, Servicio pDestino)
+        {
+            pDestino.TipoServicio = pOrigen.TipoServicio;
+            pDestino.FechaServicio = pOrigen.FechaServicio;
+            pDestino.FechaProbableParto = pOrigen.FechaProbableParto;
+            pDestino.Observaciones = pOrigen.Observaciones;
+            pDestino.Animal = pOrigen.Animal;
+            pDestino.Toro = pOrigen.Toro;
+            pDestino.Pajuela = pOrigen.Pajuela;
         }
 
         public List<Servicio> FiltrarServiciosXHembra(int pIdHembra)
@@ -2403,6 +2981,15 @@ namespace Tesis.Dominio
         // la vigencia se deduce de las fechas.
         public Servicio ServicioVigente(Hembra pHembra)
         {
+            return this.ServicioVigente(pHembra, 0, 0);
+        }
+
+        // El mismo servicio vigente, pero salteando el servicio y el parto que se estan
+        // por eliminar. La correccion necesita saber como queda la hembra cuando esos
+        // registros ya no esten, y en ese momento todavia figuran en la cache. Los dos
+        // identificadores van en cero cuando no hay nada que saltear.
+        private Servicio ServicioVigente(Hembra pHembra, int pIdServicioIgnorado, int pIdPartoIgnorado)
+        {
             if (pHembra == null)
             {
                 return null;
@@ -2411,6 +2998,11 @@ namespace Tesis.Dominio
             DateTime vUltimoParto = DateTime.MinValue;
             foreach (Parto unParto in this.FiltrarPartosXHembra(pHembra.IdAnimal))
             {
+                if (unParto.IdParto == pIdPartoIgnorado)
+                {
+                    continue;
+                }
+
                 if (unParto.FechaParto > vUltimoParto)
                 {
                     vUltimoParto = unParto.FechaParto;
@@ -2420,6 +3012,11 @@ namespace Tesis.Dominio
             Servicio unServicioVigente = null;
             foreach (Servicio unServicio in this.FiltrarServiciosXHembra(pHembra.IdAnimal))
             {
+                if (unServicio.IdServicio == pIdServicioIgnorado)
+                {
+                    continue;
+                }
+
                 if (unServicio.FechaServicio > vUltimoParto)
                 {
                     if (unServicioVigente == null || unServicio.FechaServicio > unServicioVigente.FechaServicio)
@@ -2539,6 +3136,14 @@ namespace Tesis.Dominio
 
         public Tacto UltimoTacto(Servicio pServicio)
         {
+            return this.UltimoTacto(pServicio, 0);
+        }
+
+        // El ultimo tacto salteando el que se esta por eliminar, para deducir con que
+        // estado queda la hembra cuando ese control ya no exista. Va en cero cuando no
+        // hay nada que saltear.
+        private Tacto UltimoTacto(Servicio pServicio, int pIdTactoIgnorado)
+        {
             if (pServicio == null)
             {
                 return null;
@@ -2547,6 +3152,11 @@ namespace Tesis.Dominio
             Tacto unUltimoTacto = null;
             foreach (Tacto unTacto in this.FiltrarTactosXServicio(pServicio.IdServicio))
             {
+                if (unTacto.IdTacto == pIdTactoIgnorado)
+                {
+                    continue;
+                }
+
                 if (unUltimoTacto == null || unTacto.FechaTacto > unUltimoTacto.FechaTacto)
                 {
                     unUltimoTacto = unTacto;
@@ -2630,6 +3240,141 @@ namespace Tesis.Dominio
             }
             return false;
 
+        }
+
+        // Lo que impide corregir el tacto, o una cadena vacia si se puede. Son las
+        // mismas condiciones que valida el alta: el control se hace sobre un servicio,
+        // despues de ese servicio y no en el futuro, y con uno de los tres resultados.
+        public string ValidarModificarTacto(int pIdTacto, int pIdServicio, DateTime pFechaTacto,
+            string pResultado)
+        {
+            this.Refrescar();
+
+            if (this.BuscarTacto(pIdTacto) == null)
+            {
+                return "El tacto que se quiere corregir ya no existe!";
+            }
+
+            Servicio unServicio = this.BuscarServicio(pIdServicio);
+            if (unServicio == null)
+            {
+                return "Hay que indicar el servicio al que corresponde el tacto!";
+            }
+
+            if (pResultado != Tacto.PRENADA && pResultado != Tacto.VACIA && pResultado != Tacto.DUDOSA)
+            {
+                return "Hay que indicar el resultado del tacto!";
+            }
+
+            if (pFechaTacto > DateTime.Now)
+            {
+                return "La fecha del tacto no puede ser posterior a la fecha actual!";
+            }
+
+            if (pFechaTacto.Date < unServicio.FechaServicio.Date)
+            {
+                return "El tacto no puede ser anterior al servicio del "
+                    + unServicio.FechaServicio.ToShortDateString() + "!";
+            }
+            return "";
+        }
+
+        // Corregir un tacto es la correccion que mas se nota: cambia si la vaca figura
+        // prenada o vacia, y con eso si vuelve a la lista para servir, si aparece en las
+        // alertas de parto y con que fecha se la seca. Todo eso se recalcula solo,
+        // porque sale de los tactos que hay y no de un estado guardado aparte.
+        public bool ModificarTacto(int pIdTacto, int pIdServicio, DateTime pFechaTacto,
+            string pResultado, string pObservaciones)
+        {
+            if (this.ValidarModificarTacto(pIdTacto, pIdServicio, pFechaTacto, pResultado) != "")
+            {
+                return false;
+            }
+
+            Tacto unTacto = this.BuscarTacto(pIdTacto);
+            Servicio unServicio = this.BuscarServicio(pIdServicio);
+
+            Hembra unaHembraAnterior = unTacto.Servicio != null ? unTacto.Servicio.Animal : null;
+            Hembra unaHembra = unServicio.Animal;
+
+            Tacto unTactoAnterior = this.CopiarTacto(unTacto);
+            Tacto unTactoNuevo = new Tacto(pIdTacto, pFechaTacto, pResultado, pObservaciones, unServicio);
+            this.VolcarTacto(unTactoNuevo, unTacto);
+
+            List<Hembra> _listaHembras = new List<Hembra>();
+            List<Lactancia> _listaLactancias = new List<Lactancia>();
+            this.RecalcularHembras(this.HembrasAfectadas(unaHembraAnterior, unaHembra), 0, 0, 0,
+                _listaHembras, _listaLactancias);
+
+            try
+            {
+                if (Persistencia.ModificarTacto(unTactoNuevo, _listaHembras, _listaLactancias))
+                {
+                    this.AplicarRecalculoEnCache(_listaHembras, _listaLactancias);
+                    return true;
+                }
+
+                this.VolcarTacto(unTactoAnterior, unTacto);
+                return false;
+            }
+            catch (Exception)
+            {
+                this.VolcarTacto(unTactoAnterior, unTacto);
+                throw;
+            }
+        }
+
+        // Del tacto no cuelga nada, asi que nunca se bloquea. La hembra vuelve al
+        // estado que le dan los tactos que le quedan a ese servicio: servida si no
+        // queda ninguno, que es como estaba antes del control.
+        public string ValidarEliminarTacto(int pIdTacto)
+        {
+            this.Refrescar();
+
+            if (this.BuscarTacto(pIdTacto) == null)
+            {
+                return "El tacto que se quiere eliminar ya no existe!";
+            }
+            return "";
+        }
+
+        public bool EliminarTacto(int pIdTacto)
+        {
+            if (this.ValidarEliminarTacto(pIdTacto) != "")
+            {
+                return false;
+            }
+
+            Tacto unTacto = this.BuscarTacto(pIdTacto);
+            Hembra unaHembra = unTacto.Servicio != null ? unTacto.Servicio.Animal : null;
+
+            List<Hembra> _listaHembras = new List<Hembra>();
+            List<Lactancia> _listaLactancias = new List<Lactancia>();
+            this.RecalcularHembras(this.HembrasAfectadas(unaHembra, null), 0, pIdTacto, 0,
+                _listaHembras, _listaLactancias);
+
+            if (Persistencia.EliminarTacto(pIdTacto, _listaHembras, _listaLactancias))
+            {
+                mListaTactos.Remove(unTacto);
+                this.AplicarRecalculoEnCache(_listaHembras, _listaLactancias);
+                return true;
+            }
+            return false;
+
+        }
+
+        private Tacto CopiarTacto(Tacto pTacto)
+        {
+            return new Tacto(pTacto.IdTacto, pTacto.FechaTacto, pTacto.Resultado,
+                pTacto.Observaciones, pTacto.Servicio);
+        }
+
+        private void VolcarTacto(Tacto pOrigen, Tacto pDestino)
+        {
+            pDestino.FechaTacto = pOrigen.FechaTacto;
+            pDestino.Resultado = pOrigen.Resultado;
+            pDestino.Observaciones = pOrigen.Observaciones;
+            pDestino.Servicio = pOrigen.Servicio;
         }
         #endregion
 
@@ -2877,6 +3622,442 @@ namespace Tesis.Dominio
             this.ActualizarCategoria(unaMadre.IdAnimal);
 
             return true;
+        }
+
+        // La lactancia que abrio el parto: la de esa vaca que empieza el mismo dia.
+        // partos y lactancias son tablas independientes -el modelo no las vincula con
+        // una foranea-, asi que el vinculo se reconstruye por la fecha. No queda
+        // ambiguo: una vaca no puede tener dos lactancias que empiecen el mismo dia.
+        public Lactancia LactanciaDelParto(Parto pParto)
+        {
+            if (pParto == null || pParto.Madre == null)
+            {
+                return null;
+            }
+
+            foreach (Lactancia unaLactancia in this.FiltrarLactanciasXHembra(pParto.Madre.IdAnimal))
+            {
+                if (unaLactancia.FechaInicio.Date == pParto.FechaParto.Date)
+                {
+                    return unaLactancia;
+                }
+            }
+            return null;
+        }
+
+        // La lactancia que el parto habia cerrado, para poder volver a abrirla. Se la
+        // reconoce porque quedo secada justo el dia del parto y habia empezado antes.
+        //
+        // Es la misma reconstruccion por fecha que la anterior, con una salvedad: si el
+        // secado se hubiera registrado a mano ese mismo dia, el borrado del parto la
+        // reabre igual. Es poco probable -el parto cierra la lactancia solo cuando el
+        // secado no se registro- y la pantalla lo muestra antes de confirmar.
+        public Lactancia LactanciaCerradaPorParto(Parto pParto)
+        {
+            if (pParto == null || pParto.Madre == null)
+            {
+                return null;
+            }
+
+            foreach (Lactancia unaLactancia in this.FiltrarLactanciasXHembra(pParto.Madre.IdAnimal))
+            {
+                if (unaLactancia.FechaSecado != DateTime.MinValue
+                    && unaLactancia.FechaSecado.Date == pParto.FechaParto.Date
+                    && unaLactancia.FechaInicio.Date < pParto.FechaParto.Date)
+                {
+                    return unaLactancia;
+                }
+            }
+            return null;
+        }
+
+        // Las crias que dio ese parto: los animales de esa madre nacidos el dia del
+        // parto. Tampoco hay foranea entre partos y animales, y tampoco es ambiguo:
+        // una vaca no pare dos veces el mismo dia.
+        public List<Animal> CriasDelParto(Parto pParto)
+        {
+            List<Animal> _listaCrias = new List<Animal>();
+
+            if (pParto == null || pParto.Madre == null)
+            {
+                return _listaCrias;
+            }
+
+            foreach (Animal unAnimal in this.ListarAnimales())
+            {
+                if (unAnimal.Madre != null && unAnimal.Madre.IdAnimal == pParto.Madre.IdAnimal
+                    && unAnimal.FechaNacimiento.Date == pParto.FechaParto.Date)
+                {
+                    _listaCrias.Add(unAnimal);
+                }
+            }
+            return _listaCrias;
+        }
+
+        // Lo que impide borrar fisicamente a un animal, o una cadena vacia si no hay
+        // nada. Lo usa el borrado del parto, que se lleva las crias que ese parto habia
+        // dado de alta: una cria que ya tiene historia propia no es un error de carga,
+        // es un animal del rodeo, y el parto no se puede deshacer sin decidir antes que
+        // hacer con ella.
+        public string MotivoAnimalNoEliminable(Animal pAnimal)
+        {
+            if (pAnimal == null)
+            {
+                return "";
+            }
+
+            if (this.ListarDescendencia(pAnimal).Count > 0)
+            {
+                return "ya tiene descendencia registrada";
+            }
+
+            if (this.FiltrarCelosXHembra(pAnimal.IdAnimal).Count > 0)
+            {
+                return "tiene celos registrados";
+            }
+
+            if (this.FiltrarServiciosXHembra(pAnimal.IdAnimal).Count > 0)
+            {
+                return "tiene servicios registrados";
+            }
+
+            if (this.FiltrarPartosXHembra(pAnimal.IdAnimal).Count > 0)
+            {
+                return "tiene partos registrados";
+            }
+
+            if (this.FiltrarLactanciasXHembra(pAnimal.IdAnimal).Count > 0)
+            {
+                return "tiene lactancias registradas";
+            }
+
+            if (this.FiltrarDiagnosticosXAnimal(pAnimal.IdAnimal).Count > 0)
+            {
+                return "tiene diagnosticos registrados";
+            }
+
+            if (this.FiltrarTratamientosXAnimal(pAnimal.IdAnimal).Count > 0)
+            {
+                return "tiene tratamientos registrados";
+            }
+
+            if (this.FiltrarVacunacionesXAnimal(pAnimal.IdAnimal).Count > 0)
+            {
+                return "tiene vacunaciones registradas";
+            }
+
+            if (this.FiltrarDescornesXAnimal(pAnimal.IdAnimal).Count > 0)
+            {
+                return "tiene descornes registrados";
+            }
+
+            // Un macho puede estar declarado como el toro que aporta una pajuela del
+            // stock, aunque no tenga ningun otro registro propio.
+            foreach (Insumo unInsumo in this.ListarInsumos())
+            {
+                if (unInsumo.Toro != null && unInsumo.Toro.IdAnimal == pAnimal.IdAnimal)
+                {
+                    return "figura como el toro de la pajuela " + unInsumo.Nombre;
+                }
+            }
+
+            return "";
+        }
+
+        // Lo que impide corregir el parto, o una cadena vacia si se puede. La fecha es
+        // lo unico delicado: arrastra el inicio de la lactancia que el parto abrio, el
+        // secado de la que cerro y el nacimiento de las crias, y ninguna de las tres
+        // cosas puede terminar contradiciendo un registro posterior.
+        public string ValidarModificarParto(int pIdParto, DateTime pFechaParto, string pTipoParto)
+        {
+            this.Refrescar();
+
+            Parto unParto = this.BuscarParto(pIdParto);
+            if (unParto == null)
+            {
+                return "El parto que se quiere corregir ya no existe!";
+            }
+
+            if (unParto.Madre == null)
+            {
+                return "El parto no tiene madre registrada: no se puede corregir!";
+            }
+
+            if (pTipoParto != Parto.NORMAL && pTipoParto != Parto.DISTOCICO && pTipoParto != Parto.CESAREA)
+            {
+                return "Hay que indicar el tipo de parto!";
+            }
+
+            if (pFechaParto > DateTime.Now)
+            {
+                return "La fecha del parto no puede ser posterior a la fecha actual!";
+            }
+
+            // El parto anterior de la misma vaca
+            foreach (Parto otroParto in this.FiltrarPartosXHembra(unParto.Madre.IdAnimal))
+            {
+                if (otroParto.IdParto != pIdParto && otroParto.FechaParto.Date >= pFechaParto.Date)
+                {
+                    return "La caravana " + unParto.Madre.NumCaravana + " tiene otro parto el "
+                        + otroParto.FechaParto.ToShortDateString()
+                        + ": la fecha corregida tiene que ser posterior!";
+                }
+            }
+
+            // La lactancia que abrio el parto no puede empezar despues de los ordenies
+            // que ya tiene imputados
+            Lactancia unaLactancia = this.LactanciaDelParto(unParto);
+            if (unaLactancia != null)
+            {
+                foreach (OrdenieIndividual unOrdenie in this.FiltrarOrdeniesXLactancia(unaLactancia.IdLactancia))
+                {
+                    if (unOrdenie.Fecha.Date < pFechaParto.Date)
+                    {
+                        return "La lactancia que abrio este parto tiene un control de ordenie del "
+                            + unOrdenie.Fecha.ToShortDateString()
+                            + ": la fecha del parto no puede ser posterior!";
+                    }
+                }
+            }
+
+            // Y la que el parto cerro no puede quedar secada antes de sus propios
+            // ordenies
+            Lactancia unaLactanciaCerrada = this.LactanciaCerradaPorParto(unParto);
+            if (unaLactanciaCerrada != null)
+            {
+                foreach (OrdenieIndividual unOrdenie in this.FiltrarOrdeniesXLactancia(unaLactanciaCerrada.IdLactancia))
+                {
+                    if (unOrdenie.Fecha.Date > pFechaParto.Date)
+                    {
+                        return "La lactancia anterior tiene un control de ordenie del "
+                            + unOrdenie.Fecha.ToShortDateString()
+                            + ": el parto no puede ser anterior a ese control!";
+                    }
+                }
+            }
+
+            // Las crias nacieron el dia del parto: correrlo les corre la fecha de
+            // nacimiento, y con otra fecha la genealogia puede dejar de cerrar.
+            foreach (Animal unaCria in this.CriasDelParto(unParto))
+            {
+                string vMotivo = this.ValidarGenealogia(unaCria.IdAnimal, pFechaParto,
+                    unaCria.Madre, unaCria.Padre);
+
+                if (vMotivo != "")
+                {
+                    return "Con esa fecha, la cria " + unaCria.NumCaravana + " queda mal: " + vMotivo;
+                }
+            }
+
+            return "";
+        }
+
+        public bool ModificarParto(int pIdParto, DateTime pFechaParto, string pTipoParto,
+            string pObservaciones)
+        {
+            if (this.ValidarModificarParto(pIdParto, pFechaParto, pTipoParto) != "")
+            {
+                return false;
+            }
+
+            Parto unParto = this.BuscarParto(pIdParto);
+            Parto unPartoNuevo = new Parto(pIdParto, pFechaParto, pTipoParto, pObservaciones,
+                unParto.Madre);
+
+            // La lactancia que el parto abrio empieza el dia del parto, y la que cerro
+            // quedo secada ese dia: las dos se corren con el.
+            List<Lactancia> _listaLactancias = new List<Lactancia>();
+
+            Lactancia unaLactancia = this.LactanciaDelParto(unParto);
+            if (unaLactancia != null)
+            {
+                _listaLactancias.Add(new Lactancia(unaLactancia.IdLactancia, unaLactancia.NumeroLactancia,
+                    pFechaParto, unaLactancia.FechaSecado, unaLactancia.FechaProbableParto,
+                    unaLactancia.Animal));
+            }
+
+            Lactancia unaLactanciaCerrada = this.LactanciaCerradaPorParto(unParto);
+            if (unaLactanciaCerrada != null)
+            {
+                _listaLactancias.Add(this.CopiarLactancia(unaLactanciaCerrada, pFechaParto,
+                    unaLactanciaCerrada.FechaProbableParto));
+            }
+
+            // Y las crias nacieron ese dia. Se resuelven antes de tocar nada: las crias
+            // se reconocen por coincidir con la fecha del parto, asi que una vez movida
+            // esa fecha ya no habria como encontrarlas.
+            List<Animal> _listaCriasEnCache = this.CriasDelParto(unParto);
+            List<Animal> _listaCrias = new List<Animal>();
+
+            foreach (Animal unaCria in _listaCriasEnCache)
+            {
+                int vNumeroPartos = unaCria is Hembra ? ((Hembra)unaCria).NumeroPartos : 0;
+                bool vEnPie = unaCria is Macho ? ((Macho)unaCria).EnPie : false;
+
+                _listaCrias.Add(this.CopiarAnimal(unaCria, unaCria.NumCaravana, pFechaParto,
+                    unaCria.Raza, unaCria.Categoria, unaCria.Madre, unaCria.Padre, vNumeroPartos,
+                    vEnPie));
+            }
+
+            if (Persistencia.ModificarParto(unPartoNuevo, _listaLactancias, _listaCrias))
+            {
+                unParto.FechaParto = pFechaParto;
+                unParto.TipoParto = pTipoParto;
+                unParto.Observaciones = pObservaciones;
+
+                this.AplicarRecalculoEnCache(new List<Hembra>(), _listaLactancias);
+
+                foreach (Animal unaCria in _listaCriasEnCache)
+                {
+                    unaCria.FechaNacimiento = pFechaParto;
+                }
+                return true;
+            }
+            return false;
+
+        }
+
+        // Lo que impide eliminar el parto, o una cadena vacia si se puede. Deshacer un
+        // parto es deshacer el alta de las crias, la apertura de la lactancia y el
+        // cierre de la anterior, asi que se permite unicamente mientras nada de eso se
+        // haya usado todavia.
+        public string ValidarEliminarParto(int pIdParto)
+        {
+            this.Refrescar();
+
+            Parto unParto = this.BuscarParto(pIdParto);
+            if (unParto == null)
+            {
+                return "El parto que se quiere eliminar ya no existe!";
+            }
+
+            if (unParto.Madre == null)
+            {
+                return "El parto no tiene madre registrada: no se puede deshacer!";
+            }
+
+            // Deshacer uno del medio dejaria las lactancias numeradas con un salto y el
+            // numero de partos de la vaca sin correspondencia con su historial.
+            Parto unUltimoParto = this.UltimoParto(unParto.Madre);
+            if (unUltimoParto != null && unUltimoParto.IdParto != pIdParto)
+            {
+                return "Solo se puede eliminar el ultimo parto de la vaca: el de la caravana "
+                    + unParto.Madre.NumCaravana + " es el del "
+                    + unUltimoParto.FechaParto.ToShortDateString() + "!";
+            }
+
+            Lactancia unaLactancia = this.LactanciaDelParto(unParto);
+            if (unaLactancia != null)
+            {
+                List<OrdenieIndividual> _listaOrdenies = this.FiltrarOrdeniesXLactancia(unaLactancia.IdLactancia);
+
+                if (_listaOrdenies.Count > 0)
+                {
+                    return "La lactancia que abrio este parto tiene " + _listaOrdenies.Count
+                        + " control(es) de ordenie cargado(s): deshacer el parto borraria esa produccion!";
+                }
+            }
+
+            foreach (Animal unaCria in this.CriasDelParto(unParto))
+            {
+                string vMotivo = this.MotivoAnimalNoEliminable(unaCria);
+
+                if (vMotivo != "")
+                {
+                    return "La cria " + unaCria.NumCaravana + " " + vMotivo
+                        + ": ya no es un error de carga, hay que darla de baja por Animales!";
+                }
+            }
+            return "";
+        }
+
+        // El borrado del parto deshace todo lo que el alta habia dejado, en el orden
+        // inverso: se van las crias y la lactancia que abrio, se reabre la que habia
+        // cerrado y la madre vuelve a tener un parto menos, con el estado y la
+        // categoria que le corresponden.
+        public bool EliminarParto(int pIdParto)
+        {
+            if (this.ValidarEliminarParto(pIdParto) != "")
+            {
+                return false;
+            }
+
+            Parto unParto = this.BuscarParto(pIdParto);
+            Hembra unaMadre = unParto.Madre;
+
+            List<Animal> _listaCrias = this.CriasDelParto(unParto);
+            Lactancia unaLactanciaDelParto = this.LactanciaDelParto(unParto);
+            Lactancia unaLactanciaCerrada = this.LactanciaCerradaPorParto(unParto);
+
+            Lactancia unaLactanciaReabierta = null;
+            if (unaLactanciaCerrada != null)
+            {
+                unaLactanciaReabierta = this.CopiarLactancia(unaLactanciaCerrada, DateTime.MinValue,
+                    unaLactanciaCerrada.FechaProbableParto);
+            }
+
+            // La madre pierde el parto. Queda en lactancia si se le reabre la anterior y
+            // sin lactancia si no le queda ninguna, y con el estado reproductivo que le
+            // dan los servicios y tactos que quedan.
+            int vNumeroPartos = unaMadre.NumeroPartos > 0 ? unaMadre.NumeroPartos - 1 : 0;
+            string vEstadoProductivo = unaLactanciaReabierta != null
+                ? Hembra.EN_LACTANCIA
+                : Hembra.SIN_LACTANCIA;
+
+            Hembra unaMadreNueva = this.CopiarHembra(unaMadre, vNumeroPartos, vEstadoProductivo,
+                this.EstadoReproductivoDeducido(unaMadre, 0, 0, pIdParto));
+
+            // RF1.9 al reves: la vaca de un solo parto vuelve a ser novilla
+            Categoria unaCategoria = this.CalcularCategoria(unaMadreNueva);
+            if (unaCategoria != null)
+            {
+                unaMadreNueva.Categoria = unaCategoria;
+            }
+
+            if (Persistencia.EliminarParto(pIdParto, _listaCrias, unaLactanciaDelParto,
+                unaMadreNueva, unaLactanciaReabierta))
+            {
+                mListaPartos.Remove(unParto);
+
+                if (unaLactanciaDelParto != null)
+                {
+                    mListaLactancias.Remove(unaLactanciaDelParto);
+                }
+
+                if (unaLactanciaCerrada != null)
+                {
+                    unaLactanciaCerrada.FechaSecado = DateTime.MinValue;
+                }
+
+                foreach (Animal unaCria in _listaCrias)
+                {
+                    mListaAnimales.Remove(unaCria);
+
+                    if (unaCria is Hembra)
+                    {
+                        mListaHembras.Remove((Hembra)unaCria);
+                    }
+                    else if (unaCria is Macho)
+                    {
+                        mListaMachos.Remove((Macho)unaCria);
+                    }
+
+                    // La foto es un archivo en el disco: si la fila se va, el archivo
+                    // tambien, o wwwroot/fotos junta imagenes que ya no son de nadie.
+                    if (unaCria.TieneFoto)
+                    {
+                        Persistencia.BorrarFoto(unaCria.Foto);
+                    }
+                }
+
+                unaMadre.NumeroPartos = unaMadreNueva.NumeroPartos;
+                unaMadre.EstadoProductivo = unaMadreNueva.EstadoProductivo;
+                unaMadre.EstadoReproductivo = unaMadreNueva.EstadoReproductivo;
+                unaMadre.Categoria = unaMadreNueva.Categoria;
+                return true;
+            }
+            return false;
+
         }
         #endregion
 
@@ -3432,6 +4613,138 @@ namespace Tesis.Dominio
             return _listaXAnimal;
         }
 
+        // La correccion del diagnostico toca la fecha, la enfermedad y el animal. El
+        // estado no: lo maneja el sistema -el alta del tratamiento lo pasa a "En
+        // tratamiento" y el boton de resolver lo cierra-, y dejarlo escribir a mano
+        // permitiria marcar como resuelto un diagnostico con tratamiento en curso.
+        public string ValidarModificarDiagnostico(int pIdDiagnostico, DateTime pFechaDiagnostico,
+            string pEnfermedad, int pIdAnimal)
+        {
+            this.Refrescar();
+
+            if (this.BuscarDiagnostico(pIdDiagnostico) == null)
+            {
+                return "El diagnostico que se quiere corregir ya no existe!";
+            }
+
+            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
+            if (unAnimal == null)
+            {
+                return "Hay que indicar el animal diagnosticado!";
+            }
+
+            if (pEnfermedad == null || pEnfermedad == "")
+            {
+                return "Hay que indicar la enfermedad!";
+            }
+
+            if (pFechaDiagnostico > DateTime.Now)
+            {
+                return "La fecha del diagnostico no puede ser posterior a la fecha actual!";
+            }
+
+            if (!this.EstabaActivo(unAnimal, pFechaDiagnostico))
+            {
+                return "El animal figura dado de baja el " + unAnimal.FechaBaja.ToShortDateString()
+                    + ": no se le puede registrar un diagnostico posterior a esa fecha!";
+            }
+
+            // El tratamiento se aplica sobre el animal diagnosticado: pasarle el
+            // diagnostico a otro animal dejaria el tratamiento tratando a la vaca
+            // equivocada, con su descarte de leche incluido.
+            List<Tratamiento> _listaTratamientos = this.FiltrarTratamientosXDiagnostico(pIdDiagnostico);
+            Diagnostico unDiagnostico = this.BuscarDiagnostico(pIdDiagnostico);
+
+            if (_listaTratamientos.Count > 0 && unDiagnostico.Animal != null
+                && unAnimal.IdAnimal != unDiagnostico.Animal.IdAnimal)
+            {
+                return "El diagnostico tiene " + _listaTratamientos.Count + " tratamiento(s) aplicado(s) "
+                    + "sobre la caravana " + unDiagnostico.Animal.NumCaravana + ": para pasarlo a otro "
+                    + "animal hay que eliminar antes esos tratamientos!";
+            }
+            return "";
+        }
+
+        public bool ModificarDiagnostico(int pIdDiagnostico, DateTime pFechaDiagnostico,
+            string pEnfermedad, int pIdAnimal)
+        {
+            if (this.ValidarModificarDiagnostico(pIdDiagnostico, pFechaDiagnostico, pEnfermedad,
+                pIdAnimal) != "")
+            {
+                return false;
+            }
+
+            Diagnostico unDiagnostico = this.BuscarDiagnostico(pIdDiagnostico);
+            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
+
+            Diagnostico unDiagnosticoNuevo = new Diagnostico(pIdDiagnostico, pFechaDiagnostico,
+                pEnfermedad, unDiagnostico.Estado, unAnimal);
+
+            if (Persistencia.ModificarDiagnostico(unDiagnosticoNuevo))
+            {
+                unDiagnostico.FechaDiagnostico = pFechaDiagnostico;
+                unDiagnostico.Enfermedad = pEnfermedad;
+                unDiagnostico.Animal = unAnimal;
+                return true;
+            }
+            return false;
+
+        }
+
+        // El diagnostico no se elimina mientras tenga tratamientos: un tratamiento sin
+        // el diagnostico que lo origino queda sin explicacion, y ademas es el que fija
+        // el descarte de leche.
+        public string ValidarEliminarDiagnostico(int pIdDiagnostico)
+        {
+            this.Refrescar();
+
+            if (this.BuscarDiagnostico(pIdDiagnostico) == null)
+            {
+                return "El diagnostico que se quiere eliminar ya no existe!";
+            }
+
+            List<Tratamiento> _listaTratamientos = this.FiltrarTratamientosXDiagnostico(pIdDiagnostico);
+            if (_listaTratamientos.Count > 0)
+            {
+                return "El diagnostico tiene " + _listaTratamientos.Count + " tratamiento(s) aplicado(s): "
+                    + "elimine primero esos tratamientos desde Sanidad, Tratamientos!";
+            }
+            return "";
+        }
+
+        public bool EliminarDiagnostico(int pIdDiagnostico)
+        {
+            if (this.ValidarEliminarDiagnostico(pIdDiagnostico) != "")
+            {
+                return false;
+            }
+
+            Diagnostico unDiagnostico = this.BuscarDiagnostico(pIdDiagnostico);
+
+            if (Persistencia.EliminarDiagnostico(pIdDiagnostico))
+            {
+                mListaDiagnosticos.Remove(unDiagnostico);
+                return true;
+            }
+            return false;
+
+        }
+
+        public List<Tratamiento> FiltrarTratamientosXDiagnostico(int pIdDiagnostico)
+        {
+            List<Tratamiento> _listaXDiagnostico = new List<Tratamiento>();
+
+            foreach (Tratamiento unTratamiento in mListaTratamientos)
+            {
+                if (unTratamiento.Diagnostico != null
+                    && unTratamiento.Diagnostico.IdDiagnostico == pIdDiagnostico)
+                {
+                    _listaXDiagnostico.Add(unTratamiento);
+                }
+            }
+            return _listaXDiagnostico;
+        }
+
         public List<Tratamiento> ListarTratamientos()
         {
             this.Refrescar();
@@ -3505,13 +4818,250 @@ namespace Tesis.Dominio
                 pTratamientoNuevo.FechaFinDescarte = this.CalcularDescarte(pTratamientoNuevo);
             }
 
-            if (Persistencia.AltaTratamiento(pTratamientoNuevo, pCantidadInsumo))
+            // La cantidad viaja con el tratamiento y no solo en el movimiento de stock:
+            // es lo que despues permite devolverle al inventario lo que nunca se uso si
+            // el registro resulta estar mal.
+            pTratamientoNuevo.CantidadInsumo = pCantidadInsumo;
+
+            if (Persistencia.AltaTratamiento(pTratamientoNuevo))
             {
                 mListaTratamientos.Add(pTratamientoNuevo);
                 return true;
             }
             return false;
 
+        }
+
+        // Lo que impide corregir el tratamiento, o una cadena vacia si se puede. Es la
+        // misma validacion del alta con una diferencia: el stock que se exige es
+        // unicamente el que falta, porque lo que este tratamiento ya tenia descontado
+        // se devuelve en la misma operacion.
+        public string ValidarModificarTratamiento(int pIdTratamiento, DateTime pFechaInicio,
+            int pDiasDuracion, string pDosisDiaria, double pCantidadInsumo, int pIdDiagnostico,
+            int pIdAnimal, int pIdInsumo, int pIdPlan)
+        {
+            this.Refrescar();
+
+            Tratamiento unTratamiento = this.BuscarTratamiento(pIdTratamiento);
+            if (unTratamiento == null)
+            {
+                return "El tratamiento que se quiere corregir ya no existe!";
+            }
+
+            Insumo unInsumo = this.BuscarInsumo(pIdInsumo);
+            if (unInsumo == null)
+            {
+                return "Hay que indicar el producto aplicado!";
+            }
+
+            // El animal sale del diagnostico cuando el tratamiento viene de uno, y se
+            // elige por caravana cuando es preventivo.
+            Diagnostico unDiagnostico = this.BuscarDiagnostico(pIdDiagnostico);
+            Animal unAnimal = unDiagnostico != null ? unDiagnostico.Animal : this.BuscarAnimal(pIdAnimal);
+
+            if (unAnimal == null)
+            {
+                return "Hay que indicar el diagnostico a tratar, o el animal si el tratamiento es preventivo!";
+            }
+
+            if (pDiasDuracion <= 0)
+            {
+                return "La duracion del tratamiento tiene que ser de al menos un dia!";
+            }
+
+            if (pDosisDiaria == null || pDosisDiaria == "")
+            {
+                return "La dosis diaria es obligatoria!";
+            }
+
+            if (pFechaInicio > DateTime.Now)
+            {
+                return "La fecha de inicio no puede ser posterior a la fecha actual!";
+            }
+
+            PlanSanitario unPlan = this.BuscarPlanSanitario(pIdPlan);
+            if (unPlan != null && unPlan.TipoProcedimiento != PlanSanitario.DESPARASITACION)
+            {
+                return "Un tratamiento solo puede dar por cumplido un plan de desparasitacion!";
+            }
+
+            // Solo se pide el stock que falta: lo que este mismo tratamiento tenia
+            // descontado vuelve al inventario en la misma transaccion.
+            double vDevuelto = unTratamiento.Insumo != null
+                && unTratamiento.Insumo.IdInsumo == unInsumo.IdInsumo
+                ? unTratamiento.CantidadInsumo
+                : 0;
+
+            if (pCantidadInsumo - vDevuelto > unInsumo.StockActual)
+            {
+                return "No hay stock suficiente del producto: quedan "
+                    + unInsumo.StockActual.ToString("N2") + " unidades!";
+            }
+            return "";
+        }
+
+        // La correccion recalcula el descarte de leche y mueve el stock. Las dos cosas
+        // importan: el descarte es lo que deja al animal fuera del lote de ordenie, y
+        // una duracion o un producto corregidos sin recalcularlo dejarian leche
+        // descartada de mas o, peor, leche con residuos yendo al tanque.
+        public bool ModificarTratamiento(int pIdTratamiento, DateTime pFechaInicio, int pDiasDuracion,
+            string pDosisDiaria, double pCantidadInsumo, DateTime pFechaFinDescarte,
+            int pIdDiagnostico, int pIdAnimal, int pIdInsumo, int pIdPlan)
+        {
+            if (this.ValidarModificarTratamiento(pIdTratamiento, pFechaInicio, pDiasDuracion,
+                pDosisDiaria, pCantidadInsumo, pIdDiagnostico, pIdAnimal, pIdInsumo, pIdPlan) != "")
+            {
+                return false;
+            }
+
+            Tratamiento unTratamiento = this.BuscarTratamiento(pIdTratamiento);
+            Insumo unInsumoAnterior = unTratamiento.Insumo;
+            Diagnostico unDiagnosticoAnterior = unTratamiento.Diagnostico;
+            double vCantidadAnterior = unTratamiento.CantidadInsumo;
+
+            Insumo unInsumo = this.BuscarInsumo(pIdInsumo);
+            Diagnostico unDiagnostico = this.BuscarDiagnostico(pIdDiagnostico);
+            Animal unAnimal = unDiagnostico != null ? unDiagnostico.Animal : this.BuscarAnimal(pIdAnimal);
+            PlanSanitario unPlan = this.BuscarPlanSanitario(pIdPlan);
+
+            Tratamiento unTratamientoNuevo = new Tratamiento(pIdTratamiento, pFechaInicio,
+                pDiasDuracion, pDosisDiaria, pCantidadInsumo, pFechaFinDescarte, unDiagnostico,
+                unAnimal, unInsumo, unPlan);
+
+            // Como en el alta, la fecha se propone cuando llega vacia y el usuario la
+            // puede ajustar.
+            if (unTratamientoNuevo.FechaFinDescarte == DateTime.MinValue)
+            {
+                unTratamientoNuevo.FechaFinDescarte = this.CalcularDescarte(unTratamientoNuevo);
+            }
+
+            List<MovimientoStock> _listaMovimientos = this.MovimientosPorCambioDeInsumo(
+                unInsumoAnterior, unInsumo, vCantidadAnterior, pCantidadInsumo, pFechaInicio,
+                "Ajuste por correccion del tratamiento del " + unTratamiento.FechaInicio.ToShortDateString(),
+                "Tratamiento sanitario");
+
+            List<Diagnostico> _listaDiagnosticos = this.DiagnosticosPorCambioDeTratamiento(
+                pIdTratamiento, unDiagnosticoAnterior, unDiagnostico);
+
+            if (Persistencia.ModificarTratamiento(unTratamientoNuevo, _listaMovimientos,
+                _listaDiagnosticos))
+            {
+                unTratamiento.FechaInicio = pFechaInicio;
+                unTratamiento.DiasDuracion = pDiasDuracion;
+                unTratamiento.DosisDiaria = pDosisDiaria;
+                unTratamiento.CantidadInsumo = pCantidadInsumo;
+                unTratamiento.FechaFinDescarte = unTratamientoNuevo.FechaFinDescarte;
+                unTratamiento.Diagnostico = unDiagnostico;
+                unTratamiento.Animal = unAnimal;
+                unTratamiento.Insumo = unInsumo;
+                unTratamiento.Plan = unPlan;
+
+                this.AplicarMovimientosEnCache(_listaMovimientos);
+                this.AplicarEstadosDeDiagnosticoEnCache(_listaDiagnosticos);
+                return true;
+            }
+            return false;
+
+        }
+
+        // Del tratamiento no cuelga ningun otro registro, asi que nunca se bloquea. El
+        // descarte de leche desaparece solo: no es un dato guardado en el animal, es lo
+        // que dicen sus tratamientos, y sin el tratamiento no dicen nada.
+        public string ValidarEliminarTratamiento(int pIdTratamiento)
+        {
+            this.Refrescar();
+
+            if (this.BuscarTratamiento(pIdTratamiento) == null)
+            {
+                return "El tratamiento que se quiere eliminar ya no existe!";
+            }
+            return "";
+        }
+
+        public bool EliminarTratamiento(int pIdTratamiento)
+        {
+            if (this.ValidarEliminarTratamiento(pIdTratamiento) != "")
+            {
+                return false;
+            }
+
+            Tratamiento unTratamiento = this.BuscarTratamiento(pIdTratamiento);
+
+            List<MovimientoStock> _listaMovimientos = this.ArmarMovimientos(
+                this.Devolucion(unTratamiento.Insumo, unTratamiento.CantidadInsumo,
+                    "Devolucion por eliminacion del tratamiento del "
+                    + unTratamiento.FechaInicio.ToShortDateString()),
+                null);
+
+            List<Diagnostico> _listaDiagnosticos = this.DiagnosticosPorCambioDeTratamiento(
+                pIdTratamiento, unTratamiento.Diagnostico, null);
+
+            if (Persistencia.EliminarTratamiento(pIdTratamiento, _listaMovimientos, _listaDiagnosticos))
+            {
+                mListaTratamientos.Remove(unTratamiento);
+                this.AplicarMovimientosEnCache(_listaMovimientos);
+                this.AplicarEstadosDeDiagnosticoEnCache(_listaDiagnosticos);
+                return true;
+            }
+            return false;
+
+        }
+
+        // Los diagnosticos que cambian de estado por una correccion de tratamiento. El
+        // que se deja atras vuelve a quedar activo si no le queda ningun otro
+        // tratamiento -si no, seguiria figurando "En tratamiento" sin tratamiento
+        // alguno- y el nuevo pasa a estar en tratamiento, como en el alta.
+        private List<Diagnostico> DiagnosticosPorCambioDeTratamiento(int pIdTratamiento,
+            Diagnostico pAnterior, Diagnostico pNuevo)
+        {
+            List<Diagnostico> _listaDiagnosticos = new List<Diagnostico>();
+
+            bool vMismoDiagnostico = pAnterior != null && pNuevo != null
+                && pAnterior.IdDiagnostico == pNuevo.IdDiagnostico;
+
+            if (vMismoDiagnostico)
+            {
+                return _listaDiagnosticos;
+            }
+
+            if (pAnterior != null && pAnterior.Estado == Diagnostico.EN_TRATAMIENTO
+                && !this.TieneOtroTratamiento(pAnterior.IdDiagnostico, pIdTratamiento))
+            {
+                _listaDiagnosticos.Add(new Diagnostico(pAnterior.IdDiagnostico,
+                    pAnterior.FechaDiagnostico, pAnterior.Enfermedad, Diagnostico.ACTIVO,
+                    pAnterior.Animal));
+            }
+
+            if (pNuevo != null && pNuevo.Estado != Diagnostico.EN_TRATAMIENTO)
+            {
+                _listaDiagnosticos.Add(new Diagnostico(pNuevo.IdDiagnostico, pNuevo.FechaDiagnostico,
+                    pNuevo.Enfermedad, Diagnostico.EN_TRATAMIENTO, pNuevo.Animal));
+            }
+            return _listaDiagnosticos;
+        }
+
+        private bool TieneOtroTratamiento(int pIdDiagnostico, int pIdTratamientoExcluido)
+        {
+            foreach (Tratamiento unTratamiento in this.FiltrarTratamientosXDiagnostico(pIdDiagnostico))
+            {
+                if (unTratamiento.IdTratamiento != pIdTratamientoExcluido)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void AplicarEstadosDeDiagnosticoEnCache(List<Diagnostico> pDiagnosticosActualizados)
+        {
+            foreach (Diagnostico unDiagnosticoNuevo in pDiagnosticosActualizados)
+            {
+                Diagnostico unDiagnostico = this.BuscarDiagnostico(unDiagnosticoNuevo.IdDiagnostico);
+                if (unDiagnostico != null)
+                {
+                    unDiagnostico.Estado = unDiagnosticoNuevo.Estado;
+                }
+            }
         }
 
         // CU8, paso 3. El animal queda fuera del lote mientras su descarte siga vigente.
@@ -3615,6 +5165,137 @@ namespace Tesis.Dominio
 
         }
 
+        // Corregir la vacunacion puede cambiar la vacuna aplicada. Como en el
+        // tratamiento, el stock que se exige es solo el que falta: la dosis que esta
+        // misma aplicacion tenia descontada vuelve al inventario en la operacion.
+        public string ValidarModificarVacunacion(int pIdVacunacion, DateTime pFechaAplicacion,
+            int pIdAnimal, int pIdInsumo, int pIdPlan)
+        {
+            this.Refrescar();
+
+            Vacunacion unaVacunacion = this.BuscarVacunacion(pIdVacunacion);
+            if (unaVacunacion == null)
+            {
+                return "La vacunacion que se quiere corregir ya no existe!";
+            }
+
+            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
+            if (unAnimal == null)
+            {
+                return "Hay que indicar el animal vacunado!";
+            }
+
+            Insumo unInsumo = this.BuscarInsumo(pIdInsumo);
+            if (unInsumo == null)
+            {
+                return "Hay que indicar la vacuna aplicada!";
+            }
+
+            if (pFechaAplicacion > DateTime.Now)
+            {
+                return "La fecha de aplicacion no puede ser posterior a la fecha actual!";
+            }
+
+            if (!this.EstabaActivo(unAnimal, pFechaAplicacion))
+            {
+                return "El animal figura dado de baja el " + unAnimal.FechaBaja.ToShortDateString()
+                    + ": no se le puede registrar una vacunacion posterior a esa fecha!";
+            }
+
+            PlanSanitario unPlan = this.BuscarPlanSanitario(pIdPlan);
+            if (unPlan != null && unPlan.TipoProcedimiento != PlanSanitario.VACUNACION)
+            {
+                return "Una vacunacion solo puede dar por cumplido un plan de vacunacion!";
+            }
+
+            bool vMismaVacuna = unaVacunacion.Insumo != null
+                && unaVacunacion.Insumo.IdInsumo == unInsumo.IdInsumo;
+
+            if (!vMismaVacuna && unInsumo.StockActual < UNIDADES_POR_VACUNACION)
+            {
+                return "No hay stock disponible de la vacuna seleccionada!";
+            }
+            return "";
+        }
+
+        public bool ModificarVacunacion(int pIdVacunacion, DateTime pFechaAplicacion, int pIdAnimal,
+            int pIdInsumo, int pIdPlan)
+        {
+            if (this.ValidarModificarVacunacion(pIdVacunacion, pFechaAplicacion, pIdAnimal,
+                pIdInsumo, pIdPlan) != "")
+            {
+                return false;
+            }
+
+            Vacunacion unaVacunacion = this.BuscarVacunacion(pIdVacunacion);
+            Insumo unInsumoAnterior = unaVacunacion.Insumo;
+
+            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
+            Insumo unInsumo = this.BuscarInsumo(pIdInsumo);
+            PlanSanitario unPlan = this.BuscarPlanSanitario(pIdPlan);
+
+            Vacunacion unaVacunacionNueva = new Vacunacion(pIdVacunacion, pFechaAplicacion,
+                unAnimal, unInsumo, unPlan);
+
+            List<MovimientoStock> _listaMovimientos = this.MovimientosPorCambioDeInsumo(
+                unInsumoAnterior, unInsumo, UNIDADES_POR_VACUNACION, UNIDADES_POR_VACUNACION,
+                pFechaAplicacion,
+                "Ajuste por correccion de la vacunacion del "
+                + unaVacunacion.FechaAplicacion.ToShortDateString(),
+                "Vacunacion");
+
+            if (Persistencia.ModificarVacunacion(unaVacunacionNueva, _listaMovimientos))
+            {
+                unaVacunacion.FechaAplicacion = pFechaAplicacion;
+                unaVacunacion.Animal = unAnimal;
+                unaVacunacion.Insumo = unInsumo;
+                unaVacunacion.Plan = unPlan;
+
+                this.AplicarMovimientosEnCache(_listaMovimientos);
+                return true;
+            }
+            return false;
+
+        }
+
+        // De la vacunacion no cuelga nada: se elimina siempre y el animal vuelve a
+        // figurar pendiente en el plan que esta aplicacion daba por cumplido.
+        public string ValidarEliminarVacunacion(int pIdVacunacion)
+        {
+            this.Refrescar();
+
+            if (this.BuscarVacunacion(pIdVacunacion) == null)
+            {
+                return "La vacunacion que se quiere eliminar ya no existe!";
+            }
+            return "";
+        }
+
+        public bool EliminarVacunacion(int pIdVacunacion)
+        {
+            if (this.ValidarEliminarVacunacion(pIdVacunacion) != "")
+            {
+                return false;
+            }
+
+            Vacunacion unaVacunacion = this.BuscarVacunacion(pIdVacunacion);
+
+            List<MovimientoStock> _listaMovimientos = this.ArmarMovimientos(
+                this.Devolucion(unaVacunacion.Insumo, UNIDADES_POR_VACUNACION,
+                    "Devolucion por eliminacion de la vacunacion del "
+                    + unaVacunacion.FechaAplicacion.ToShortDateString()),
+                null);
+
+            if (Persistencia.EliminarVacunacion(pIdVacunacion, _listaMovimientos))
+            {
+                mListaVacunaciones.Remove(unaVacunacion);
+                this.AplicarMovimientosEnCache(_listaMovimientos);
+                return true;
+            }
+            return false;
+
+        }
+
         public List<Vacunacion> FiltrarVacunacionesXAnimal(int pIdAnimal)
         {
             List<Vacunacion> _listaXAnimal = new List<Vacunacion>();
@@ -3684,13 +5365,137 @@ namespace Tesis.Dominio
 
         }
 
+        // Corregir el descorne no puede dejar dos descornes sobre el mismo animal: el
+        // procedimiento es de aplicacion unica y esa es la regla que hace que el plan
+        // deje de exigirlo.
+        public string ValidarModificarDescorne(int pIdDescorne, DateTime pFecha, string pMetodo,
+            int pIdAnimal, int pIdPlan)
+        {
+            this.Refrescar();
+
+            if (this.BuscarDescorne(pIdDescorne) == null)
+            {
+                return "El descorne que se quiere corregir ya no existe!";
+            }
+
+            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
+            if (unAnimal == null)
+            {
+                return "Hay que indicar el animal descornado!";
+            }
+
+            if (pMetodo == null || pMetodo == "")
+            {
+                return "Hay que indicar el metodo de descorne!";
+            }
+
+            if (pFecha > DateTime.Now)
+            {
+                return "La fecha del descorne no puede ser posterior a la fecha actual!";
+            }
+
+            if (!this.EstabaActivo(unAnimal, pFecha))
+            {
+                return "El animal figura dado de baja el " + unAnimal.FechaBaja.ToShortDateString()
+                    + ": no se le puede registrar un descorne posterior a esa fecha!";
+            }
+
+            PlanSanitario unPlan = this.BuscarPlanSanitario(pIdPlan);
+            if (unPlan != null && unPlan.TipoProcedimiento != PlanSanitario.DESCORNE)
+            {
+                return "Un descorne solo puede dar por cumplido un plan de descorne!";
+            }
+
+            if (this.TieneDescorne(unAnimal, pIdDescorne))
+            {
+                return "La caravana " + unAnimal.NumCaravana + " ya tiene otro descorne registrado!";
+            }
+            return "";
+        }
+
+        public bool ModificarDescorne(int pIdDescorne, DateTime pFecha, string pMetodo,
+            string pObservaciones, int pIdAnimal, int pIdPlan)
+        {
+            if (this.ValidarModificarDescorne(pIdDescorne, pFecha, pMetodo, pIdAnimal, pIdPlan) != "")
+            {
+                return false;
+            }
+
+            Descorne unDescorne = this.BuscarDescorne(pIdDescorne);
+            Animal unAnimal = this.BuscarAnimal(pIdAnimal);
+            PlanSanitario unPlan = this.BuscarPlanSanitario(pIdPlan);
+
+            Descorne unDescorneNuevo = new Descorne(pIdDescorne, pFecha, pMetodo, pObservaciones,
+                unAnimal, unPlan);
+
+            if (Persistencia.ModificarDescorne(unDescorneNuevo))
+            {
+                unDescorne.Fecha = pFecha;
+                unDescorne.Metodo = pMetodo;
+                unDescorne.Observaciones = pObservaciones;
+                unDescorne.Animal = unAnimal;
+                unDescorne.Plan = unPlan;
+                return true;
+            }
+            return false;
+
+        }
+
+        // El descorne no consume insumo y nada cuelga de el: se elimina siempre. Lo
+        // unico que cambia es que el animal vuelve a figurar pendiente en el plan de
+        // descorne, que es lo correcto si el registro estaba mal.
+        public string ValidarEliminarDescorne(int pIdDescorne)
+        {
+            this.Refrescar();
+
+            if (this.BuscarDescorne(pIdDescorne) == null)
+            {
+                return "El descorne que se quiere eliminar ya no existe!";
+            }
+            return "";
+        }
+
+        public bool EliminarDescorne(int pIdDescorne)
+        {
+            if (this.ValidarEliminarDescorne(pIdDescorne) != "")
+            {
+                return false;
+            }
+
+            Descorne unDescorne = this.BuscarDescorne(pIdDescorne);
+
+            if (Persistencia.EliminarDescorne(pIdDescorne))
+            {
+                mListaDescornes.Remove(unDescorne);
+                return true;
+            }
+            return false;
+
+        }
+
         public bool TieneDescorne(Animal pAnimal)
+        {
+            return this.TieneDescorne(pAnimal, 0);
+        }
+
+        // El mismo control salteando el descorne que se esta corrigiendo: si no, un
+        // descorne se bloquearia a si mismo apenas se le quiere arreglar la fecha.
+        private bool TieneDescorne(Animal pAnimal, int pIdDescorneIgnorado)
         {
             if (pAnimal == null)
             {
                 return false;
             }
-            return this.FiltrarDescornesXAnimal(pAnimal.IdAnimal).Count > 0;
+
+            foreach (Descorne unDescorne in this.FiltrarDescornesXAnimal(pAnimal.IdAnimal))
+            {
+                if (unDescorne.IdDescorne != pIdDescorneIgnorado)
+                {
+                    return true;
+                }
+            }
+            return false;
+
         }
 
         public List<Descorne> FiltrarDescornesXAnimal(int pIdAnimal)

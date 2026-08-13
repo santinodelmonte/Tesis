@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Periodo de Secado</h1>
+<div class="panel-formulario">
+    <h1>Registrar Periodo de Secado</h1>
     <p class="text-muted">
         Cierra la lactancia vigente y saca al animal del ordeñe. El estado reproductivo
         no se modifica: una vaca seca puede estar preñada, y de hecho es lo habitual.
@@ -40,16 +40,16 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="RegistrarSecado">Registrar Secado</button>
-                <a class="btn btn-info" asp-page="./AlertasSecado">Alertas de Secado</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="RegistrarSecado">Registrar Secado</button>
+                <a class="btn btn-outline-secondary" asp-page="./AlertasSecado">Alertas de Secado</a>
                 <a class="btn btn-warning" asp-page="./ListaLactancias">Volver</a>
             </div>
         </div>
     </form>
 
     <hr />
-    <h5>Animales en ordeñe (@Model.enLactancia.Count)</h5>
-    <table data-paginar="10" class="table table-sm text-center">
+    <h2 class="h5">Animales en ordeñe (@Model.enLactancia.Count)</h2>
+    <table data-paginar="10" class="table table-sm">
         <thead>
             <tr>
                 <th>Caravana</th>

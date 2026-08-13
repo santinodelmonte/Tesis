@@ -365,3 +365,7 @@ FodyWeavers.xsd
 # Fotos de los animales. Las carga el usuario con el sistema andando: son datos
 # del establecimiento, no fuente, y se respaldan junto con la base.
 Tesis/wwwroot/fotos/
+
+# Volcados de la base que deja bd/actualizar.ps1 antes de tocar nada. Son datos
+# del establecimiento y pueden pesar: se guardan, no se versionan.
+respaldos/

@@ -3,19 +3,19 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Lactancias</h1>
-    <p class="text-center text-muted">
+    <h1>Lactancias</h1>
+    <p class="text-muted">
         @Model.lactancias.Count lactancias registradas, @Model.cantidadActivas en curso.
     </p>
+    @* Las alertas de secado y el historial estan en el menu, en Pendientes y en
+       Produccion. Aca queda lo que se hace sobre las lactancias. *@
     <div class="row">
-        <div class="col-sm-12 text-right">
-            <a class="btn btn-success" asp-page="./AltaLactancia">Abrir Lactancia</a>
-            <a class="btn btn-primary" asp-page="./RegistrarSecado">Registrar Secado</a>
-            <a class="btn btn-info" asp-page="./AlertasSecado">Alertas de Secado</a>
-            <a class="btn btn-secondary" asp-page="./HistorialProduccion">Historial de Produccion</a>
+        <div class="col-sm-12 text-end">
+            <a class="btn btn-primary" asp-page="./AltaLactancia">Abrir lactancia</a>
+            <a class="btn btn-primary" asp-page="./RegistrarSecado">Registrar secado</a>
         </div>
     </div>
-    <table data-paginar="10" class="table text-center">
+    <table data-paginar="10" class="table">
         <thead>
             <tr>
                 <th>Caravana</th>

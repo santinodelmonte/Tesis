@@ -3,18 +3,18 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Planes Sanitarios</h1>
-    <p class="text-center text-muted">
+    <h1>Planes Sanitarios</h1>
+    <p class="text-muted">
         @Model.planes.Count planes configurados. Solo los activos generan procedimientos
         pendientes en el calendario sanitario.
     </p>
     <div class="row">
-        <div class="col-sm-12 text-right">
-            <a class="btn btn-success" asp-page="./ConfigurarPlan">Nuevo Plan</a>
+        <div class="col-sm-12 text-end">
+            <a class="btn btn-primary" asp-page="./ConfigurarPlan">Nuevo Plan</a>
             <a class="btn btn-primary" asp-page="./CalendarioSanitario">Calendario Sanitario</a>
         </div>
     </div>
-    <table data-paginar="10" class="table text-center">
+    <table data-paginar="10" class="table">
         <thead>
             <tr>
                 <th>Nombre</th>

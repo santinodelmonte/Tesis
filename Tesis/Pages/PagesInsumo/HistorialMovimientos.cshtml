@@ -3,8 +3,8 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Historial de Movimientos</h1>
-    <p class="text-center text-muted">
+    <h1>Historial de Movimientos</h1>
+    <p class="text-muted">
         Ingresos y egresos de stock en orden cronológico. Los descuentos automáticos de
         pajuelas, medicamentos y vacunas quedan asentados como un movimiento más.
     </p>
@@ -67,7 +67,7 @@
         </div>
     }
 
-    <table data-paginar="15" class="table text-center">
+    <table data-paginar="15" class="table">
         <thead>
             <tr>
                 <th>Fecha</th>
@@ -125,7 +125,7 @@
     </table>
 
     <div class="row">
-        <div class="col-sm-12 text-right">
+        <div class="col-sm-12 text-end">
             <a class="btn btn-warning" asp-page="./ListaInsumos">Volver</a>
         </div>
     </div>

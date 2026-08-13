@@ -47,13 +47,63 @@ namespace Tesis.Persistencia
             };
         }
 
+        // Asienta un movimiento y mueve el saldo del insumo, dentro de una transaccion
+        // que ya viene abierta. Lo usan el ingreso de partidas, los consumos
+        // automaticos -la pajuela de la inseminacion, el producto del tratamiento, la
+        // dosis de la vacunacion- y las devoluciones que dejan las correcciones.
+        //
+        // El saldo se mueve con la cuenta hecha en la base y no con el valor que trae
+        // el objeto, para que dos operaciones simultaneas no se pisen el stock. Antes
+        // esta misma pareja de escrituras estaba repetida en pServicio, pTratamiento y
+        // pVacunacion, cada una con su UPDATE escrito a mano.
+        public static void AsentarEnTransaccion(pConexion pConexionDatos, MovimientoStock pMovimiento,
+            MySqlConnection pConexion, MySqlTransaction pTransaccion)
+        {
+            int vIdNuevo = pConexionDatos.EjecutarInsercionEnTransaccion(SQL_ALTA,
+                ParametrosAlta(pMovimiento), pConexion, pTransaccion);
+            pMovimiento.IdMovimiento = vIdNuevo;
+
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@cantidad", pMovimiento.Cantidad },
+                { "@id_insumo", pMovimiento.Insumo.IdInsumo }
+            };
+
+            if (pMovimiento.TipoMovimiento == MovimientoStock.INGRESO)
+            {
+                pConexionDatos.EjecutarComandoEnTransaccion(
+                    "UPDATE insumos SET stock_actual = stock_actual + @cantidad WHERE id_insumo = @id_insumo",
+                    parametros, pConexion, pTransaccion);
+            }
+            else
+            {
+                pConexionDatos.EjecutarComandoEnTransaccion(
+                    "UPDATE insumos SET stock_actual = stock_actual - @cantidad WHERE id_insumo = @id_insumo",
+                    parametros, pConexion, pTransaccion);
+            }
+        }
+
+        // Los movimientos que deja una correccion: ninguno cuando no toco el consumo,
+        // la devolucion sola cuando el registro se elimina, y la devolucion mas el
+        // consumo nuevo cuando se cambio el producto o la cantidad. La lista puede
+        // venir nula.
+        public static void AsentarEnTransaccion(pConexion pConexionDatos,
+            List<MovimientoStock> pMovimientos, MySqlConnection pConexion, MySqlTransaction pTransaccion)
+        {
+            if (pMovimientos == null)
+            {
+                return;
+            }
+
+            foreach (MovimientoStock unMovimiento in pMovimientos)
+            {
+                AsentarEnTransaccion(pConexionDatos, unMovimiento, pConexion, pTransaccion);
+            }
+        }
+
         // El ingreso de una partida deja su movimiento y suma el stock del insumo en
         // una misma transaccion. Antes eran dos escrituras sueltas: si la segunda
         // fallaba, el movimiento quedaba asentado y el inventario no lo reflejaba.
-        //
-        // El stock se suma con la cuenta hecha en la base y no con el valor que trae el
-        // objeto, para que dos ingresos simultaneos no se pisen el saldo. Es el mismo
-        // criterio con el que los egresos automaticos lo descuentan.
         public bool RegistrarIngreso(MovimientoStock pMovimiento)
         {
             using (MySqlConnection conexion = Conexion.AbrirConexion())
@@ -62,18 +112,7 @@ namespace Tesis.Persistencia
                 {
                     try
                     {
-                        int vIdNuevo = Conexion.EjecutarInsercionEnTransaccion(SQL_ALTA,
-                            ParametrosAlta(pMovimiento), conexion, transaccion);
-                        pMovimiento.IdMovimiento = vIdNuevo;
-
-                        Conexion.EjecutarComandoEnTransaccion(
-                            "UPDATE insumos SET stock_actual = stock_actual + @cantidad WHERE id_insumo = @id_insumo",
-                            new Dictionary<string, object?>
-                            {
-                                { "@cantidad", pMovimiento.Cantidad },
-                                { "@id_insumo", pMovimiento.Insumo.IdInsumo }
-                            },
-                            conexion, transaccion);
+                        AsentarEnTransaccion(Conexion, pMovimiento, conexion, transaccion);
 
                         transaccion.Commit();
                         return true;

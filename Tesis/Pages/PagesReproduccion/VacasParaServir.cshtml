@@ -3,8 +3,8 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Vacas para Servir</h1>
-    <p class="text-center text-muted">
+    <h1>Vacas para Servir</h1>
+    <p class="text-muted">
         Hembras vacías que ya pasaron los @Model.diasEsperaVoluntaria días de espera
         voluntaria posparto, y vaquillonas que alcanzaron la edad mínima de servicio. El
         período de espera se configura en
@@ -24,7 +24,7 @@
             Las de más días abiertos son las que más urge servir: cada día de más es leche
             que la vaca no va a dar el año que viene.
         </div>
-        <table data-paginar="10" class="table text-center">
+        <table data-paginar="10" class="table">
             <thead>
                 <tr>
                     <th>Caravana</th>
@@ -68,7 +68,7 @@
                             }
                         </td>
                         <td>
-                            <a class="btn btn-success btn-sm" asp-page="./RegistrarServicio"
+                            <a class="btn btn-primary btn-sm" asp-page="./RegistrarServicio"
                                asp-route-caravana="@Model.paraServir[i].NumCaravana">
                                 Registrar Servicio
                             </a>
@@ -81,7 +81,7 @@
     }
 
     <div class="row">
-        <div class="col-sm-12 text-right">
+        <div class="col-sm-12 text-end">
             <a class="btn btn-warning" asp-page="/Index">Volver</a>
         </div>
     </div>

@@ -1,14 +1,28 @@
 @page
 @model Tesis.Pages.PagesReproduccion.RegistrarCeloModel
 @{
+    ViewData["Title"] = Model.esCorreccion ? "Corregir celo" : "Registrar celo";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Deteccion de Celo</h1>
+<div class="panel-formulario">
+    <h1>
+        @(Model.esCorreccion ? "Corregir Deteccion de Celo" : "Registrar Deteccion de Celo")
+    </h1>
     <hr />
+
+    @if (Model.esCorreccion)
+    {
+        <div class="alert alert-info">
+            Se esta corrigiendo un celo ya registrado. El celo no arrastra nada:
+            no mueve el estado de la vaca ni consume insumos, asi que la correccion
+            no afecta a ningun otro registro.
+        </div>
+    }
+
     <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
@@ -45,9 +59,10 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-info" asp-page="./RegistrarServicio">Registrar Servicio</a>
-                <a class="btn btn-warning" asp-page="./ListaCelos">Volver</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    @(Model.esCorreccion ? "Guardar cambios" : "Guardar")
+                </button>
+                <a class="btn btn-outline-secondary" asp-page="./ListaCelos">Cancelar</a>
             </div>
         </div>
     </form>

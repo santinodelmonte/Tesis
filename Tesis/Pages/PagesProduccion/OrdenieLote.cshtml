@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Ordeñe General (Por Lote)</h1>
+<div class="panel-formulario">
+    <h1>Registrar Ordeñe General (Por Lote)</h1>
     <p class="text-muted">
         El sistema propone las vacas en lactancia y deja afuera a las que tienen un
         descarte de leche vigente. La lista se puede ajustar antes de guardar.
@@ -57,8 +57,8 @@
 
         <hr />
 
-        <h5>Animales del lote (@Model.animalesDelLote.Count en lactancia)</h5>
-        <table data-paginar="10" class="table table-sm text-center">
+        <h2 class="h5">Animales del lote (@Model.animalesDelLote.Count en lactancia)</h2>
+        <table data-paginar="10" class="table table-sm">
             <thead>
                 <tr>
                     <th>Ordeñada</th>
@@ -99,7 +99,7 @@
                 La leche de estos animales no debe destinarse a consumo. Si igual se
                 ordeñaron, se pueden incluir tildándolas.
             </div>
-            <table data-paginar="10" class="table table-sm text-center">
+            <table data-paginar="10" class="table table-sm">
                 <thead>
                     <tr>
                         <th>Incluir</th>
@@ -129,8 +129,8 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-info" asp-page="./OrdenieIndividual">Ordeñe Individual</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-outline-secondary" asp-page="./OrdenieIndividual">Ordeñe Individual</a>
                 <a class="btn btn-warning" asp-page="./HistorialProduccion">Historial</a>
             </div>
         </div>
@@ -139,8 +139,8 @@
     @if (Model.ultimosOrdenies.Any())
     {
         <hr />
-        <h5>Ordeñes de los ultimos siete dias</h5>
-        <table data-paginar="10" class="table table-sm text-center">
+        <h2 class="h5">Ordeñes de los ultimos siete dias</h2>
+        <table data-paginar="10" class="table table-sm">
             <thead>
                 <tr>
                     <th>Fecha</th>

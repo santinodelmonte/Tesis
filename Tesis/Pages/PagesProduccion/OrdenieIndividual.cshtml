@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Ordeñe Individual</h1>
+<div class="panel-formulario">
+    <h1>Registrar Ordeñe Individual</h1>
     <p class="text-muted">
         El control individual es puntual: convive con el registro por lote y se imputa
         a la lactancia vigente del animal.
@@ -58,8 +58,8 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-info" asp-page="./OrdenieLote">Ordeñe por Lote</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">Guardar</button>
+                <a class="btn btn-outline-secondary" asp-page="./OrdenieLote">Ordeñe por Lote</a>
                 <a class="btn btn-warning" asp-page="./HistorialProduccion">Historial</a>
             </div>
         </div>
@@ -68,8 +68,8 @@
     @if (Model.ultimosControles.Any())
     {
         <hr />
-        <h5>Controles de los ultimos siete dias</h5>
-        <table data-paginar="10" class="table table-sm text-center">
+        <h2 class="h5">Controles de los ultimos siete dias</h2>
+        <table data-paginar="10" class="table table-sm">
             <thead>
                 <tr>
                     <th>Fecha</th>

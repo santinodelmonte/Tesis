@@ -3,8 +3,8 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Lista de Animales</h1>
-    <p class="text-center text-muted">
+    <h1>Lista de Animales</h1>
+    <p class="text-muted">
         Rodeo actual: @Model.animales.Count animales activos.
         Los animales dados de baja se consultan desde <a asp-page="./BuscarAnimales">Buscar y Filtrar</a>.
     </p>
@@ -15,15 +15,15 @@
             quedo desactualizada. Se marcan abajo con la categoria que les corresponde.
         </div>
     }
+    @* Buscar, linaje y consanguinidad estan en el menu, en la seccion Animales: eran
+       tres accesos repetidos que no pertenecen a esta pantalla. Aca queda lo que se
+       hace sobre el rodeo que se esta mirando. *@
     <div class="row">
-        <div class="col-sm-12 text-right">
-            <a class="btn btn-success" asp-page="./AltaAnimal">Agregar</a>
-            <a class="btn btn-info" asp-page="./BuscarAnimales">Buscar y Filtrar</a>
-            <a class="btn btn-secondary" asp-page="./ConsultaLinaje">Consultar Linaje</a>
-            <a class="btn btn-secondary" asp-page="./VerificarConsanguinidad">Verificar Consanguinidad</a>
+        <div class="col-sm-12 text-end">
+            <a class="btn btn-primary" asp-page="./AltaAnimal">Agregar animal</a>
         </div>
     </div>
-    <table data-paginar="10" class="table text-center">
+    <table data-paginar="10" class="table">
         <thead>
             <tr>
                 <th>Caravana</th>

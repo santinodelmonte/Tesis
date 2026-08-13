@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <hr />
-                <table id="mSelectorTabla" data-paginar="8" class="table table-hover text-center">
+                <table id="mSelectorTabla" data-paginar="8" class="table table-hover">
                     <thead>
                         <tr>
                             <th>Caravana</th>
@@ -74,7 +74,7 @@
                                 <td>@(animal.Categoria != null ? animal.Categoria.Nombre : "")</td>
                                 <td>@(animal.Activo ? "Activo" : "Inactivo")</td>
                                 <td>
-                                    <button type="button" class="btn btn-success btn-sm" onclick="elegirAnimalSelector(this)">Elegir</button>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="elegirAnimalSelector(this)">Elegir</button>
                                 </td>
                             </tr>
                         }

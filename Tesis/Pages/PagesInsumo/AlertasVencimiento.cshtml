@@ -3,8 +3,8 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Alertas de Vencimiento</h1>
-    <p class="text-center text-muted">
+    <h1>Alertas de Vencimiento</h1>
+    <p class="text-muted">
         Partidas vencidas y próximas a vencer. El remanente se calcula imputando los
         egresos del insumo a la partida que vence primero.
     </p>
@@ -41,7 +41,7 @@
     else
     {
         <p>@Model.partidas.Count partida(s) para revisar.</p>
-        <table data-paginar="10" class="table text-center">
+        <table data-paginar="10" class="table">
             <thead>
                 <tr>
                     <th>Vencimiento</th>
@@ -90,7 +90,7 @@
     }
 
     <div class="row">
-        <div class="col-sm-12 text-right">
+        <div class="col-sm-12 text-end">
             <a class="btn btn-warning" asp-page="./ListaInsumos">Volver</a>
         </div>
     </div>

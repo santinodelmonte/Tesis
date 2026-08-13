@@ -7,8 +7,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Metrica de Produccion Mensual</h1>
+<div class="panel-formulario">
+    <h1>Metrica de Produccion Mensual</h1>
     <hr />
     <form method="post">
         <div class="row">
@@ -49,10 +49,10 @@
     {
         <hr />
         <div class="alert alert-success">
-            <h3 class="mb-0">@Model.totalMensual.ToString("N2") litros</h3>
+            <h2 class="mb-0">@Model.totalMensual.ToString("N2") litros</h2>
             <small>Producción de @nombresMes[Model.mes - 1] de @Model.anio</small>
         </div>
-        <table class="table text-center">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Concepto</th>

@@ -3,8 +3,8 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Indicadores del Rodeo</h1>
-    <p class="text-center text-muted">
+    <h1>Indicadores del Rodeo</h1>
+    <p class="text-muted">
         Ninguno de estos números se guarda: se calculan sobre lo registrado cada vez que
         se consulta la pantalla.
     </p>
@@ -13,7 +13,7 @@
         <div class="col-md-6 mb-3">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Reproductivos</h5>
+                    <h2 class="h5 card-title">Reproductivos</h2>
                     <table class="table table-sm mb-0">
                         <tbody>
                             <tr>
@@ -24,7 +24,7 @@
                                         la vaca no da el año siguiente.
                                     </small>
                                 </td>
-                                <td class="text-right h5">@Model.promedioDiasAbiertos.ToString("N0")</td>
+                                <td class="text-end h5">@Model.promedioDiasAbiertos.ToString("N0")</td>
                             </tr>
                             <tr>
                                 <td>
@@ -33,7 +33,7 @@
                                         El objetivo de un tambo está alrededor de los 395 días.
                                     </small>
                                 </td>
-                                <td class="text-right h5">@Model.promedioIntervaloPartos.ToString("N0")</td>
+                                <td class="text-end h5">@Model.promedioIntervaloPartos.ToString("N0")</td>
                             </tr>
                             <tr>
                                 <td>
@@ -42,7 +42,7 @@
                                         Cuántos servicios hacen falta por preñez confirmada.
                                     </small>
                                 </td>
-                                <td class="text-right h5">@Model.serviciosPorPrenez.ToString("N2")</td>
+                                <td class="text-end h5">@Model.serviciosPorPrenez.ToString("N2")</td>
                             </tr>
                         </tbody>
                     </table>
@@ -53,7 +53,7 @@
         <div class="col-md-6 mb-3">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Productivos</h5>
+                    <h2 class="h5 card-title">Productivos</h2>
                     <table class="table table-sm mb-0">
                         <tbody>
                             <tr>
@@ -64,15 +64,15 @@
                                         intervalos de control.
                                     </small>
                                 </td>
-                                <td class="text-right h5">@Model.promedioDiarioRodeo.ToString("N1")</td>
+                                <td class="text-end h5">@Model.promedioDiarioRodeo.ToString("N1")</td>
                             </tr>
                             <tr>
                                 <td>Días en leche promedio</td>
-                                <td class="text-right h5">@Model.promedioDiasEnLeche.ToString("N0")</td>
+                                <td class="text-end h5">@Model.promedioDiasEnLeche.ToString("N0")</td>
                             </tr>
                             <tr>
                                 <td>Vacas en ordeñe</td>
-                                <td class="text-right h5">@Model.enLactancia</td>
+                                <td class="text-end h5">@Model.enLactancia</td>
                             </tr>
                         </tbody>
                     </table>
@@ -83,7 +83,7 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">Composicion del rodeo</h5>
+            <h2 class="h5 card-title">Composicion del rodeo</h2>
             <div class="row text-center">
                 <div class="col">
                     <div class="h4 mb-0">@Model.totalActivos</div>
@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    <h5>Lactancias en curso</h5>
+    <h2 class="h5">Lactancias en curso</h2>
     <p class="text-muted">
         La producción se estima por el método de intervalos de control: como el control
         lechero se hace una vez por mes, cada medición representa a los días que la
@@ -126,7 +126,7 @@
         último nivel controlado, así que es optimista: sirve para comparar vacas entre
         sí, no como pronóstico.
     </p>
-    <table data-paginar="10" class="table text-center">
+    <table data-paginar="10" class="table">
         <thead>
             <tr>
                 <th>Caravana</th>
@@ -176,7 +176,7 @@
     </table>
 
     <div class="row">
-        <div class="col-sm-12 text-right">
+        <div class="col-sm-12 text-end">
             <a class="btn btn-primary" asp-page="./CandidatasDescarte">Candidatas a descarte</a>
             <a class="btn btn-warning" asp-page="/Index">Volver</a>
         </div>

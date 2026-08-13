@@ -1,0 +1,100 @@
+@page
+@model Tesis.Pages.PagesReproduccion.ListaPartosModel
+@{
+    ViewData["Title"] = "Partos";
+}
+<div>
+    <div class="encabezado-pagina">
+        <div>
+            <h1>Partos</h1>
+            <small class="text-muted">@Model.partos.Count partos registrados.</small>
+        </div>
+        <a class="btn btn-primary" asp-page="./RegistrarParto">Registrar parto</a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
+
+    <div class="alert alert-light border">
+        Eliminar un parto deshace todo lo que dejó: da de baja las crías, borra la
+        lactancia que abrió y le devuelve a la vaca el parto, el estado y la categoría.
+        Por eso solo se puede mientras nada de eso se haya usado todavía.
+    </div>
+
+    <table data-paginar="10" class="table align-middle">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Caravana</th>
+                <th>Tipo</th>
+                <th>Crias</th>
+                <th>Observaciones</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.partos.Any())
+            {
+                @foreach (Dominio.Parto parto in Model.partos)
+                {
+                    <tr>
+                        <td>@parto.FechaParto.ToShortDateString()</td>
+                        <td>@(parto.Madre != null ? parto.Madre.NumCaravana : "")</td>
+                        <td>
+                            @if (parto.TipoParto == Dominio.Parto.NORMAL)
+                            {
+                                <span class="badge bg-success">@parto.TipoParto</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">@parto.TipoParto</span>
+                            }
+                        </td>
+                        <td>
+                            @{
+                                List<Dominio.Animal> criasDelParto = Model.crias[parto.IdParto];
+                            }
+                            @if (criasDelParto.Any())
+                            {
+                                @foreach (Dominio.Animal cria in criasDelParto)
+                                {
+                                    <a class="badge bg-secondary text-decoration-none me-1"
+                                       asp-page="/PagesAnimal/DetalleAnimal" asp-route-caravana="@cria.NumCaravana">
+                                        @cria.NumCaravana
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sin crias registradas</span>
+                            }
+                        </td>
+                        <td>@parto.Observaciones</td>
+                        <td>
+                            <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                {
+                                    PaginaEditar = "./ModificarParto",
+                                    Id = parto.IdParto,
+                                    MotivoBloqueo = Model.bloqueos[parto.IdParto],
+                                    Descripcion = "el parto del " + parto.FechaParto.ToShortDateString()
+                                        + " de la caravana " + (parto.Madre != null ? parto.Madre.NumCaravana : "")
+                                        + ", con sus " + Model.crias[parto.IdParto].Count
+                                        + " cria(s) y la lactancia que abrio"
+                                })" />
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">
+                        No hay partos registrados
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -4,9 +4,19 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesReproduccion
 {
-    // CU16 - Registrar Tacto y Confirmacion de Preniez
+    // CU16 - Registrar Tacto y Confirmacion de Preniez.
+    //
+    // La misma pantalla da de alta y corrige. En el alta el tacto se asienta sobre el
+    // servicio vigente de la hembra, que es lo que el caso de uso pide; en la
+    // correccion el servicio ya esta decidido -es el del tacto que se abrio- y no se
+    // vuelve a buscar, porque un control viejo puede estar colgado de un servicio que
+    // hoy ya no es el vigente.
     public class RegistrarTactoModel : PageModel
     {
+        [BindProperty]
+        public int id { get; set; } = 0;
+        [BindProperty]
+        public int idServicio { get; set; } = 0;
         [BindProperty]
         public string? numCaravana { get; set; } = "";
         [BindProperty]
@@ -22,16 +32,39 @@ namespace Tesis.Pages.PagesReproduccion
         public Servicio servicioVigente = null;
         public List<Tacto> tactosDelServicio = new List<Tacto>();
 
-        public void OnGet(string caravana)
+        public bool esCorreccion { get { return id > 0; } }
+
+        public IActionResult OnGet(int id, string caravana)
         {
             Controladora unaControladora = new Controladora();
             animales = unaControladora.ListarAnimales();
+
+            if (id > 0)
+            {
+                Tacto unTacto = unaControladora.BuscarTacto(id);
+                if (unTacto == null || unTacto.Servicio == null)
+                {
+                    return Redirect("./ListaTactos");
+                }
+
+                this.id = id;
+                idServicio = unTacto.Servicio.IdServicio;
+                fechaTacto = unTacto.FechaTacto;
+                resultado = unTacto.Resultado;
+                observaciones = unTacto.Observaciones;
+                numCaravana = unTacto.Servicio.Animal != null ? unTacto.Servicio.Animal.NumCaravana : "";
+
+                servicioVigente = unTacto.Servicio;
+                tactosDelServicio = unaControladora.FiltrarTactosXServicio(idServicio);
+                return Page();
+            }
 
             if (caravana != null && caravana != "")
             {
                 numCaravana = caravana;
                 this.CargarServicio(unaControladora);
             }
+            return Page();
         }
 
         // Trae el servicio vigente de la hembra para que el usuario vea sobre que
@@ -59,6 +92,12 @@ namespace Tesis.Pages.PagesReproduccion
             animales = unaControladora.ListarAnimales();
 
             this.LeerFormulario();
+
+            if (id > 0)
+            {
+                return this.Corregir(unaControladora);
+            }
+
             this.CargarServicio(unaControladora);
 
             if (numCaravana == null || numCaravana == "")
@@ -100,10 +139,38 @@ namespace Tesis.Pages.PagesReproduccion
             // resultado positivo baja la fecha probable de parto a la lactancia en curso
             if (unaControladora.AltaTacto(unTacto))
             {
-                return Redirect("./ListaServicios");
+                return Redirect("./ListaTactos");
             }
 
             ModelState.AddModelError(string.Empty, "No se pudo registrar el tacto!");
+            return Page();
+        }
+
+        // Corregir un tacto vuelve a deducir el estado reproductivo de la vaca a partir
+        // de los tactos que quedan, y con el la fecha probable de parto proyectada sobre
+        // su lactancia. De eso se ocupa la Controladora.
+        private IActionResult Corregir(Controladora pControladoraDominio)
+        {
+            servicioVigente = pControladoraDominio.BuscarServicio(idServicio);
+            if (servicioVigente != null)
+            {
+                tactosDelServicio = pControladoraDominio.FiltrarTactosXServicio(idServicio);
+            }
+
+            string vMotivo = pControladoraDominio.ValidarModificarTacto(id, idServicio, fechaTacto, resultado);
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
+
+            if (pControladoraDominio.ModificarTacto(id, idServicio, fechaTacto, resultado,
+                observaciones ?? ""))
+            {
+                return Redirect("./ListaTactos");
+            }
+
+            ModelState.AddModelError(string.Empty, "No se pudo corregir el tacto!");
             return Page();
         }
 
@@ -124,12 +191,21 @@ namespace Tesis.Pages.PagesReproduccion
 
             if (servicioVigente != null)
             {
+                idServicio = servicioVigente.IdServicio;
                 tactosDelServicio = pControladoraDominio.FiltrarTactosXServicio(servicioVigente.IdServicio);
             }
         }
 
         private void LeerFormulario()
         {
+            int vId = 0;
+            int.TryParse(Request.Form["id"], out vId);
+            id = vId;
+
+            int vIdServicio = 0;
+            int.TryParse(Request.Form["idServicio"], out vIdServicio);
+            idServicio = vIdServicio;
+
             numCaravana = Request.Form["numCaravana"];
             fechaTacto = Request.Form["fechaTacto"] != "" ? Convert.ToDateTime(Request.Form["fechaTacto"]) : DateTime.Now;
             resultado = Request.Form["resultado"] != "" ? Request.Form["resultado"] : Tacto.PRENADA;

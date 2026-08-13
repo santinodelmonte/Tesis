@@ -1,0 +1,89 @@
+@page
+@model Tesis.Pages.PagesReproduccion.ModificarPartoModel
+@{
+    ViewData["Title"] = "Corregir parto";
+}
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<div class="panel-formulario">
+    <h1>Corregir Parto</h1>
+    <hr />
+
+    <div class="alert alert-info">
+        <strong>Se está corrigiendo el parto de la caravana @Model.caravanaMadre.</strong>
+        Corregir la fecha corre también el inicio de la lactancia que este parto abrió,
+        el secado de la anterior y la fecha de nacimiento de las crías, que nacieron
+        ese día. Las crías se corrigen por separado, desde Animales.
+    </div>
+
+    <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="caravanaMadre">Caravana de la madre:</label>
+                    <input type="text" id="caravanaMadre" class="form-control" readonly
+                           value="@Model.caravanaMadre" />
+                    <small class="text-muted">
+                        No se cambia: un parto de otra vaca es otro parto.
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="fechaParto">Fecha del parto:</label>
+                    <input type="date" id="fechaParto" name="fechaParto" class="form-control"
+                           value="@Model.fechaParto.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="tipoParto">Tipo de parto:</label>
+                    <select id="tipoParto" name="tipoParto" asp-for="tipoParto" class="form-control">
+                        <option value="@Dominio.Parto.NORMAL">@Dominio.Parto.NORMAL</option>
+                        <option value="@Dominio.Parto.DISTOCICO">@Dominio.Parto.DISTOCICO</option>
+                        <option value="@Dominio.Parto.CESAREA">@Dominio.Parto.CESAREA</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="observaciones">Observaciones:</label>
+                    <textarea id="observaciones" name="observaciones" class="form-control" rows="3"
+                              maxlength="200">@Model.observaciones</textarea>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.crias.Any())
+        {
+            <div class="mt-3">
+                <label class="form-label">Crias de este parto:</label>
+                <div>
+                    @foreach (Dominio.Animal cria in Model.crias)
+                    {
+                        <a class="btn btn-outline-secondary btn-sm me-1"
+                           asp-page="/PagesAnimal/DetalleAnimal" asp-route-caravana="@cria.NumCaravana">
+                            @cria.NumCaravana
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        <hr />
+        <div class="row">
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    Guardar cambios
+                </button>
+                <a class="btn btn-outline-secondary" asp-page="./ListaPartos">Cancelar</a>
+            </div>
+        </div>
+    </form>
+</div>

@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Verificar Consanguinidad</h1>
+<div class="panel-formulario">
+    <h1>Verificar Consanguinidad</h1>
     <hr />
     <form method="post">
         <div class="row">
@@ -17,7 +17,7 @@
                     <label for="txtHembra">Hembra:</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="txtHembra" value="@Model.caravanaHembra" placeholder="Ninguna hembra seleccionada" readonly>
-                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idHembra','txtHembra','Seleccionar Hembra','H',false)">Buscar</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="abrirSelectorAnimal('idHembra','txtHembra','Seleccionar Hembra','H',false)">Buscar</button>
                     </div>
                     <input type="hidden" id="idHembra" name="idHembra" value="@Model.idHembra" />
                 </div>
@@ -29,7 +29,7 @@
                     <label for="txtMacho">Reproductor:</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="txtMacho" value="@Model.caravanaMacho" placeholder="Ningun reproductor seleccionado" readonly>
-                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('idMacho','txtMacho','Seleccionar Reproductor','M',false)">Buscar</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="abrirSelectorAnimal('idMacho','txtMacho','Seleccionar Reproductor','M',false)">Buscar</button>
                     </div>
                     <input type="hidden" id="idMacho" name="idMacho" value="@Model.idMacho" />
                 </div>
@@ -40,7 +40,7 @@
         <br />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-info" asp-page-handler="Verificar">Verificar</button>
+                <button type="submit" class="btn btn-outline-secondary" asp-page-handler="Verificar">Verificar</button>
                 <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
             </div>
         </div>
@@ -53,7 +53,7 @@
         if (Model.hayParentesco)
         {
             <div class="alert alert-danger">
-                <h4>Existe parentesco directo entre los animales seleccionados.</h4>
+                <h2 class="h5">Existe parentesco directo entre los animales seleccionados.</h2>
                 @if (Model.ancestroComun != null)
                 {
                     <p>El parentesco lo origina el animal @Model.ancestroComun.NumCaravana.</p>
@@ -64,7 +64,7 @@
         else
         {
             <div class="alert alert-success">
-                <h4>No se detecto parentesco directo entre los animales seleccionados.</h4>
+                <h2 class="h5">No se detecto parentesco directo entre los animales seleccionados.</h2>
             </div>
         }
 

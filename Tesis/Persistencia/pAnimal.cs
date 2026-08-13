@@ -162,19 +162,22 @@ namespace Tesis.Persistencia
             }
         }
 
-        public bool ModificarAnimal(Animal pAnimal)
-        {
-            string sql = "UPDATE animales SET "
-                + "num_caravana = @num_caravana,"
-                + "fecha_nacimiento = @fecha_nacimiento,"
-                + "foto = @foto,"
-                + "id_raza = @id_raza,"
-                + "id_categoria = @id_categoria,"
-                + "id_madre = @id_madre,"
-                + "id_padre = @id_padre "
-                + "WHERE id_animal = @id_animal";
+        // El comando se declara aparte porque no lo usa solo esta modificacion: el
+        // borrado de un parto tiene que devolverle la categoria a la madre -una vaca de
+        // un solo parto vuelve a ser novilla- dentro de su propia transaccion.
+        public const string SQL_MODIFICAR = "UPDATE animales SET "
+            + "num_caravana = @num_caravana,"
+            + "fecha_nacimiento = @fecha_nacimiento,"
+            + "foto = @foto,"
+            + "id_raza = @id_raza,"
+            + "id_categoria = @id_categoria,"
+            + "id_madre = @id_madre,"
+            + "id_padre = @id_padre "
+            + "WHERE id_animal = @id_animal";
 
-            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        public static Dictionary<string, object?> ParametrosModificar(Animal pAnimal)
+        {
+            return new Dictionary<string, object?>
             {
                 { "@num_caravana", pAnimal.NumCaravana },
                 { "@fecha_nacimiento", pAnimal.FechaNacimiento.Date },
@@ -185,6 +188,12 @@ namespace Tesis.Persistencia
                 { "@id_padre", pAnimal.Padre != null ? (object)pAnimal.Padre.IdAnimal : null },
                 { "@id_animal", pAnimal.IdAnimal }
             };
+        }
+
+        public bool ModificarAnimal(Animal pAnimal)
+        {
+            string sql = SQL_MODIFICAR;
+            Dictionary<string, object?> parametros = ParametrosModificar(pAnimal);
 
             // Como el alta, la modificacion toca dos tablas: la del animal y la de su
             // especializacion. Van juntas en una transaccion para que no quede el

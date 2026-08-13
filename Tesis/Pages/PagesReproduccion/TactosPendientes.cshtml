@@ -3,8 +3,8 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Tactos Pendientes</h1>
-    <p class="text-center text-muted">
+    <h1>Tactos Pendientes</h1>
+    <p class="text-muted">
         Servicios de hace @Model.diasParaTacto días o más que todavía no tienen tacto
         registrado. La ventana se configura en
         <a asp-page="/PagesConfiguracion/Configuracion">Configuración</a>.
@@ -21,7 +21,7 @@
         <div class="alert alert-primary">
             <strong>@Model.pendientes.Count servicio(s) para tactar.</strong>
         </div>
-        <table data-paginar="10" class="table text-center">
+        <table data-paginar="10" class="table">
             <thead>
                 <tr>
                     <th>Caravana</th>
@@ -55,7 +55,7 @@
                         </td>
                         <td>@Model.pendientes[i].FechaProbableParto.ToShortDateString()</td>
                         <td>
-                            <a class="btn btn-success btn-sm" asp-page="./RegistrarTacto"
+                            <a class="btn btn-primary btn-sm" asp-page="./RegistrarTacto"
                                asp-route-caravana="@Model.pendientes[i].Animal.NumCaravana">
                                 Registrar Tacto
                             </a>
@@ -67,7 +67,7 @@
     }
 
     <div class="row">
-        <div class="col-sm-12 text-right">
+        <div class="col-sm-12 text-end">
             <a class="btn btn-warning" asp-page="/Index">Volver</a>
         </div>
     </div>

@@ -183,6 +183,16 @@ namespace Tesis.Persistencia
         {
             return new pCelo().AltaCelo(pCelo);
         }
+
+        public bool ModificarCelo(Celo pCelo)
+        {
+            return new pCelo().ModificarCelo(pCelo);
+        }
+
+        public bool EliminarCelo(int pIdCelo)
+        {
+            return new pCelo().EliminarCelo(pIdCelo);
+        }
         #endregion
 
         #region SERVICIOS
@@ -199,11 +209,22 @@ namespace Tesis.Persistencia
             return new pServicio().AltaServicio(pServicio, pHembraServida);
         }
 
-        // La correccion de la fecha probable de parto baja tambien a la lactancia en
-        // curso, que es de donde sale la fecha recomendada de secado
-        public bool ModificarServicio(Servicio pServicio, Lactancia pLactanciaVigente)
+        // La correccion baja a la lactancia en curso -de donde sale la fecha recomendada
+        // de secado-, al estado de la hembra y, si cambio la pajuela, al stock
+        public bool ModificarServicio(Servicio pServicio, List<Lactancia> pLactanciasActualizadas,
+            List<Hembra> pHembrasActualizadas, List<MovimientoStock> pMovimientos)
         {
-            return new pServicio().ModificarServicio(pServicio, pLactanciaVigente);
+            return new pServicio().ModificarServicio(pServicio, pLactanciasActualizadas,
+                pHembrasActualizadas, pMovimientos);
+        }
+
+        // Borra el servicio, deja a la hembra con el estado que le dan los servicios
+        // que le quedan y devuelve al stock la pajuela que no se uso
+        public bool EliminarServicio(int pIdServicio, List<Lactancia> pLactanciasActualizadas,
+            List<Hembra> pHembrasActualizadas, List<MovimientoStock> pMovimientos)
+        {
+            return new pServicio().EliminarServicio(pIdServicio, pLactanciasActualizadas,
+                pHembrasActualizadas, pMovimientos);
         }
         #endregion
 
@@ -218,6 +239,18 @@ namespace Tesis.Persistencia
         public bool AltaTacto(Tacto pTacto, Hembra pHembraTactada, Lactancia pLactanciaVigente)
         {
             return new pTacto().AltaTacto(pTacto, pHembraTactada, pLactanciaVigente);
+        }
+
+        public bool ModificarTacto(Tacto pTacto, List<Hembra> pHembrasActualizadas,
+            List<Lactancia> pLactanciasActualizadas)
+        {
+            return new pTacto().ModificarTacto(pTacto, pHembrasActualizadas, pLactanciasActualizadas);
+        }
+
+        public bool EliminarTacto(int pIdTacto, List<Hembra> pHembrasActualizadas,
+            List<Lactancia> pLactanciasActualizadas)
+        {
+            return new pTacto().EliminarTacto(pIdTacto, pHembrasActualizadas, pLactanciasActualizadas);
         }
         #endregion
 
@@ -234,6 +267,23 @@ namespace Tesis.Persistencia
         {
             return new pParto().AltaParto(pParto, pListaCrias, pNuevaLactancia,
                 pMadreActualizada, pLactanciaCerrada);
+        }
+
+        // Corregir la fecha del parto corre tambien las lactancias que movio y la fecha
+        // de nacimiento de las crias, que nacieron ese dia
+        public bool ModificarParto(Parto pParto, List<Lactancia> pLactanciasActualizadas,
+            List<Animal> pListaCrias)
+        {
+            return new pParto().ModificarParto(pParto, pLactanciasActualizadas, pListaCrias);
+        }
+
+        // Deshace el parto entero: borra las crias y la lactancia que abrio, reabre la
+        // que habia cerrado y le devuelve a la madre el parto, el estado y la categoria
+        public bool EliminarParto(int pIdParto, List<Animal> pListaCrias, Lactancia pLactanciaDelParto,
+            Hembra pMadreActualizada, Lactancia pLactanciaReabierta)
+        {
+            return new pParto().EliminarParto(pIdParto, pListaCrias, pLactanciaDelParto,
+                pMadreActualizada, pLactanciaReabierta);
         }
         #endregion
 
@@ -299,6 +349,16 @@ namespace Tesis.Persistencia
         {
             return new pVacunacion().AltaVacunacion(pVacunacion, pCantidadInsumo);
         }
+
+        public bool ModificarVacunacion(Vacunacion pVacunacion, List<MovimientoStock> pMovimientos)
+        {
+            return new pVacunacion().ModificarVacunacion(pVacunacion, pMovimientos);
+        }
+
+        public bool EliminarVacunacion(int pIdVacunacion, List<MovimientoStock> pMovimientos)
+        {
+            return new pVacunacion().EliminarVacunacion(pIdVacunacion, pMovimientos);
+        }
         #endregion
 
         #region DESCORNES
@@ -311,6 +371,16 @@ namespace Tesis.Persistencia
         public bool AltaDescorne(Descorne pDescorne)
         {
             return new pDescorne().AltaDescorne(pDescorne);
+        }
+
+        public bool ModificarDescorne(Descorne pDescorne)
+        {
+            return new pDescorne().ModificarDescorne(pDescorne);
+        }
+
+        public bool EliminarDescorne(int pIdDescorne)
+        {
+            return new pDescorne().EliminarDescorne(pIdDescorne);
         }
         #endregion
 
@@ -329,6 +399,16 @@ namespace Tesis.Persistencia
         {
             return new pDiagnostico().ModificarDiagnostico(pIdDiagnostico, pEstado);
         }
+
+        public bool ModificarDiagnostico(Diagnostico pDiagnostico)
+        {
+            return new pDiagnostico().ModificarDiagnostico(pDiagnostico);
+        }
+
+        public bool EliminarDiagnostico(int pIdDiagnostico)
+        {
+            return new pDiagnostico().EliminarDiagnostico(pIdDiagnostico);
+        }
         #endregion
 
         #region TRATAMIENTOS
@@ -339,9 +419,25 @@ namespace Tesis.Persistencia
                 pListaAnimales, pListaPlanes);
         }
 
-        public bool AltaTratamiento(Tratamiento pTratamientoNuevo, double pCantidadInsumo)
+        // La cantidad aplicada viaja en el tratamiento: es lo que despues permite
+        // devolverle al inventario lo que nunca se uso si el registro se corrige
+        public bool AltaTratamiento(Tratamiento pTratamientoNuevo)
         {
-            return new pTratamiento().AltaTratamiento(pTratamientoNuevo, pCantidadInsumo);
+            return new pTratamiento().AltaTratamiento(pTratamientoNuevo);
+        }
+
+        public bool ModificarTratamiento(Tratamiento pTratamiento, List<MovimientoStock> pMovimientos,
+            List<Diagnostico> pDiagnosticosActualizados)
+        {
+            return new pTratamiento().ModificarTratamiento(pTratamiento, pMovimientos,
+                pDiagnosticosActualizados);
+        }
+
+        public bool EliminarTratamiento(int pIdTratamiento, List<MovimientoStock> pMovimientos,
+            List<Diagnostico> pDiagnosticosActualizados)
+        {
+            return new pTratamiento().EliminarTratamiento(pIdTratamiento, pMovimientos,
+                pDiagnosticosActualizados);
         }
         #endregion
     }

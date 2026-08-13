@@ -1,0 +1,70 @@
+@page
+@model Tesis.Pages.PagesSanidad.ListaVacunacionesModel
+@{
+    ViewData["Title"] = "Vacunaciones";
+}
+<div>
+    <div class="encabezado-pagina">
+        <div>
+            <h1>Vacunaciones</h1>
+            <small class="text-muted">@Model.vacunaciones.Count aplicaciones registradas.</small>
+        </div>
+        <a class="btn btn-primary" asp-page="./RegistrarVacunacion">Registrar vacunación</a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
+
+    <table data-paginar="10" class="table align-middle">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Caravana</th>
+                <th>Vacuna</th>
+                <th>Plan</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.vacunaciones.Any())
+            {
+                @foreach (Dominio.Vacunacion vacunacion in Model.vacunaciones)
+                {
+                    <tr>
+                        <td>@vacunacion.FechaAplicacion.ToShortDateString()</td>
+                        <td>@(vacunacion.Animal != null ? vacunacion.Animal.NumCaravana : "")</td>
+                        <td>@(vacunacion.Insumo != null ? vacunacion.Insumo.Nombre : "")</td>
+                        <td>
+                            @if (vacunacion.Plan != null)
+                            {
+                                @vacunacion.Plan.Nombre
+                            }
+                            else
+                            {
+                                <span class="text-muted">Fuera de plan</span>
+                            }
+                        </td>
+                        <td>
+                            <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                {
+                                    PaginaEditar = "./RegistrarVacunacion",
+                                    Id = vacunacion.IdVacunacion,
+                                    Descripcion = "la vacunacion del " + vacunacion.FechaAplicacion.ToShortDateString()
+                                        + " de la caravana "
+                                        + (vacunacion.Animal != null ? vacunacion.Animal.NumCaravana : "")
+                                })" />
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">No hay vacunaciones registradas</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

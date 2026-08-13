@@ -2,8 +2,8 @@
 @model Tesis.Pages.PagesAnimal.DetalleAnimalModel
 @{
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Detalle de Animal</h1>
+<div class="panel-formulario">
+    <h1>Detalle de Animal</h1>
     <hr />
     @if (Model.animal != null)
     {
@@ -188,7 +188,7 @@
                 y no participa del ordeñe, de las alertas ni del calendario sanitario.
                 Si la baja se cargó por error, se puede deshacer.
                 <form method="post" asp-page-handler="Reactivar" asp-route-id="@Model.animal.IdAnimal" class="mt-2">
-                    <button type="submit" class="btn btn-success btn-sm">Reactivar animal</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Reactivar animal</button>
                 </form>
             </div>
         }
@@ -205,7 +205,7 @@
         @if (Model.animal is Dominio.Hembra)
         {
             <hr />
-            <h4>Produccion</h4>
+            <h2>Produccion</h2>
 
             @if (Model.lactanciaActual != null)
             {
@@ -236,8 +236,8 @@
                     La producción se estima por intervalos de control, no sumando los controles.
                 </p>
 
-                <h6>Controles de la lactancia en curso</h6>
-                <table data-paginar="10" class="table table-sm text-center">
+                <h3 class="h6">Controles de la lactancia en curso</h3>
+                <table data-paginar="10" class="table table-sm">
                     <thead>
                         <tr>
                             <th>Fecha</th>
@@ -269,8 +269,8 @@
                 <p class="text-muted">No tiene una lactancia en curso.</p>
             }
 
-            <h6>Lactancias registradas</h6>
-            <table data-paginar="10" class="table table-sm text-center">
+            <h3 class="h6">Lactancias registradas</h3>
+            <table data-paginar="10" class="table table-sm">
                 <thead>
                     <tr>
                         <th>Numero</th>
@@ -310,7 +310,7 @@
 
             @* ---------------- Reproductivo ---------------- *@
             <hr />
-            <h4>Reproduccion</h4>
+            <h2>Reproduccion</h2>
             <div class="row text-center mb-3">
                 <div class="col">
                     <div class="h4 mb-0">@((Model.animal as Dominio.Hembra).NumeroPartos)</div>
@@ -365,8 +365,8 @@
                 </p>
             }
 
-            <h6>Partos</h6>
-            <table data-paginar="10" class="table table-sm text-center">
+            <h3 class="h6">Partos</h3>
+            <table data-paginar="10" class="table table-sm">
                 <thead>
                     <tr>
                         <th>Fecha</th>
@@ -398,7 +398,7 @@
 
         @* ---------------- Sanitario ---------------- *@
         <hr />
-        <h4>Sanidad</h4>
+        <h2>Sanidad</h2>
 
         @if (Model.pendientesSanitarios.Any())
         {
@@ -416,8 +416,8 @@
             </div>
         }
 
-        <h6>Diagnosticos y tratamientos</h6>
-        <table data-paginar="10" class="table table-sm text-center">
+        <h3 class="h6">Diagnosticos y tratamientos</h3>
+        <table data-paginar="10" class="table table-sm">
             <thead>
                 <tr>
                     <th>Fecha</th>
@@ -457,8 +457,8 @@
             </tbody>
         </table>
 
-        <h6>Vacunaciones y descornes</h6>
-        <table data-paginar="10" class="table table-sm text-center">
+        <h3 class="h6">Vacunaciones y descornes</h3>
+        <table data-paginar="10" class="table table-sm">
             <thead>
                 <tr>
                     <th>Fecha</th>
@@ -499,8 +499,8 @@
         @if (Model.hijos.Any())
         {
             <hr />
-            <h4>Descendencia</h4>
-            <table data-paginar="10" class="table table-sm text-center">
+            <h2>Descendencia</h2>
+            <table data-paginar="10" class="table table-sm">
                 <thead>
                     <tr>
                         <th>Caravana</th>

@@ -1,23 +1,26 @@
 @page
 @model Tesis.Pages.PagesReproduccion.ListaServiciosModel
 @{
+    ViewData["Title"] = "Servicios";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
 <div>
-    <h1 class="display-4 text-center">Servicios</h1>
-    <p class="text-center text-muted">@Model.servicios.Count servicios registrados.</p>
-    <div class="row">
-        <div class="col-sm-12 text-right">
-            <a class="btn btn-success" asp-page="./RegistrarServicio">Registrar Servicio</a>
-            <a class="btn btn-primary" asp-page="./RegistrarTacto">Registrar Tacto</a>
-            <a class="btn btn-info" asp-page="./AlertasParto">Alertas de Parto</a>
-            <a class="btn btn-secondary" asp-page="./RegistrarParto">Registrar Parto</a>
+    <div class="encabezado-pagina">
+        <div>
+            <h1>Servicios</h1>
+            <small class="text-muted">@Model.servicios.Count servicios registrados.</small>
         </div>
+        <a class="btn btn-primary" asp-page="./RegistrarServicio">Registrar servicio</a>
     </div>
-    <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
-    <table data-paginar="10" class="table text-center">
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
+
+    <table data-paginar="10" class="table align-middle">
         <thead>
             <tr>
                 <th>Fecha</th>
@@ -27,6 +30,7 @@
                 <th>Toro genetico</th>
                 <th>Fecha probable de parto</th>
                 <th>Ultimo tacto</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -94,13 +98,23 @@
                                 <span class="badge bg-warning text-dark">@ultimoTacto.Resultado</span>
                             }
                         </td>
+                        <td>
+                            <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                {
+                                    PaginaEditar = "./RegistrarServicio",
+                                    Id = servicio.IdServicio,
+                                    MotivoBloqueo = Model.bloqueos[servicio.IdServicio],
+                                    Descripcion = "el servicio del " + servicio.FechaServicio.ToShortDateString()
+                                        + " de la caravana " + (servicio.Animal != null ? servicio.Animal.NumCaravana : "")
+                                })" />
+                        </td>
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="7" class="text-center">
+                    <td colspan="8" class="text-center">
                         No hay servicios registrados
                     </td>
                 </tr>

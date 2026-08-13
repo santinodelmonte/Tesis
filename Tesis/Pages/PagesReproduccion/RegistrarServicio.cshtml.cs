@@ -4,9 +4,14 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesReproduccion
 {
-    // CU15 - Registrar Servicio
+    // CU15 - Registrar Servicio.
+    //
+    // La misma pantalla da de alta y corrige, como la de celo. Con id en cero es un
+    // alta; con un identificador se abre con el servicio cargado y guarda encima.
     public class RegistrarServicioModel : PageModel
     {
+        [BindProperty]
+        public int id { get; set; } = 0;
         [BindProperty]
         public string? numCaravana { get; set; } = "";
         [BindProperty]
@@ -36,10 +41,21 @@ namespace Tesis.Pages.PagesReproduccion
 
         public string caravanaToro = "";
 
-        public void OnGet(string caravana)
+        public bool esCorreccion { get { return id > 0; } }
+
+        // Cuando se corrige un servicio que ya tiene tactos, el animal queda fijo: el
+        // control de gestacion se hizo sobre esa vaca.
+        public bool animalBloqueado = false;
+
+        public IActionResult OnGet(int id, string caravana)
         {
             Controladora unaControladora = new Controladora();
             this.CargarListados(unaControladora);
+
+            if (id > 0)
+            {
+                return this.CargarServicio(unaControladora, id);
+            }
 
             // La fecha probable de parto se propone desde el vamos, con la fecha de hoy
             fechaProbableParto = unaControladora.CalcularFechaParto(fechaServicio);
@@ -48,6 +64,49 @@ namespace Tesis.Pages.PagesReproduccion
             {
                 numCaravana = caravana;
             }
+            return Page();
+        }
+
+        private IActionResult CargarServicio(Controladora pControladoraDominio, int pIdServicio)
+        {
+            Servicio unServicio = pControladoraDominio.BuscarServicio(pIdServicio);
+            if (unServicio == null)
+            {
+                return Redirect("./ListaServicios");
+            }
+
+            id = pIdServicio;
+            numCaravana = unServicio.Animal != null ? unServicio.Animal.NumCaravana : "";
+            fechaServicio = unServicio.FechaServicio;
+            fechaProbableParto = unServicio.FechaProbableParto;
+            tipoServicio = unServicio.TipoServicio;
+            observaciones = unServicio.Observaciones;
+            idToro = unServicio.Toro != null ? unServicio.Toro.IdAnimal : 0;
+            idPajuela = unServicio.Pajuela != null ? unServicio.Pajuela.IdInsumo : 0;
+            caravanaToro = unServicio.Toro != null ? unServicio.Toro.NumCaravana : "";
+
+            animalBloqueado = pControladoraDominio.FiltrarTactosXServicio(pIdServicio).Count > 0;
+
+            // El toro que hizo el servicio puede haber salido del rodeo desde entonces.
+            // Si no esta en la lista de candidatos, se agrega: corregirle la fecha al
+            // servicio no tiene por que cambiarle el reproductor.
+            if (unServicio.Toro != null && !this.EstaEnLaLista(unServicio.Toro))
+            {
+                toros.Add(unServicio.Toro);
+            }
+            return Page();
+        }
+
+        private bool EstaEnLaLista(Macho pToro)
+        {
+            foreach (Macho unMacho in toros)
+            {
+                if (unMacho.IdAnimal == pToro.IdAnimal)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         // Paso 7: el sistema propone la fecha probable de parto sumando la gestacion a
@@ -101,6 +160,11 @@ namespace Tesis.Pages.PagesReproduccion
                 fechaProbableParto = unaControladora.CalcularFechaParto(fechaServicio);
             }
 
+            if (id > 0)
+            {
+                return this.Corregir(unaControladora, (Hembra)unAnimal, unToro, unaPajuela);
+            }
+
             Servicio unServicio = new Servicio(0, tipoServicio, fechaServicio, fechaProbableParto,
                 observaciones ?? "", (Hembra)unAnimal, unToro, unaPajuela);
 
@@ -130,6 +194,34 @@ namespace Tesis.Pages.PagesReproduccion
             return Page();
         }
 
+        // La correccion pasa por la Controladora, que ademas de revalidar arrastra los
+        // tres efectos que el alta habia dejado: el estado de la hembra, la fecha
+        // probable de parto de la lactancia en curso y, si cambio la pajuela, el stock.
+        private IActionResult Corregir(Controladora pControladoraDominio, Hembra pHembra,
+            Macho pToro, Insumo pPajuela)
+        {
+            int vIdToro = pToro != null ? pToro.IdAnimal : 0;
+            int vIdPajuela = pPajuela != null ? pPajuela.IdInsumo : 0;
+
+            string vMotivo = pControladoraDominio.ValidarModificarServicio(id, tipoServicio,
+                fechaServicio, fechaProbableParto, pHembra.IdAnimal, vIdToro, vIdPajuela);
+
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
+
+            if (pControladoraDominio.ModificarServicio(id, tipoServicio, fechaServicio,
+                fechaProbableParto, observaciones ?? "", pHembra.IdAnimal, vIdToro, vIdPajuela))
+            {
+                return Redirect("./ListaServicios");
+            }
+
+            ModelState.AddModelError(string.Empty, "No se pudo corregir el servicio!");
+            return Page();
+        }
+
         private void CargarListados(Controladora pControladoraDominio)
         {
             animales = pControladoraDominio.ListarAnimales();
@@ -149,6 +241,15 @@ namespace Tesis.Pages.PagesReproduccion
 
         private void LeerFormulario(Controladora pControladoraDominio)
         {
+            int vId = 0;
+            int.TryParse(Request.Form["id"], out vId);
+            id = vId;
+
+            if (id > 0)
+            {
+                animalBloqueado = pControladoraDominio.FiltrarTactosXServicio(id).Count > 0;
+            }
+
             numCaravana = Request.Form["numCaravana"];
             fechaServicio = Request.Form["fechaServicio"] != "" ? Convert.ToDateTime(Request.Form["fechaServicio"]) : DateTime.Now;
             tipoServicio = Request.Form["tipoServicio"] != "" ? Request.Form["tipoServicio"] : Servicio.MONTA_NATURAL;

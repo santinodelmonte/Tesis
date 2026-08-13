@@ -2,8 +2,8 @@
 @model Tesis.Pages.PagesReproduccion.AlertasPartoModel
 @{
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Alertas de Parto Proximo</h1>
+<div class="panel-formulario">
+    <h1>Alertas de Parto Proximo</h1>
     <p class="text-muted">
         Vacas preñadas cuya fecha probable de parto entra dentro de los proximos
         @Model.diasAnticipacion dias, para preparar la maternidad.
@@ -15,7 +15,7 @@
         <div class="alert alert-warning">
             @Model.alertas.Count animal(es) proximos a parir.
         </div>
-        <table data-paginar="10" class="table text-center">
+        <table data-paginar="10" class="table">
             <thead>
                 <tr>
                     <th>Caravana</th>

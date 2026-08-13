@@ -3,8 +3,8 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Alertas de Stock Critico</h1>
-    <p class="text-center text-muted">
+    <h1>Alertas de Stock Critico</h1>
+    <p class="text-muted">
         Insumos cuya existencia quedó por debajo o igual al stock mínimo configurado.
         Se revisan sobre @Model.totalInsumos insumos registrados.
     </p>
@@ -21,7 +21,7 @@
             <strong>@Model.criticos.Count insumo(s) en stock crítico.</strong>
             Conviene reponerlos antes de la próxima jornada sanitaria.
         </div>
-        <table data-paginar="10" class="table text-center">
+        <table data-paginar="10" class="table">
             <thead>
                 <tr>
                     <th>Insumo</th>
@@ -53,7 +53,7 @@
     }
 
     <div class="row">
-        <div class="col-sm-12 text-right">
+        <div class="col-sm-12 text-end">
             <a class="btn btn-warning" asp-page="./ListaInsumos">Volver</a>
         </div>
     </div>

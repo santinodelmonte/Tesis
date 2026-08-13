@@ -1,19 +1,35 @@
 @page
 @model Tesis.Pages.PagesSanidad.RegistrarTratamientoModel
 @{
+    ViewData["Title"] = Model.esCorreccion ? "Corregir tratamiento" : "Registrar tratamiento";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Tratamiento Sanitario</h1>
+<div class="panel-formulario">
+    <h1>
+        @(Model.esCorreccion ? "Corregir Tratamiento Sanitario" : "Registrar Tratamiento Sanitario")
+    </h1>
     <p class="text-muted">
         El tratamiento descuenta el producto del stock y fija hasta cuándo hay que
         descartar la leche del animal. Mientras el descarte esté vigente, el sistema lo
         deja fuera del lote de ordeñe.
     </p>
     <hr />
+
+    @if (Model.esCorreccion)
+    {
+        <div class="alert alert-info">
+            <strong>Se está corrigiendo un tratamiento ya registrado.</strong>
+            Al guardar, el sistema devuelve al stock lo que este tratamiento había
+            consumido y descuenta lo nuevo, dejando los dos movimientos asentados en el
+            historial. El descarte de leche se vuelve a calcular: revisá la fecha antes
+            de guardar.
+        </div>
+    }
+
     <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -152,8 +168,10 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-warning" asp-page="./ListaDiagnosticos">Volver</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    @(Model.esCorreccion ? "Guardar cambios" : "Guardar")
+                </button>
+                <a class="btn btn-outline-secondary" asp-page="./ListaTratamientos">Cancelar</a>
             </div>
         </div>
     </form>

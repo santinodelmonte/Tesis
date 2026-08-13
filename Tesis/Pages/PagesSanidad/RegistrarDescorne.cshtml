@@ -1,18 +1,37 @@
 @page
 @model Tesis.Pages.PagesSanidad.RegistrarDescorneModel
 @{
+    ViewData["Title"] = Model.esCorreccion ? "Corregir descorne" : "Registrar descorne";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Descorne</h1>
+@*
+    El listado de descornes que esta pantalla mostraba abajo se mudo a ListaDescornes,
+    que es de donde ahora se llega hasta aca.
+*@
+<div class="panel-formulario">
+    <h1>
+        @(Model.esCorreccion ? "Corregir Descorne" : "Registrar Descorne")
+    </h1>
     <p class="text-muted">
         El descorne se registra una sola vez por animal. Si cumple un plan sanitario,
         indicarlo es lo que hace que el calendario deje de pedirlo.
     </p>
     <hr />
+
+    @if (Model.esCorreccion)
+    {
+        <div class="alert alert-info">
+            <strong>Se está corrigiendo un descorne ya registrado.</strong>
+            El descorne no consume insumo y no arrastra nada más: lo único que cambia al
+            pasarlo a otro animal es cuál de los dos vuelve a figurar pendiente en el
+            plan de descorne.
+        </div>
+    }
+
     <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
         <div class="row">
             <div class="col-md-3">
                 <div class="form-group">
@@ -74,54 +93,13 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Confirmar</button>
-                <a class="btn btn-warning" asp-page="./ListaDiagnosticos">Volver</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    @(Model.esCorreccion ? "Guardar cambios" : "Confirmar")
+                </button>
+                <a class="btn btn-outline-secondary" asp-page="./ListaDescornes">Cancelar</a>
             </div>
         </div>
     </form>
-
-    <h5 class="mt-4">Ultimos descornes</h5>
-    <table data-paginar="10" class="table text-center">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Caravana</th>
-                <th>Metodo</th>
-                <th>Plan</th>
-                <th>Observaciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.descornes.Any())
-            {
-                @foreach (Dominio.Descorne descorne in Model.descornes)
-                {
-                    <tr>
-                        <td>@descorne.Fecha.ToShortDateString()</td>
-                        <td>@(descorne.Animal != null ? descorne.Animal.NumCaravana : "")</td>
-                        <td>@descorne.Metodo</td>
-                        <td>
-                            @if (descorne.Plan != null)
-                            {
-                                @descorne.Plan.Nombre
-                            }
-                            else
-                            {
-                                <span class="text-muted">Fuera de plan</span>
-                            }
-                        </td>
-                        <td>@descorne.Observaciones</td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="5">No hay descornes registrados</td>
-                </tr>
-            }
-        </tbody>
-    </table>
 </div>
 
 <partial name="_SelectorAnimal" model="Model.animales" />

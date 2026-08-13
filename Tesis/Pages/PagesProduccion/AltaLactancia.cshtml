@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Abrir Lactancia</h1>
+<div class="panel-formulario">
+    <h1>Abrir Lactancia</h1>
     <div class="alert alert-info">
         Normalmente la lactancia la abre el parto. Esta pantalla es para las vacas que
         ya estaban en ordeñe cuando arrancó el sistema y no tienen un parto registrado.
@@ -53,15 +53,15 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="AbrirLactancia">Abrir Lactancia</button>
+                <button type="submit" class="btn btn-primary" asp-page-handler="AbrirLactancia">Abrir Lactancia</button>
                 <a class="btn btn-warning" asp-page="./ListaLactancias">Volver</a>
             </div>
         </div>
     </form>
 
     <hr />
-    <h5>Hembras sin lactancia abierta (@Model.sinLactancia.Count)</h5>
-    <table data-paginar="10" class="table table-sm text-center">
+    <h2 class="h5">Hembras sin lactancia abierta (@Model.sinLactancia.Count)</h2>
+    <table data-paginar="10" class="table table-sm">
         <thead>
             <tr>
                 <th>Caravana</th>

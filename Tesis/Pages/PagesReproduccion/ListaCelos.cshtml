@@ -1,18 +1,23 @@
 @page
 @model Tesis.Pages.PagesReproduccion.ListaCelosModel
 @{
+    ViewData["Title"] = "Celos";
 }
 <div>
-    <h1 class="display-4 text-center">Celos Detectados</h1>
-    <p class="text-center text-muted">@Model.celos.Count celos registrados.</p>
-    <div class="row">
-        <div class="col-sm-12 text-right">
-            <a class="btn btn-success" asp-page="./RegistrarCelo">Registrar Celo</a>
-            <a class="btn btn-primary" asp-page="./RegistrarServicio">Registrar Servicio</a>
-            <a class="btn btn-info" asp-page="./ListaServicios">Servicios</a>
+    <div class="encabezado-pagina">
+        <div>
+            <h1>Celos detectados</h1>
+            <small class="text-muted">@Model.celos.Count celos registrados.</small>
         </div>
+        <a class="btn btn-primary" asp-page="./RegistrarCelo">Registrar celo</a>
     </div>
-    <table data-paginar="10" class="table text-center">
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
+
+    <table data-paginar="10" class="table align-middle">
         <thead>
             <tr>
                 <th>Fecha</th>
@@ -20,6 +25,7 @@
                 <th>Categoria</th>
                 <th>Estado reproductivo</th>
                 <th>Observaciones</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -33,13 +39,22 @@
                         <td>@(celo.Animal != null && celo.Animal.Categoria != null ? celo.Animal.Categoria.Nombre : "")</td>
                         <td>@(celo.Animal != null ? celo.Animal.EstadoReproductivo : "")</td>
                         <td>@celo.Observaciones</td>
+                        <td>
+                            <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                {
+                                    PaginaEditar = "./RegistrarCelo",
+                                    Id = celo.IdCelo,
+                                    Descripcion = "el celo del " + celo.Fecha.ToShortDateString()
+                                        + " de la caravana " + (celo.Animal != null ? celo.Animal.NumCaravana : "")
+                                })" />
+                        </td>
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="5" class="text-center">
+                    <td colspan="6" class="text-center">
                         No hay celos registrados
                     </td>
                 </tr>

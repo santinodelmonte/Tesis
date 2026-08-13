@@ -1,5 +1,14 @@
 # Puesta en marcha — Módulos 0 a 5
 
+> **El entorno de desarrollo usa XAMPP.** El motor que trae XAMPP es MariaDB, que
+> para todo lo que hace el sistema se comporta igual que MySQL y habla con el mismo
+> conector. Se levanta desde el panel de control de XAMPP, no como servicio de
+> Windows, así que buscarlo en la lista de servicios no lo encuentra. El cliente de
+> línea de comandos está en `C:\xampp\mysql\bin\mysql.exe`, y ahí lo busca solo
+> `actualizar.ps1`. Los valores por defecto de XAMPP —`localhost`, puerto 3306,
+> usuario `root`, sin contraseña— son los que ya trae la cadena de conexión de
+> `Tesis/appsettings.json`.
+
 ## 1. Crear la base
 
 Con MySQL instalado y corriendo, alcanza con un solo script:
@@ -20,6 +29,59 @@ corra. Para conservar lo que haya cargado, respaldar antes:
 mysqldump -u root -p tambo > respaldo_tambo.sql
 ```
 
+## 1.bis. Actualizar una base que ya existe
+
+`tambo.sql` sirve para crear de cero: empieza borrando la base. Sobre una
+instalación que ya tiene datos cargados eso no se puede hacer, y para eso está
+la actualización:
+
+```bash
+mysql -u root -p < bd/tambo_actualizacion.sql
+```
+
+Compara lo que hay contra lo que tiene que haber y agrega únicamente lo que
+falta: tablas, columnas, claves foráneas y claves alternas. No borra nada. Se
+puede correr las veces que haga falta y sobre una base en cualquier estado
+anterior —recién creada, a mitad de los módulos, o ya al día—; si no hay nada
+que hacer, no hace nada. Al terminar imprime qué cambió y cómo quedó el
+esquema.
+
+Reemplaza a los dos scripts de actualización sueltos —`tambo_foto_animal.sql` y
+`tambo_configuracion_actualizacion.sql`—, que había que saber cuál correr y
+fallaban si la columna ya estaba. Quedan como registro, igual que los scripts
+por módulo, pero no hace falta usarlos.
+
+Lo único que la actualización no resuelve sola es una restricción que los datos
+actuales violen: dos ordeñes de lote cargados para la misma fecha y turno, por
+ejemplo. En ese caso no fuerza nada ni corta a la mitad, deja la línea anotada
+como `PENDIENTE` en el informe con el motivo, y esa fila hay que depurarla a
+mano antes de volver a correrlo.
+
+**Una base anterior a la corrección de registros tiene que actualizarse.** La
+corrección de Reproducción y Sanidad agregó `tratamientos.cantidad_insumo`, que
+es lo que permite devolverle al stock lo que un tratamiento mal cargado nunca
+consumió. Sin esa columna la aplicación no arranca contra la base vieja. Los
+tratamientos que ya estaban cargados quedan con la cantidad en cero y por eso no
+devuelven stock al eliminarlos; está explicado en
+`docs/correccion-de-registros-y-navegacion.md`.
+
+### Todo junto, en un comando (Windows)
+
+`actualizar.ps1` encadena lo que si no hay que hacer a mano: lee la cadena de
+conexión de `Tesis/appsettings.json`, busca el cliente de MySQL, respalda con
+`mysqldump` en `respaldos/`, corre la actualización y, con `-DatosPrueba`,
+además carga el rodeo de prueba.
+
+```powershell
+.\bd\actualizar.ps1 -DatosPrueba
+```
+
+Sin `-DatosPrueba` solo actualiza el esquema y no toca los datos. La contraseña
+no viaja en la línea de comandos: se le pasa a `mysql` por `MYSQL_PWD`. Los
+parámetros `-Servidor`, `-Puerto`, `-Usuario`, `-Contrasena` y `-Base` pisan lo
+que diga `appsettings.json`, `-SinRespaldo` saltea el `mysqldump` y `-Forzar`
+evita la confirmación de los datos de prueba.
+
 ### Los scripts por módulo
 
 `tambo.sql` reemplaza a la secuencia de scripts por módulo, que quedan como el
@@ -35,21 +97,13 @@ mysql -u root -p < bd/tambo_configuracion.sql
 ```
 
 Cada uno asume que los anteriores ya corrieron: las tablas nuevas tienen claves
-foráneas hacia `animales`, `hembras`, `machos` e `insumos`. Si la base ya tenía la
-tabla `configuracion` creada de antes, en lugar del último hay que correr solo la
-actualización, que agrega los dos parámetros de trabajo reproductivo:
+foráneas hacia `animales`, `hembras`, `machos` e `insumos`.
 
-```bash
-mysql -u root -p < bd/tambo_configuracion_actualizacion.sql
-```
-
-Y si la base ya existía antes de que el animal tuviera foto, hay que agregarle la
-columna. No hace falta en una base nueva: tanto `tambo.sql` como `tambo_m0_m1.sql`
-ya la crean.
-
-```bash
-mysql -u root -p < bd/tambo_foto_animal.sql
-```
+Junto a ellos quedan `tambo_configuracion_actualizacion.sql` —los dos parámetros
+de trabajo reproductivo— y `tambo_foto_animal.sql` —la columna de la foto—, que
+eran los parches para una base creada antes de cada uno de esos incrementos.
+También quedan solo como registro: `tambo_actualizacion.sql` hace lo que hacían
+los dos y no hay que averiguar antes cuál corresponde.
 
 `tambo_m0_m1.sql` crea la base `tambo`, las cinco tablas del Módulo 1 (`razas`,
 `categorias`, `animales`, `hembras`, `machos`) y carga las razas y categorías

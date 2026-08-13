@@ -1,98 +1,489 @@
-html {
-  font-size: 14px;
+/* =====================================================================
+   Componentes del sistema
+
+   Lo que tiene forma propia: la disposición general, el menú lateral, el
+   encabezado de pantalla, las tablas que se vuelven tarjetas en el
+   celular y el control de foto.
+
+   Los colores, la tipografía y la densidad no están acá: viven en
+   tema.css, que se carga antes. Acá solo se usan sus variables.
+   ===================================================================== */
+
+/* =====================================================================
+   Disposición general
+   ===================================================================== */
+
+.barra-superior {
+    background-color: var(--tambo-verde-700);
+    box-shadow: var(--tambo-sombra);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+.barra-superior .navbar-brand {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.barra-superior .navbar-text,
+.barra-superior .btn-outline-light {
+    color: #ffffff;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+/* El buscador de caravana de la barra superior. En pantalla chica se
+   pasa a una segunda línea completa en vez de comprimirse hasta ser
+   inusable. */
+.buscador-caravana {
+    min-width: 8rem;
+    max-width: 12rem;
 }
 
-body {
-  margin-bottom: 60px;
+.disposicion {
+    display: block;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.contenido {
+    padding: 1.25rem;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+@media (min-width: 992px) {
+    .disposicion {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .menu-lateral {
+        flex: 0 0 250px;
+        width: 250px;
+        position: sticky;
+        top: 3.5rem;
+        max-height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+
+    .contenido {
+        /* min-width en cero deja que las tablas anchas se encojan en lugar
+           de empujar la columna del menú fuera de la pantalla */
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 1.75rem 2rem;
+    }
 }
 
-/* ------------------------------------------------------------------
+/* Ancho de lectura cómodo para las pantallas que son un formulario y no una
+   tabla: una línea de campos de 1600px de ancho es incómoda de recorrer con la
+   vista, y un campo de texto de ese ancho invita a escribir un párrafo donde
+   va una observación.
+
+   La clase reemplazó a un .text-left que venía de Bootstrap 4 y que en la 5 no
+   existe: estaba escrito en treinta y tres pantallas y no hacía nada. */
+.panel-formulario {
+    max-width: 1100px;
+}
+
+.panel-formulario > h1 {
+    margin-bottom: 0.25rem;
+}
+
+.panel-formulario > p {
+    color: var(--tambo-gris-600);
+    font-size: var(--tambo-texto-sm);
+    max-width: 70ch;
+}
+
+/* La línea que casi todas las pantallas ponen debajo del título hace de
+   separador de encabezado, igual que el borde de .encabezado-pagina en los
+   listados. */
+hr {
+    border-color: var(--tambo-gris-200);
+    opacity: 1;
+    margin: 1.25rem 0;
+}
+
+/* =====================================================================
+   Menú lateral
+
+   En pantalla ancha es una columna fija que se desplaza sola. Abajo de
+   992px se pliega y la abre el botón de la barra superior.
+
+   Las secciones son desplegables: la del módulo abierto viene desplegada
+   y su ítem marcado con una barra de color a la izquierda, para que la
+   pantalla en la que uno está parado se vea sin abrir nada y se
+   distinga también en una impresión en blanco y negro del informe.
+   ===================================================================== */
+
+.menu-lateral {
+    background-color: #ffffff;
+    border-right: 1px solid var(--tambo-gris-200);
+    padding: 0.75rem 0 2rem;
+}
+
+.menu-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 0;
+    padding: 0.5rem 1rem;
+    margin-top: 0.35rem;
+    font-size: var(--tambo-texto-xs);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--tambo-gris-600);
+    border-radius: 0;
+}
+
+.menu-titulo:hover {
+    color: var(--tambo-verde-700);
+    background-color: var(--tambo-gris-25);
+}
+
+.menu-titulo.activa {
+    color: var(--tambo-verde-700);
+}
+
+/* La flecha que indica si la sección está abierta. Gira sola siguiendo el
+   estado que Bootstrap ya escribe en aria-expanded, así que no hace falta
+   ningún script para mantenerla en hora. */
+.menu-titulo .ico-flecha {
+    margin-left: auto;
+    transition: transform 0.15s ease-in-out;
+    opacity: 0.6;
+}
+
+.menu-titulo[aria-expanded="true"] .ico-flecha {
+    transform: rotate(180deg);
+}
+
+.menu-lateral .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem 0.4rem 1.75rem;
+    color: var(--tambo-gris-900);
+    font-size: var(--tambo-texto-base);
+    border-left: 3px solid transparent;
+    min-height: var(--tambo-toque-minimo);
+}
+
+.menu-lateral .nav-link:hover {
+    background-color: var(--tambo-gris-25);
+    color: var(--tambo-verde-700);
+}
+
+.menu-lateral .nav-link.activo {
+    background-color: var(--tambo-verde-50);
+    border-left-color: var(--tambo-verde-600);
+    color: var(--tambo-verde-800);
+    font-weight: 600;
+}
+
+.menu-pie {
+    border-top: 1px solid var(--tambo-gris-100);
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+}
+
+/* =====================================================================
+   Íconos
+
+   Un sprite propio con las veintiuna figuras que el sistema usa
+   (wwwroot/img/iconos.svg). Van siempre con aria-hidden y acompañados de
+   texto visible: el ícono ayuda a encontrar, el texto es el que dice qué
+   hace. Criterio 1.1.1.
+   ===================================================================== */
+
+.ico {
+    width: 1em;
+    height: 1em;
+    flex: 0 0 auto;
+    fill: currentColor;
+    vertical-align: -0.125em;
+}
+
+.ico-lg {
+    width: 1.25em;
+    height: 1.25em;
+}
+
+/* =====================================================================
+   Encabezado de pantalla
+
+   El bloque que abre cada pantalla: título, una línea que explica de qué
+   se trata y la acción principal a la derecha. En el celular la acción
+   baja debajo del título en vez de comprimir el texto.
+
+   Antes cada pantalla resolvía esto por su cuenta con un .display-4 y un
+   font-size escrito en el atributo style, que es exactamente lo que hacía
+   imposible cambiar el aspecto de los títulos desde un solo lado.
+   ===================================================================== */
+
+.encabezado-pagina {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--tambo-gris-200);
+}
+
+.encabezado-pagina h1 {
+    margin-bottom: 0.15rem;
+}
+
+.encabezado-pagina .bajada {
+    color: var(--tambo-gris-600);
+    font-size: var(--tambo-texto-sm);
+    margin-bottom: 0;
+    max-width: 65ch;
+}
+
+.encabezado-acciones {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* La fila de botones que muchas pantallas ponen al pie del formulario */
+.acciones-pie {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    margin-top: 1.25rem;
+    border-top: 1px solid var(--tambo-gris-200);
+}
+
+/* =====================================================================
+   Tablas que se vuelven tarjetas
+
+   Abajo de 768px cada fila se convierte en una tarjeta con "etiqueta:
+   valor", una debajo de otra. Es lo que permite consultar una tabla de
+   diez columnas en un celular sin arrastrar al costado y sin perder de
+   vista la caravana, que es la columna que identifica la fila.
+
+   La etiqueta la pone tablaMovil.js copiando el encabezado de cada
+   columna, así que ninguna de las treinta y cuatro tablas del sistema
+   tuvo que tocarse.
+
+   Dos detalles de accesibilidad que hacen la diferencia:
+
+   - El encabezado no se esconde con display:none sino con la técnica de
+     ocultamiento visual, porque display:none lo saca del árbol de
+     accesibilidad y con él se pierde la relación entre cada celda y su
+     columna.
+   - Pasar las celdas a display:block le quita a la tabla sus roles
+     implícitos. tablaMovil.js los repone de forma explícita, así que para
+     un lector de pantalla la tabla sigue siendo una tabla en cualquier
+     ancho.
+   ===================================================================== */
+
+.tabla-etiqueta {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .tabla-adaptable {
+        border: 0;
+        box-shadow: none;
+        background-color: transparent;
+    }
+
+    .tabla-adaptable > thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .tabla-adaptable > tbody {
+        display: block;
+    }
+
+    .tabla-adaptable > tbody > tr {
+        display: block;
+        background-color: #ffffff;
+        border: 1px solid var(--tambo-gris-200);
+        border-radius: var(--tambo-radio);
+        box-shadow: var(--tambo-sombra-sm);
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+    }
+
+    .tabla-adaptable > tbody > tr:hover > td {
+        background-color: transparent;
+    }
+
+    .tabla-adaptable > tbody > tr > td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        text-align: right;
+        padding: 0.6rem 0.85rem;
+        border-bottom: 1px solid var(--tambo-gris-100);
+    }
+
+    .tabla-adaptable > tbody > tr > td:last-child {
+        border-bottom: 0;
+        background-color: var(--tambo-gris-25);
+    }
+
+    .tabla-etiqueta {
+        display: block;
+        flex: 0 0 auto;
+        text-align: left;
+        font-size: var(--tambo-texto-xs);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--tambo-gris-600);
+    }
+
+    /* La fila de "no hay registros" ocupa la tarjeta entera y no lleva
+       etiqueta: su celda abarca todas las columnas. */
+    .tabla-adaptable > tbody > tr > td[colspan] {
+        justify-content: center;
+        text-align: center;
+        color: var(--tambo-gris-600);
+    }
+
+    /* Un formulario dentro de una celda -el ajuste de fecha de parto, el
+       botón de eliminar- necesita el ancho de la tarjeta. */
+    .tabla-adaptable > tbody > tr > td form,
+    .tabla-adaptable > tbody > tr > td .d-flex {
+        justify-content: flex-end;
+    }
+}
+
+/* Las tablas que se usan para cargar y no para consultar -el control
+   lechero, el ordeñe por lote- pueden declarar data-movil="tabla" y
+   quedan como tabla en cualquier ancho: son de cuatro columnas y una de
+   ellas es el campo donde se escribe, así que apilarlas alarga la
+   pantalla sin ganar nada. */
+
+/* =====================================================================
+   Panel de resumen
+
+   Las tarjetas de "Hoy en el tambo": el número grande primero y la
+   descripción después, que es el orden en que se leen de un vistazo.
+   ===================================================================== */
+
+.resumen-numero {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--tambo-gris-900);
+    font-variant-numeric: tabular-nums;
+}
+
+.resumen-etiqueta {
+    font-size: var(--tambo-texto-sm);
+    color: var(--tambo-gris-600);
+}
+
+/* =====================================================================
    Foto del animal
 
    El control de carga (_CampoFoto.cshtml) y la foto de la ficha. El
    recuadro tiene medida fija para que la pantalla no salte cuando se
    elige la imagen, y la foto se recorta al centro: las fotos de campo
    vienen apaisadas y verticales mezcladas.
-   ------------------------------------------------------------------ */
+   ===================================================================== */
 
 .foto-control {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
 }
 
 .foto-marco {
-  flex: 0 0 auto;
-  width: 110px;
-  height: 110px;
-  border: 1px solid var(--bs-border-color, #dee2e6);
-  border-radius: 0.375rem;
-  overflow: hidden;
-  background-color: #f8f9fa;
+    flex: 0 0 auto;
+    width: 110px;
+    height: 110px;
+    border: 1px solid var(--tambo-gris-200);
+    border-radius: var(--tambo-radio-sm);
+    overflow: hidden;
+    background-color: var(--tambo-gris-50);
 }
 
 .foto-vista {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .foto-vacia {
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  color: var(--bs-secondary-color, #6c757d);
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--tambo-texto-sm);
+    color: var(--tambo-gris-600);
 }
 
 .foto-acciones {
-  flex: 1 1 auto;
-  min-width: 0;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
-/* Foto de la ficha del animal */
 .foto-ficha {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 0.5rem;
-  border: 1px solid var(--bs-border-color, #dee2e6);
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: var(--tambo-radio);
+    border: 1px solid var(--tambo-gris-200);
 }
 
 .foto-ficha-vacia {
-  width: 180px;
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  border: 1px dashed var(--bs-border-color, #dee2e6);
-  background-color: #f8f9fa;
-  color: var(--bs-secondary-color, #6c757d);
-  font-size: 0.85rem;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--tambo-radio);
+    border: 1px dashed var(--tambo-gris-200);
+    background-color: var(--tambo-gris-50);
+    color: var(--tambo-gris-600);
+    font-size: var(--tambo-texto-sm);
+}
+
+/* =====================================================================
+   Inicio de sesión
+
+   Es la primera pantalla que se ve, así que se lleva un tratamiento
+   propio: una tarjeta centrada sobre el fondo de la aplicación.
+   ===================================================================== */
+
+.pantalla-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 3.5rem);
+    padding: 1.5rem;
+}
+
+.tarjeta-login {
+    width: 100%;
+    max-width: 24rem;
+    background-color: #ffffff;
+    border: 1px solid var(--tambo-gris-200);
+    border-radius: var(--tambo-radio-lg);
+    box-shadow: var(--tambo-sombra);
+    padding: 2rem;
 }

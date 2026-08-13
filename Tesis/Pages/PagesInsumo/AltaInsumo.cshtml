@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Agregar Insumo</h1>
+<div class="panel-formulario">
+    <h1>Agregar Insumo</h1>
     <hr />
     <form method="post">
         <div class="row">
@@ -93,7 +93,7 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="AgregarInsumo">Guardar</button>
+                <button type="submit" class="btn btn-primary" asp-page-handler="AgregarInsumo">Guardar</button>
                 <a class="btn btn-warning" asp-page="./ListaInsumos">Volver</a>
             </div>
         </div>

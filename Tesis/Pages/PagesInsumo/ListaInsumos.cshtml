@@ -3,8 +3,8 @@
 @{
 }
 <div>
-    <h1 class="display-4 text-center">Insumos</h1>
-    <p class="text-center text-muted">
+    <h1>Insumos</h1>
+    <p class="text-muted">
         @Model.insumos.Count insumos registrados.
         @if (Model.criticos > 0)
         {
@@ -13,16 +13,16 @@
             </text>
         }
     </p>
+    @* Las dos alertas y el historial estan en el menu -en Pendientes y en Insumos-,
+       asi que no se repiten aca. Queda lo que se hace sobre el stock que se esta
+       mirando. *@
     <div class="row">
-        <div class="col-sm-12 text-right">
-            <a class="btn btn-success" asp-page="./AltaInsumo">Agregar Insumo</a>
-            <a class="btn btn-primary" asp-page="./IngresoStock">Registrar Ingreso</a>
-            <a class="btn btn-danger" asp-page="./AlertasStock">Alertas de Stock</a>
-            <a class="btn btn-warning" asp-page="./AlertasVencimiento">Alertas de Vencimiento</a>
-            <a class="btn btn-info" asp-page="./HistorialMovimientos">Historial</a>
+        <div class="col-sm-12 text-end">
+            <a class="btn btn-primary" asp-page="./AltaInsumo">Agregar insumo</a>
+            <a class="btn btn-primary" asp-page="./IngresoStock">Registrar ingreso</a>
         </div>
     </div>
-    <table data-paginar="10" class="table text-center">
+    <table data-paginar="10" class="table">
         <thead>
             <tr>
                 <th>Nombre</th>

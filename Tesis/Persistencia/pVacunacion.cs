@@ -63,17 +63,7 @@ namespace Tesis.Persistencia
                                 pCantidadInsumo, pVacunacion.FechaAplicacion, DateTime.MinValue,
                                 "Vacunacion", pVacunacion.Insumo);
 
-                            Conexion.EjecutarInsercionEnTransaccion(pMovimientoStock.SQL_ALTA,
-                                pMovimientoStock.ParametrosAlta(unMovimiento), conexion, transaccion);
-
-                            Conexion.EjecutarComandoEnTransaccion(
-                                "UPDATE insumos SET stock_actual = stock_actual - @cantidad WHERE id_insumo = @id_insumo",
-                                new Dictionary<string, object?>
-                                {
-                                    { "@cantidad", pCantidadInsumo },
-                                    { "@id_insumo", pVacunacion.Insumo.IdInsumo }
-                                },
-                                conexion, transaccion);
+                            pMovimientoStock.AsentarEnTransaccion(Conexion, unMovimiento, conexion, transaccion);
 
                             pVacunacion.Insumo.StockActual = pVacunacion.Insumo.StockActual - pCantidadInsumo;
                         }
@@ -87,6 +77,65 @@ namespace Tesis.Persistencia
                         // El id que habia asignado la base ya no vale, el alta se deshizo
                         pVacunacion.IdVacunacion = 0;
                         throw new Exception("Error al registrar la vacunacion", e);
+                    }
+                }
+            }
+        }
+
+        // Corregir la vacunacion puede cambiar la vacuna aplicada: en ese caso los
+        // movimientos traen la devolucion de la dosis que no se uso y el egreso de la
+        // que si. Cuando solo se corrigio la fecha, el animal o el plan, la lista llega
+        // vacia y el stock no se toca.
+        public bool ModificarVacunacion(Vacunacion pVacunacion, List<MovimientoStock> pMovimientos)
+        {
+            string sql = "UPDATE vacunaciones SET "
+                + "fecha_aplicacion = @fecha_aplicacion,"
+                + "id_animal = @id_animal,"
+                + "id_insumo = @id_insumo,"
+                + "id_plan = @id_plan "
+                + "WHERE id_vacunacion = @id_vacunacion";
+
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@fecha_aplicacion", pVacunacion.FechaAplicacion.Date },
+                { "@id_animal", pVacunacion.Animal.IdAnimal },
+                { "@id_insumo", pVacunacion.Insumo.IdInsumo },
+                { "@id_plan", pVacunacion.Plan != null ? (object)pVacunacion.Plan.IdPlan : null },
+                { "@id_vacunacion", pVacunacion.IdVacunacion }
+            };
+
+            return this.Escribir(sql, parametros, pMovimientos, "Error al modificar la vacunacion");
+        }
+
+        // Al eliminar la vacunacion vuelve la dosis al stock y el animal queda otra vez
+        // pendiente en el plan que esta aplicacion daba por cumplido.
+        public bool EliminarVacunacion(int pIdVacunacion, List<MovimientoStock> pMovimientos)
+        {
+            return this.Escribir("DELETE FROM vacunaciones WHERE id_vacunacion = @id_vacunacion",
+                new Dictionary<string, object?> { { "@id_vacunacion", pIdVacunacion } },
+                pMovimientos, "Error al eliminar la vacunacion");
+        }
+
+        private bool Escribir(string pSql, Dictionary<string, object?> pParametros,
+            List<MovimientoStock> pMovimientos, string pMensajeError)
+        {
+            using (MySqlConnection conexion = Conexion.AbrirConexion())
+            {
+                using (MySqlTransaction transaccion = conexion.BeginTransaction())
+                {
+                    try
+                    {
+                        Conexion.EjecutarComandoEnTransaccion(pSql, pParametros, conexion, transaccion);
+
+                        pMovimientoStock.AsentarEnTransaccion(Conexion, pMovimientos, conexion, transaccion);
+
+                        transaccion.Commit();
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        transaccion.Rollback();
+                        throw new Exception(pMensajeError, e);
                     }
                 }
             }

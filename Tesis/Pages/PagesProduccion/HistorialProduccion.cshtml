@@ -5,8 +5,8 @@
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Historial de Produccion</h1>
+<div class="panel-formulario">
+    <h1>Historial de Produccion</h1>
     <p class="text-muted">
         La producción se resuelve turno por turno: si el turno tiene su ordeñe por lote,
         son esos litros &mdash;que ya incluyen a las vacas medidas vaca por vaca&mdash;; y
@@ -77,9 +77,9 @@
     {
         <hr />
         <div class="alert alert-info">
-            <h4 class="mb-0">
+            <h2 class="h5 mb-0">
                 Acumulado del periodo: @Model.acumulado.ToString("N2") litros
-            </h4>
+            </h2>
             <small>
                 @Model.fechaDesde.ToShortDateString() a @Model.fechaHasta.ToShortDateString()
                 &mdash; modalidad @Model.modalidad
@@ -88,8 +88,8 @@
 
         @if (Model.ordeniesLote.Any())
         {
-            <h5>Ordeñes por lote (@Model.ordeniesLote.Count)</h5>
-            <table data-paginar="10" class="table table-sm text-center">
+            <h2 class="h5">Ordeñes por lote (@Model.ordeniesLote.Count)</h2>
+            <table data-paginar="10" class="table table-sm">
                 <thead>
                     <tr>
                         <th>Fecha</th>
@@ -119,8 +119,8 @@
 
         @if (Model.ordeniesIndividual.Any())
         {
-            <h5>Controles individuales (@Model.ordeniesIndividual.Count)</h5>
-            <table data-paginar="10" class="table table-sm text-center">
+            <h2 class="h5">Controles individuales (@Model.ordeniesIndividual.Count)</h2>
+            <table data-paginar="10" class="table table-sm">
                 <thead>
                     <tr>
                         <th>Fecha</th>

@@ -12,8 +12,8 @@
         <script src="~/js/arbol.js" asp-append-version="true"></script>
     }
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Consultar Linaje y Registro Genealogico</h1>
+<div class="panel-formulario">
+    <h1>Consultar Linaje y Registro Genealogico</h1>
     <hr />
     <form method="post">
         <div class="row">
@@ -24,7 +24,7 @@
                     <label for="txtAnimal">Animal:</label>
                     <div class="input-group">
                         <input type="text" class="form-control" id="txtAnimal" value="@Model.numCaravana" placeholder="Ningun animal seleccionado" readonly>
-                        <button type="button" class="btn btn-info" onclick="abrirSelectorAnimal('numCaravana','txtAnimal','Seleccionar Animal','',true)">Buscar</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="abrirSelectorAnimal('numCaravana','txtAnimal','Seleccionar Animal','',true)">Buscar</button>
                     </div>
                     <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
                 </div>
@@ -35,7 +35,7 @@
         <br />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-info" asp-page-handler="ConsultarLinaje">Ver Linaje</button>
+                <button type="submit" class="btn btn-outline-secondary" asp-page-handler="ConsultarLinaje">Ver Linaje</button>
                 <a class="btn btn-warning" asp-page="./ListaAnimales">Volver</a>
             </div>
         </div>
@@ -46,7 +46,7 @@
     @if (Model.animal != null)
     {
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
-            <h4 class="mb-0">Arbol genealogico de @Model.animal.NumCaravana</h4>
+            <h2 class="h5 mb-0">Arbol genealogico de @Model.animal.NumCaravana</h2>
 
             <div class="btn-toolbar gap-2">
                 @* Solo tiene sentido ofrecer desplegar si hay mas de lo que ya se ve *@
@@ -104,7 +104,7 @@
                             <img id="panelFoto" class="linaje-panel-foto mb-2" alt="Foto del animal" style="display: none" />
                             <div id="panelFotoVacia" class="linaje-panel-foto-vacia mb-2">Sin foto cargada</div>
 
-                            <h5 class="mb-0" id="panelCaravana"></h5>
+                            <h2 class="h5 mb-0" id="panelCaravana"></h2>
                             <p class="text-muted small mb-2" id="panelParentesco"></p>
 
                             <table class="table table-sm mb-2">
@@ -163,8 +163,8 @@
            muestra el dato crudo. Arranca oculta porque el arbol es la vista principal. *@
         <div id="linajeTabla" style="display: none">
             <hr />
-            <h5>Registro genealogico de @Model.animal.NumCaravana</h5>
-            <table class="table text-center">
+            <h2 class="h5">Registro genealogico de @Model.animal.NumCaravana</h2>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Nivel</th>

@@ -51,6 +51,40 @@ namespace Tesis.Persistencia
             return pDescorne.IdDescorne > 0;
         }
 
+        // Como el alta, la correccion y el borrado son una sola escritura: el descorne
+        // no consume insumo y nada cuelga de el. Lo unico que cambia al eliminarlo es
+        // que el animal vuelve a figurar como pendiente en el plan de descorne, y eso
+        // el calendario lo deduce solo de que ya no haya registro.
+        public bool ModificarDescorne(Descorne pDescorne)
+        {
+            string sql = "UPDATE descornes SET "
+                + "fecha = @fecha,"
+                + "metodo = @metodo,"
+                + "observaciones = @observaciones,"
+                + "id_animal = @id_animal,"
+                + "id_plan = @id_plan "
+                + "WHERE id_descorne = @id_descorne";
+
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@fecha", pDescorne.Fecha.Date },
+                { "@metodo", pDescorne.Metodo },
+                { "@observaciones", pDescorne.Observaciones },
+                { "@id_animal", pDescorne.Animal.IdAnimal },
+                { "@id_plan", pDescorne.Plan != null ? (object)pDescorne.Plan.IdPlan : null },
+                { "@id_descorne", pDescorne.IdDescorne }
+            };
+
+            return Conexion.EjecutarComando(sql, parametros);
+        }
+
+        public bool EliminarDescorne(int pIdDescorne)
+        {
+            return Conexion.EjecutarComando(
+                "DELETE FROM descornes WHERE id_descorne = @id_descorne",
+                new Dictionary<string, object?> { { "@id_descorne", pIdDescorne } });
+        }
+
         private Animal BuscarAnimal(List<Animal> pLista, int pIdAnimal)
         {
             foreach (Animal unAnimal in pLista)

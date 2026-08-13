@@ -1,51 +1,31 @@
 @page
 @model Tesis.Pages.PagesSanidad.ListaDiagnosticosModel
 @{
+    ViewData["Title"] = "Diagnósticos";
 }
 <div>
-    <h1 class="display-4 text-center">Sanidad</h1>
-    <p class="text-center text-muted">
-        @Model.diagnosticos.Count diagnósticos, @Model.tratamientos.Count tratamientos,
-        @Model.vacunaciones.Count vacunaciones y @Model.descornes.Count descornes
-        registrados.
-    </p>
-    <div class="row">
-        <div class="col-sm-12 text-right">
-            <a class="btn btn-success" asp-page="./RegistrarDiagnostico">Registrar Diagnostico</a>
-            <a class="btn btn-primary" asp-page="./RegistrarTratamiento">Registrar Tratamiento</a>
-            <a class="btn btn-primary" asp-page="./RegistrarVacunacion">Registrar Vacunacion</a>
-            <a class="btn btn-secondary" asp-page="./RegistrarDescorne">Registrar Descorne</a>
-            <a class="btn btn-info" asp-page="./CalendarioSanitario">Calendario</a>
-            <a class="btn btn-warning" asp-page="./ListaPlanes">Planes Sanitarios</a>
+    <div class="encabezado-pagina">
+        <div>
+            <h1>Diagnósticos</h1>
+            <small class="text-muted">@Model.diagnosticos.Count diagnósticos registrados.</small>
         </div>
+        <a class="btn btn-primary" asp-page="./RegistrarDiagnostico">Registrar diagnóstico</a>
     </div>
 
-    @if (Model.animalesEnDescarte.Any())
+    @if (!ViewData.ModelState.IsValid)
     {
-        <div class="alert alert-warning">
-            <strong>Descarte de leche vigente.</strong>
-            Estos animales quedan fuera del lote de ordeñe hasta la fecha indicada.
-            <ul class="mb-0 mt-2">
-                @foreach (Dominio.Animal animal in Model.animalesEnDescarte)
-                {
-                    <li>
-                        @animal.NumCaravana &mdash; hasta
-                        @Model.descartesVigentes[animal.IdAnimal].ToShortDateString()
-                    </li>
-                }
-            </ul>
-        </div>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
     }
 
-    <h5>Diagnosticos</h5>
-    <table data-paginar="10" class="table text-center">
+    <table data-paginar="10" class="table align-middle">
         <thead>
             <tr>
                 <th>Fecha</th>
                 <th>Caravana</th>
                 <th>Enfermedad</th>
                 <th>Estado</th>
-                <th>Accion</th>
+                <th>Tratamientos</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -70,84 +50,29 @@
                             {
                                 <span class="badge bg-danger">@diagnostico.Estado</span>
                             }
-                        </td>
-                        <td>
+
                             @if (diagnostico.Estado != Dominio.Diagnostico.RESUELTO)
                             {
                                 <form method="post" asp-page-handler="Resolver"
-                                      asp-route-id="@diagnostico.IdDiagnostico">
-                                    <button type="submit" class="btn btn-secondary btn-sm">
+                                      asp-route-id="@diagnostico.IdDiagnostico" class="mt-1">
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">
                                         Marcar resuelto
                                     </button>
                                 </form>
                             }
                         </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="5">No hay diagnosticos registrados</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <h5>Tratamientos</h5>
-    <table data-paginar="10" class="table text-center">
-        <thead>
-            <tr>
-                <th>Inicio</th>
-                <th>Caravana</th>
-                <th>Origen</th>
-                <th>Insumo</th>
-                <th>Duracion</th>
-                <th>Dosis diaria</th>
-                <th>Plan</th>
-                <th>Descarte de leche hasta</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.tratamientos.Any())
-            {
-                @foreach (Dominio.Tratamiento tratamiento in Model.tratamientos)
-                {
-                    <tr>
-                        <td>@tratamiento.FechaInicio.ToShortDateString()</td>
-                        <td>@(tratamiento.Animal != null ? tratamiento.Animal.NumCaravana : "")</td>
+                        <td>@Model.tratamientosPorDiagnostico[diagnostico.IdDiagnostico]</td>
                         <td>
-                            @if (tratamiento.Diagnostico != null)
-                            {
-                                @tratamiento.Diagnostico.Enfermedad
-                            }
-                            else
-                            {
-                                <span class="text-muted">Preventivo</span>
-                            }
-                        </td>
-                        <td>@(tratamiento.Insumo != null ? tratamiento.Insumo.Nombre : "")</td>
-                        <td>@tratamiento.DiasDuracion dias</td>
-                        <td>@tratamiento.DosisDiaria</td>
-                        <td>
-                            @if (tratamiento.Plan != null)
-                            {
-                                @tratamiento.Plan.Nombre
-                            }
-                            else
-                            {
-                                <span class="text-muted">Fuera de plan</span>
-                            }
-                        </td>
-                        <td>
-                            @if (tratamiento.FechaFinDescarte != DateTime.MinValue)
-                            {
-                                @tratamiento.FechaFinDescarte.ToShortDateString()
-                            }
-                            else
-                            {
-                                <span class="text-muted">No obliga</span>
-                            }
+                            <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                {
+                                    PaginaEditar = "./RegistrarDiagnostico",
+                                    Id = diagnostico.IdDiagnostico,
+                                    MotivoBloqueo = Model.bloqueos[diagnostico.IdDiagnostico],
+                                    Descripcion = "el diagnostico de " + diagnostico.Enfermedad
+                                        + " del " + diagnostico.FechaDiagnostico.ToShortDateString()
+                                        + " de la caravana "
+                                        + (diagnostico.Animal != null ? diagnostico.Animal.NumCaravana : "")
+                                })" />
                         </td>
                     </tr>
                 }
@@ -155,91 +80,7 @@
             else
             {
                 <tr>
-                    <td colspan="8">No hay tratamientos registrados</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <h5>Vacunaciones</h5>
-    <table data-paginar="10" class="table text-center">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Caravana</th>
-                <th>Vacuna</th>
-                <th>Plan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.vacunaciones.Any())
-            {
-                @foreach (Dominio.Vacunacion vacunacion in Model.vacunaciones)
-                {
-                    <tr>
-                        <td>@vacunacion.FechaAplicacion.ToShortDateString()</td>
-                        <td>@(vacunacion.Animal != null ? vacunacion.Animal.NumCaravana : "")</td>
-                        <td>@(vacunacion.Insumo != null ? vacunacion.Insumo.Nombre : "")</td>
-                        <td>
-                            @if (vacunacion.Plan != null)
-                            {
-                                @vacunacion.Plan.Nombre
-                            }
-                            else
-                            {
-                                <span class="text-muted">Fuera de plan</span>
-                            }
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4">No hay vacunaciones registradas</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <h5>Descornes</h5>
-    <table data-paginar="10" class="table text-center">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Caravana</th>
-                <th>Metodo</th>
-                <th>Plan</th>
-                <th>Observaciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.descornes.Any())
-            {
-                @foreach (Dominio.Descorne descorne in Model.descornes)
-                {
-                    <tr>
-                        <td>@descorne.Fecha.ToShortDateString()</td>
-                        <td>@(descorne.Animal != null ? descorne.Animal.NumCaravana : "")</td>
-                        <td>@descorne.Metodo</td>
-                        <td>
-                            @if (descorne.Plan != null)
-                            {
-                                @descorne.Plan.Nombre
-                            }
-                            else
-                            {
-                                <span class="text-muted">Fuera de plan</span>
-                            }
-                        </td>
-                        <td>@descorne.Observaciones</td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="5">No hay descornes registrados</td>
+                    <td colspan="6">No hay diagnosticos registrados</td>
                 </tr>
             }
         </tbody>

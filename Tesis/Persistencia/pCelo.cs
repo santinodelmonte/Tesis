@@ -42,6 +42,31 @@ namespace Tesis.Persistencia
             return pCelo.IdCelo > 0;
         }
 
+        // El celo es el unico registro de reproduccion que no arrastra nada: no mueve
+        // el estado de la hembra ni consume stock, y ningun otro registro lo
+        // referencia. Por eso su correccion y su borrado son una sola escritura.
+        public bool ModificarCelo(Celo pCelo)
+        {
+            string sql = "UPDATE celos SET fecha = @fecha, observaciones = @observaciones, "
+                + "id_animal = @id_animal WHERE id_celo = @id_celo";
+
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@fecha", pCelo.Fecha.Date },
+                { "@observaciones", pCelo.Observaciones },
+                { "@id_animal", pCelo.Animal.IdAnimal },
+                { "@id_celo", pCelo.IdCelo }
+            };
+
+            return Conexion.EjecutarComando(sql, parametros);
+        }
+
+        public bool EliminarCelo(int pIdCelo)
+        {
+            return Conexion.EjecutarComando("DELETE FROM celos WHERE id_celo = @id_celo",
+                new Dictionary<string, object?> { { "@id_celo", pIdCelo } });
+        }
+
         private Hembra BuscarHembra(List<Hembra> pLista, int pIdAnimal)
         {
             foreach (Hembra unaHembra in pLista)

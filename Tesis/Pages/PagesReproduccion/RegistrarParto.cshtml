@@ -6,8 +6,8 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/fotoAnimal.js" asp-append-version="true"></script>
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Parto</h1>
+<div class="panel-formulario">
+    <h1>Registrar Parto</h1>
     <p class="text-muted">
         El parto cierra el ciclo reproductivo devolviendo la hembra a "Vacía" e inicia
         el productivo llevándola a "En lactancia". Además da de alta la cría y abre la
@@ -15,7 +15,7 @@
     </p>
     <hr />
     <form method="post">
-        <h5>Madre</h5>
+        <h2 class="h5">Madre</h2>
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
@@ -113,7 +113,7 @@
         </div>
 
         <hr />
-        <h5>Cria</h5>
+        <h2 class="h5">Cria</h2>
         <div class="row">
             <div class="col-md-3">
                 <div class="form-group">
@@ -259,8 +259,8 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="ConfirmarParto">Confirmar Parto</button>
-                <a class="btn btn-info" asp-page="./AlertasParto">Alertas de Parto</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="ConfirmarParto">Confirmar Parto</button>
+                <a class="btn btn-outline-secondary" asp-page="./AlertasParto">Alertas de Parto</a>
                 <a class="btn btn-warning" asp-page="./ListaServicios">Volver</a>
             </div>
         </div>

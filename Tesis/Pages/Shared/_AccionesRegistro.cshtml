@@ -1,0 +1,46 @@
+@model Tesis.Pages.Shared.AccionesRegistroModelo
+@{
+    string vIconos = Url.Content("~/img/iconos.svg");
+}
+@*
+    Los dos botones de corrección de una fila: editar y eliminar.
+
+    El ícono acompaña al texto, nunca lo reemplaza: un botón que solo dice
+    "🗑" obliga a adivinar, y en una acción que no se puede deshacer eso es
+    justamente lo que no se quiere. Los íconos van con aria-hidden porque el
+    texto de al lado ya dice qué hace el botón (criterio 1.1.1).
+
+    Cuando el registro tiene algo colgando, el botón de eliminar se cambia por
+    uno que explica qué hay que sacar primero. Mostrar el motivo en el momento
+    en que la persona lo va a necesitar evita el "no se pudo eliminar" a secas,
+    que obliga a adivinar.
+*@
+@* La clase es propia y no una fila de utilitarios de Bootstrap porque los
+   utilitarios llevan !important y no se pueden ajustar por ancho de pantalla:
+   acá los botones tienen que ir en una sola línea en la PC -si se parten, la
+   fila pasa de 45 a 78 píxeles y se ve la mitad de los animales- y pueden
+   partirse en el celular, donde la tarjeta es angosta. *@
+<div class="acciones-fila">
+    <a class="btn btn-outline-secondary btn-sm" asp-page="@Model.PaginaEditar" asp-route-id="@Model.Id">
+        <svg class="ico" aria-hidden="true"><use href="@vIconos#editar"></use></svg>
+        Editar
+    </a>
+
+    @if (Model.MotivoBloqueo == "")
+    {
+        <form method="post" asp-page-handler="Eliminar" asp-route-id="@Model.Id"
+              data-confirmar="@Model.TextoConfirmacion">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+                <svg class="ico" aria-hidden="true"><use href="@vIconos#eliminar"></use></svg>
+                Eliminar
+            </button>
+        </form>
+    }
+    else
+    {
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-aviso="@Model.MotivoBloqueo">
+            <svg class="ico" aria-hidden="true"><use href="@vIconos#info"></use></svg>
+            Eliminar
+        </button>
+    }
+</div>

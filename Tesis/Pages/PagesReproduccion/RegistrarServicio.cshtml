@@ -1,12 +1,15 @@
 @page
 @model Tesis.Pages.PagesReproduccion.RegistrarServicioModel
 @{
+    ViewData["Title"] = Model.esCorreccion ? "Corregir servicio" : "Registrar servicio";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Servicio</h1>
+<div class="panel-formulario">
+    <h1>
+        @(Model.esCorreccion ? "Corregir Servicio" : "Registrar Servicio")
+    </h1>
     <p class="text-muted">
         Todo servicio tiene un único reproductor: el toro del rodeo y la pajuela son
         excluyentes. La pajuela conserva el vínculo con el toro que la aporta, de modo
@@ -14,7 +17,27 @@
         integre el rodeo.
     </p>
     <hr />
+
+    @if (Model.esCorreccion)
+    {
+        <div class="alert alert-info">
+            <strong>Se está corrigiendo un servicio ya registrado.</strong>
+            Al guardar, el sistema vuelve a deducir el estado reproductivo de la vaca y
+            la fecha probable de parto proyectada sobre su lactancia. Si se cambia la
+            pajuela, devuelve la anterior al stock y descuenta la nueva.
+            @if (Model.animalBloqueado)
+            {
+                <div class="mt-2">
+                    El animal no se puede cambiar porque este servicio ya tiene tactos
+                    registrados. Para pasarlo a otra vaca hay que eliminar antes esos
+                    tactos.
+                </div>
+            }
+        </div>
+    }
+
     <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
@@ -23,10 +46,13 @@
                         <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
                         <input type="text" id="caravanaTexto" class="form-control" readonly
                                value="@Model.numCaravana" />
-                        <button type="button" class="btn btn-secondary"
-                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
-                            Buscar
-                        </button>
+                        @if (!Model.animalBloqueado)
+                        {
+                            <button type="button" class="btn btn-secondary"
+                                    onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
+                                Buscar
+                            </button>
+                        }
                     </div>
                 </div>
             </div>
@@ -150,9 +176,10 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-info" asp-page="./RegistrarTacto">Registrar Tacto</a>
-                <a class="btn btn-warning" asp-page="./ListaServicios">Volver</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    @(Model.esCorreccion ? "Guardar cambios" : "Guardar")
+                </button>
+                <a class="btn btn-outline-secondary" asp-page="./ListaServicios">Cancelar</a>
             </div>
         </div>
     </form>

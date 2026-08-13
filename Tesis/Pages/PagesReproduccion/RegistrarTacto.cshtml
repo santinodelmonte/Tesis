@@ -1,18 +1,35 @@
 @page
 @model Tesis.Pages.PagesReproduccion.RegistrarTactoModel
 @{
+    ViewData["Title"] = Model.esCorreccion ? "Corregir tacto" : "Registrar tacto";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Tacto y Confirmacion de Preñez</h1>
+<div class="panel-formulario">
+    <h1>
+        @(Model.esCorreccion ? "Corregir Tacto" : "Registrar Tacto y Confirmacion de Preñez")
+    </h1>
     <p class="text-muted">
         El tacto modifica el estado reproductivo y nunca el productivo: una vaca en
         lactancia confirmada preñada sigue produciendo.
     </p>
     <hr />
+
+    @if (Model.esCorreccion)
+    {
+        <div class="alert alert-info">
+            <strong>Se está corrigiendo un tacto ya registrado.</strong>
+            Al guardar, el sistema vuelve a deducir si la vaca queda preñada, vacía o
+            servida a partir de los controles que quedan, y ajusta la fecha probable de
+            parto de su lactancia. El servicio no se cambia: si el control se anotó en
+            el servicio equivocado, hay que eliminarlo y registrarlo de nuevo.
+        </div>
+    }
+
     <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
+        <input type="hidden" name="idServicio" value="@Model.idServicio" />
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
@@ -21,13 +38,16 @@
                         <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
                         <input type="text" id="caravanaTexto" class="form-control" readonly
                                value="@Model.numCaravana" />
-                        <button type="button" class="btn btn-secondary"
-                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
-                            Buscar
-                        </button>
-                        <button type="submit" class="btn btn-primary" asp-page-handler="BuscarServicio">
-                            Ver servicio
-                        </button>
+                        @if (!Model.esCorreccion)
+                        {
+                            <button type="button" class="btn btn-secondary"
+                                    onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Hembra', 'H', true)">
+                                Buscar
+                            </button>
+                            <button type="submit" class="btn btn-primary" asp-page-handler="BuscarServicio">
+                                Ver servicio
+                            </button>
+                        }
                     </div>
                 </div>
             </div>
@@ -95,9 +115,10 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-info" asp-page="./AlertasParto">Alertas de Parto</a>
-                <a class="btn btn-warning" asp-page="./ListaServicios">Volver</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    @(Model.esCorreccion ? "Guardar cambios" : "Guardar")
+                </button>
+                <a class="btn btn-outline-secondary" asp-page="./ListaTactos">Cancelar</a>
             </div>
         </div>
     </form>

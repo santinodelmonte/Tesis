@@ -1,0 +1,85 @@
+@page
+@model Tesis.Pages.PagesReproduccion.ListaTactosModel
+@{
+    ViewData["Title"] = "Tactos";
+}
+<div>
+    <div class="encabezado-pagina">
+        <div>
+            <h1>Tactos</h1>
+            <small class="text-muted">@Model.tactos.Count controles de gestación registrados.</small>
+        </div>
+        <a class="btn btn-primary" asp-page="./RegistrarTacto">Registrar tacto</a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    }
+
+    <table data-paginar="10" class="table align-middle">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Caravana</th>
+                <th>Servicio</th>
+                <th>Resultado</th>
+                <th>Observaciones</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.tactos.Any())
+            {
+                @foreach (Dominio.Tacto tacto in Model.tactos)
+                {
+                    <tr>
+                        <td>@tacto.FechaTacto.ToShortDateString()</td>
+                        <td>
+                            @(tacto.Servicio != null && tacto.Servicio.Animal != null
+                                ? tacto.Servicio.Animal.NumCaravana : "")
+                        </td>
+                        <td>
+                            @(tacto.Servicio != null
+                                ? tacto.Servicio.FechaServicio.ToShortDateString() : "")
+                        </td>
+                        <td>
+                            @if (tacto.Resultado == Dominio.Tacto.PRENADA)
+                            {
+                                <span class="badge bg-success">@tacto.Resultado</span>
+                            }
+                            else if (tacto.Resultado == Dominio.Tacto.VACIA)
+                            {
+                                <span class="badge bg-danger">@tacto.Resultado</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">@tacto.Resultado</span>
+                            }
+                        </td>
+                        <td>@tacto.Observaciones</td>
+                        <td>
+                            <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                {
+                                    PaginaEditar = "./RegistrarTacto",
+                                    Id = tacto.IdTacto,
+                                    Descripcion = "el tacto del " + tacto.FechaTacto.ToShortDateString()
+                                        + " de la caravana "
+                                        + (tacto.Servicio != null && tacto.Servicio.Animal != null
+                                            ? tacto.Servicio.Animal.NumCaravana : "")
+                                })" />
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">
+                        No hay tactos registrados
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

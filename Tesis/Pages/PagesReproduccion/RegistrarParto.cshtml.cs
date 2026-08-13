@@ -222,7 +222,7 @@ namespace Tesis.Pages.PagesReproduccion
             // abre la nueva.
             if (unaControladora.AltaParto(unParto, _listaCrias))
             {
-                return Redirect("/PagesProduccion/ListaLactancias");
+                return Redirect("./ListaPartos");
             }
 
             // El parto no se registro: las crias no existen y sus fotos tampoco tienen

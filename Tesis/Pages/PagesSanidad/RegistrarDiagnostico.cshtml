@@ -1,14 +1,36 @@
 @page
 @model Tesis.Pages.PagesSanidad.RegistrarDiagnosticoModel
 @{
+    ViewData["Title"] = Model.esCorreccion ? "Corregir diagnóstico" : "Registrar diagnóstico";
 }
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-<div class="text-left">
-    <h1 class="display-4" style="font-size: 40px">Registrar Diagnostico</h1>
+<div class="panel-formulario">
+    <h1>
+        @(Model.esCorreccion ? "Corregir Diagnostico" : "Registrar Diagnostico")
+    </h1>
     <hr />
+
+    @if (Model.esCorreccion)
+    {
+        <div class="alert alert-info">
+            <strong>Se está corrigiendo un diagnóstico ya registrado.</strong>
+            El estado no se edita acá: lo mueve el alta del tratamiento, que lo pasa a
+            "En tratamiento", y el botón de marcar resuelto del listado.
+            @if (Model.animalBloqueado)
+            {
+                <div class="mt-2">
+                    El animal no se puede cambiar porque este diagnóstico ya tiene
+                    tratamientos aplicados. Para pasarlo a otra vaca hay que eliminar
+                    antes esos tratamientos.
+                </div>
+            }
+        </div>
+    }
+
     <form method="post">
+        <input type="hidden" name="id" value="@Model.id" />
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
@@ -17,10 +39,13 @@
                         <input type="hidden" id="numCaravana" name="numCaravana" value="@Model.numCaravana" />
                         <input type="text" id="caravanaTexto" class="form-control" readonly
                                value="@Model.numCaravana" />
-                        <button type="button" class="btn btn-secondary"
-                                onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Animal', '', true)">
-                            Buscar
-                        </button>
+                        @if (!Model.animalBloqueado)
+                        {
+                            <button type="button" class="btn btn-secondary"
+                                    onclick="abrirSelectorAnimal('numCaravana', 'caravanaTexto', 'Seleccionar Animal', '', true)">
+                                Buscar
+                            </button>
+                        }
                     </div>
                 </div>
             </div>
@@ -31,16 +56,19 @@
                            value="@Model.fechaDiagnostico.ToString("yyyy-MM-dd")" />
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label for="estado">Estado:</label>
-                    <select id="estado" name="estado" asp-for="estado" class="form-control">
-                        <option value="@Dominio.Diagnostico.ACTIVO">@Dominio.Diagnostico.ACTIVO</option>
-                        <option value="@Dominio.Diagnostico.EN_TRATAMIENTO">@Dominio.Diagnostico.EN_TRATAMIENTO</option>
-                        <option value="@Dominio.Diagnostico.RESUELTO">@Dominio.Diagnostico.RESUELTO</option>
-                    </select>
+            @if (!Model.esCorreccion)
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="estado">Estado:</label>
+                        <select id="estado" name="estado" asp-for="estado" class="form-control">
+                            <option value="@Dominio.Diagnostico.ACTIVO">@Dominio.Diagnostico.ACTIVO</option>
+                            <option value="@Dominio.Diagnostico.EN_TRATAMIENTO">@Dominio.Diagnostico.EN_TRATAMIENTO</option>
+                            <option value="@Dominio.Diagnostico.RESUELTO">@Dominio.Diagnostico.RESUELTO</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
         <div class="row">
             <div class="col-md-8">
@@ -55,9 +83,10 @@
         <hr />
         <div class="row">
             <div class="mt-2">
-                <button type="submit" class="btn btn-success" asp-page-handler="Guardar">Guardar</button>
-                <a class="btn btn-info" asp-page="./RegistrarTratamiento">Registrar Tratamiento</a>
-                <a class="btn btn-warning" asp-page="./ListaDiagnosticos">Volver</a>
+                <button type="submit" class="btn btn-primary" asp-page-handler="Guardar">
+                    @(Model.esCorreccion ? "Guardar cambios" : "Guardar")
+                </button>
+                <a class="btn btn-outline-secondary" asp-page="./ListaDiagnosticos">Cancelar</a>
             </div>
         </div>
     </form>
