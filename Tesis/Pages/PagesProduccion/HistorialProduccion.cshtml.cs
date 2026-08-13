@@ -4,7 +4,12 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesProduccion
 {
-    // CU10 - Consultar Historial de Produccion y Lactancias
+    // CU10 - Consultar Historial de Produccion y Lactancias.
+    //
+    // Es ademas el listado desde el que se corrigen y se dan de baja los dos registros
+    // de produccion, el ordenie por lote y el control individual. Va acá y no en las
+    // pantallas de carga por el mismo criterio que en Reproduccion y Sanidad: una
+    // entrada por entidad, y esa entrada es su listado.
     public class HistorialProduccionModel : PageModel
     {
         [BindProperty]
@@ -25,6 +30,22 @@ namespace Tesis.Pages.PagesProduccion
         // lectura del tanque, asi que la pantalla los senala.
         public List<OrdenieLote> turnosSoloIndividual = new List<OrdenieLote>();
 
+        // El rango consultado, que los botones de baja mandan de vuelta. Sin esto la
+        // pantalla vuelve sin consulta despues de borrar y hay que buscar otra vez para
+        // ver como quedo. El formato es el mismo que manda el campo de fecha.
+        public Dictionary<string, string> FiltroActual
+        {
+            get
+            {
+                return new Dictionary<string, string>
+                {
+                    { "modalidad", modalidad },
+                    { "fechaDesde", fechaDesde.ToString("yyyy-MM-dd") },
+                    { "fechaHasta", fechaHasta.ToString("yyyy-MM-dd") }
+                };
+            }
+        }
+
         public void OnGet()
         {
             Controladora unaControladora = new Controladora();
@@ -36,9 +57,55 @@ namespace Tesis.Pages.PagesProduccion
         public void OnPostBuscar()
         {
             Controladora unaControladora = new Controladora();
-            unaControladora.ListarAnimales();
+            this.Buscar(unaControladora);
+        }
 
-            turnosSoloIndividual = unaControladora.ListarTurnosSoloConControlIndividual();
+        // Baja de un control individual. La consulta se rehace despues de borrar -con el
+        // mismo rango, que viaja en el formulario de la baja- para que el listado quede
+        // donde estaba y se vea el acumulado ya recalculado.
+        public void OnPostEliminar(int id)
+        {
+            Controladora unaControladora = new Controladora();
+
+            string vMotivo = unaControladora.ValidarEliminarOrdenieIndividual(id);
+
+            if (vMotivo == "" && !unaControladora.EliminarOrdenieIndividual(id))
+            {
+                vMotivo = "No se pudo eliminar el control individual!";
+            }
+
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+            }
+
+            this.Buscar(unaControladora);
+        }
+
+        public void OnPostEliminarLote(int id)
+        {
+            Controladora unaControladora = new Controladora();
+
+            string vMotivo = unaControladora.ValidarEliminarOrdenieLote(id);
+
+            if (vMotivo == "" && !unaControladora.EliminarOrdenieLote(id))
+            {
+                vMotivo = "No se pudo eliminar el ordeñe del lote!";
+            }
+
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+            }
+
+            this.Buscar(unaControladora);
+        }
+
+        private void Buscar(Controladora pControladoraDominio)
+        {
+            pControladoraDominio.ListarAnimales();
+
+            turnosSoloIndividual = pControladoraDominio.ListarTurnosSoloConControlIndividual();
 
             this.LeerFormulario();
 
@@ -57,17 +124,17 @@ namespace Tesis.Pages.PagesProduccion
 
             if (modalidad == Controladora.MODALIDAD_LOTE)
             {
-                ordeniesLote = unaControladora.FiltrarOrdeniesLoteXFecha(fechaDesde, fechaHasta);
+                ordeniesLote = pControladoraDominio.FiltrarOrdeniesLoteXFecha(fechaDesde, fechaHasta);
             }
 
             if (modalidad == Controladora.MODALIDAD_INDIVIDUAL)
             {
-                ordeniesIndividual = unaControladora.FiltrarOrdeniesIndividualXFecha(fechaDesde, fechaHasta);
+                ordeniesIndividual = pControladoraDominio.FiltrarOrdeniesIndividualXFecha(fechaDesde, fechaHasta);
             }
 
-            // En "Totales" se suman las dos fuentes: los litros del control individual
-            // no estan incluidos en los del lote, asi que no hay doble conteo.
-            acumulado = unaControladora.CalcularProduccionEnRango(fechaDesde, fechaHasta, modalidad);
+            // La produccion se resuelve turno por turno: el total del lote ya incluye a
+            // las vacas medidas, asi que no hay doble conteo que descontar.
+            acumulado = pControladoraDominio.CalcularProduccionEnRango(fechaDesde, fechaHasta, modalidad);
             consultado = true;
         }
 

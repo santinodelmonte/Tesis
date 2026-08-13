@@ -96,7 +96,7 @@
                         <th>Turno</th>
                         <th>Litros</th>
                         <th>Animales</th>
-                        <th>Accion</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,8 +108,18 @@
                             <td>@ordenie.LitrosTotales.ToString("N2")</td>
                             <td>@ordenie.Animales.Count</td>
                             <td>
-                                <a class="btn btn-primary btn-sm" asp-page="./ModificarOrdenieLote"
-                                   asp-route-id="@ordenie.IdOrdenieLote">Corregir</a>
+                                <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                    {
+                                        PaginaEditar = "./ModificarOrdenieLote",
+                                        Handler = "EliminarLote",
+                                        Id = ordenie.IdOrdenieLote,
+                                        Descripcion = "el ordeñe del " + ordenie.Fecha.ToShortDateString()
+                                            + ", " + ordenie.Turno + ", de "
+                                            + ordenie.LitrosTotales.ToString("N2") + " litros",
+                                        Consecuencia = "Los controles individuales de ese turno no se borran: "
+                                            + "quedan como los que se cargan antes que el total del ordeñe.",
+                                        CamposOcultos = Model.FiltroActual
+                                    })" />
                             </td>
                         </tr>
                     }
@@ -128,6 +138,7 @@
                         <th>Caravana</th>
                         <th>Litros</th>
                         <th>Lactancia</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -139,6 +150,21 @@
                             <td>@(control.Animal != null ? control.Animal.NumCaravana : "")</td>
                             <td>@control.Litros.ToString("N2")</td>
                             <td>@(control.Lactancia != null ? control.Lactancia.NumeroLactancia.ToString() : "")</td>
+                            <td>
+                                <partial name="_AccionesRegistro" model="@(new Tesis.Pages.Shared.AccionesRegistroModelo
+                                    {
+                                        PaginaEditar = "./OrdenieIndividual",
+                                        Id = control.IdOrdenieInd,
+                                        Descripcion = "el control de la caravana "
+                                            + (control.Animal != null ? control.Animal.NumCaravana : "")
+                                            + " del " + control.Fecha.ToShortDateString()
+                                            + ", " + control.Turno + ", de "
+                                            + control.Litros.ToString("N2") + " litros",
+                                        Consecuencia = "La producción de la lactancia, la proyección a 305 días "
+                                            + "y los indicadores se recalculan con los controles que queden.",
+                                        CamposOcultos = Model.FiltroActual
+                                    })" />
+                            </td>
                         </tr>
                     }
                 </tbody>

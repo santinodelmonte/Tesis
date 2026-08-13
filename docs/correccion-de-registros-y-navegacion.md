@@ -28,6 +28,28 @@ Reproducción y Sanidad —celo, servicio, tacto, parto, diagnóstico, tratamien
 vacunación y descorne—, con dos reglas que evitan que corregir un dato rompa otros
 tres.
 
+### 1.1 Producción entró después, y por otro motivo
+
+El razonamiento de arriba deja afuera a los dos registros de Producción —el ordeñe
+por lote y el control individual—, y por una razón que parecía buena: un ordeñe mal
+tipeado no cambia el estado de ningún animal. No la deja preñada, no la saca de una
+lista de trabajo, no adelanta un secado. Sólo cambia números.
+
+El error fue tratar "sólo cambia números" como si fuera inofensivo. Un control mal
+cargado queda **congelado**, porque las dos claves alternas —fecha y turno en el
+lote, y fecha, turno y animal en el control individual— impiden volver a cargar lo
+mismo, y sin baja no hay otro camino. Y esos números no son decorativos: de los
+controles individuales salen la producción de la lactancia, la proyección a 305
+días, el ranking de lactancias en curso y el criterio *"produce menos del 70 % del
+promedio del rodeo"* de las candidatas a descarte. Un cero de más, que pasa la
+validación sin problemas porque el tope por control son 100 litros, mete o saca una
+vaca de la lista de descarte. Eso sí es una consecuencia sobre el animal.
+
+`ModificarOrdenieLote` ya existía por exactamente ese argumento —está escrito en su
+propio comentario—, pero se había resuelto sólo para el lote. Ahora la corrección
+cubre los dos registros de Producción, y con la misma forma que los otros ocho:
+listado, botones de editar y eliminar, confirmación que dice qué se va a borrar.
+
 ## 2. Las dos reglas
 
 ### 2.1 El estado derivado no se deshace: se vuelve a deducir
@@ -77,6 +99,8 @@ en el que se acuerda de lo que hizo.
 | Tratamiento | nada: nunca se bloquea |
 | Vacunación | nada: nunca se bloquea |
 | Descorne | nada: nunca se bloquea |
+| Ordeñe por lote | nada: nunca se bloquea |
+| Control individual | nada: nunca se bloquea |
 
 La única excepción a "nada en cascada" es el parto, y es deliberada: deshacerlo
 paso a paso significaría que el usuario diera de baja las crías a mano y cerrara la
@@ -99,6 +123,8 @@ ya no es un error de carga reciente.
 | Tratamiento | producto devuelto al stock; descarte de leche recalculado; estado del diagnóstico de origen |
 | Vacunación | dosis devuelta al stock |
 | Descorne | nada; el animal vuelve a figurar pendiente en el plan de descorne |
+| Ordeñe por lote | nada; los controles individuales de ese turno quedan sin lote |
+| Control individual | nada; producción de la lactancia e indicadores se rehacen solos |
 
 Todo eso va dentro de una misma transacción que la del borrado o la modificación.
 Un servicio eliminado a medias dejaría una vaca servida que no lo está, o una
@@ -122,6 +148,35 @@ marzo era el que era, y para eso el error y su corrección tienen que estar los 
 El contra-movimiento va sin fecha de vencimiento a propósito: no es una partida
 nueva que entra al depósito, es producto que en realidad nunca salió, y sin
 vencimiento no aparece en las alertas de CU28.
+
+### 3.3 En Producción se corrigen los litros y nada más
+
+Las dos correcciones de Producción tocan un solo campo: los litros. Lo demás
+—fecha, turno, y el animal en el control individual— es la **clave alterna** de cada
+registro. Cambiarla no es corregir ese registro, es cargar otro distinto, y además
+obligaría a revalidar contra el duplicado que la clave alterna justamente impide.
+
+El caso real que queda del otro lado —"anoté el control en la vaca de al lado", "el
+turno lo cargué con la fecha de ayer"— se resuelve con la **baja**, y se resuelve
+mejor: es lo que la persona entiende que tiene que deshacer, y deja la pantalla de
+carga como el único lugar donde se elige animal, fecha y turno.
+
+### 3.4 La baja del lote no se lleva los controles del turno
+
+Es la única cascada de Producción, y es una cascada que no borra nada. Al eliminar
+un ordeñe por lote, los controles individuales de ese turno quedan con
+`id_ordenie_lote` en nulo en lugar de irse con él.
+
+El motivo es que son mediciones válidas por sí solas: lo que dio esa vaca en ese
+turno se midió y sigue siendo cierto aunque el total del tanque se haya cargado mal.
+Nulo además no es un estado inventado para esta baja: es exactamente el estado en el
+que nace todo control cargado antes que el total del ordeñe, que es el caso normal el
+día del control lechero. El turno pasa a contarse como "anotado únicamente vaca por
+vaca", que es lo que efectivamente quedó.
+
+Las tres escrituras —poner la foránea en nulo, borrar el detalle de animales y borrar
+la cabecera— van en una sola transacción: a medias quedarían controles apuntando a un
+turno que ya no existe.
 
 ## 4. Cambio en la base: `tratamientos.cantidad_insumo`
 
@@ -208,6 +263,8 @@ que esa fila propone.
 | `ListaDescornes` | nueva; ídem |
 | `ListaDiagnosticos` | queda solo con diagnósticos: mostraba las cuatro tablas de Sanidad |
 | `Registrar*` (7 pantallas) | las mismas pantallas dan de alta y corrigen, según reciban o no un identificador |
+| `OrdenieIndividual` | ídem: da de alta y corrige; deja de ser entrada del menú (ver 6.4) |
+| `HistorialProduccion` | se lleva los botones de editar y eliminar de los dos registros de Producción |
 
 La ficha sanitaria completa de un animal —diagnósticos, tratamientos, vacunaciones
 y descornes juntos— sigue estando donde corresponde, que es el detalle del animal.
@@ -220,6 +277,41 @@ selector de animal y la misma validación. El alta del parto, en cambio, carga
 además las crías con su caravana, su raza y su foto, y esas ya son animales del
 rodeo que se corrigen desde Animales. Por eso `ModificarParto` es una pantalla
 aparte, como `ModificarAnimal` y `ModificarOrdenieLote`.
+
+### 6.4 "Ordeñe individual" y "Control lechero" eran el mismo caso de uso
+
+El menú de Producción tenía las dos como entradas hermanas, al mismo nivel y con
+nombres que suenan a conceptos distintos. No lo son: las dos pantallas construyen un
+`OrdenieIndividual` y lo guardan con `AltaOrdenieIndividual`, la misma regla y la
+misma tabla. No hay un solo campo de diferencia en lo que queda persistido. Lo único
+que cambia es cuántas vacas se cargan de una vez.
+
+Eso ya estaba dicho en `tablero-indicadores-y-listas-de-trabajo.md`, donde la carga
+masiva figura como *"una variante de CU9 [que] puede escribirse como curso
+alternativo"*. El menú contradecía al documento, y de paso a la regla de este mismo
+capítulo: una entrada por entidad.
+
+Los tres roles que **sí** son distintos, y así conviene nombrarlos, son:
+
+| | Qué es | Nivel |
+|---|---|---|
+| Ordeñe por lote (CU8) | la leche que salió del tambo, tal como se lee del tanque | establecimiento |
+| Control lechero (CU9) | cuánto dio cada vaca en un turno medido | animal |
+| Carga masiva vs. de a una | dos formularios para CU9, no dos conceptos | pantalla |
+
+Vale la pena notar que el control lechero no mide "leche vendible": a una vaca en
+tratamiento se la mide igual, aunque esa leche se descarte. Es medición del animal,
+no del tanque. Por eso el par lote/individual no se suma dentro de un mismo turno,
+que es lo que ya explica `desvios-modulos-2-y-3.md`.
+
+**Lo que se hizo.** La entrada del menú es **Control lechero**, y es la carga masiva:
+el control se hace una vez por mes y se miden todas las vacas el mismo día, así que
+ése es el camino normal. La carga de a una vaca —renombrada "Control de una vaca"—
+se llega desde adentro del control lechero y desde la ficha del animal, que es donde
+aparece el caso que la justifica: la vaca que faltó, una medición suelta, una carga
+retroactiva. Y se fue el botón "Ordeñe Individual" que colgaba de la pantalla del
+ordeñe por lote, que era un acceso repetido entre dos pantallas que ni siquiera
+registran lo mismo.
 
 ---
 
@@ -251,3 +343,10 @@ Casos que conviene probar a mano porque no salen de un flujo normal:
    abierta y que la vaca vuelve a la categoría que tenía.
 4. Intentar eliminar un servicio con tactos y un diagnóstico con tratamientos, para
    comprobar que el mensaje dice qué hay que sacar primero.
+5. Corregir los litros de un control individual y verificar que la producción de la
+   lactancia y la proyección a 305 días de la ficha del animal cambian con él.
+6. Eliminar un ordeñe por lote y verificar que los controles individuales de ese
+   turno **siguen estando**, y que el turno pasa a figurar en el aviso de "anotado
+   únicamente vaca por vaca" del historial.
+7. Eliminar un control individual y volver a cargarlo con la misma fecha y turno,
+   que antes la clave alterna impedía.

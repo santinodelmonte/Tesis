@@ -147,6 +147,52 @@ namespace Tesis.Persistencia
             }
         }
 
+        // La baja del ordenie del turno. Los controles individuales de ese turno NO se
+        // borran: son mediciones de cada vaca, validas por si solas, y lo unico que
+        // pierden es el enganche con el total del tanque. Por eso la foranea se pone en
+        // nulo -que es el mismo estado en el que nace un control cargado antes que el
+        // lote- en lugar de arrastrarlos.
+        //
+        // Las tres escrituras van juntas: un lote borrado a medias dejaria controles
+        // apuntando a un turno que ya no existe.
+        public bool EliminarOrdenieLote(int pIdOrdenieLote)
+        {
+            Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            {
+                { "@id_ordenie_lote", pIdOrdenieLote }
+            };
+
+            using (MySqlConnection conexion = Conexion.AbrirConexion())
+            {
+                using (MySqlTransaction transaccion = conexion.BeginTransaction())
+                {
+                    try
+                    {
+                        Conexion.EjecutarComandoEnTransaccion(
+                            "UPDATE ordenies_individual SET id_ordenie_lote = NULL " +
+                            "WHERE id_ordenie_lote = @id_ordenie_lote",
+                            parametros, conexion, transaccion);
+
+                        Conexion.EjecutarComandoEnTransaccion(
+                            "DELETE FROM ordenie_lote_animales WHERE id_ordenie_lote = @id_ordenie_lote",
+                            parametros, conexion, transaccion);
+
+                        Conexion.EjecutarComandoEnTransaccion(
+                            "DELETE FROM ordenies_lote WHERE id_ordenie_lote = @id_ordenie_lote",
+                            parametros, conexion, transaccion);
+
+                        transaccion.Commit();
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        transaccion.Rollback();
+                        throw new Exception("Error al eliminar el ordeñe del lote", e);
+                    }
+                }
+            }
+        }
+
         private OrdenieLote BuscarEnLista(List<OrdenieLote> pLista, int pIdOrdenieLote)
         {
             foreach (OrdenieLote unOrdenie in pLista)

@@ -317,6 +317,15 @@ necesitó:
 - `SumarLitrosIndividualesDelTurno(pFecha, pTurno)` — para descontar del total del tanque.
 - `ModificarOrdenieLote(pIdOrdenieLote, pLitrosTotales, pAnimales)` — corrección del
   ordeñe ya cargado.
+- `ValidarEliminarOrdenieLote(pIdOrdenieLote)` y `EliminarOrdenieLote(pIdOrdenieLote)` —
+  la baja del ordeñe del turno, que la corrección no cubre: fecha y turno son clave
+  alterna y no se reescriben.
+- `ValidarModificarOrdenieIndividual(pIdOrdenieInd, pLitros)` y
+  `ModificarOrdenieIndividual(pIdOrdenieInd, pLitros)` — corrección de los litros de un
+  control ya cargado.
+- `ValidarEliminarOrdenieIndividual(pIdOrdenieInd)` y
+  `EliminarOrdenieIndividual(pIdOrdenieInd)` — la baja del control, que es como se
+  arregla el control anotado en la vaca equivocada.
 - `ValidarServicio(pServicio)` — devuelve el motivo por el que el servicio no se
   puede registrar, para que la pantalla informe cuál de las reglas de CU15 falló.
 - `ServicioVigente(pHembra)` — ver D6.

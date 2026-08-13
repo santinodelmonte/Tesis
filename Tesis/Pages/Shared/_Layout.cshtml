@@ -56,8 +56,9 @@
             Items = new[]
             {
                 new { Texto = "Ordeñe por lote", Paginas = new[] { "/PagesProduccion/OrdenieLote", "/PagesProduccion/ModificarOrdenieLote" } },
-                new { Texto = "Ordeñe individual", Paginas = new[] { "/PagesProduccion/OrdenieIndividual" } },
-                new { Texto = "Control lechero", Paginas = new[] { "/PagesProduccion/ControlLechero" } },
+                // El control lechero y la carga de a una vaca son el mismo CU9: la
+                // entrada es la carga masiva y la puntual se llega desde adentro.
+                new { Texto = "Control lechero", Paginas = new[] { "/PagesProduccion/ControlLechero", "/PagesProduccion/OrdenieIndividual" } },
                 new { Texto = "Lactancias", Paginas = new[] { "/PagesProduccion/ListaLactancias", "/PagesProduccion/AltaLactancia", "/PagesProduccion/RegistrarSecado" } },
                 new { Texto = "Historial de producción", Paginas = new[] { "/PagesProduccion/HistorialProduccion" } },
                 new { Texto = "Métrica mensual", Paginas = new[] { "/PagesProduccion/MetricaMensual" } }
