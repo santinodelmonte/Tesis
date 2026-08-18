@@ -1,6 +1,6 @@
 namespace Tesis.Dominio
 {
-    // Una fila del calendario sanitario (CU23): el procedimiento que un plan le exige
+    // Una fila del calendario sanitario (CU31): el procedimiento que un plan le exige
     // a un animal y todavia no se registro.
     //
     // No tiene tabla ni figura en el Modelo Entidad-Relacion, y no debe tenerla: el

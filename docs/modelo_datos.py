@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Secciones 2.2.5.2, 2.2.5.3 y 2.2.5.4 del Proyecto, derivadas de bd/tambo.sql.
+"""Secciones 2.2.5.2, 2.2.5.3 y 2.2.5.4 del Proyecto, derivadas de bd/CreacionDb.sql.
 
 La normalizacion, la tabla de claves y las restricciones de integridad se arman
 leyendo el DDL. Lo unico escrito a mano son las observaciones: el resto -tipos,
@@ -198,7 +198,7 @@ def integridad():
 def main():
     destino = os.path.join(AQUI, 'modelo-datos-v6.md')
     p = ['# 2.2.5 Modelo de Datos — v6\n',
-         'Generado desde `bd/tambo.sql` por `modelo_datos.py`. No editar a mano.\n',
+         'Generado desde `bd/CreacionDb.sql` por `modelo_datos.py`. No editar a mano.\n',
          '## 2.2.5.2 Normalización\n']
     for nombre, columnas in normalizacion():
         p.append('- **%s** = {%s}' % (nombre, ', '.join(columnas)))

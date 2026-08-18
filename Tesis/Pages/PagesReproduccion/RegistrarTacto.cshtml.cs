@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesReproduccion
 {
-    // CU16 - Registrar Tacto y Confirmacion de Preniez.
+    // CU22 - Registrar Tacto y Confirmacion de Preniez.
     //
     // La misma pantalla da de alta y corrige. En el alta el tacto se asienta sobre el
     // servicio vigente de la hembra, que es lo que el caso de uso pide; en la

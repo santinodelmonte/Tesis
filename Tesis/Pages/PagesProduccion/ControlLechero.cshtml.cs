@@ -4,14 +4,14 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesProduccion
 {
-    // Carga masiva del control lechero (CU9).
+    // Carga masiva del control lechero (CU13).
     //
     // El control se hace una vez por mes y se miden todas las vacas en ordeñe el mismo
     // dia. Cargarlas de a una, eligiendo la caravana cada vez, es media hora de clics:
     // esta pantalla muestra la lista completa con una columna de litros y guarda de una
     // sola vez las que tengan valor.
     //
-    // Cada control se guarda por separado a traves de la misma regla de CU9, asi que si
+    // Cada control se guarda por separado a traves de la misma regla de CU13, asi que si
     // una fila falla -por ejemplo, porque esa vaca ya tenia control ese dia y turno- las
     // demas se guardan igual y la pantalla informa cuales quedaron afuera.
     public class ControlLecheroModel : PageModel

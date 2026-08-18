@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesProduccion
 {
-    // CU10 - Consultar Historial de Produccion y Lactancias.
+    // CU14 - Consultar Historial de Produccion y Lactancias.
     //
     // Es ademas el listado desde el que se corrigen y se dan de baja los dos registros
     // de produccion, el ordenie por lote y el control individual. Va acá y no en las

@@ -4,9 +4,9 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesInsumo
 {
-    // CU25. El alta del insumo y el ingreso de su primera partida son un solo tramite:
+    // CU35. El alta del insumo y el ingreso de su primera partida son un solo tramite:
     // la existencia inicial entra como movimiento de stock, con su vencimiento, para
-    // que la alerta de CU28 y el historial de CU29 arranquen completos.
+    // que la alerta de CU38 y el historial de CU39 arranquen completos.
     public class AltaInsumoModel : PageModel
     {
         [BindProperty]

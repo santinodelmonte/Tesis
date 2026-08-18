@@ -3,7 +3,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesReproduccion
 {
-    // CU17 - Consultar Alertas de Parto Proximo
+    // CU23 - Consultar Alertas de Parto Proximo
     public class AlertasPartoModel : PageModel
     {
         // Se listan los servicios y no las hembras porque la fecha proyectada vive en

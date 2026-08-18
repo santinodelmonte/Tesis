@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesReproduccion
 {
-    // CU18 - Registrar Parto
+    // CU24 - Registrar Parto
     public class RegistrarPartoModel : PageModel
     {
         [BindProperty]

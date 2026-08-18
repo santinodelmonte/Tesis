@@ -1,6 +1,6 @@
 namespace Tesis.Dominio
 {
-    // Una fila de la alerta de vencimiento (CU28): la partida ingresada de un insumo
+    // Una fila de la alerta de vencimiento (CU38): la partida ingresada de un insumo
     // con lo que queda de ella.
     //
     // Igual que ProcedimientoPendiente, es un dato derivado y no se almacena. La

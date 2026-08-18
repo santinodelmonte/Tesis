@@ -1,6 +1,6 @@
 namespace Tesis.Dominio
 {
-    // Procedimiento de descorne (CU24). Es de aplicacion unica: una vez registrado,
+    // Procedimiento de descorne (CU32). Es de aplicacion unica: una vez registrado,
     // el plan de descorne deja de exigirlo para ese animal.
     public class Descorne
     {

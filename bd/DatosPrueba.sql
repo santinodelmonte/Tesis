@@ -21,10 +21,10 @@
 -- atrasado, tres vacas para servicio, un ternero sin descornar, dos
 -- insumos bajo el minimo y dos partidas por vencer.
 --
--- Requiere que bd/tambo.sql ya haya corrido: usa las razas, las
+-- Requiere que bd/CreacionDb.sql ya haya corrido: usa las razas, las
 -- categorias y la fila de configuracion que ese script deja cargadas.
 --
---     mysql -u root -p < bd/tambo_datos_prueba.sql
+--     mysql -u root -p < bd/DatosPrueba.sql
 --
 -- Se puede volver a correr: empieza vaciando las tablas de datos, sin
 -- tocar razas, categorias ni configuracion.
@@ -240,7 +240,7 @@ INSERT INTO movimientos_stock (tipo_movimiento, cantidad, fecha, fecha_vencimien
 -- El plan es la regla, no la aplicacion. periodicidad_dias en nulo marca
 -- el procedimiento que se aplica una sola vez en la vida del animal: la
 -- brucelosis y el descorne. El descorne ademas va sin insumo, que es el
--- curso alternativo 4c de CU22.
+-- curso alternativo 4c de CU30.
 -- =====================================================================
 
 INSERT INTO planes_sanitarios (id_plan, nombre, tipo_procedimiento, periodicidad_dias, edad_inicio_meses, activo, id_insumo) VALUES
@@ -253,7 +253,7 @@ INSERT INTO planes_sanitarios (id_plan, nombre, tipo_procedimiento, periodicidad
 -- ---------------------------------------------------------------------
 -- plan_categorias
 -- El plan de aftosa no lleva ninguna fila: eso es lo que lo hace valido
--- para todo el rodeo (CU22, curso alternativo 4a). La ausencia de fila es
+-- para todo el rodeo (CU30, curso alternativo 4a). La ausencia de fila es
 -- informacion, no un dato que falte.
 -- ---------------------------------------------------------------------
 INSERT INTO plan_categorias (id_plan, id_categoria) VALUES
@@ -323,7 +323,7 @@ INSERT INTO ordenies_lote (id_ordenie_lote, fecha, turno, litros_totales) VALUES
 -- Que vacas integraron el lote de cada turno. Se genera cruzando los
 -- catorce ordenies con las ocho vacas en lactancia, y se excluye a la
 -- 115 (id 13) desde el 07/08: su descarte de leche esta vigente y el
--- paso 3 de CU8 la deja afuera del lote.
+-- paso 3 de CU12 la deja afuera del lote.
 -- ---------------------------------------------------------------------
 INSERT INTO ordenie_lote_animales (id_ordenie_lote, id_animal)
 SELECT ol.id_ordenie_lote, v.id_animal
@@ -342,8 +342,7 @@ WHERE NOT (v.id_animal = 13 AND ol.fecha >= '2026-08-07');
 -- anotados vaca por vaca, no una fuente de leche aparte.
 --
 --   06/07: sin lote cargado. id_ordenie_lote va en nulo y la produccion
---          de esos dos turnos es la suma de estos controles. Es el caso
---          que describe el desvio D1 de docs/desvios-modulos-2-y-3.md.
+--          de esos dos turnos es la suma de estos controles.
 --   05/08: con lote cargado. Los controles apuntan a los ordenies 5 y 6,
 --          y sus litros ya estan dentro de los litros_totales de esos dos
 --          registros: sumar las dos cosas contaria la leche dos veces.

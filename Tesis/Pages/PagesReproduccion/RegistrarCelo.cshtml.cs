@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesReproduccion
 {
-    // CU14 - Registrar Deteccion de Celo.
+    // CU20 - Registrar Deteccion de Celo.
     //
     // La misma pantalla da de alta y corrige. Con id en cero es un alta; con un
     // identificador se abre con el celo cargado y guarda encima. Es un solo formulario

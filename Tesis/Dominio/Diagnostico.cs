@@ -1,7 +1,7 @@
 namespace Tesis.Dominio
 {
     // Adelantada del Modulo 4. Es el origen del tratamiento, y el tratamiento es lo
-    // que define el periodo de descarte de leche que el paso 3 de CU8 usa para
+    // que define el periodo de descarte de leche que el paso 3 de CU12 usa para
     // excluir animales del lote de ordenie.
     public class Diagnostico
     {

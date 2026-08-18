@@ -2,7 +2,7 @@
 
 Guion para recorrer el sistema a mano. Cada flujo dice qué hay que hacer, con qué
 datos concretos y qué tiene que pasar. Los datos no son de relleno: se apoyan en el
-rodeo que carga `bd/tambo_datos_prueba.sql`, así que las pantallas quedan coherentes
+rodeo que carga `bd/DatosPrueba.sql`, así que las pantallas quedan coherentes
 después de cargarlos y se puede seguir probando encima.
 
 La fecha de referencia del juego de datos es el **09/08/2026**. Todo lo que sigue se
@@ -19,12 +19,13 @@ pueden hacer sueltos, pero en orden se lee mejor.
 
 1. Crear la base y cargar el rodeo de prueba:
 
-```powershell
-.\bd\actualizar.ps1 -DatosPrueba
+```bash
+mysql -u root -p < bd/CreacionDb.sql
 ```
 
-   O a mano: `mysql -u root -p < bd/tambo.sql` y después
-   `mysql -u root -p < bd/tambo_datos_prueba.sql`.
+```bash
+mysql -u root -p < bd/DatosPrueba.sql
+```
 
 2. Levantar el sitio:
 
@@ -682,5 +683,5 @@ Volver a correr el juego de datos borra lo cargado en estas pruebas y deja el ro
 el estado original:
 
 ```bash
-mysql -u root -p < bd/tambo_datos_prueba.sql
+mysql -u root -p < bd/DatosPrueba.sql
 ```

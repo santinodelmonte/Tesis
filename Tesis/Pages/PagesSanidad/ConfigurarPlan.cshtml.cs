@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesSanidad
 {
-    // CU22. Una sola pantalla para el alta y para la modificacion, como plantea el paso
+    // CU30. Una sola pantalla para el alta y para la modificacion, como plantea el paso
     // 3 del caso de uso: sin id llega un plan nuevo, con id se edita el existente.
     public class ConfigurarPlanModel : PageModel
     {
@@ -63,7 +63,7 @@ namespace Tesis.Pages.PagesSanidad
             PlanSanitario unPlan = this.ArmarPlan(unaControladora);
 
             // La Controladora devuelve el motivo por el que el plan no se puede
-            // guardar, para que la pantalla informe cual validacion de CU22 fallo.
+            // guardar, para que la pantalla informe cual validacion de CU30 fallo.
             string vMotivo = unaControladora.ValidarPlanSanitario(unPlan);
             if (vMotivo != "")
             {

@@ -22,7 +22,7 @@ namespace Tesis.Dominio
 
         // Animales que integraron el lote de ese turno. El Modelo Entidad-Relacion no
         // los contempla: se persisten en la tabla ordenie_lote_animales para que el
-        // paso 4 de CU8, donde el usuario ajusta la lista, deje rastro.
+        // paso 4 de CU12, donde el usuario ajusta la lista, deje rastro.
         private List<Hembra> mAnimales;
 
         public int IdOrdenieLote { get { return mIdOrdenieLote; } set { mIdOrdenieLote = value; } }

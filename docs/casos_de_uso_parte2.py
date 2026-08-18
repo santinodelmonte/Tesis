@@ -484,13 +484,15 @@ dict(
         'El sistema recupera los avisos vigentes de cada módulo: secados próximos, partos '
         'próximos, tactos pendientes, hembras para servir, procedimientos sanitarios '
         'vencidos y por vencer, insumos en stock crítico y partidas próximas a vencer.',
-        'El sistema recupera las cifras del día: producción registrada y cantidad de '
-        'animales en ordeñe.',
+        'El sistema recupera la composición del rodeo —animales activos, hembras en '
+        'lactancia, secas, preñadas y vacías— junto con los litros por vaca y por día y '
+        'los días en leche promedio.',
         'El sistema despliega cada grupo de avisos con su cantidad y el acceso directo a la '
         'pantalla que lo resuelve.',
     ],
     alternativos='3a. No hay avisos pendientes en un grupo: el sistema lo informa en lugar '
-        'de mostrar una lista vacía.',
+        'de mostrar una lista vacía. 1a. Todavía no hay ningún animal cargado: el tablero '
+        'reemplaza los avisos por la indicación de por dónde empezar la puesta en marcha.',
     excepcion='—',
     postcondicion='El usuario conoce el estado del establecimiento sin que se altere ningún '
         'registro.',

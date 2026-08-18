@@ -54,7 +54,7 @@ namespace Tesis.Persistencia
 
         // El stock_actual no se escribe desde aca: lo mueven los ingresos y los egresos,
         // que lo ajustan con la cuenta hecha en la base dentro de su propia transaccion.
-        // Lo unico que se configura a mano es el umbral (CU26).
+        // Lo unico que se configura a mano es el umbral (CU36).
         public bool ModificarStockMinimo(int pIdInsumo, double pStockMinimo)
         {
             string sql = "UPDATE insumos SET stock_minimo = @stock_minimo WHERE id_insumo = @id_insumo";

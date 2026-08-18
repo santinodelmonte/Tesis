@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesInsumo
 {
-    // CU29. Todo movimiento queda asentado, incluidos los egresos automaticos que
+    // CU39. Todo movimiento queda asentado, incluidos los egresos automaticos que
     // genera el sistema al inseminar, tratar o vacunar: el motivo dice cual fue la
     // operacion que lo origino.
     public class HistorialMovimientosModel : PageModel

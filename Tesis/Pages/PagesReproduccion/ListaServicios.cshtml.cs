@@ -28,7 +28,7 @@ namespace Tesis.Pages.PagesReproduccion
             this.CargarListado(unaControladora);
         }
 
-        // Curso alternativo 7a de CU15: el usuario ajusta la fecha probable de parto que
+        // Curso alternativo 7a de CU21: el usuario ajusta la fecha probable de parto que
         // propuso el sistema. El ajuste baja tambien a la lactancia en curso, que es de
         // donde sale la fecha recomendada de secado.
         public IActionResult OnPostAjustarFechaParto(int id)

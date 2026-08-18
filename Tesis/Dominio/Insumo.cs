@@ -1,8 +1,8 @@
 namespace Tesis.Dominio
 {
-    // Adelantada del Modulo 5. Se incorpora ahora porque CU15 registra la
+    // Adelantada del Modulo 5. Se incorpora ahora porque CU21 registra la
     // inseminacion artificial con una pajuela del stock y le descuenta una unidad,
-    // y CU20 necesita el periodo de carencia para calcular el descarte de leche.
+    // y CU28 necesita el periodo de carencia para calcular el descarte de leche.
     public class Insumo
     {
         // Tipos de insumo admitidos.

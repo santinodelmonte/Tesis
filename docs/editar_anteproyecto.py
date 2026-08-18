@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Aplica sobre Anteproyecto_v5.docx los cambios de docs/sincronizacion-anteproyecto.md.
+"""Produce Anteproyecto_v6.docx aplicando sobre el v5 los cambios de la sincronizacion.
+
+El v6 dice lo que el sistema hace: cada requerimiento que este script reescribe o
+agrega esta verificado contra Tesis/Dominio, Tesis/Persistencia, Tesis/Pages y
+bd/CreacionDb.sql. El resumen de lo que cambio esta en docs/cambios-anteproyecto-v6.md.
 
 Trabaja sobre el .docx original conservando estilos, numeraciones y formato: los
 requerimientos nuevos se crean clonando un requerimiento existente del mismo modulo,
@@ -122,9 +126,25 @@ clonar_despues(
 
 escribir(
     buscar('RF1.2'), 'RF1.2 Baja de animales:',
-    'El sistema debe permitir registrar la baja lógica de un animal, indicando la fecha '
-    'y el motivo de salida (venta, fallecimiento, descarte sanitario u otros), '
-    'conservando su historial y su lugar en el linaje del rodeo.')
+    'El sistema debe permitir registrar la baja lógica de un animal indicando el motivo '
+    'de salida (venta, fallecimiento, descarte sanitario u otros), dejando asentada la '
+    'fecha en que la baja se registra y conservando su historial y su lugar en el linaje '
+    'del rodeo.')
+
+# La verificacion no se limita al parentesco directo: recorre la ascendencia registrada
+# de los dos animales y avisa si encuentran un ancestro comun.
+escribir(
+    buscar('RF1.7'), 'RF1.7 Prevención de consanguinidad:',
+    'El sistema debe advertir el parentesco entre una hembra y un posible reproductor, '
+    'verificando si existe un ancestro común dentro de la ascendencia registrada de '
+    'ambos. La advertencia es informativa y no impide registrar el servicio.')
+
+# El macho de mas de quince meses es Toro solo si integra el rodeo como reproductor; si
+# no, es Novillo. La edad sola no alcanza para clasificarlo.
+escribir(
+    buscar('RF1.8'), 'RF1.8 Clasificación automática:',
+    'El sistema debe clasificar automáticamente a los animales: las hembras según su '
+    'edad y su número de partos, y los machos según su edad y su destino reproductivo.')
 
 escribir(
     buscar('RF1.5'), 'RF1.5 Registro genealógico:',

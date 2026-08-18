@@ -25,7 +25,7 @@ namespace Tesis.Pages.PagesSanidad
             this.CargarListado(unaControladora);
         }
 
-        // CU19: el diagnostico se cierra cuando el animal se recupera. Sin este paso una
+        // CU27: el diagnostico se cierra cuando el animal se recupera. Sin este paso una
         // afeccion ya resuelta seguiria ofreciendose para tratar.
         public IActionResult OnPostResolver(int id)
         {

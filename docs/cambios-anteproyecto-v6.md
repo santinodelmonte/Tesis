@@ -1,8 +1,10 @@
 # Anteproyecto v6 — qué cambió respecto de la v5
 
 Resumen de lo que se modificó sobre `Anteproyecto_v5.docx` para producir
-`Anteproyecto_v6.docx`. El detalle de por qué cambia cada cosa está en
-`sincronizacion-anteproyecto.md`; acá está lo que hay que mirar al abrir el documento.
+`Anteproyecto_v6.docx`: lo que hay que mirar al abrir el documento. El criterio de
+todos los cambios es el mismo —cuando el código y el documento se contradicen, manda
+el código— y cada requerimiento reescrito está verificado contra el sistema
+construido.
 
 El archivo se editó sobre el `.docx` original, conservando estilos, numeraciones,
 encabezados, imágenes y tablas. El script que aplica los cambios quedó en
@@ -61,12 +63,14 @@ De 55 requerimientos se pasó a 74, en siete módulos en lugar de seis: 20 nuevo
 | RF6.3 | Candidatas a descarte |
 | RF6.4 | Buscador de caravana |
 
-### Requerimientos corregidos (11)
+### Requerimientos corregidos (13)
 
 | | Qué decía | Qué dice |
 |---|---|---|
-| RF1.2 | baja lógica **o definitiva** | sólo baja lógica, con fecha y motivo |
+| RF1.2 | baja lógica **o definitiva** | sólo baja lógica: el usuario elige el motivo y el sistema asienta la fecha del día |
 | RF1.5 | padre y madre **obligatorios** | opcionales: admite que no estén registrados |
+| RF1.7 | advierte el **parentesco directo** | busca un **ancestro común** en la ascendencia registrada de los dos |
+| RF1.8 | los machos se clasifican **por edad** | por edad **y destino reproductivo**: el macho de más de quince meses es Toro sólo si está en pie |
 | RF1.9 | actualización **automática** de categoría | recalcula y señala; automática al registrarse un parto |
 | RF1.10 | caravana, categoría, estado, edad | agrega **raza** |
 | RF2.1 | dos requerimientos, uno por turno | uno solo, para la cantidad de turnos configurada |
@@ -85,7 +89,9 @@ RF6.1–RF6.7 renumerados a RF7.1–RF7.7. Es la única renumeración: los módu
 5 conservan la numeración de la v5.
 
 **Esto impacta en el Proyecto**: cada caso de uso referencia sus requerimientos por
-número. La actualización de esas referencias es parte de la segunda etapa.
+número, y los cuarenta y nueve casos de uso de la v6 ya citan la numeración nueva. La
+correspondencia entre una numeración y la otra está en `catalogo-casos-de-uso.md`, y
+los comentarios del código citan los casos de uso con la numeración v6.
 
 ## Requerimientos no funcionales
 
@@ -128,3 +134,51 @@ Nada bloqueante, pero conviene decidirlo antes de la entrega:
 2. **La portada** dice "Abril 2026". Si la v6 se entrega, corresponde revisar la fecha.
 3. **El cronograma de trabajo** (sección propia) no se tocó. Si el orden real de las
    iteraciones lo desactualizó, avisame y lo ajustamos.
+
+---
+
+## Cómo se regenera
+
+El documento no se edita a mano: sale de correr el script sobre el v5, que es la
+fuente. Cualquier corrección va al script, no al `.docx`.
+
+```bash
+python docs/editar_anteproyecto.py
+```
+
+El Proyecto se regenera igual, después de los diagramas y de las secciones derivadas:
+
+```bash
+python docs/render_casos_de_uso.py
+```
+
+```bash
+python docs/modelo_datos.py
+```
+
+```bash
+python docs/diccionario_clases.py
+```
+
+```bash
+python docs/diagramas/generar_mer.py
+```
+
+```bash
+python docs/diagramas/generar_dominio.py
+```
+
+```bash
+python docs/diagramas/generar_casos_de_uso.py
+```
+
+```bash
+python docs/diagramas/generar_secuencia.py
+```
+
+```bash
+python docs/editar_proyecto.py
+```
+
+Los diagramas necesitan un conversor de SVG a PNG: `cairosvg` si la máquina tiene la
+biblioteca cairo, y si no `pymupdf`, que trae la suya (`pip install pymupdf`).

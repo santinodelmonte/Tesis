@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesSanidad
 {
-    // CU21. La aplicacion descuenta la dosis del stock y declara, si corresponde, que
+    // CU29. La aplicacion descuenta la dosis del stock y declara, si corresponde, que
     // plan sanitario da por cumplido: sin esa declaracion el calendario tendria que
     // adivinarlo a partir del insumo, y dos planes distintos pueden usar la misma
     // vacuna.

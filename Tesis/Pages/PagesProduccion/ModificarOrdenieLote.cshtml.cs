@@ -6,7 +6,7 @@ namespace Tesis.Pages.PagesProduccion
 {
     // Correccion de un ordenie por lote ya cargado.
     //
-    // No sale de ningun caso de uso: CU8 sólo registra. Hace falta porque la fecha y el
+    // No sale de ningun caso de uso: CU12 sólo registra. Hace falta porque la fecha y el
     // turno son clave alterna -no se puede volver a cargar el mismo turno- y un error
     // de tipeo en los litros quedaba fijo para siempre.
     public class ModificarOrdenieLoteModel : PageModel

@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesProduccion
 {
-    // CU12 - Registrar Periodo de Secado Manual
+    // CU16 - Registrar Periodo de Secado Manual
     public class RegistrarSecadoModel : PageModel
     {
         [BindProperty]

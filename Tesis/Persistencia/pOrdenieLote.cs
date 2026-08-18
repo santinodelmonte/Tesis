@@ -46,7 +46,7 @@ namespace Tesis.Persistencia
 
         // La cabecera y el detalle de animales van en una misma transaccion: un lote
         // sin sus animales no deja constancia de que vacas se ordeniaron, que es
-        // justamente lo que pide el paso 4 de CU8.
+        // justamente lo que pide el paso 4 de CU12.
         public bool AltaOrdenieLote(OrdenieLote pOrdenieLote)
         {
             string sql = "INSERT INTO ordenies_lote (fecha, turno, litros_totales) " +

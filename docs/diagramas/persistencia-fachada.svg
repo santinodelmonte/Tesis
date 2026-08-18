@@ -1,11 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="490" viewBox="0 0 720 490">
-<defs><marker id="punta" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#40484f" stroke-width="1.2"/></marker></defs>
 <rect width="100%" height="100%" fill="#ffffff"/>
 <text x="360.0" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Diagrama de Persistencia — fachada pControladora</text>
-<line x1="410.0" y1="101.0" x2="350.0" y2="221.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
-<line x1="350.0" y1="221.0" x2="410.0" y2="204.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="410.0" y1="101.0" x2="350.0" y2="221.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 351.1 210.8 L 350.0 221.0 L 357.5 214.0" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<line x1="350.0" y1="221.0" x2="410.0" y2="204.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 401.7 210.1 L 410.0 204.0 L 399.8 203.2" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="372.8" y="206.5" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">delega en</text>
-<line x1="550.0" y1="243.0" x2="550.0" y2="276.0" stroke="#40484f" stroke-width="1.2" marker-end="url(#punta)"/>
+<line x1="550.0" y1="243.0" x2="550.0" y2="276.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 546.4 266.4 L 550.0 276.0 L 553.6 266.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="550.0" y="247.5" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">ejecuta</text>
 <rect x="30.0" y="56.0" width="320.0" height="330.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
 <path d="M 31.0 80.0 h 318.0 v -22.0 h -318.0 Z" fill="#f4f6f8"/>

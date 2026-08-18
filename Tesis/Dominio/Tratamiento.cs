@@ -1,8 +1,8 @@
 namespace Tesis.Dominio
 {
-    // Tratamiento sanitario aplicado a un animal (CU20). fecha_fin_descarte es lo que
+    // Tratamiento sanitario aplicado a un animal (CU28). fecha_fin_descarte es lo que
     // mira el Modulo 2: mientras no venza, la hembra tratada queda fuera del lote de
-    // ordenie (CU8, paso 3).
+    // ordenie (CU12, paso 3).
     //
     // mAnimal no figura en el Diccionario de Clases. Se agrega porque el diagnostico
     // -el unico vinculo que el modelo preveia- es opcional: el tratamiento preventivo

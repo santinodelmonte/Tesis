@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesSanidad
 {
-    // Adelantado del Modulo 4 (CU19). Es el origen del tratamiento, y el tratamiento es
+    // Adelantado del Modulo 4 (CU27). Es el origen del tratamiento, y el tratamiento es
     // lo que define el periodo de descarte de leche.
     //
     // La misma pantalla da de alta y corrige: con id en cero es un alta, con un

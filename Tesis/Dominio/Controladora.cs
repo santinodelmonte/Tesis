@@ -48,7 +48,7 @@ namespace Tesis.Dominio
         public const int ORDENIES_POR_DIA = 2;
 
         // Constantes de los modulos 4 y 5. El documento tampoco las fija con numeros:
-        // CU23 habla de "horizonte de anticipacion" y CU28 de "ventana de anticipacion"
+        // CU31 habla de "horizonte de anticipacion" y CU38 de "ventana de anticipacion"
         // sin decir de cuantos dias.
         //
         // El mes es el margen con el que se planifica en el establecimiento: alcanza
@@ -58,7 +58,7 @@ namespace Tesis.Dominio
         public const int DIAS_ANTICIPACION_SANITARIA = 30;
         public const int DIAS_ANTICIPACION_VENCIMIENTO = 30;
 
-        // Cada aplicacion consume una dosis del biologico (CU21, paso 6).
+        // Cada aplicacion consume una dosis del biologico (CU29, paso 6).
         public const double UNIDADES_POR_VACUNACION = 1;
 
         // Edad a la que la vaquillona empieza a manifestar celo. Es anterior a la edad
@@ -486,7 +486,7 @@ namespace Tesis.Dominio
         }
 
         // Ademas de los datos del animal recibe los de su especializacion: el numero
-        // de partos de la hembra y el en pie del macho, que CU3 pide poder corregir
+        // de partos de la hembra y el en pie del macho, que CU5 pide poder corregir
         // y que ademas determinan la categoria.
         //
         // La foto llega ya resuelta: la pantalla manda el nombre del archivo nuevo si
@@ -848,7 +848,7 @@ namespace Tesis.Dominio
                     + "Es correcto si la cria vino de una pajuela suya.");
             }
 
-            // Padre y madre emparentados: la cria nace consanguinea (CU6)
+            // Padre y madre emparentados: la cria nace consanguinea (CU9)
             if (pMadre != null && pPadre != null && this.VerificarConsanguinidad(pMadre, pPadre))
             {
                 _listaAdvertencias.Add("Los progenitores tienen parentesco entre si: "
@@ -1480,7 +1480,7 @@ namespace Tesis.Dominio
                 mListaLactancias.Add(pLactanciaNueva);
 
                 // Abrir la lactancia es ponerla en ordenie: sin esto la vaca no entra
-                // en el lote de CU8 ni admite el control individual de CU9.
+                // en el lote de CU12 ni admite el control individual de CU13.
                 if (pLactanciaNueva.Animal.EstadoProductivo != Hembra.EN_LACTANCIA)
                 {
                     this.ModificarEstadoProductivo(pLactanciaNueva.Animal.IdAnimal, Hembra.EN_LACTANCIA);
@@ -1510,7 +1510,7 @@ namespace Tesis.Dominio
                 pLactancia.FechaInicio, pFechaSecado, pFechaProbableParto, pLactancia.Animal);
         }
 
-        // CU12. Cierra la lactancia vigente y pasa la hembra a seca. El estado
+        // CU16. Cierra la lactancia vigente y pasa la hembra a seca. El estado
         // reproductivo no se toca: una hembra seca puede estar prenada, y de hecho es
         // lo habitual.
         public bool RegistrarSecado(string pNumCaravana, DateTime pFecha)
@@ -1567,7 +1567,7 @@ namespace Tesis.Dominio
             return unaLactancia.FechaProbableParto.AddDays(-this.Parametros().DiasSecadoAntesParto);
         }
 
-        // CU13. Vacas en produccion que ya entraron en la ventana critica para iniciar
+        // CU17. Vacas en produccion que ya entraron en la ventana critica para iniciar
         // el secado.
         public List<Hembra> ListarAlertasSecado()
         {
@@ -1672,7 +1672,7 @@ namespace Tesis.Dominio
 
         }
 
-        // CU8, pasos 2 y 3: las hembras en lactancia, menos las que estan dentro de un
+        // CU12, pasos 2 y 3: las hembras en lactancia, menos las que estan dentro de un
         // periodo de descarte de leche vigente.
         public List<Hembra> ListarAnimalesParaOrdenie()
         {
@@ -1689,7 +1689,7 @@ namespace Tesis.Dominio
         }
 
         // Las que quedaron afuera por descarte. La pantalla las muestra aparte porque
-        // el curso alternativo 3a de CU8 permite incluirlas a mano.
+        // el curso alternativo 3a de CU12 permite incluirlas a mano.
         public List<Hembra> ListarHembrasEnDescarte()
         {
             List<Hembra> _listaEnDescarte = new List<Hembra>();
@@ -1907,7 +1907,7 @@ namespace Tesis.Dominio
             return null;
         }
 
-        // CU9. Se imputa a la lactancia vigente de la hembra y, si el ordenie del lote
+        // CU13. Se imputa a la lactancia vigente de la hembra y, si el ordenie del lote
         // de esa fecha y turno ya esta cargado, queda ademas enganchado a el.
         public bool AltaOrdenieIndividual(OrdenieIndividual pOrdenie)
         {
@@ -2139,7 +2139,7 @@ namespace Tesis.Dominio
             return _listaXFecha;
         }
 
-        // CU10. Las tres modalidades del historial. En "Totales" se suman las dos
+        // CU14. Las tres modalidades del historial. En "Totales" se suman las dos
         // fuentes sin miedo a duplicar: los litros del control individual no estan
         // incluidos en los del lote.
         // Las dos formas de mirar la produccion. No son dos sumandos: el ordenie por
@@ -2182,7 +2182,7 @@ namespace Tesis.Dominio
             return vTotal;
         }
 
-        // CU11. El mes calendario completo, sumando obligatoriamente las dos fuentes.
+        // CU15. El mes calendario completo, sumando obligatoriamente las dos fuentes.
         public double CalcularProduccionMensual(int pMes, int pAnio)
         {
             DateTime vDesde = new DateTime(pAnio, pMes, 1);
@@ -2289,7 +2289,7 @@ namespace Tesis.Dominio
         // despues de la correccion, o nulo si no cambia. La fecha es la del servicio
         // vigente cuando la hembra queda prenada, y ninguna cuando no.
         //
-        // Es de donde CU13 saca la fecha recomendada de secado. Una correccion que la
+        // Es de donde CU17 saca la fecha recomendada de secado. Una correccion que la
         // dejara vieja secaria vacas por una preniez que ya no existe, o dejaria de
         // avisar por una que si.
         private Lactancia LactanciaRecalculada(Hembra pHembra, int pIdServicioIgnorado,
@@ -2328,7 +2328,7 @@ namespace Tesis.Dominio
         //
         // Es un ingreso sin fecha de vencimiento a proposito: no es una partida nueva
         // que entra al deposito, es producto que en realidad nunca salio. Sin
-        // vencimiento no aparece en las alertas de CU28, que es lo correcto, porque el
+        // vencimiento no aparece en las alertas de CU38, que es lo correcto, porque el
         // producto sigue estando en el envase de la partida original.
         //
         // El egreso original no se borra. El historial de movimientos tiene que poder
@@ -2493,7 +2493,7 @@ namespace Tesis.Dominio
             return null;
         }
 
-        // CU14. La validacion de que el animal sea hembra ya quedo resuelta al armar el
+        // CU20. La validacion de que el animal sea hembra ya quedo resuelta al armar el
         // objeto: Celo solo admite una Hembra.
         // Devuelve el motivo por el que el celo no se puede registrar, o una cadena
         // vacia si esta bien.
@@ -2693,7 +2693,7 @@ namespace Tesis.Dominio
             return null;
         }
 
-        // CU15. El reproductor es uno solo: el toro del rodeo y la pajuela son
+        // CU21. El reproductor es uno solo: el toro del rodeo y la pajuela son
         // mutuamente excluyentes. Devuelve el motivo por el que el servicio no se puede
         // registrar, o una cadena vacia si esta bien.
         public string ValidarServicio(Servicio pServicio)
@@ -2825,7 +2825,7 @@ namespace Tesis.Dominio
             }
 
             // Parentesco entre la hembra y el reproductor, sea el toro del rodeo o el
-            // que aporto la pajuela (CU6). La cria nace consanguinea.
+            // que aporto la pajuela (CU9). La cria nace consanguinea.
             Macho unReproductor = this.ToroDelServicio(pServicio);
             if (unReproductor != null && this.VerificarConsanguinidad(pServicio.Animal, unReproductor))
             {
@@ -2863,7 +2863,7 @@ namespace Tesis.Dominio
 
         }
 
-        // Curso alternativo 7a de CU15: el usuario ajusta la fecha probable de parto que
+        // Curso alternativo 7a de CU21: el usuario ajusta la fecha probable de parto que
         // propuso el sistema. Es la correccion mas frecuente y por eso el listado la
         // ofrece a mano, pero por dentro es la correccion completa dejando el resto de
         // los campos como estaban.
@@ -3204,7 +3204,7 @@ namespace Tesis.Dominio
             return _listaXFechaParto;
         }
 
-        // CU17. Hembras prenadas cuya fecha probable de parto entra en la ventana de
+        // CU23. Hembras prenadas cuya fecha probable de parto entra en la ventana de
         // alerta. Se devuelven los servicios y no las hembras porque la pantalla
         // necesita mostrar la fecha proyectada, que vive en el servicio.
         public List<Servicio> ListarAlertasParto()
@@ -3301,9 +3301,9 @@ namespace Tesis.Dominio
             return unUltimoTacto;
         }
 
-        // CU16. El tacto mueve el estado reproductivo y nunca el productivo: una vaca en
+        // CU22. El tacto mueve el estado reproductivo y nunca el productivo: una vaca en
         // lactancia confirmada prenada sigue produciendo. Con resultado positivo, ademas,
-        // baja la fecha probable de parto a la lactancia en curso, que es de donde CU13
+        // baja la fecha probable de parto a la lactancia en curso, que es de donde CU17
         // saca la fecha recomendada de secado.
         public bool AltaTacto(Tacto pTacto)
         {
@@ -3628,7 +3628,7 @@ namespace Tesis.Dominio
             return _listaAdvertencias;
         }
 
-        // CU18. El parto actua sobre los dos ejes a la vez: cierra el ciclo reproductivo
+        // CU24. El parto actua sobre los dos ejes a la vez: cierra el ciclo reproductivo
         // devolviendo la hembra a vacia e inicia el productivo llevandola a lactancia.
         // Ademas da de alta la cria y abre la lactancia nueva.
         // Recibe una lista de crias y no una sola: alrededor del cuatro por ciento de
@@ -4202,7 +4202,7 @@ namespace Tesis.Dominio
         #endregion
 
         #region INSUMOS
-        // Modulo 5: Control de Insumos y Stock (CU25 a CU29).
+        // Modulo 5: Control de Insumos y Stock (CU35 a CU39).
         //
         // El stock disponible se guarda en insumos.stock_actual y lo mueven los
         // ingresos de partida y los egresos automaticos de la inseminacion, el
@@ -4260,7 +4260,7 @@ namespace Tesis.Dominio
         }
 
         // La vacunacion aplica una vacuna y no cualquier producto sanitario, asi que la
-        // pantalla de CU21 ofrece solo ese tipo.
+        // pantalla de CU29 ofrece solo ese tipo.
         public List<Insumo> ListarInsumosXTipo(string pTipoInsumo)
         {
             List<Insumo> _listaXTipo = new List<Insumo>();
@@ -4275,7 +4275,7 @@ namespace Tesis.Dominio
             return _listaXTipo;
         }
 
-        // CU25, paso 3: el usuario declara si el insumo es nuevo o si repone uno
+        // CU35, paso 3: el usuario declara si el insumo es nuevo o si repone uno
         // existente. El mismo producto no se da de alta dos veces; la segunda compra
         // entra como partida del insumo que ya existe.
         public bool ExisteInsumo(string pNombre, string pTipoInsumo)
@@ -4324,9 +4324,9 @@ namespace Tesis.Dominio
 
         }
 
-        // CU25: el alta del insumo y el ingreso de la primera partida son un solo
+        // CU35: el alta del insumo y el ingreso de la primera partida son un solo
         // tramite. El insumo nace con stock cero y la existencia entra como movimiento,
-        // asi la partida queda con su vencimiento (CU28) y el historial de CU29 arranca
+        // asi la partida queda con su vencimiento (CU38) y el historial de CU39 arranca
         // completo. Sin esto el stock inicial seria un numero sin respaldo.
         public bool RegistrarIngreso(Insumo pInsumoNuevo, double pCantidad, DateTime pFecha,
             DateTime pFechaVencimiento)
@@ -4377,7 +4377,7 @@ namespace Tesis.Dominio
 
         }
 
-        // CU20 y CU21 lo consultan antes de guardar: el egreso automatico no puede
+        // CU28 y CU29 lo consultan antes de guardar: el egreso automatico no puede
         // dejar el stock en negativo.
         public bool VerificarStock(int pIdInsumo, double pCantidad)
         {
@@ -4391,7 +4391,7 @@ namespace Tesis.Dominio
 
         }
 
-        // CU26. El umbral es lo unico del insumo que se configura a mano: el stock lo
+        // CU36. El umbral es lo unico del insumo que se configura a mano: el stock lo
         // mueven los movimientos.
         public bool ModificarStockMinimo(int pIdInsumo, double pStockMinimo)
         {
@@ -4420,7 +4420,7 @@ namespace Tesis.Dominio
 
         }
 
-        // CU27. La condicion se evalua contra el stock del momento, que ya viene
+        // CU37. La condicion se evalua contra el stock del momento, que ya viene
         // descontado por los egresos automaticos de la inseminacion, el tratamiento y
         // la vacunacion.
         public List<Insumo> ListarAlertasStock()
@@ -4443,7 +4443,7 @@ namespace Tesis.Dominio
             return mListaMovimientosStock;
         }
 
-        // CU29. El insumo en cero y el tipo vacio significan "todos"; las fechas en
+        // CU39. El insumo en cero y el tipo vacio significan "todos"; las fechas en
         // DateTime.MinValue, "sin limite".
         public List<MovimientoStock> FiltrarMovimientos(int pIdInsumo, string pTipoMovimiento,
             DateTime pDesde, DateTime pHasta)
@@ -4478,7 +4478,7 @@ namespace Tesis.Dominio
             return _listaFiltrada;
         }
 
-        // CU29, paso 5: el stock que quedo despues de cada movimiento. No se almacena
+        // CU39, paso 5: el stock que quedo despues de cada movimiento. No se almacena
         // -seria un derivado mas- y tampoco se reconstruye sumando desde cero, porque
         // el saldo bueno es el que tiene el insumo hoy: se le restan los movimientos
         // posteriores al que se esta mostrando.
@@ -4509,7 +4509,7 @@ namespace Tesis.Dominio
             return vStock;
         }
 
-        // CU28. Las partidas de un insumo son sus movimientos de ingreso. Como los
+        // CU38. Las partidas de un insumo son sus movimientos de ingreso. Como los
         // egresos no dicen de que partida salieron -el modelo no los vincula-, el
         // consumo se imputa a la partida que vence primero, que es el orden en el que
         // se usan los productos en el tambo. El remanente que queda es el de esa
@@ -4558,7 +4558,7 @@ namespace Tesis.Dominio
             return _listaPartidas;
         }
 
-        // CU28. Partidas vencidas y por vencer dentro del horizonte, de todos los
+        // CU38. Partidas vencidas y por vencer dentro del horizonte, de todos los
         // insumos, ordenadas por fecha de vencimiento. Las partidas agotadas y las que
         // no declaran vencimiento no alertan.
         public List<PartidaVencimiento> ListarAlertasVencimiento(int pAnticipacionDias)
@@ -4607,7 +4607,7 @@ namespace Tesis.Dominio
 
         // La cache viene ordenada por fecha descendente desde la persistencia. El
         // ingreso nuevo se inserta donde le toca y no al final, para que el historial
-        // de CU29 no muestre un movimiento fuera de lugar hasta la proxima recarga.
+        // de CU39 no muestre un movimiento fuera de lugar hasta la proxima recarga.
         private void AgregarMovimientoOrdenado(MovimientoStock pMovimiento)
         {
             int vPosicion = 0;
@@ -4663,12 +4663,12 @@ namespace Tesis.Dominio
         #endregion
 
         #region SANIDAD
-        // Modulo 4: Gestion Sanitaria (CU19 a CU24).
+        // Modulo 4: Gestion Sanitaria (CU27 a CU34).
         //
         // El diagnostico origina el tratamiento, el tratamiento define el descarte de
-        // leche que el paso 3 de CU8 usa para excluir animales del lote de ordenie, y
+        // leche que el paso 3 de CU12 usa para excluir animales del lote de ordenie, y
         // las tres aplicaciones -tratamiento, vacunacion y descorne- declaran que plan
-        // sanitario dan por cumplido. De esa declaracion sale el calendario de CU23.
+        // sanitario dan por cumplido. De esa declaracion sale el calendario de CU31.
         public List<Diagnostico> ListarDiagnosticos()
         {
             this.Refrescar();
@@ -5204,7 +5204,7 @@ namespace Tesis.Dominio
             }
         }
 
-        // CU8, paso 3. El animal queda fuera del lote mientras su descarte siga vigente.
+        // CU12, paso 3. El animal queda fuera del lote mientras su descarte siga vigente.
         //
         // El tratamiento apunta ahora al animal de forma directa, asi que el preventivo
         // -que va sin diagnostico- tambien bloquea la leche. Con el vinculo anterior,
@@ -5270,7 +5270,7 @@ namespace Tesis.Dominio
             return null;
         }
 
-        // CU21. La aplicacion descuenta una dosis del stock y declara, si corresponde,
+        // CU29. La aplicacion descuenta una dosis del stock y declara, si corresponde,
         // que plan sanitario da por cumplido. El plan tiene que ser de vacunacion: no
         // se cumple un plan de desparasitacion aplicando una vacuna.
         public bool AltaVacunacion(Vacunacion pVacunacionNueva)
@@ -5470,7 +5470,7 @@ namespace Tesis.Dominio
             return null;
         }
 
-        // CU24. El descorne es de aplicacion unica: un animal ya descornado no se
+        // CU32. El descorne es de aplicacion unica: un animal ya descornado no se
         // vuelve a descornar, y ese registro es lo que hace que el plan deje de
         // exigirlo.
         public bool AltaDescorne(Descorne pDescorneNuevo)
@@ -5674,7 +5674,7 @@ namespace Tesis.Dominio
             return mListaPlanes;
         }
 
-        // Solo los planes activos generan pendientes en el calendario (CU22, reglas de
+        // Solo los planes activos generan pendientes en el calendario (CU30, reglas de
         // negocio). Desactivar un plan es la forma de dejar de exigir un procedimiento
         // sin perder las aplicaciones ya registradas.
         public List<PlanSanitario> ListarPlanesActivos()
@@ -5719,7 +5719,7 @@ namespace Tesis.Dominio
             return null;
         }
 
-        // El nombre del plan es unico (CU22, curso de excepcion 6a). Al modificar, el
+        // El nombre del plan es unico (CU30, curso de excepcion 6a). Al modificar, el
         // propio plan no se cuenta como duplicado: por eso el id se recibe y se excluye.
         public bool ExistePlanSanitario(string pNombre, int pIdPlan)
         {
@@ -5735,7 +5735,7 @@ namespace Tesis.Dominio
         }
 
         // Devuelve el motivo por el que el plan no se puede guardar, o el string vacio
-        // si esta bien. La pantalla informa cual de las validaciones de CU22 fallo.
+        // si esta bien. La pantalla informa cual de las validaciones de CU30 fallo.
         public string ValidarPlanSanitario(PlanSanitario pPlan)
         {
             if (pPlan.Nombre == "")
@@ -5756,14 +5756,14 @@ namespace Tesis.Dominio
             }
 
             // La periodicidad vacia es valida: significa que el procedimiento se aplica
-            // una unica vez en la vida del animal (CU22, curso alternativo 4b). Lo que
+            // una unica vez en la vida del animal (CU30, curso alternativo 4b). Lo que
             // no se admite es un numero negativo.
             if (pPlan.PeriodicidadDias < PlanSanitario.SIN_PERIODICIDAD)
             {
                 return "La periodicidad tiene que ser un numero positivo de dias, o quedar vacia.";
             }
 
-            // El descorne no consume insumo (CU22, curso alternativo 4c). El resto de
+            // El descorne no consume insumo (CU30, curso alternativo 4c). El resto de
             // los procedimientos aplican un producto y sin el no se puede descontar del
             // stock ni calcular el descarte de leche.
             if (pPlan.TipoProcedimiento != PlanSanitario.DESCORNE && pPlan.Insumo == null)
@@ -6424,7 +6424,7 @@ namespace Tesis.Dominio
         #endregion
 
         #region CALENDARIO SANITARIO
-        // CU23. El calendario no se almacena: es la diferencia entre lo que los planes
+        // CU31. El calendario no se almacena: es la diferencia entre lo que los planes
         // activos exigen y lo que efectivamente se aplico, calculada en el momento de
         // la consulta. Es el mismo calculo que va a alimentar el resumen diario del
         // Modulo 6, para que las dos vistas no puedan discrepar.

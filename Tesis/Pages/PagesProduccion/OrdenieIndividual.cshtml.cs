@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesProduccion
 {
-    // CU9 - Registrar Ordenie Individual, de a un animal.
+    // CU13 - Registrar Ordenie Individual, de a un animal.
     //
     // Es la variante puntual del control lechero, no una pantalla hermana: las dos
     // guardan el mismo registro con la misma regla -AltaOrdenieIndividual- y la unica

@@ -7,9 +7,9 @@ namespace Tesis.Pages.PagesProduccion
     // Apertura manual de lactancia.
     //
     // No sale de ningun caso de uso del documento: el unico camino previsto para abrir
-    // una lactancia es el parto (CU18). Hace falta para las vacas que ya estaban en
+    // una lactancia es el parto (CU24). Hace falta para las vacas que ya estaban en
     // ordenie cuando arranco el sistema, que no tienen un parto registrado y que sin
-    // esta pantalla no podrian recibir controles individuales (CU9) ni secarse (CU12).
+    // esta pantalla no podrian recibir controles individuales (CU13) ni secarse (CU16).
     public class AltaLactanciaModel : PageModel
     {
         [BindProperty]

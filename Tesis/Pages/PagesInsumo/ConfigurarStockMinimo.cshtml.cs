@@ -4,8 +4,8 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesInsumo
 {
-    // CU26. El umbral es la barrera de seguridad del inventario: cuando el stock lo
-    // alcanza, el insumo aparece en las alertas de stock critico de CU27.
+    // CU36. El umbral es la barrera de seguridad del inventario: cuando el stock lo
+    // alcanza, el insumo aparece en las alertas de stock critico de CU37.
     public class ConfigurarStockMinimoModel : PageModel
     {
         [BindProperty]

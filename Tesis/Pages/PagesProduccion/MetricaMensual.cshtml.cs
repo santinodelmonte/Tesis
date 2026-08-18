@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesProduccion
 {
-    // CU11 - Consultar Metrica de Produccion Mensual
+    // CU15 - Consultar Metrica de Produccion Mensual
     public class MetricaMensualModel : PageModel
     {
         [BindProperty]

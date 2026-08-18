@@ -313,7 +313,7 @@ namespace Tesis.Persistencia
             return new pInsumo().AltaInsumo(pInsumoNuevo);
         }
 
-        // CU26: el umbral que dispara la alerta de reposicion
+        // CU36: el umbral que dispara la alerta de reposicion
         public bool ModificarStockMinimo(int pIdInsumo, double pStockMinimo)
         {
             return new pInsumo().ModificarStockMinimo(pIdInsumo, pStockMinimo);

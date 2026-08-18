@@ -1,6 +1,6 @@
 # 2.2.5 Modelo de Datos — v6
 
-Generado desde `bd/tambo.sql` por `modelo_datos.py`. No editar a mano.
+Generado desde `bd/CreacionDb.sql` por `modelo_datos.py`. No editar a mano.
 
 ## 2.2.5.2 Normalización
 

@@ -3,7 +3,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesProduccion
 {
-    // CU13 - Consultar Alertas de Secado Proximo
+    // CU17 - Consultar Alertas de Secado Proximo
     public class AlertasSecadoModel : PageModel
     {
         public List<Hembra> alertas = new List<Hembra>();

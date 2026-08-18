@@ -5,7 +5,7 @@ using Tesis.Dominio;
 namespace Tesis.Pages.PagesInsumo
 {
     // Adelantado del Modulo 5. Cada ingreso deja su movimiento, para que el descuento
-    // que hace CU15 al usar una pajuela quede trazado y no sea solo un numero que baja.
+    // que hace CU21 al usar una pajuela quede trazado y no sea solo un numero que baja.
     public class IngresoStockModel : PageModel
     {
         [BindProperty]

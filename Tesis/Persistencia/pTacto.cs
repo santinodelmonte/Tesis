@@ -49,7 +49,7 @@ namespace Tesis.Persistencia
 
         // El tacto no se guarda solo: mueve el estado reproductivo de la hembra y,
         // cuando confirma la preniez, baja la fecha probable de parto a la lactancia
-        // en curso, que es de donde CU13 saca la fecha recomendada de secado. La
+        // en curso, que es de donde CU17 saca la fecha recomendada de secado. La
         // hembra y la lactancia llegan con los valores nuevos ya puestos desde el
         // dominio. La lactancia puede venir nula: una vaquillona de primer servicio
         // todavia no tiene ninguna abierta.

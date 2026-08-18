@@ -1,7 +1,7 @@
 namespace Tesis.Dominio
 {
     // Adelantada del Modulo 5. Cada alta de stock y cada consumo dejan su
-    // movimiento, para que el descuento de una pajuela en CU15 quede trazado y no
+    // movimiento, para que el descuento de una pajuela en CU21 quede trazado y no
     // sea solo un numero que baja en insumos.
     public class MovimientoStock
     {

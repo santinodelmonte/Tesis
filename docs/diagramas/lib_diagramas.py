@@ -7,10 +7,24 @@ el documento. Tener una sola definicion es lo que evita que el archivo editable 
 la imagen del documento se separen con el tiempo.
 """
 import html
+import math
 import os
 import xml.etree.ElementTree as ET
 
-import cairosvg
+# El SVG se convierte a PNG para insertarlo en el documento. cairosvg es el conversor
+# preferido, pero necesita la biblioteca cairo del sistema, que no esta en todas las
+# maquinas donde se generan los diagramas; PyMuPDF trae la suya y sirve de reemplazo.
+# Las puntas de flecha se dibujan como trazos y no como <marker>, asi el SVG se ve
+# igual con cualquiera de los dos.
+try:
+    import cairosvg
+except (ImportError, OSError):  # OSError: el modulo importa pero no encuentra cairo
+    cairosvg = None
+
+try:
+    import fitz  # PyMuPDF
+except ImportError:
+    fitz = None
 
 FUENTE = 'Helvetica, Arial, sans-serif'
 ANCHO_CARACTER = 0.55  # proporcion del tamano de fuente; alcanza para cortar lineas
@@ -161,6 +175,20 @@ def _texto_svg(partes, x, y, lineas, tamano=12, negrita=False, ancla='middle'):
                html.escape(linea)))
 
 
+def _punta_svg(p, x1, y1, x2, y2, largo=9.6, ancho=3.6):
+    """Punta de flecha abierta en (x2, y2), apuntando en la direccion del tramo."""
+    dx, dy = x2 - x1, y2 - y1
+    distancia = math.hypot(dx, dy)
+    if distancia == 0:
+        return
+    ux, uy = dx / distancia, dy / distancia
+    bx, by = x2 - ux * largo, y2 - uy * largo
+    px, py = -uy * ancho, ux * ancho
+    p.append('<path d="M %.1f %.1f L %.1f %.1f L %.1f %.1f" fill="none" stroke="%s" '
+             'stroke-width="1.2"/>'
+             % (bx + px, by + py, x2, y2, bx - px, by - py, BORDE))
+
+
 def a_svg(diagrama):
     p = ['<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" '
          'viewBox="0 0 %d %d">' % (diagrama.ancho, diagrama.alto,
@@ -180,9 +208,10 @@ def a_svg(diagrama):
     for v in diagrama.vinculos:
         (x1, y1), (x2, y2) = v.extremos
         guion = ' stroke-dasharray="6 4"' if v.punteado else ''
-        punta = ' marker-end="url(#punta)"' if v.flecha else ''
         p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
-                 'stroke-width="1.2"%s%s/>' % (x1, y1, x2, y2, BORDE, guion, punta))
+                 'stroke-width="1.2"%s/>' % (x1, y1, x2, y2, BORDE, guion))
+        if v.flecha:
+            _punta_svg(p, x1, y1, x2, y2)
         if v.texto:
             # A media linea la etiqueta suele caer encima de la figura de destino;
             # a poco mas de un tercio queda en el tramo despejado.
@@ -247,18 +276,15 @@ def a_svg(diagrama):
             # Auto-mensaje: la validacion que la Controladora resuelve sin salir de
             # si misma. Se dibuja como el bucle habitual de UML.
             p.append('<path d="M %.1f %.1f h 34 v 22 h -34" fill="none" stroke="%s" '
-                     'stroke-width="1.2" marker-end="url(#punta)"%s/>'
-                     % (x1, y, BORDE, guion))
+                     'stroke-width="1.2"%s/>' % (x1, y, BORDE, guion))
+            _punta_svg(p, x1 + 34, y + 22, x1, y + 22)
             _texto_svg(p, x1 + 42, y + 11, [texto], 10, ancla='start')
         else:
             p.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
-                     'stroke-width="1.2" marker-end="url(#punta)"%s/>'
-                     % (x1, y, x2, y, BORDE, guion))
+                     'stroke-width="1.2"%s/>' % (x1, y, x2, y, BORDE, guion))
+            _punta_svg(p, x1, y, x2, y)
             _texto_svg(p, (x1 + x2) / 2.0, y - 10, [texto], 10)
 
-    p.insert(1, '<defs><marker id="punta" markerWidth="9" markerHeight="9" '
-                'refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" '
-                'fill="none" stroke="%s" stroke-width="1.2"/></marker></defs>' % BORDE)
     p.append('</svg>')
     return '\n'.join(p)
 
@@ -337,6 +363,24 @@ def escribir(diagrama, carpeta):
     with open(base + '.svg', 'w', encoding='utf-8') as archivo:
         archivo.write(svg)
 
-    cairosvg.svg2png(bytestring=svg.encode('utf-8'), write_to=base + '.png',
-                     output_width=diagrama.ancho * 2, output_height=diagrama.alto * 2)
+    _a_png(svg, base + '.png', diagrama.ancho, diagrama.alto)
     return base
+
+
+def _a_png(svg, destino, ancho, alto, escala=2):
+    """El PNG que se inserta en el documento, al doble de tamano para que no pixele."""
+    if cairosvg is not None:
+        cairosvg.svg2png(bytestring=svg.encode('utf-8'), write_to=destino,
+                         output_width=ancho * escala, output_height=alto * escala)
+        return
+
+    if fitz is not None:
+        documento = fitz.open(stream=svg.encode('utf-8'), filetype='svg')
+        pagina = documento[0]
+        pagina.get_pixmap(matrix=fitz.Matrix(escala, escala)).save(destino)
+        documento.close()
+        return
+
+    raise RuntimeError(
+        'No hay conversor de SVG a PNG: instalar cairosvg (necesita la biblioteca '
+        'cairo del sistema) o PyMuPDF (pip install pymupdf).')

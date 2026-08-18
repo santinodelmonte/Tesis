@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesReproduccion
 {
-    // CU15 - Registrar Servicio.
+    // CU21 - Registrar Servicio.
     //
     // La misma pantalla da de alta y corrige, como la de celo. Con id en cero es un
     // alta; con un identificador se abre con el servicio cargado y guarda encima.

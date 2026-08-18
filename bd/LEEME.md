@@ -1,25 +1,31 @@
-# Puesta en marcha — Módulos 0 a 5
+# Puesta en marcha
+
+La carpeta tiene dos scripts y nada más:
+
+| Script | Qué hace |
+|---|---|
+| `CreacionDb.sql` | Crea la base `tambo` completa: las veintidós tablas y los datos semilla |
+| `DatosPrueba.sql` | Carga un rodeo de prueba sobre una base ya creada |
 
 > **El entorno de desarrollo usa XAMPP.** El motor que trae XAMPP es MariaDB, que
 > para todo lo que hace el sistema se comporta igual que MySQL y habla con el mismo
 > conector. Se levanta desde el panel de control de XAMPP, no como servicio de
 > Windows, así que buscarlo en la lista de servicios no lo encuentra. El cliente de
-> línea de comandos está en `C:\xampp\mysql\bin\mysql.exe`, y ahí lo busca solo
-> `actualizar.ps1`. Los valores por defecto de XAMPP —`localhost`, puerto 3306,
-> usuario `root`, sin contraseña— son los que ya trae la cadena de conexión de
-> `Tesis/appsettings.json`.
+> línea de comandos está en `C:\xampp\mysql\bin\mysql.exe`. Los valores por defecto
+> de XAMPP —`localhost`, puerto 3306, usuario `root`, sin contraseña— son los que ya
+> trae la cadena de conexión de `Tesis/appsettings.json`.
 
 ## 1. Crear la base
 
-Con MySQL instalado y corriendo, alcanza con un solo script:
+Con el motor corriendo, alcanza con un solo script:
 
 ```bash
-mysql -u root -p < bd/tambo.sql
+mysql -u root -p < bd/CreacionDb.sql
 ```
 
 O abrirlo en MySQL Workbench y ejecutarlo entero. Crea la base `tambo` con las
-veintidós tablas de los Módulos 0 a 5 más la de configuración, y carga las razas,
-las categorías y la fila de parámetros del establecimiento.
+veintidós tablas y carga las razas, las categorías y la fila de parámetros del
+establecimiento, que son los tres datos que el sistema no da de alta por pantalla.
 
 **El script empieza borrando la base `tambo` si ya existe, con todos sus datos.**
 Eso es lo que le permite dejar siempre el mismo esquema por más veces que se
@@ -29,122 +35,22 @@ corra. Para conservar lo que haya cargado, respaldar antes:
 mysqldump -u root -p tambo > respaldo_tambo.sql
 ```
 
-## 1.bis. Actualizar una base que ya existe
-
-`tambo.sql` sirve para crear de cero: empieza borrando la base. Sobre una
-instalación que ya tiene datos cargados eso no se puede hacer, y para eso está
-la actualización:
-
-```bash
-mysql -u root -p < bd/tambo_actualizacion.sql
-```
-
-Compara lo que hay contra lo que tiene que haber y agrega únicamente lo que
-falta: tablas, columnas, claves foráneas y claves alternas. No borra nada. Se
-puede correr las veces que haga falta y sobre una base en cualquier estado
-anterior —recién creada, a mitad de los módulos, o ya al día—; si no hay nada
-que hacer, no hace nada. Al terminar imprime qué cambió y cómo quedó el
-esquema.
-
-Reemplaza a los dos scripts de actualización sueltos —`tambo_foto_animal.sql` y
-`tambo_configuracion_actualizacion.sql`—, que había que saber cuál correr y
-fallaban si la columna ya estaba. Quedan como registro, igual que los scripts
-por módulo, pero no hace falta usarlos.
-
-Lo único que la actualización no resuelve sola es una restricción que los datos
-actuales violen: dos ordeñes de lote cargados para la misma fecha y turno, por
-ejemplo. En ese caso no fuerza nada ni corta a la mitad, deja la línea anotada
-como `PENDIENTE` en el informe con el motivo, y esa fila hay que depurarla a
-mano antes de volver a correrlo.
-
-**Una base anterior a la corrección de registros tiene que actualizarse.** La
-corrección de Reproducción y Sanidad agregó `tratamientos.cantidad_insumo`, que
-es lo que permite devolverle al stock lo que un tratamiento mal cargado nunca
-consumió. Sin esa columna la aplicación no arranca contra la base vieja. Los
-tratamientos que ya estaban cargados quedan con la cantidad en cero y por eso no
-devuelven stock al eliminarlos; está explicado en
-`docs/correccion-de-registros-y-navegacion.md`.
-
-### Todo junto, en un comando (Windows)
-
-`actualizar.ps1` encadena lo que si no hay que hacer a mano: lee la cadena de
-conexión de `Tesis/appsettings.json`, busca el cliente de MySQL, respalda con
-`mysqldump` en `respaldos/`, corre la actualización y, con `-DatosPrueba`,
-además carga el rodeo de prueba.
-
-```powershell
-.\bd\actualizar.ps1 -DatosPrueba
-```
-
-Sin `-DatosPrueba` solo actualiza el esquema y no toca los datos. La contraseña
-no viaja en la línea de comandos: se le pasa a `mysql` por `MYSQL_PWD`. Los
-parámetros `-Servidor`, `-Puerto`, `-Usuario`, `-Contrasena` y `-Base` pisan lo
-que diga `appsettings.json`, `-SinRespaldo` saltea el `mysqldump` y `-Forzar`
-evita la confirmación de los datos de prueba.
-
-### Los scripts por módulo
-
-`tambo.sql` reemplaza a la secuencia de scripts por módulo, que quedan como el
-registro de cómo se fue entregando cada uno y son los que citan los documentos de
-`docs/`. Sirven igual —corridos en orden dejan la misma base—, pero para poner en
-marcha una instalación no hacen falta:
-
-```bash
-mysql -u root -p < bd/tambo_m0_m1.sql
-mysql -u root -p < bd/tambo_m2_m3.sql
-mysql -u root -p < bd/tambo_m4_m5.sql
-mysql -u root -p < bd/tambo_configuracion.sql
-```
-
-Cada uno asume que los anteriores ya corrieron: las tablas nuevas tienen claves
-foráneas hacia `animales`, `hembras`, `machos` e `insumos`.
-
-Junto a ellos quedan `tambo_configuracion_actualizacion.sql` —los dos parámetros
-de trabajo reproductivo— y `tambo_foto_animal.sql` —la columna de la foto—, que
-eran los parches para una base creada antes de cada uno de esos incrementos.
-También quedan solo como registro: `tambo_actualizacion.sql` hace lo que hacían
-los dos y no hay que averiguar antes cuál corresponde.
-
-`tambo_m0_m1.sql` crea la base `tambo`, las cinco tablas del Módulo 1 (`razas`,
-`categorias`, `animales`, `hembras`, `machos`) y carga las razas y categorías
-semilla. El Módulo 0 no necesita tablas: las credenciales son fijas y se validan
-en memoria.
+No hay script de actualización incremental: una base vieja se rehace corriendo
+`CreacionDb.sql` de nuevo, y lo que se quiera conservar se restaura del respaldo.
 
 **Sobre la foto del animal:** la columna `foto` de `animales` guarda el nombre del
 archivo, no la imagen. Las imágenes viven en `Tesis/wwwroot/fotos`, así que **esa
 carpeta hay que respaldarla aparte del dump de la base**: un dump solo no alcanza
 para restaurar el sistema completo. La carpeta no se versiona —son datos del
-establecimiento, no fuente— y la crea el sistema al arrancar si no existe. Está
-explicado en `docs/foto-del-animal-y-arbol-genealogico.md`.
+establecimiento, no fuente— y la crea el sistema al arrancar si no existe.
 
-`tambo_m2_m3.sql` agrega:
+## 2. Datos de prueba
 
-- **Módulo 2:** `lactancias`, `ordenies_lote`, `ordenie_lote_animales`,
-  `ordenies_individual`.
-- **Módulo 3:** `celos`, `servicios`, `tactos`, `partos`.
-- **Adelantado del Módulo 5:** `insumos`, `movimientos_stock` — CU15 registra la
-  inseminación artificial con una pajuela del stock y le descuenta una unidad.
-- **Adelantado del Módulo 4:** `diagnosticos`, `tratamientos` — el paso 3 de CU8
-  excluye del lote de ordeñe a los animales con descarte de leche vigente.
-
-`tambo_m4_m5.sql` completa esos dos módulos:
-
-- **Módulo 4:** `planes_sanitarios`, `plan_categorias`, `vacunaciones`, `descornes`.
-- **Módulo 5:** no crea tablas nuevas —`insumos` y `movimientos_stock` ya estaban—:
-  los umbrales, los vencimientos por partida y el historial salen de esas dos.
-- **Sobre `tratamientos`:** agrega la clave foránea de `id_plan`, que había quedado
-  pendiente hasta que existiera `planes_sanitarios`, y la columna `id_animal`, sin la
-  cual el tratamiento preventivo no se puede atribuir a ningún animal. El script
-  completa esa columna en los tratamientos ya cargados que venían de un diagnóstico.
-  Está explicado en `docs/desvios-modulos-4-y-5.md`.
-
-## 1.a. Datos de prueba
-
-`tambo_datos_prueba.sql` carga un rodeo chico pero completo para poder recorrer el
-sistema sin tener que dar de alta todo a mano. Se corre después de `tambo.sql`:
+`DatosPrueba.sql` carga un rodeo chico pero completo para poder recorrer el sistema
+sin tener que dar de alta todo a mano. Se corre después de `CreacionDb.sql`:
 
 ```bash
-mysql -u root -p < bd/tambo_datos_prueba.sql
+mysql -u root -p < bd/DatosPrueba.sql
 ```
 
 Son 21 animales del establecimiento más 3 toros de catálogo que sólo aportan
@@ -169,19 +75,19 @@ alertas: corriendo el script mucho después de esa fecha, los vencimientos y los
 partos próximos ya habrán pasado.
 
 El script empieza vaciando las tablas de datos, así que se puede volver a correr.
-No toca razas, categorías ni la fila de configuración, que las deja `tambo.sql`.
+No toca razas, categorías ni la fila de configuración, que las deja `CreacionDb.sql`.
 
-## 1.b. Carga inicial del rodeo
+## 3. Carga inicial del rodeo
 
 Las vacas que ya estaban en ordeñe cuando arranca el sistema no tienen un parto
 registrado, así que tampoco tienen lactancia abierta. Sin lactancia no se les puede
-cargar un ordeñe individual (CU9) ni registrarles el secado (CU12). Para eso está
+cargar un control lechero (CU13) ni registrarles el secado (CU16). Para eso está
 **Producción → Lactancias → Abrir Lactancia**, que abre la lactancia a mano y deja
 al animal en estado productivo "En lactancia".
 
-De ahí en adelante la lactancia la abre sola el parto (CU18).
+De ahí en adelante la lactancia la abre sola el parto.
 
-## 1.c. Puesta en marcha sanitaria
+## 4. Puesta en marcha sanitaria
 
 El calendario sanitario no trae nada precargado: proyecta lo que exigen los planes
 configurados. Sin planes activos no muestra procedimientos, y así lo informa. El
@@ -193,9 +99,9 @@ Para que el calendario dé por cumplido un procedimiento, la aplicación tiene q
 declarar a qué plan corresponde: es el campo "Plan sanitario que cumple" de las
 pantallas de vacunación, tratamiento y descorne.
 
-## 2. Completar la cadena de conexión
+## 5. Completar la cadena de conexión
 
-Los datos de conexión ya no están en el código: se leen de `Tesis/appsettings.json`.
+Los datos de conexión no están en el código: se leen de `Tesis/appsettings.json`.
 
 ```json
 "ConnectionStrings": {
@@ -203,17 +109,20 @@ Los datos de conexión ya no están en el código: se leen de `Tesis/appsettings
 }
 ```
 
-Ajustar servidor, puerto, usuario y contraseña según la instalación de MySQL.
+Ajustar servidor, puerto, usuario y contraseña según la instalación.
 
 Para no versionar la contraseña real conviene usar user-secrets, que la guarda
 fuera del repositorio y pisa el valor de `appsettings.json`:
 
 ```bash
 dotnet user-secrets init --project Tesis/Tesis.csproj
+```
+
+```bash
 dotnet user-secrets set "ConnectionStrings:Tambo" "server=localhost; port=3306; database=tambo; uid=root; pwd=LA_CONTRASENA; CharSet=utf8mb4;" --project Tesis/Tesis.csproj
 ```
 
-## 3. Credenciales del sistema
+## 6. Credenciales del sistema
 
 También salen de `Tesis/appsettings.json`:
 
@@ -231,10 +140,10 @@ Igual que la cadena de conexión, se pueden mover a user-secrets:
 dotnet user-secrets set "Seguridad:Contrasena" "LA_CONTRASENA" --project Tesis/Tesis.csproj
 ```
 
-Todo el sitio queda detrás del login: sin sesión iniciada cualquier página
-redirige a `/PagesSeguridad/Login`.
+Todo el sitio queda detrás del login: sin sesión iniciada cualquier página redirige
+a `/PagesSeguridad/Login`.
 
-## 4. Correr
+## 7. Correr
 
 ```bash
 dotnet run --project Tesis/Tesis.csproj
@@ -243,35 +152,48 @@ dotnet run --project Tesis/Tesis.csproj
 Queda en `http://localhost:5174`. El login está en `/PagesSeguridad/Login` y el
 listado de animales en `/PagesAnimal/ListaAnimales`.
 
-## 5. Constantes de negocio de los Módulos 2 a 5
+## 8. Parámetros de manejo y constantes de negocio
 
-El documento no las fija con números. Están en `Dominio/Controladora.cs` con los
-valores habituales de un tambo Holando.
+Los **once parámetros de manejo** del establecimiento viven en la tabla
+`configuracion` y se editan desde **Configuración** en el menú. `CreacionDb.sql`
+crea la tabla con un valor por defecto en cada columna y deja cargada la única fila.
 
-**Nueve de ellas ya no son constantes sino parámetros configurables**: viven en la
-tabla `configuracion` y se editan desde **Configuración** en el menú. Los valores de
-abajo pasaron a ser el valor por defecto de cada una, el que trae una base recién
-creada. Qué se configura y qué no está explicado en
-`docs/configuracion-del-establecimiento.md`.
+| Parámetro | Por defecto |
+|---|---|
+| `dias_secado_antes_parto` | 60 |
+| `edad_minima_servicio_meses` | 13 |
+| `edad_cambio_categoria_meses` | 12 |
+| `litros_maximos_individual` | 100 |
+| `ordenies_por_dia` | 2 |
+| `dias_anticipacion_secado` | 15 |
+| `dias_anticipacion_parto` | 15 |
+| `dias_anticipacion_sanitaria` | 30 |
+| `dias_anticipacion_vencimiento` | 30 |
+| `dias_espera_voluntaria` | 45 |
+| `dias_para_tacto` | 35 |
 
-| Constante | Valor | Para qué |
+Las mismas once figuran como constantes en `Dominio/Controladora.cs`, pero ahí son
+sólo el valor de respaldo: si la fila de configuración no existiera, el sistema se
+comporta como antes de que la configuración existiera.
+
+Lo que **no** es configurable y sigue siendo constante en la Controladora es lo que
+no es una decisión del establecimiento:
+
+| Constante | Valor | Por qué no se configura |
 |---|---|---|
-| `GESTACION_DIAS` | 283 | Fecha probable de parto (RF3.6, CU15, CU16) |
-| `DIAS_SECADO_ANTES_PARTO` | 60 | Fecha recomendada de secado (RF2.10) |
-| `DIAS_ANTICIPACION_SECADO` | 15 | Ventana de la alerta de secado (CU13) |
-| `DIAS_ANTICIPACION_PARTO` | 15 | Ventana de la alerta de parto (CU17) |
-| `LITROS_MAXIMOS_INDIVIDUAL` | 100 | Coherencia del control individual (RF2.3) |
-| `LITROS_MAXIMOS_LOTE` | 100000 | Coherencia del ordeñe por lote (RF2.3) |
-| `DIAS_ANTICIPACION_SANITARIA` | 30 | Horizonte del calendario sanitario (CU23) |
-| `DIAS_ANTICIPACION_VENCIMIENTO` | 30 | Ventana de la alerta de vencimiento (CU28) |
-| `UNIDADES_POR_VACUNACION` | 1 | Dosis que consume una aplicación (CU21) |
-| `EDAD_MINIMA_CELO_MESES` | 9 | Edad a la que la hembra empieza a ciclar (CU14) |
-| `DIAS_LACTANCIA_ESTANDAR` | 305 | Referencia para proyectar la produccion de una lactancia |
-| `GESTACION_DIAS_MINIMA` | 240 | Piso de una gestación viable, para advertir en el parto |
-| `GESTACION_DIAS_MAXIMA` | 320 | Techo de una gestación normal, para advertir en el parto |
+| `GESTACION_DIAS` | 283 | Biología: es la duración de la gestación Holando |
+| `GESTACION_MESES` | 9 | La misma, en meses, para la validación de genealogía |
+| `GESTACION_DIAS_MINIMA` / `MAXIMA` | 240 / 320 | Rango de una gestación viable, para advertir en el parto |
+| `EDAD_MINIMA_SERVICIO_MESES` | 15 | Edad de servicio del macho |
+| `EDAD_MINIMA_CELO_MESES` | 9 | Edad a la que la hembra empieza a ciclar |
+| `DIAS_LACTANCIA_ESTANDAR` | 305 | Referencia con la que trabaja cualquier control lechero |
+| `LITROS_MAXIMOS_LOTE` | 100000 | Tope de coherencia del ordeñe por lote |
+| `UNIDADES_POR_VACUNACION` | 1 | Una aplicación consume una dosis |
+| `PORCENTAJE_PRODUCCION_BAJA` | 0,7 | Criterio de descarte, no regla de manejo diaria |
+| `SERVICIOS_SIN_PRENIEZ_DESCARTE` | 3 | Ídem |
+| `DIAS_ABIERTOS_EXCESIVOS` | 150 | Ídem |
+| `DIAGNOSTICOS_REPETIDOS_DESCARTE` | 3 | Ídem |
+| `PARTOS_PARA_DESCARTE` | 7 | Ídem |
 
-Las dos ventanas de anticipación se pueden cambiar desde la pantalla: el valor de la
-tabla es el que trae por defecto.
-
-`GESTACION_MESES` (9) sigue existiendo aparte: la usa la validación de genealogía
-del Módulo 1, que razona en meses.
+El período de carencia y el stock mínimo tampoco están acá: son datos del producto
+y viven en `insumos`.

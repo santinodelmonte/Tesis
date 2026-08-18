@@ -1,7 +1,7 @@
 namespace Tesis.Dominio
 {
-    // La regla de un procedimiento sanitario periodico (CU22). No guarda
-    // aplicaciones: el calendario de CU23 sale de comparar lo que el plan exige
+    // La regla de un procedimiento sanitario periodico (CU30). No guarda
+    // aplicaciones: el calendario de CU31 sale de comparar lo que el plan exige
     // contra lo que efectivamente se registro.
     public class PlanSanitario
     {
@@ -26,7 +26,7 @@ namespace Tesis.Dominio
         private Insumo mInsumo;
 
         // Categorias alcanzadas por el plan. La lista vacia significa que alcanza a
-        // todo el rodeo (CU22, curso alternativo 4a). A diferencia del resto de las
+        // todo el rodeo (CU30, curso alternativo 4a). A diferencia del resto de las
         // colecciones del Diccionario de Clases, esta si se materializa: el vinculo
         // no es circular y el calendario la necesita en cada iteracion.
         private List<Categoria> mCategorias;

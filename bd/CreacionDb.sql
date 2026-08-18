@@ -1,21 +1,24 @@
 -- =====================================================================
 -- Sistema de Gestion de Tambo
--- Script unico de creacion de la base de datos - Modulos 0 a 5
+-- Creacion completa de la base de datos
 --
---   Modulo 0: Seguridad y Acceso al Sistema  (no requiere tablas: las
---             credenciales se leen de appsettings.json y se validan en
---             memoria)
+--   Modulo 0: Seguridad, Acceso y Configuracion  (el acceso no requiere
+--             tablas: las credenciales se leen de appsettings.json y se
+--             validan en memoria; los parametros de manejo si, y estan
+--             al final, en configuracion)
 --   Modulo 1: Gestion de Animales y Genetica
 --   Modulo 2: Control de Produccion
 --   Modulo 3: Gestion Reproductiva
 --   Modulo 4: Gestion Sanitaria
 --   Modulo 5: Control de Insumos y Stock
---   Configuracion del establecimiento
+--   Modulo 6: Tablero, Indicadores y Apoyo a la Decision  (no agrega
+--             tablas: todo lo que muestra se deriva de las anteriores)
 --
--- Este script reemplaza a la secuencia de scripts por modulo. Deja la
--- base en el mismo estado en el que la dejaban los cinco corridos en
--- orden, pero de una sola vez y sin ALTER TABLE intermedios: las tablas
--- se crean directamente con todas sus columnas y restricciones.
+-- Es el unico script de esquema del sistema: crea las veintidos tablas
+-- de una sola vez y sin ALTER TABLE intermedios -salvo las dos claves
+-- foraneas recursivas de animales, que no pueden declararse antes de que
+-- existan hembras y machos-, y carga los datos semilla que el sistema no
+-- da de alta por pantalla.
 --
 -- ATENCION: la primera sentencia BORRA la base tambo si ya existe, con
 -- todos sus datos. Es lo que permite que el script se pueda volver a
@@ -24,7 +27,9 @@
 --
 --     mysqldump -u root -p tambo > respaldo_tambo.sql
 --
--- Motor: MySQL
+-- Para poblarla con un rodeo de prueba, correr despues bd/DatosPrueba.sql.
+--
+-- Motor: MySQL (el entorno de desarrollo usa MariaDB, el motor de XAMPP)
 -- =====================================================================
 
 DROP DATABASE IF EXISTS tambo;
@@ -124,9 +129,9 @@ ALTER TABLE animales
 -- Modulo 5: Control de Insumos y Stock
 --
 -- Va antes que los modulos 2, 3 y 4 porque los tres dependen de estas
--- dos tablas: la inseminacion artificial consume una pajuela (CU15), el
--- tratamiento y la vacunacion descuentan el producto que aplican (CU20,
--- CU21) y el plan sanitario declara el insumo que exige (CU22).
+-- dos tablas: la inseminacion artificial consume una pajuela (CU21), el
+-- tratamiento y la vacunacion descuentan el producto que aplican (CU28,
+-- CU29) y el plan sanitario declara el insumo que exige (CU30).
 --
 -- El modulo no agrega nada mas: los umbrales, los vencimientos por
 -- partida y el historial salen de estas mismas dos tablas.
@@ -173,7 +178,7 @@ CREATE TABLE movimientos_stock (
 
 -- ---------------------------------------------------------------------
 -- lactancias
--- La abre el parto (CU18) o la carga manual de las vacas que ya estaban
+-- La abre el parto (CU24) o la carga manual de las vacas que ya estaban
 -- en ordenie cuando arranco el sistema. fecha_secado se completa recien
 -- al cerrarla, asi que el nulo es lo que identifica a la lactancia en
 -- curso.
@@ -208,7 +213,7 @@ CREATE TABLE ordenies_lote (
 -- ---------------------------------------------------------------------
 -- ordenie_lote_animales
 -- Deja asentado que animales integraron el lote de cada turno. El Modelo
--- Entidad-Relacion no la contempla, pero sin ella el paso 4 de CU8 -donde
+-- Entidad-Relacion no la contempla, pero sin ella el paso 4 de CU12 -donde
 -- el usuario ajusta la lista de animales ordeniados- no deja rastro y no
 -- hay forma de saber despues que vacas se ordeniaron.
 -- ---------------------------------------------------------------------
@@ -227,14 +232,12 @@ CREATE TABLE ordenie_lote_animales (
 -- litros ya estan dentro de los litros_totales del lote de esa fecha y
 -- turno, cuando ese lote existe.
 --
--- id_ordenie_lote admite nulo, a diferencia de lo que declara 2.2.5.4,
--- porque el control no exige que el total del ordenie ya este cargado.
--- Cuando el lote no existe, la produccion de ese turno es la suma de sus
--- controles individuales: el ordenie ocurrio igual, lo unico distinto es
--- como se anoto. La produccion se resuelve asi turno por turno, y nunca
--- sumando las dos cosas dentro del mismo turno, que contaria dos veces la
--- leche de las vacas controladas. Esta explicado en el desvio D1 de
--- docs/desvios-modulos-2-y-3.md.
+-- id_ordenie_lote admite nulo porque el control no exige que el total del
+-- ordenie ya este cargado. Cuando el lote no existe, la produccion de ese
+-- turno es la suma de sus controles individuales: el ordenie ocurrio
+-- igual, lo unico distinto es como se anoto. La produccion se resuelve
+-- asi turno por turno, y nunca sumando las dos cosas dentro del mismo
+-- turno, que contaria dos veces la leche de las vacas controladas.
 -- ---------------------------------------------------------------------
 -- Un animal tiene un solo control por fecha y turno: la carga a mano en un dia de
 -- control lechero es propensa a la doble carga y la base la tiene que rechazar.
@@ -329,13 +332,13 @@ CREATE TABLE partos (
 -- ---------------------------------------------------------------------
 -- planes_sanitarios
 -- La regla del procedimiento periodico, no su aplicacion. El calendario
--- de CU23 sale de comparar lo que el plan exige contra lo que se aplico,
+-- de CU31 sale de comparar lo que el plan exige contra lo que se aplico,
 -- asi que aca no se guarda nada derivado.
 --
 -- periodicidad_dias admite nulo: el nulo indica que el procedimiento se
 -- aplica una unica vez en la vida del animal, como el descorne.
 -- id_insumo admite nulo por el mismo motivo: el descorne no consume
--- insumo (CU22, curso alternativo 4c).
+-- insumo (CU30, curso alternativo 4c).
 -- ---------------------------------------------------------------------
 CREATE TABLE planes_sanitarios (
     id_plan            INT(11)     NOT NULL AUTO_INCREMENT,
@@ -353,7 +356,7 @@ CREATE TABLE planes_sanitarios (
 -- ---------------------------------------------------------------------
 -- plan_categorias
 -- Resuelve el vinculo muchos a muchos entre planes_sanitarios y
--- categorias. Un plan sin filas aca alcanza a todo el rodeo (CU22,
+-- categorias. Un plan sin filas aca alcanza a todo el rodeo (CU30,
 -- curso alternativo 4a), por eso la ausencia de fila es informacion y no
 -- un dato faltante.
 -- ---------------------------------------------------------------------
@@ -387,20 +390,19 @@ CREATE TABLE diagnosticos (
 -- id_animal es lo que permite atribuir ese preventivo a un animal: sin
 -- la columna, la desparasitacion no genera descarte de leche para nadie
 -- y el calendario sanitario nunca encuentra su ultima aplicacion. El
--- curso alternativo 2a de CU20 dice que el preventivo "se registra
--- directamente sobre el animal", que es exactamente esta columna. Queda
--- como Null porque asi la dejaron los scripts por modulo, donde se
--- agrego despues de que ya hubiera tratamientos cargados; de todos
--- modos la Controladora siempre la completa.
+-- curso alternativo 2a de CU28 dice que el preventivo "se registra
+-- directamente sobre el animal", que es exactamente esta columna. Admite
+-- nulo porque la capa de persistencia escribe nulo cuando el tratamiento
+-- llega sin animal; en la practica la Controladora siempre lo completa,
+-- con el del diagnostico o con el que se elige en la pantalla.
 --
 -- id_plan admite nulo cuando el tratamiento se registra fuera de todo
 -- plan sanitario.
 --
--- cantidad_insumo es cuanto producto consumio la aplicacion. Antes vivia
--- solo en el movimiento de stock, que no dice de que tratamiento salio:
--- al corregir o eliminar el tratamiento no habia forma de saber cuanto
--- devolverle al inventario. Queda en cero en los tratamientos anteriores
--- a la columna, y esos no devuelven nada.
+-- cantidad_insumo es cuanto producto consumio la aplicacion. No alcanza
+-- con el movimiento de stock, que no dice de que tratamiento salio: al
+-- corregir o eliminar el tratamiento hay que saber cuanto devolverle al
+-- inventario, y ese dato es este.
 -- ---------------------------------------------------------------------
 CREATE TABLE tratamientos (
     id_tratamiento     INT(11)       NOT NULL AUTO_INCREMENT,
@@ -423,7 +425,7 @@ CREATE TABLE tratamientos (
 -- ---------------------------------------------------------------------
 -- vacunaciones
 -- id_plan declara explicitamente que plan da por cumplido la aplicacion.
--- Es nulo cuando se vacuna fuera de todo plan (CU21, curso alternativo
+-- Es nulo cuando se vacuna fuera de todo plan (CU29, curso alternativo
 -- 4a). El calendario no lo infiere del insumo: dos planes distintos
 -- pueden usar la misma vacuna.
 -- ---------------------------------------------------------------------
@@ -442,7 +444,7 @@ CREATE TABLE vacunaciones (
 -- ---------------------------------------------------------------------
 -- descornes
 -- El descorne es de aplicacion unica: un plan de descorne deja de
--- exigirlo para el animal una vez que se registro (CU24, regla de
+-- exigirlo para el animal una vez que se registro (CU32, regla de
 -- negocio).
 -- ---------------------------------------------------------------------
 CREATE TABLE descornes (

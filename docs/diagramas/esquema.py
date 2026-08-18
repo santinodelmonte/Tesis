@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Lee bd/tambo.sql y devuelve el esquema como estructura de datos.
+"""Lee bd/CreacionDb.sql y devuelve el esquema como estructura de datos.
 
 El modelo entidad-relacion, la tabla de claves y las restricciones de integridad
 del documento salen todas de aca. Derivarlas del DDL en lugar de transcribirlas a
@@ -10,7 +10,7 @@ import os
 import re
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SQL = os.path.join(RAIZ, 'bd', 'tambo.sql')
+SQL = os.path.join(RAIZ, 'bd', 'CreacionDb.sql')
 
 
 class Columna:

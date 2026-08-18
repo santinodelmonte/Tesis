@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Modelo Entidad-Relacion (seccion 2.2.5.1), leido de bd/tambo.sql."""
+"""Modelo Entidad-Relacion (seccion 2.2.5.1), leido de bd/CreacionDb.sql."""
 import os
 import sys
 

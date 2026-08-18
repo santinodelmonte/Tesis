@@ -1,6 +1,6 @@
 namespace Tesis.Dominio
 {
-    // Aplicacion de una vacuna a un animal (CU21). El plan es opcional: en nulo
+    // Aplicacion de una vacuna a un animal (CU29). El plan es opcional: en nulo
     // queda la vacunacion registrada fuera de todo plan.
     public class Vacunacion
     {

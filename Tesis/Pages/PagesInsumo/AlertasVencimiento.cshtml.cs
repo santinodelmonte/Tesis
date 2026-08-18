@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesInsumo
 {
-    // CU28. El vencimiento vive en cada movimiento de ingreso y no en el insumo,
+    // CU38. El vencimiento vive en cada movimiento de ingreso y no en el insumo,
     // porque un mismo producto entra en partidas distintas: cada una se evalua por
     // separado.
     public class AlertasVencimientoModel : PageModel

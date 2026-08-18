@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesSanidad
 {
-    // CU24. El descorne no consume insumo y es de aplicacion unica: una vez
+    // CU32. El descorne no consume insumo y es de aplicacion unica: una vez
     // registrado, el plan de descorne deja de exigirlo para ese animal.
     //
     // La misma pantalla da de alta y corrige: con id en cero es un alta, con un

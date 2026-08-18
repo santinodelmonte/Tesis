@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesProduccion
 {
-    // CU8 - Registrar Ordenie General (Por Lote)
+    // CU12 - Registrar Ordenie General (Por Lote)
     public class OrdenieLoteModel : PageModel
     {
         [BindProperty]

@@ -4,10 +4,10 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesSanidad
 {
-    // CU20. El tratamiento nace de un diagnostico pendiente o se aplica de forma
+    // CU28. El tratamiento nace de un diagnostico pendiente o se aplica de forma
     // preventiva sobre el animal (curso alternativo 2a). En los dos casos descuenta el
     // producto del stock y fija hasta cuando hay que descartar la leche, que es lo que
-    // el paso 3 de CU8 usa para dejar a la hembra fuera del lote de ordenie.
+    // el paso 3 de CU12 usa para dejar a la hembra fuera del lote de ordenie.
     //
     // La misma pantalla da de alta y corrige: con id en cero es un alta, con un
     // identificador se abre con el tratamiento cargado.

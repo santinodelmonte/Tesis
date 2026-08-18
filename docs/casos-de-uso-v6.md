@@ -294,7 +294,7 @@ Actores: Encargada del sector
 
 Tipo: Primario
 
-Descripción: Permite registrar la baja lógica de un animal del rodeo activo, especificando la fecha y la causa de su salida.
+Descripción: Permite registrar la baja lógica de un animal del rodeo activo, especificando la causa de su salida.
 
 Referencia a Requerimientos Funcionales: RF1.2
 
@@ -306,11 +306,11 @@ Curso Básico:
 
 1. El usuario busca y selecciona el animal al que desea dar de baja.
 
-2. El sistema despliega el formulario solicitando la fecha y el motivo de la salida.
+2. El sistema despliega los datos del animal y solicita el motivo de la salida.
 
-3. El usuario indica la fecha, selecciona el motivo (venta, fallecimiento, descarte sanitario u otros) y presiona “Confirmar Baja”.
+3. El usuario selecciona el motivo (venta, fallecimiento, descarte sanitario u otros) y presiona “Confirmar Baja”.
 
-4. El sistema actualiza el estado del animal a inactivo, almacena la fecha y el motivo, y confirma la operación.
+4. El sistema actualiza el estado del animal a inactivo, almacena el motivo y la fecha del día como fecha de salida, y confirma la operación.
 
 Cursos Alternativos: —
 
@@ -320,7 +320,7 @@ Post-condición: El animal cambia su estado a inactivo y deja de formar parte de
 
 Reglas de Negocio: Las bajas son siempre lógicas: no existe borrado definitivo de animales, porque destruiría el historial productivo y el linaje genealógico de los animales emparentados. La baja no impide registrar eventos anteriores a su fecha, pero sí posteriores.
 
-Validaciones: La fecha y el motivo de salida son obligatorios. La fecha no puede ser futura ni anterior a la fecha de nacimiento del animal.
+Validaciones: El motivo de salida es obligatorio. La fecha de salida no se ingresa: la registra el sistema, que es el día en que la baja se carga.
 
 Frecuencia de Uso: Baja, sólo ante la pérdida, descarte o comercialización de un vientre o cría.
 
@@ -384,11 +384,11 @@ Curso Básico:
 
 2. El usuario selecciona la opción “Ver Linaje”.
 
-3. El sistema recupera los datos de los progenitores vinculados.
+3. El sistema recorre la ascendencia registrada del animal y la envía completa a la pantalla.
 
 4. El sistema despliega el árbol genealógico mostrando al animal y a sus progenitores directos, cada uno con su fotografía y su caravana.
 
-5. El usuario despliega la rama de cualquier ancestro y el sistema incorpora al árbol la generación siguiente.
+5. El usuario despliega la rama de cualquier ancestro y la pantalla incorpora al árbol la generación siguiente.
 
 Cursos Alternativos: 5a. El usuario selecciona un ancestro: el sistema abre la ficha integral de ese animal.
 
@@ -396,7 +396,7 @@ Cursos de Excepción: 3a. El animal no tiene progenitores registrados: el sistem
 
 Post-condición: El sistema despliega la información solicitada sin alterar los registros existentes.
 
-Reglas de Negocio: El árbol se construye a demanda: cada rama se resuelve cuando el usuario la despliega, de modo que un linaje profundo no obliga a recorrer todo el rodeo.
+Reglas de Negocio: La ascendencia se resuelve de una sola vez, hasta diez generaciones, y se envía entera a la pantalla: el despliegue de cada rama ocurre en el navegador y no vuelve a consultar al servidor. La profundidad está acotada porque la validación genealógica impide que un animal sea ancestro de sí mismo.
 
 Validaciones: —
 
@@ -557,7 +557,7 @@ Curso Básico:
 
 7. El sistema almacena el registro del turno junto con los animales que lo integraron y confirma la operación.
 
-Cursos Alternativos: 3a. El usuario decide incluir manualmente un animal excluido por descarte: el sistema advierte que la leche de ese animal no debe destinarse a consumo y solicita confirmación.
+Cursos Alternativos: 3a. El usuario decide incluir manualmente un animal excluido por descarte: el sistema los presenta en una lista aparte, advirtiendo que la leche de esos animales no debe destinarse a consumo e indicando hasta cuándo dura el descarte de cada uno, y el usuario los incorpora al lote marcándolos.
 
 Cursos de Excepción: 5a. Ya existe un registro de ordeñe por lote para esa fecha y turno: el sistema informa la duplicación y remite a la corrección del registro existente (CU19). 6a. Los litros ingresados son negativos o superan el máximo admitido: el sistema muestra una alerta de error e impide el guardado.
 
@@ -1711,11 +1711,11 @@ Curso Básico:
 
 1. El sistema recupera los avisos vigentes de cada módulo: secados próximos, partos próximos, tactos pendientes, hembras para servir, procedimientos sanitarios vencidos y por vencer, insumos en stock crítico y partidas próximas a vencer.
 
-2. El sistema recupera las cifras del día: producción registrada y cantidad de animales en ordeñe.
+2. El sistema recupera la composición del rodeo —animales activos, hembras en lactancia, secas, preñadas y vacías— junto con los litros por vaca y por día y los días en leche promedio.
 
 3. El sistema despliega cada grupo de avisos con su cantidad y el acceso directo a la pantalla que lo resuelve.
 
-Cursos Alternativos: 3a. No hay avisos pendientes en un grupo: el sistema lo informa en lugar de mostrar una lista vacía.
+Cursos Alternativos: 3a. No hay avisos pendientes en un grupo: el sistema lo informa en lugar de mostrar una lista vacía. 1a. Todavía no hay ningún animal cargado: el tablero reemplaza los avisos por la indicación de por dónde empezar la puesta en marcha.
 
 Cursos de Excepción: —
 

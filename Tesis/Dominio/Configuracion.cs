@@ -39,7 +39,7 @@ namespace Tesis.Dominio
         public double LitrosMaximosIndividual { get { return mLitrosMaximosIndividual; } set { mLitrosMaximosIndividual = value; } }
 
         // Cantidad de orden;es diarios. De aca salen los turnos que ofrecen las
-        // pantallas de CU8 y CU9.
+        // pantallas de CU12 y CU13.
         public int OrdeniesPorDia { get { return mOrdeniesPorDia; } set { mOrdeniesPorDia = value; } }
 
         public int DiasAnticipacionSecado { get { return mDiasAnticipacionSecado; } set { mDiasAnticipacionSecado = value; } }

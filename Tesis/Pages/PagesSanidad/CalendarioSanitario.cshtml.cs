@@ -4,7 +4,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesSanidad
 {
-    // CU23. El cronograma no se guarda en ningun lado: es lo que los planes activos
+    // CU31. El cronograma no se guarda en ningun lado: es lo que los planes activos
     // exigen menos lo que se aplico, calculado cada vez que se consulta.
     public class CalendarioSanitarioModel : PageModel
     {

@@ -3,7 +3,7 @@ using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesSanidad
 {
-    // CU22, pasos 1 y 2: los planes ya configurados con su estado. Desde aca se crea
+    // CU30, pasos 1 y 2: los planes ya configurados con su estado. Desde aca se crea
     // uno nuevo o se elige uno existente para modificarlo.
     public class ListaPlanesModel : PageModel
     {

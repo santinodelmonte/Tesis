@@ -8,9 +8,10 @@ namespace Tesis.Persistencia
     {
         private pConexion Conexion = new pConexion();
 
-        // id_animal e id_plan se leen y se escriben desde el Modulo 4: la columna
-        // id_plan ya existia y la de animal la agrega tambo_m4_m5.sql. Un tratamiento
-        // anterior a ese script puede tener el animal en nulo si era preventivo.
+        // id_animal e id_plan se leen y se escriben desde el Modulo 4. Las dos columnas
+        // admiten nulo: id_plan cuando el tratamiento no cumple ningun plan sanitario,
+        // e id_animal por si la fila llega sin animal, aunque la Controladora siempre
+        // lo completa.
         public List<Tratamiento> ListarTratamientos(List<Diagnostico> pListaDiagnosticos,
             List<Insumo> pListaInsumos, List<Animal> pListaAnimales, List<PlanSanitario> pListaPlanes)
         {

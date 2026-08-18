@@ -209,18 +209,18 @@ dict(
     actores='Encargada del sector',
     tipo='Primario',
     descripcion='Permite registrar la baja lógica de un animal del rodeo activo, '
-        'especificando la fecha y la causa de su salida.',
+        'especificando la causa de su salida.',
     rf='RF1.2',
     precondicion='El usuario debe estar logueado en el sistema y el animal debe figurar '
         'en estado activo.',
     desencadenante='El usuario selecciona la opción de dar de baja a un animal.',
     curso=[
         'El usuario busca y selecciona el animal al que desea dar de baja.',
-        'El sistema despliega el formulario solicitando la fecha y el motivo de la salida.',
-        'El usuario indica la fecha, selecciona el motivo (venta, fallecimiento, descarte '
-        'sanitario u otros) y presiona “Confirmar Baja”.',
-        'El sistema actualiza el estado del animal a inactivo, almacena la fecha y el '
-        'motivo, y confirma la operación.',
+        'El sistema despliega los datos del animal y solicita el motivo de la salida.',
+        'El usuario selecciona el motivo (venta, fallecimiento, descarte sanitario u '
+        'otros) y presiona “Confirmar Baja”.',
+        'El sistema actualiza el estado del animal a inactivo, almacena el motivo y la '
+        'fecha del día como fecha de salida, y confirma la operación.',
     ],
     alternativos='—',
     excepcion='—',
@@ -232,8 +232,8 @@ dict(
         'porque destruiría el historial productivo y el linaje genealógico de los animales '
         'emparentados. La baja no impide registrar eventos anteriores a su fecha, pero sí '
         'posteriores.',
-    validaciones='La fecha y el motivo de salida son obligatorios. La fecha no puede ser '
-        'futura ni anterior a la fecha de nacimiento del animal.',
+    validaciones='El motivo de salida es obligatorio. La fecha de salida no se ingresa: '
+        'la registra el sistema, que es el día en que la baja se carga.',
     frecuencia='Baja, sólo ante la pérdida, descarte o comercialización de un vientre o '
         'cría.',
 ),
@@ -281,10 +281,11 @@ dict(
     curso=[
         'El usuario busca y selecciona el animal dentro del rodeo.',
         'El usuario selecciona la opción “Ver Linaje”.',
-        'El sistema recupera los datos de los progenitores vinculados.',
+        'El sistema recorre la ascendencia registrada del animal y la envía completa a '
+        'la pantalla.',
         'El sistema despliega el árbol genealógico mostrando al animal y a sus '
         'progenitores directos, cada uno con su fotografía y su caravana.',
-        'El usuario despliega la rama de cualquier ancestro y el sistema incorpora al '
+        'El usuario despliega la rama de cualquier ancestro y la pantalla incorpora al '
         'árbol la generación siguiente.',
     ],
     alternativos='5a. El usuario selecciona un ancestro: el sistema abre la ficha integral '
@@ -293,8 +294,10 @@ dict(
         'con el padre y la madre como “No registrado”, sin rama para desplegar.',
     postcondicion='El sistema despliega la información solicitada sin alterar los registros '
         'existentes.',
-    reglas='El árbol se construye a demanda: cada rama se resuelve cuando el usuario la '
-        'despliega, de modo que un linaje profundo no obliga a recorrer todo el rodeo.',
+    reglas='La ascendencia se resuelve de una sola vez, hasta diez generaciones, y se '
+        'envía entera a la pantalla: el despliegue de cada rama ocurre en el navegador y '
+        'no vuelve a consultar al servidor. La profundidad está acotada porque la '
+        'validación genealógica impide que un animal sea ancestro de sí mismo.',
     validaciones='—',
     frecuencia='Media, consultada principalmente durante la planificación de servicios o '
         'el análisis de descarte.',
@@ -433,8 +436,9 @@ dict(
         'integraron y confirma la operación.',
     ],
     alternativos='3a. El usuario decide incluir manualmente un animal excluido por '
-        'descarte: el sistema advierte que la leche de ese animal no debe destinarse a '
-        'consumo y solicita confirmación.',
+        'descarte: el sistema los presenta en una lista aparte, advirtiendo que la leche '
+        'de esos animales no debe destinarse a consumo e indicando hasta cuándo dura el '
+        'descarte de cada uno, y el usuario los incorpora al lote marcándolos.',
     excepcion='5a. Ya existe un registro de ordeñe por lote para esa fecha y turno: el '
         'sistema informa la duplicación y remite a la corrección del registro existente '
         '(CU19). 6a. Los litros ingresados son negativos o superan el máximo admitido: el '
