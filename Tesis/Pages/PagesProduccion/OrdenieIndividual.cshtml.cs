@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -135,6 +135,17 @@ namespace Tesis.Pages.PagesProduccion
                 return Page();
             }
 
+            // El otro lado de la regla del tanque: si el turno tiene ordeñe de lote y
+            // el animal lo integra, lo medido no puede pasarse del total.
+            string vMotivo = unaControladora.ValidarMedidoContraLote(fecha, turno,
+                unaHembra.IdAnimal, litros, 0);
+
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
+
             // La lactancia y el ordenie de lote los resuelve la Controladora al guardar
             OrdenieIndividual unOrdenie = new OrdenieIndividual(0, fecha, turno, litros,
                 unaHembra, null, null);
@@ -203,9 +214,7 @@ namespace Tesis.Pages.PagesProduccion
             int.TryParse(Request.Form["id"], out vId);
             id = vId;
 
-            double vLitros = 0;
-            double.TryParse(Request.Form["litros"], out vLitros);
-            litros = vLitros;
+            litros = Shared.CampoNumerico.LeerDecimal(Request.Form["litros"]);
 
             // En la correccion la pantalla no manda ni fecha, ni turno, ni caravana:
             // son la clave alterna del control y no se editan.

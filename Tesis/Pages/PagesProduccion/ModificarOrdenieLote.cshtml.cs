@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -76,6 +76,15 @@ namespace Tesis.Pages.PagesProduccion
                 return Page();
             }
 
+            string vMotivo = unaControladora.ValidarLoteContraMedido(ordenie.Fecha, ordenie.Turno,
+                litrosTotales, _animalesElegidos);
+
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
+
             if (unaControladora.ModificarOrdenieLote(idOrdenieLote, litrosTotales, _animalesElegidos))
             {
                 return Redirect("./HistorialProduccion");
@@ -117,9 +126,7 @@ namespace Tesis.Pages.PagesProduccion
             int.TryParse(Request.Form["idOrdenieLote"], out vId);
             idOrdenieLote = vId;
 
-            double vLitros = 0;
-            double.TryParse(Request.Form["litrosTotales"], out vLitros);
-            litrosTotales = vLitros;
+            litrosTotales = Shared.CampoNumerico.LeerDecimal(Request.Form["litrosTotales"]);
 
             seleccionados = new List<int>();
             foreach (string? vValor in Request.Form["animales"])

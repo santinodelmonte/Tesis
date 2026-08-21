@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model Tesis.Pages.PagesInsumo.IngresoStockModel
 @{
 }
@@ -28,7 +28,7 @@
                 <div class="form-group">
                     <label for="cantidad">Cantidad:</label>
                     <input type="number" step="0.01" min="0" id="cantidad" name="cantidad"
-                           class="form-control" value="@Model.cantidad" />
+                           class="form-control" value="@Tesis.Pages.Shared.CampoNumerico.Escribir(Model.cantidad)" />
                 </div>
             </div>
             <div class="col-md-3">

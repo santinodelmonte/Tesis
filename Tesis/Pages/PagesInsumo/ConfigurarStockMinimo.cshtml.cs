@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -65,9 +65,7 @@ namespace Tesis.Pages.PagesInsumo
             int.TryParse(Request.Form["idInsumo"], out vIdInsumo);
             idInsumo = vIdInsumo;
 
-            double vStockMinimo = 0;
-            double.TryParse(Request.Form["stockMinimo"], out vStockMinimo);
-            stockMinimo = vStockMinimo;
+            stockMinimo = Shared.CampoNumerico.LeerDecimal(Request.Form["stockMinimo"]);
         }
     }
 }

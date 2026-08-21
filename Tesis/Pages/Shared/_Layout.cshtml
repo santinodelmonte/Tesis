@@ -1,4 +1,4 @@
-@*
+﻿@*
     Disposición general del sistema.
 
     El menú es una columna lateral. Con seis módulos, la barra superior de
@@ -111,6 +111,19 @@
             {
                 new { Texto = "Indicadores del rodeo", Paginas = new[] { "/PagesIndicadores/Indicadores" } },
                 new { Texto = "Candidatas a descarte", Paginas = new[] { "/PagesIndicadores/CandidatasDescarte" } }
+            }
+        },
+        new
+        {
+            Titulo = "Reportes",
+            Icono = "reportes",
+            Id = "seccionReportes",
+            Items = new[]
+            {
+                new { Texto = "Productivo", Paginas = new[] { "/PagesReportes/ReporteProductivo" } },
+                new { Texto = "Sanitario", Paginas = new[] { "/PagesReportes/ReporteSanitario" } },
+                new { Texto = "Reproductivo", Paginas = new[] { "/PagesReportes/ReporteReproductivo" } },
+                new { Texto = "Genético", Paginas = new[] { "/PagesReportes/ReporteGenetico" } }
             }
         }
     };

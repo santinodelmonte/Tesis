@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model Tesis.Pages.PagesInsumo.ConfigurarStockMinimoModel
 @{
 }
@@ -34,7 +34,7 @@
                 <div class="form-group">
                     <label for="stockMinimo">Stock minimo:</label>
                     <input type="number" step="0.01" min="0" id="stockMinimo" name="stockMinimo"
-                           class="form-control" value="@Model.stockMinimo" />
+                           class="form-control" value="@Tesis.Pages.Shared.CampoNumerico.Escribir(Model.stockMinimo)" />
                 </div>
             </div>
         </div>

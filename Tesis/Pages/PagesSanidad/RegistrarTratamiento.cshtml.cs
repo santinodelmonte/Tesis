@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -292,9 +292,7 @@ namespace Tesis.Pages.PagesSanidad
 
             dosisDiaria = Request.Form["dosisDiaria"];
 
-            double vCantidad = 0;
-            double.TryParse(Request.Form["cantidadInsumo"], out vCantidad);
-            cantidadInsumo = vCantidad;
+            cantidadInsumo = Shared.CampoNumerico.LeerDecimal(Request.Form["cantidadInsumo"]);
 
             fechaFinDescarte = Request.Form["fechaFinDescarte"] != ""
                 ? Convert.ToDateTime(Request.Form["fechaFinDescarte"])

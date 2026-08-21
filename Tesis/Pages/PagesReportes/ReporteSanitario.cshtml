@@ -1,0 +1,49 @@
+@page
+@model Tesis.Pages.PagesReportes.ReporteSanitarioModel
+@{
+    ViewData["Title"] = "Reporte sanitario";
+}
+<div>
+    <h1>Reporte sanitario</h1>
+    <p class="text-muted">Diagnosticos, tratamientos, vacunaciones y descornes del periodo, con la situacion sanitaria del rodeo al dia de la emision.</p>
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fechaDesde">Desde:</label>
+                    <input type="date" id="fechaDesde" name="fechaDesde" class="form-control"
+                           value="@Model.fechaDesde.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="fechaHasta">Hasta:</label>
+                    <input type="date" id="fechaHasta" name="fechaHasta" class="form-control"
+                           value="@Model.fechaHasta.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary" asp-page-handler="Consultar">
+                    Ver en pantalla
+                </button>
+                <button type="submit" class="btn btn-outline-secondary" asp-page-handler="Pdf">
+                    Descargar PDF
+                </button>
+                <button type="submit" class="btn btn-outline-secondary" asp-page-handler="Excel">
+                    Descargar Excel
+                </button>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+    </form>
+
+    @if (Model.reporte != null)
+    {
+        <partial name="_VistaReporte" model="Model.reporte" />
+    }
+</div>

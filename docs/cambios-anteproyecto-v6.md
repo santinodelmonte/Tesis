@@ -70,7 +70,7 @@ De 55 requerimientos se pasó a 74, en siete módulos en lugar de seis: 20 nuevo
 | RF1.2 | baja lógica **o definitiva** | sólo baja lógica: el usuario elige el motivo y el sistema asienta la fecha del día |
 | RF1.5 | padre y madre **obligatorios** | opcionales: admite que no estén registrados |
 | RF1.7 | advierte el **parentesco directo** | busca un **ancestro común** en la ascendencia registrada de los dos |
-| RF1.8 | los machos se clasifican **por edad** | por edad **y destino reproductivo**: el macho de más de quince meses es Toro sólo si está en pie |
+| RF1.8 | los machos se clasifican **por edad** | por edad **y destino reproductivo**: el macho de más de quince meses es Toro si está en pie o si aporta pajuelas al stock; si no, Novillo |
 | RF1.9 | actualización **automática** de categoría | recalcula y señala; automática al registrarse un parto |
 | RF1.10 | caravana, categoría, estado, edad | agrega **raza** |
 | RF2.1 | dos requerimientos, uno por turno | uno solo, para la cantidad de turnos configurada |

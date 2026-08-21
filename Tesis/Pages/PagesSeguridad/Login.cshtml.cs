@@ -26,8 +26,11 @@ namespace Tesis.Pages.PagesSeguridad
             usuario = Request.Form["usuario"];
             contrasena = Request.Form["contrasena"];
 
-            Controladora unaControladora = new Controladora();
-            if (unaControladora.ValidarCredenciales(usuario, contrasena))
+            // La validacion no construye una Controladora: las credenciales salen de la
+            // configuracion y no de la base, y construir una abriria una conexion que
+            // esta pantalla no necesita. Con el motor caido el login tiene que seguir
+            // respondiendo.
+            if (Controladora.ValidarCredenciales(usuario, contrasena))
             {
                 // Se abre la sesion: la identidad queda guardada en una cookie y a
                 // partir de aca el resto del sitio sabe que hay un usuario validado.

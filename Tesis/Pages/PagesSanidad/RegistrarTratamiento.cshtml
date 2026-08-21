@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model Tesis.Pages.PagesSanidad.RegistrarTratamientoModel
 @{
     ViewData["Title"] = Model.esCorreccion ? "Corregir tratamiento" : "Registrar tratamiento";
@@ -121,7 +121,7 @@
                 <div class="form-group">
                     <label for="cantidadInsumo">Unidades a descontar:</label>
                     <input type="number" step="0.01" min="0" id="cantidadInsumo" name="cantidadInsumo"
-                           class="form-control" value="@Model.cantidadInsumo" />
+                           class="form-control" value="@Tesis.Pages.Shared.CampoNumerico.Escribir(Model.cantidadInsumo)" />
                 </div>
             </div>
         </div>

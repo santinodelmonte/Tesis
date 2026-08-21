@@ -1,0 +1,32 @@
+@page
+@model Tesis.Pages.PagesReportes.ReporteGeneticoModel
+@{
+    ViewData["Title"] = "Reporte genético";
+}
+<div>
+    <h1>Reporte genético</h1>
+    <p class="text-muted">Genealogia del rodeo y rendimiento comparado de las lineas paternas.</p>
+
+    <form method="post">
+        <div class="row mt-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary" asp-page-handler="Consultar">
+                    Ver en pantalla
+                </button>
+                <button type="submit" class="btn btn-outline-secondary" asp-page-handler="Pdf">
+                    Descargar PDF
+                </button>
+                <button type="submit" class="btn btn-outline-secondary" asp-page-handler="Excel">
+                    Descargar Excel
+                </button>
+            </div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+    </form>
+
+    @if (Model.reporte != null)
+    {
+        <partial name="_VistaReporte" model="Model.reporte" />
+    }
+</div>

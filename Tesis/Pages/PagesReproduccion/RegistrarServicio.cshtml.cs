@@ -212,6 +212,20 @@ namespace Tesis.Pages.PagesReproduccion
                 return Page();
             }
 
+            // Las advertencias tambien se revisan al corregir, y por el mismo motivo que
+            // en el alta: cambiar la pajuela por una de un toro emparentado con la vaca
+            // es un dato posible pero que hay que ver antes de confirmar. Sin esto, la
+            // correccion era la puerta por la que un servicio consanguineo entraba sin
+            // que nadie lo mirara.
+            Servicio unServicioCorregido = new Servicio(id, tipoServicio, fechaServicio,
+                fechaProbableParto, observaciones ?? "", pHembra, pToro, pPajuela);
+
+            advertencias = pControladoraDominio.AdvertenciasServicio(unServicioCorregido);
+            if (advertencias.Count > 0 && !confirmado)
+            {
+                return Page();
+            }
+
             if (pControladoraDominio.ModificarServicio(id, tipoServicio, fechaServicio,
                 fechaProbableParto, observaciones ?? "", pHembra.IdAnimal, vIdToro, vIdPajuela))
             {

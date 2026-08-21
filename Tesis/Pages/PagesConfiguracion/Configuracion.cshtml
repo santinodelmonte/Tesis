@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model Tesis.Pages.PagesConfiguracion.ConfiguracionModel
 @{
 }
@@ -81,7 +81,7 @@
                     <label for="litrosMaximosIndividual">Litros maximos por control individual:</label>
                     <input type="number" step="0.01" min="1" id="litrosMaximosIndividual"
                            name="litrosMaximosIndividual" class="form-control"
-                           value="@Model.litrosMaximosIndividual" />
+                           value="@Tesis.Pages.Shared.CampoNumerico.Escribir(Model.litrosMaximosIndividual)" />
                     <small class="text-muted">
                         Tope de coherencia de una carga. También limita el ordeñe por lote,
                         multiplicado por la cantidad de animales.

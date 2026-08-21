@@ -139,8 +139,10 @@ escribir(
     'verificando si existe un ancestro común dentro de la ascendencia registrada de '
     'ambos. La advertencia es informativa y no impide registrar el servicio.')
 
-# El macho de mas de quince meses es Toro solo si integra el rodeo como reproductor; si
-# no, es Novillo. La edad sola no alcanza para clasificarlo.
+# El macho de mas de quince meses es Toro si se destina a la reproduccion -esta en pie o
+# aporta pajuelas al stock-; si no, es Novillo. La edad sola no alcanza para
+# clasificarlo, y la presencia en el campo tampoco: el toro de catalogo no integra el
+# rodeo y sigue siendo un reproductor.
 escribir(
     buscar('RF1.8'), 'RF1.8 Clasificación automática:',
     'El sistema debe clasificar automáticamente a los animales: las hembras según su '

@@ -8,6 +8,11 @@ namespace Tesis.Pages.PagesAnimal
     {
         public List<Animal> animales = new List<Animal>();
 
+        // Los toros de catalogo van en una tabla aparte: aportan pajuelas y no integran
+        // el rodeo, asi que mezclarlos con los animales del campo desvirtua el conteo y
+        // les ofrece acciones que no tienen sentido, como darlos de baja.
+        public List<Animal> reproductoresCatalogo = new List<Animal>();
+
         // RF1.9: animales cuya categoria guardada ya no es la que les corresponde por
         // edad o por partos, con el nombre de la que propone el sistema.
         public Dictionary<int, string> categoriasDesactualizadas = new Dictionary<int, string>();
@@ -32,7 +37,8 @@ namespace Tesis.Pages.PagesAnimal
             unaControladora.ListarAnimales();
 
             // El listado muestra el rodeo actual: los animales dados de baja se consultan desde Buscar y Filtrar
-            animales = unaControladora.FiltrarAnimalesXEstado(true);
+            animales = unaControladora.ListarRodeo();
+            reproductoresCatalogo = unaControladora.ListarReproductoresDeCatalogo();
 
             foreach (Animal unAnimal in animales)
             {

@@ -5,9 +5,21 @@ datos concretos y qué tiene que pasar. Los datos no son de relleno: se apoyan e
 rodeo que carga `bd/DatosPrueba.sql`, así que las pantallas quedan coherentes
 después de cargarlos y se puede seguir probando encima.
 
-La fecha de referencia del juego de datos es el **09/08/2026**. Todo lo que sigue se
-carga con fecha **11/08/2026** salvo que se aclare otra cosa. Si se prueba en otra
-fecha, correr las fechas de carga en el mismo sentido.
+**Las fechas de este guion son relativas al día en que se corre el script.**
+`bd/DatosPrueba.sql` ancla todo el rodeo a `@hoy = CURDATE()`, así que el juego de
+datos se corre solo y las alertas nunca quedan viejas. La equivalencia con las fechas
+escritas acá es siempre la misma:
+
+| Dice | Leer |
+|---|---|
+| **09/08/2026** (la referencia del rodeo) | anteayer |
+| **10/08/2026** | ayer |
+| **11/08/2026** (todo lo que se carga, salvo que se aclare) | hoy |
+
+Las demás fechas del juego —el descarte de la `115`, el parto de la `136`, los
+vencimientos— se corren la misma cantidad de días. Para que coincidan literalmente
+con lo escrito acá, fijar el ancla al principio del script:
+`SET @hoy = DATE('2026-08-11');`.
 
 Los flujos están en orden: varios se apoyan en el anterior (el celo habilita el
 servicio, el tacto confirma la preñez, el tratamiento saca la vaca del lote). Se
@@ -66,8 +78,9 @@ dotnet run --project Tesis
 
 Botón **Ingresar**.
 
-**Esperado.** Va al inicio, el menú superior muestra los seis módulos y el nombre
-`sofia` con el botón **Cerrar Sesion**.
+**Esperado.** Va al tablero "Hoy en el tambo", el menú lateral muestra las siete
+secciones y la barra superior, el buscador de caravana, el nombre `sofia` y el botón
+**Cerrar sesión**.
 
 **Variantes que tienen que fallar.**
 
@@ -108,10 +121,16 @@ partos). Después **Agregar**.
 - Caravana vacía o raza sin elegir → *"El número de caravana y la raza son
   obligatorios!"*.
 
-**Variante con advertencia (no bloquea, avisa).** Alta de la caravana `201`, nacida
-`2026-07-01`, hembra, Holando, con **Madre** `177` (la ternera nacida el 06/04/2026):
-el sistema no la registra y muestra la advertencia de genealogía (la madre no tenía
-edad para parir). El botón **Guardar de todos modos** la carga igual.
+**Variante que tiene que bloquear (genealogía imposible).** Alta de la caravana `201`,
+nacida `2026-07-01`, hembra, Holando, con **Madre** `177` (la ternera nacida el
+06/04/2026) → *"La madre tiene que haber nacido al menos 22 meses antes que la cria!"*.
+Son la edad mínima al servicio configurada (13 meses) más los 9 de gestación. No hay
+botón para forzarlo: una madre más joven que su cría es imposible, no sospechoso.
+
+**Variante con advertencia (no bloquea, avisa).** La misma alta, pero con **Madre**
+`152` y **Padre** `7HO12165`, que es el padre de `152`: el sistema no la registra y
+muestra la advertencia de genealogía (*"Los progenitores tienen parentesco entre sí…
+La cría nace consanguínea."*). El botón **Guardar de todos modos** la carga igual.
 
 ---
 

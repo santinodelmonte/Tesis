@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -114,8 +114,8 @@ namespace Tesis.Pages.PagesProduccion
             {
                 string vValor = Request.Form["litros_" + unaHembra.IdAnimal].ToString();
 
-                double vLitros = 0;
-                if (vValor != "" && double.TryParse(vValor, out vLitros) && vLitros > 0)
+                double vLitros = Shared.CampoNumerico.LeerDecimal(vValor);
+                if (vLitros > 0)
                 {
                     litrosCargados.Add(unaHembra.IdAnimal, vLitros);
                 }

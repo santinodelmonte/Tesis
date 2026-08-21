@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -73,9 +73,7 @@ namespace Tesis.Pages.PagesInsumo
             int.TryParse(Request.Form["idInsumo"], out vIdInsumo);
             idInsumo = vIdInsumo;
 
-            double vCantidad = 0;
-            double.TryParse(Request.Form["cantidad"], out vCantidad);
-            cantidad = vCantidad;
+            cantidad = Shared.CampoNumerico.LeerDecimal(Request.Form["cantidad"]);
 
             fecha = Request.Form["fecha"] != "" ? Convert.ToDateTime(Request.Form["fecha"]) : DateTime.Now;
             fechaVencimiento = Request.Form["fechaVencimiento"] != ""
