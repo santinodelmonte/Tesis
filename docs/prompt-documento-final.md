@@ -1,9 +1,8 @@
 # Prompt — del anteproyecto y el proyecto al documento final
 
-Este archivo **es** el prompt. Para arrancar una sesión de trabajo sobre el
-documento alcanza con:
+Este archivo **es** el prompt. Para arrancar una sesión de trabajo alcanza con:
 
-> Leé `docs/prompt-documento-final.md` y seguí con la Fase A, sección 2.3.
+> Leé `docs/prompt-documento-final.md` y seguí con la Fase 2, sección 2.3.
 
 No hace falta pegar nada más: acá están el objetivo, la referencia, las reglas y
 el estado de cada sección.
@@ -21,14 +20,23 @@ Anteproyecto_v6.docx  ──┐
 Proyecto_v6.docx      ──┘
 ```
 
-Se hace en dos fases y **en este orden**:
+Tres fases, **en este orden y sin solaparlas**:
 
-- **Fase A — cerrar el Proyecto.** Escribir las secciones 2.3 a 2.9, hoy con la
+- **Fase 1 — Terminar el código.** El Módulo 7 completo y lo que arrastra. Hasta
+  que el sistema no esté terminado no se toca la documentación.
+- **Fase 2 — Cerrar el Proyecto.** Escribir las secciones 2.3 a 2.9, hoy con la
   palabra «Pendiente.» y nada más.
-- **Fase B — unificar.** Renumerar el anteproyecto como `1.x`, concatenarlo con
+- **Fase 3 — Unificar.** Renumerar el anteproyecto como `1.x`, concatenarlo con
   el proyecto, rehacer índice, portada y numeración de páginas.
 
-No empezar la Fase B hasta que la A esté cerrada y revisada.
+**La regla de las fases es la que ordena todo lo demás.** El documento describe
+el sistema que existe; documentar un sistema que todavía se está moviendo es
+trabajo que hay que rehacer. Con el Módulo 7 en curso cambian el MER, los
+diagramas de secuencia, el diccionario de clases, las pantallas del manual y lo
+que se puede probar. Se termina de programar, y recién entonces se escribe.
+
+Lo único que **sí** se puede adelantar en paralelo está en el punto 9: son las
+tres cosas que no dependen del código.
 
 ---
 
@@ -82,34 +90,60 @@ documento nuestro promete pruebas automatizadas, **se corrige el documento**.
 > (carpeta `Tesis`), no en el repo, y su texto sólo se puede extraer hasta la
 > página 80 aproximadamente por la vía de la nube: justo antes de las secciones
 > que hay que copiar. **Subir `EjemploTesis.pdf` al repo** (raíz o `docs/`) es el
-> primer paso de la Fase A; con el archivo local se leen las páginas 152 a 229 sin
+> primer paso de la Fase 2; con el archivo local se leen las páginas 152 a 229 sin
 > problema.
 
 ---
 
-## 3. Regla de oro
+## 3. Dos pasos, no uno: generar y después editar
 
-**El `.docx` es un producto de compilación, no un documento que se edita.**
+El trabajo sobre el documento tiene **dos etapas separadas, con dos comandos y dos
+commits distintos**:
 
-`docs/editar_proyecto.py` toma `Proyecto_v5.docx` como plantilla —portada,
-estilos, encabezados— y reescribe las secciones de diseño con lo que generan los
-módulos de `docs/`, que a su vez leen `bd/CreacionDb.sql` y las clases de
-`Tesis/`. Volver a correrlo después de tocar el código actualiza el documento
-entero.
+```
+paso 1   generar      bd/CreacionDb.sql + Tesis/   ──►   docs/*.md  y  docs/diagramas/*.png
+paso 2   editar       docs/*.md + docs/diagramas/  ──►   Proyecto_v6.docx
+```
 
-De ahí salen tres reglas que no se negocian:
+**El paso 2 no genera nada.** Toma los archivos que ya están en `docs/` y los
+vuelca al documento. Si un diagrama está mal, se arregla en el paso 1 o a mano
+sobre el `.drawio`, se vuelve a exportar, y el paso 2 se limita a colocar el
+archivo que encuentre.
 
-1. **Nada se escribe dos veces.** Si un dato está en el código, en el SQL o en un
-   `.md` de `docs/`, la sección lo lee de ahí. No se transcribe a mano.
-2. **Nunca editar a mano una sección que un script genera.** Se pierde en la
-   próxima corrida. Si hay que cambiarla, se cambia la fuente o el script.
-3. **Las secciones nuevas siguen el mismo camino.** 2.3 a 2.9 se escriben como
-   markdown en `docs/` y `editar_proyecto.py` se extiende para volcarlas al
-   `.docx`. No se escriben directamente en Word.
+Por qué separados, y no como está hoy:
 
-Si una sección no se puede derivar de ninguna fuente —las conclusiones, la
-satisfacción del cliente— se escribe a mano **en su `.md`**, que pasa a ser la
-fuente.
+- **Los diagramas se pueden mirar antes de publicarlos.** Un error del generador
+  hoy entra derecho al `.docx`; con la separación se ve primero.
+- **Los diagramas se pueden retocar a mano y el retoque sobrevive.** Un MER de
+  veinticuatro tablas casi nunca queda legible con el acomodo automático: se abre
+  el `.drawio`, se mueven las cajas y se vuelve a exportar. El paso 2 usa lo que
+  haya, no lo vuelve a calcular.
+- **Corregir un párrafo no obliga a regenerar cuarenta y nueve diagramas de
+  secuencia.**
+
+**El precio de separar, y cómo se paga.** Al desacoplar aparece la posibilidad de
+armar el documento con diagramas viejos. El paso 2 tiene que **avisar**: antes de
+escribir, comparar la fecha de cada artefacto de `docs/` contra la de su fuente
+—`bd/CreacionDb.sql`, `Tesis/`— y cortar con un mensaje claro si el artefacto es
+más viejo. No es opcional: es lo único que reemplaza a la garantía que daba el
+acoplamiento.
+
+**Lo que no cambia.** Nada se escribe dos veces: si un dato está en el código, en
+el SQL o en un `.md` de `docs/`, la sección lo lee de ahí, no se transcribe. Y
+nunca se edita a mano en Word una sección que el paso 2 escribe: se pierde en la
+próxima corrida. Si hay que cambiarla, se cambia el `.md`.
+
+**Refactor pendiente.** Hoy `docs/editar_proyecto.py` hace las dos cosas: importa
+`modelo_datos`, `diccionario_clases` y `render_casos_de_uso` y vuelve a derivar el
+contenido mientras escribe el documento. Los tres módulos ya saben escribir su
+`.md` —`modelo-datos-v6.md`, `diccionario-clases-v6.md`, `casos-de-uso-v6.md`—,
+así que la separación es corta: un `docs/generar.py` que los corra a todos junto
+con los de `docs/diagramas/`, y un `editar_proyecto.py` que lea de disco en lugar
+de importar. Hacerlo **al empezar la Fase 2**, antes de escribir las secciones
+nuevas, para que nazcan con la forma correcta.
+
+Las secciones nuevas siguen el mismo camino: 2.3 a 2.9 se escriben como markdown
+en `docs/`, y el paso 2 las vuelca. No se escriben directamente en Word.
 
 ---
 
@@ -143,18 +177,18 @@ Insumos que ya existen y hay que aprovechar, no rehacer:
 
 ---
 
-## 5. Fase 0 — Módulo 7
+## 5. Fase 1 — Terminar el código
 
-**Decisión tomada: el Módulo 7 se construye antes de entregar.** El documento
-final describe un sistema de ocho módulos terminados, no siete y una promesa.
+**Nada de documentación hasta que esta fase esté cerrada** (salvo lo del punto 9).
 
-Implica, y en este orden:
+El Módulo 7 se construye: el documento final describe un sistema de ocho módulos
+terminados, no siete y una promesa. Implica, en este orden:
 
 1. Las dos tablas que hoy están en el MER dibujadas con otro relleno por
    proyectadas: crearlas en `bd/CreacionDb.sql`.
 2. El bot de Telegram y el envío de las alertas de RF7.6 (sanidad pendiente,
    partos próximos, tactos pendientes, secados próximos, stock crítico,
-   vencimiento de insumos, fin del período de descarte).
+   vencimiento de insumos, fin del período de descarte de leche).
 3. El resumen diario, **CU49**, que es un proceso programado.
 4. Las pantallas del módulo, que hoy no existen: los seis diagramas de secuencia
    del Módulo 7 están armados con los mensajes previstos, no leídos del código.
@@ -169,21 +203,23 @@ Implica, y en este orden:
 > porque la mayoría de los métodos leen las listas sin refrescar y hoy funcionan
 > sólo porque son `static`.
 
-Terminado el módulo, volver a correr los generadores: los diagramas de secuencia
-del Módulo 7 pasan a leerse del código, el MER pierde el relleno de «proyectada»
-y el diccionario de clases incorpora las clases nuevas.
+**Cierre de la fase.** Correr el paso 1 —los generadores— y revisar los artefactos:
+los diagramas de secuencia del Módulo 7 ahora se leen del código, el MER pierde el
+relleno de «proyectada» y el diccionario incorpora las clases nuevas. Ahí termina
+la Fase 1. El documento todavía no se toca.
 
 ---
 
-## 6. Fase A — cerrar 2.3 a 2.9
+## 6. Fase 2 — Cerrar 2.3 a 2.9
 
-Para **cada** sección, siempre el mismo procedimiento:
+Primero el refactor del punto 3. Después, para **cada** sección, siempre el mismo
+procedimiento:
 
 1. Leer la sección equivalente en `EjemploTesis.pdf` y anotar su forma.
 2. Escribir `docs/<seccion>.md` desde las fuentes que se listan abajo.
-3. Extender `docs/editar_proyecto.py` para volcarla al `.docx`.
-4. Correr el script, abrir el `.docx` y verificar que quedó donde va.
-5. Commit, con el criterio del punto 8.
+3. Revisarla en el `.md`, que es donde se lee cómodo. Commit.
+4. **Aparte**, correr el paso 2 y verificar en el `.docx` que quedó donde va y con
+   el formato de las secciones vecinas. Commit.
 
 ### 2.3 Pruebas — ~17 páginas
 
@@ -224,7 +260,8 @@ tiene que quedar explicado ahí, porque es lo que la usuaria no espera.
 
 Fuente: `bd/LEEME.md` y `Tesis/appsettings.json`. Los dos scripts de base, la
 cadena de conexión, XAMPP con MariaDB, el `dotnet run` y el hosting elegido en el
-anteproyecto. Una página: no convertirlo en un manual de sistemas.
+anteproyecto. Sumar la puesta en marcha del proceso programado del Módulo 7. Una
+página: no convertirlo en un manual de sistemas.
 
 ### 2.6 Política de Seguridad y Respaldos — ~1 página
 
@@ -232,7 +269,7 @@ El sistema es de un solo usuario con credenciales fijas: **decirlo, no
 disimularlo**. Qué se respalda, con qué frecuencia, dónde queda la copia y quién
 la hace. Los respaldos automáticos del hosting ya están comprometidos en el
 control preventivo del riesgo R9 del anteproyecto: usar eso, no inventar otra
-cosa.
+cosa. El token del bot de Telegram es un secreto: decir dónde vive y quién lo rota.
 
 ### 2.7 Plan de contingencia — ~1 página
 
@@ -256,7 +293,7 @@ Un documento que reconoce sus límites se defiende mejor que uno que los esconde
 
 ---
 
-## 7. Fase B — unificar y renumerar
+## 7. Fase 3 — Unificar y renumerar
 
 **Decisión tomada: se renumera todo como el ejemplo.**
 
@@ -269,10 +306,8 @@ Un documento que reconoce sus límites se defiende mejor que uno que los esconde
 4. El índice se genera, no se escribe. Con números de página reales.
 
 Hacerlo con un script —`docs/armar_tesis.py`— que produzca `Tesis.docx` a partir
-de los dos `.docx`. Vale la pena aunque parezca más trabajo que copiar y pegar:
-las secciones de diseño se van a regenerar varias veces antes de la entrega, y
-cada regeneración tiene que poder rehacer el documento unificado sin repetir el
-trabajo de armado a mano.
+de los dos `.docx`. Es un paso 2, no un paso 1: no deriva nada del código, sólo
+concatena y renumera lo que ya está escrito.
 
 **Dos huecos del anteproyecto que aparecen al comparar con el ejemplo:**
 
@@ -296,30 +331,38 @@ tarea —«El modelo entidad-relacion se lee del esquema, no se transcribe», no
 apareció en el camino.
 
 **El trabajo va en la rama `claude/thesis-project-document-prompt-nj7ffh`**, con
-un commit por sección terminada. No acumular las siete en uno solo: si algo hay
-que rehacer, conviene poder volver a una sección sola.
+commits separados para el contenido (`.md`) y para el documento (`.docx`). No
+mezclar los dos pasos en un commit: el diff del `.docx` es ilegible y arrastraría
+al `.md` con él.
 
 ---
 
-## 9. Lo que depende de ustedes, no del agente
+## 9. Lo que se puede adelantar mientras se programa
 
-Tres cosas no las puede resolver una sesión remota. Conviene destrabarlas
-temprano porque bloquean la sección más larga del documento.
+Estas tres no dependen del código y tienen dependencias externas lentas. Conviene
+destrabarlas durante la Fase 1, no esperar a la Fase 2:
 
 1. **Subir `EjemploTesis.pdf` al repo.** Bloquea el criterio de forma de 2.3 a
-   2.9. Es el primer paso.
-2. **Las capturas de pantalla del manual de usuario.** El contenedor remoto no
+   2.9. Es el primer paso y no cuesta nada.
+2. **La opinión de la usuaria, para 2.8.** Hay que mostrarle el sistema y
+   preguntarle. Sirve una pauta corta y por escrito —qué usa, qué le resultó
+   difícil, qué le ahorró tiempo, qué le falta— y la sección se escribe con sus
+   respuestas. Es una página: no necesita una encuesta formal, pero sí necesita
+   ser real. Se puede hacer con los siete módulos que ya andan.
+3. **`1.11 Estimación del esfuerzo` y el Anexo.** Son del anteproyecto, hablan de
+   lo que se planificó al principio: no cambian con el Módulo 7. Conviene
+   preguntarle al tutor temprano si los pide.
+
+Y una que **sí** espera al código, pero que hay que preparar antes porque es la
+sección más larga:
+
+4. **Las capturas de pantalla del manual de usuario.** El contenedor remoto no
    tiene `dotnet` ni MySQL, así que el sistema no se puede levantar ahí. Hay dos
    caminos: sacarlas a mano con XAMPP y Visual Studio andando, o correr Claude
    Code **en la máquina de ustedes**, que sí puede levantar la app y sacarlas con
    Playwright de forma consistente —mismo tamaño de ventana, mismos datos de
    `DatosPrueba.sql`, mismo recorte—. El segundo camino es bastante mejor: son
-   unas cuarenta capturas y a mano salen desparejas.
-3. **La opinión de la usuaria, para 2.8.** Hay que mostrarle el sistema y
-   preguntarle. Sirve una pauta corta y por escrito —qué usa, qué le resultó
-   difícil, qué le ahorró tiempo, qué le falta— y la sección se escribe con sus
-   respuestas. Es una página: no necesita una encuesta formal, pero sí necesita
-   ser real.
+   unas cuarenta capturas, más las del Módulo 7, y a mano salen desparejas.
 
 ---
 
@@ -329,13 +372,16 @@ El documento está terminado cuando:
 
 - [ ] `EjemploTesis.pdf` está en el repo y las secciones 2.3 a 2.9 se escribieron
       después de leer su equivalente.
-- [ ] Ninguna sección dice «Pendiente.».
 - [ ] El Módulo 7 está construido y los diagramas de secuencia del módulo se leen
       del código, no de los mensajes previstos.
 - [ ] El MER no tiene tablas dibujadas como proyectadas.
+- [ ] Ninguna sección dice «Pendiente.».
 - [ ] Ningún documento promete pruebas automatizadas.
-- [ ] Borrar `Proyecto_v6.docx` y `Tesis.docx` y correr los scripts los reconstruye
-      completos. Ninguna sección se perdió por estar escrita a mano en el Word.
+- [ ] Generar y editar son dos comandos separados, y el de editar corta con un
+      mensaje claro si algún artefacto de `docs/` es más viejo que su fuente.
+- [ ] Borrar `Proyecto_v6.docx` y `Tesis.docx` y correr el paso 2 los reconstruye
+      completos, sin volver a generar nada. Ninguna sección se perdió por estar
+      escrita a mano en el Word.
 - [ ] El índice de `Tesis.docx` tiene números de página reales y el anteproyecto
       está numerado `1.x`.
 - [ ] Está resuelto qué pasa con `1.11 Estimación del esfuerzo` y con el Anexo.
