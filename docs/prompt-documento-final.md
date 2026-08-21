@@ -2,7 +2,7 @@
 
 Este archivo **es** el prompt. Para arrancar una sesión de trabajo alcanza con:
 
-> Leé `docs/prompt-documento-final.md` y seguí con la Fase 2, sección 2.3.
+> Leé `docs/prompt-documento-final.md` y seguí con la Fase 3, sección 2.3.
 
 No hace falta pegar nada más: acá están el objetivo, la referencia, las reglas y
 el estado de cada sección.
@@ -20,13 +20,15 @@ Anteproyecto_v6.docx  ──┐
 Proyecto_v6.docx      ──┘
 ```
 
-Tres fases, **en este orden y sin solaparlas**:
+Cuatro fases, **en este orden y sin solaparlas**:
 
 - **Fase 1 — Terminar el código.** El Módulo 7 completo y lo que arrastra. Hasta
   que el sistema no esté terminado no se toca la documentación.
-- **Fase 2 — Cerrar el Proyecto.** Escribir las secciones 2.3 a 2.9, hoy con la
+- **Fase 2 — Reconciliar las tres patas.** Anteproyecto, proyecto y código tienen
+  que decir exactamente lo mismo. **Es innegociable y bloquea todo lo que sigue.**
+- **Fase 3 — Cerrar el Proyecto.** Escribir las secciones 2.3 a 2.9, hoy con la
   palabra «Pendiente.» y nada más.
-- **Fase 3 — Unificar.** Renumerar el anteproyecto como `1.x`, concatenarlo con
+- **Fase 4 — Unificar.** Renumerar el anteproyecto como `1.x`, concatenarlo con
   el proyecto, rehacer índice, portada y numeración de páginas.
 
 **La regla de las fases es la que ordena todo lo demás.** El documento describe
@@ -44,7 +46,10 @@ tres cosas que no dependen del código.
 FASE 1   programar                     Modulo 7 + cache static          ustedes / Claude Code local
            │
            ▼
-FASE 2   refactor generar|editar       docs/generar.py                  Claude Code
+FASE 2   reconciliar                   auditoria-tres-vias.md           Claude Code
+           │                           anteproyecto = proyecto = codigo  (consultas ─► ustedes)
+           ▼
+FASE 3   refactor generar|editar       docs/generar.py                  Claude Code
            │
            ├─ por seccion ─┐
            │   paso 1  generar         .md y .png en docs/              Claude Code
@@ -54,7 +59,7 @@ FASE 2   refactor generar|editar       docs/generar.py                  Claude C
            │   verificar               se abre el Word                  ustedes
            └───────────────┘
            ▼
-FASE 3   unificar                      Tesis.docx                       Claude Code
+FASE 4   unificar                      Tesis.docx                       Claude Code
            │
            ▼
          actualizar indice             abrir en Word, F9                ustedes  ← unico paso manual ineludible
@@ -228,11 +233,86 @@ terminados, no siete y una promesa. Implica, en este orden:
 **Cierre de la fase.** Correr el paso 1 —los generadores— y revisar los artefactos:
 los diagramas de secuencia del Módulo 7 ahora se leen del código, el MER pierde el
 relleno de «proyectada» y el diccionario incorpora las clases nuevas. Ahí termina
-la Fase 1. El documento todavía no se toca.
+la Fase 1. El documento todavía no se toca: primero la reconciliación.
 
 ---
 
-## 6. Fase 2 — Cerrar 2.3 a 2.9
+## 6. Fase 2 — Reconciliar las tres patas
+
+**Regla, sin excepciones: el anteproyecto, el proyecto y el código dicen
+exactamente lo mismo.** Un tribunal que encuentra una diferencia entre lo que el
+documento promete y lo que el sistema hace deja de creerle al resto del documento.
+
+**Ante la duda manda el código, pero no se resuelve solo: se consulta.** El código
+es la única de las tres patas que no puede mentir —hace lo que hace—, así que es
+el árbitro natural. Pero que el código gane no significa que el agente decida por
+su cuenta: una diferencia puede ser código que se apartó de lo acordado con la
+clienta, y eso se arregla en el código, no tapándolo en el documento. Cada
+divergencia se anota, se propone una resolución y **se pregunta antes de aplicarla**.
+
+### Lo que ya está verificado
+
+Anteproyecto y proyecto **ya coinciden**: el anteproyecto define **74
+requerimientos funcionales** y los 49 casos de uso los referencian a todos. No hay
+ningún RF huérfano ni ningún caso de uso que invente un requerimiento que no
+existe. Eso lo dejó resuelto la v6 de los dos documentos.
+
+| Módulo | RF |
+|---|---|
+| 0 Seguridad, Acceso y Configuración | 3 |
+| 1 Gestión de Animales y Genética | 15 |
+| 2 Control de Producción | 13 |
+| 3 Gestión Reproductiva | 13 |
+| 4 Gestión Sanitaria | 9 |
+| 5 Control de Insumos y Stock | 10 |
+| 6 Tablero, Indicadores y Apoyo a la Decisión | 4 |
+| 7 Reportes y Notificaciones | 7 |
+| **Total** | **74** |
+
+**La divergencia vive en la tercera pata.** Las secciones de diseño del proyecto se
+generan leyendo el código, así que ésas están sincronizadas por construcción. El
+anteproyecto no: está escrito en futuro, antes de programar, y nadie lo volvió a
+mirar contra lo que quedó hecho.
+
+### El método
+
+Producir `docs/auditoria-tres-vias.md`, una fila por divergencia:
+
+| Qué dice el anteproyecto | Qué dice el proyecto | Qué hace el código | Quién tiene razón | Resuelto |
+|---|---|---|---|---|
+
+Se recorre en este orden, que va de lo más verificable a lo más interpretable:
+
+1. **Los 74 RF, uno por uno.** Para cada uno, encontrar en el código dónde está
+   resuelto. El que no aparezca es una de dos cosas: un requerimiento que no se
+   implementó, o uno que se implementó distinto. Las dos hay que decidirlas.
+2. **Al revés: lo que el código hace y ningún RF describe.** Es el más fácil de
+   pasar por alto y el que peor queda en la defensa —una pantalla que nadie pidió—.
+   Se recorre el listado de pantallas contra el catálogo de casos de uso.
+3. **Los parámetros de configuración.** El anteproyecto los menciona sueltos, la
+   pantalla tiene una lista concreta. Tienen que ser la misma lista.
+4. **Alcance y limitaciones.** Lo que el anteproyecto declara afuera tiene que
+   seguir afuera, y lo que declara adentro tiene que estar.
+5. **Herramientas y arquitectura.** Framework, base de datos, acceso a datos,
+   hosting, notificaciones: lo elegido en el anteproyecto contra lo que hay en
+   `Tesis.csproj`, `appsettings.json` y las capas.
+6. **Las iteraciones.** Las seis iteraciones definidas describen un orden de
+   construcción. Si se construyó en otro orden, se dice el que fue.
+7. **Los riesgos.** Los que se materializaron se cuentan en 2.9; los que no,
+   quedan como estaban.
+
+### Cómo se aplica
+
+El anteproyecto se corrige con `docs/editar_anteproyecto.py`, que ya existe y ya
+hizo este trabajo una vez —`docs/cambios-anteproyecto-v6.md` es el registro de esa
+pasada—. Las correcciones de esta fase se anotan igual, en un
+`cambios-anteproyecto-v7.md`, para que quede asentado qué se cambió y por qué.
+
+**Un anteproyecto corregido después de programar no es hacer trampa.** Es un
+documento vivo, y la alternativa —dejarlo diciendo algo que el sistema no hace— es
+peor. Lo que no se puede hacer es cambiarlo en silencio: por eso el registro.
+
+## 7. Fase 3 — Cerrar 2.3 a 2.9
 
 Primero el refactor del punto 3. Después, para **cada** sección, siempre el mismo
 procedimiento:
@@ -333,7 +413,7 @@ Un documento que reconoce sus límites se defiende mejor que uno que los esconde
 
 ---
 
-## 7. Fase 3 — Unificar y renumerar
+## 8. Fase 4 — Unificar y renumerar
 
 **Decisión tomada: se renumera todo como el ejemplo.**
 
@@ -366,7 +446,7 @@ concatena y renumera lo que ya está escrito.
 
 ---
 
-## 8. Cómo se escribe
+## 9. Cómo se escribe
 
 **El texto del documento** sigue la voz del que ya está: afirmativo, concreto,
 sin adjetivos de relleno. Nada de «cabe destacar», «es importante mencionar» ni
@@ -386,7 +466,7 @@ al `.md` con él.
 
 ---
 
-## 9. Lo que se puede adelantar mientras se programa
+## 10. Lo que se puede adelantar mientras se programa
 
 Estas tres no dependen del código y tienen dependencias externas lentas. Conviene
 destrabarlas durante la Fase 1, no esperar a la Fase 2:
@@ -415,7 +495,7 @@ sección más larga:
 
 ---
 
-## 10. Criterios de aceptación
+## 11. Criterios de aceptación
 
 El documento está terminado cuando:
 
@@ -426,6 +506,11 @@ El documento está terminado cuando:
 - [ ] El MER no tiene tablas dibujadas como proyectadas.
 - [ ] Ninguna sección dice «Pendiente.».
 - [ ] Ningún documento promete pruebas automatizadas.
+- [ ] `docs/auditoria-tres-vias.md` está cerrado: los 74 RF tienen su lugar en el
+      código, no hay pantalla que ningún caso de uso describa, y toda divergencia
+      quedó resuelta y consultada, no decidida por cuenta propia.
+- [ ] Las correcciones al anteproyecto están registradas en
+      `cambios-anteproyecto-v7.md`.
 - [ ] Generar y editar son dos comandos separados, y el de editar corta con un
       mensaje claro si algún artefacto de `docs/` es más viejo que su fuente.
 - [ ] Borrar `Proyecto_v6.docx` y `Tesis.docx` y correr el paso 2 los reconstruye

@@ -21,6 +21,8 @@ porque tienen la historia cargada que hace falta.
 | **Sesión** | Iniciada como `sofia`. La contraseña nunca se ve escrita. |
 | **Nombre del archivo** | `m<módulo>-cu<número>-<slug>.png`, por ejemplo `m1-cu04-alta-categoria.png`. El número de CU es el de `docs/catalogo-casos-de-uso.md`. |
 | **Recorte** | Pantalla completa, salvo donde la tabla diga *detalle*: ahí sólo la zona que importa. |
+| **Sin anotaciones** | Ni flechas, ni números, ni recuadros. La imagen va limpia y el pie explica. |
+| **Datos de la clienta** | El nombre del establecimiento va neutro en la pantalla de configuración. |
 | **Una sola sesión** | Todas se sacan de una pasada, en orden. El sistema se va modificando a medida que se cargan cosas y el orden del punto 4 lo tiene en cuenta. |
 
 ### La fecha de referencia
@@ -242,13 +244,17 @@ imagen y el texto que explica qué hace, qué campos tiene y qué calcula sola.
 
 ---
 
-## 7. Lo que falta decidir
+## 7. Decisiones tomadas
 
-Dos cosas quedaron abiertas y las dos se resuelven con el PDF del tutor en el repo:
+- **Sin anotaciones.** Nada de flechas, números en círculos ni recuadros sobre la
+  imagen. La captura va limpia, tal como se ve la pantalla, y **la explicación va
+  en el pie**, como en el ejemplo del tutor. Consecuencia práctica: el pie tiene que
+  ser una descripción de verdad, no una etiqueta. «Pantalla de alta de animal» no
+  sirve; sirve «Alta de un animal comprado: al apretar *Calcular Categoria* el
+  sistema propone *Vaca*, porque la caravana `200` tiene partos registrados».
+- **Sin el nombre del establecimiento.** En la pantalla de configuración el nombre
+  va neutro. Es dato de la clienta, no del sistema, y el manual se entiende igual.
 
-- **Si las capturas van anotadas** —números en círculos, flechas, recuadros sobre
-  el campo que importa— o van limpias. Depende de qué hace él en las páginas 169 a
-  215, que son las que todavía no se pudieron leer.
-- **Si el nombre real del establecimiento aparece** en la pantalla de
-  configuración, o se reemplaza por uno neutro. Es dato de la clienta, no del
-  sistema, y lo deciden ustedes.
+Al escribir el manual, entonces, **el trabajo está en los pies de figura**. Son
+ochenta y uno y cada uno tiene que decir qué se está mirando y por qué importa. Es
+lo que carga el peso que en otros manuales llevan las flechas.
