@@ -554,23 +554,106 @@ distintos.
 ### 12.2 El glosario es de herramientas, no del tambo
 
 Las catorce entradas actuales explican *Framework*, *Bootstrap*, *CSS3*, *Git*,
-*UML*, *SQA*. No explican ni una palabra del dominio: **lactancia, secado, tacto,
-celo, servicio, monta natural, pajuela, caravana, rodeo, consanguinidad, período de
-carencia, descarte de leche, categoría, vaquillona, novilla, control lechero,
-ordeñe por lote, proyección a 305 días**.
+*UML*, *SQA*. Ninguna es del dominio. El tribunal sabe qué es un framework; lo que
+no tiene por qué saber es qué es un tacto, ni por qué la leche de una vaca tratada
+no se puede vender. Y esas palabras están en cada página.
 
-El tribunal sabe qué es un framework. Lo que no tiene por qué saber es qué es un
-tacto o por qué la leche de una vaca tratada no se puede vender. Y esas palabras
-están en cada página del documento. **El glosario del dominio hay que escribirlo**;
-sale de `docs/flujos-de-prueba.md` y del diccionario de clases.
+**Las definiciones no se inventan: los números salen del código.** Cada entrada
+lleva entre paréntesis de dónde sale, para que el glosario quede atado al sistema
+como el resto del documento.
+
+#### El rodeo y los animales
+
+| Término | Qué decir |
+|---|---|
+| **Rodeo** | El conjunto de animales del establecimiento. |
+| **Caravana** | La identificación individual del animal, única en el sistema. Es la forma en que la encargada lo nombra: no se usa el identificador interno. |
+| **Categoría** | Valor **derivado**, no cargado: el sistema lo calcula con el sexo, la edad y la cantidad de partos, y lo propone al usuario. Las seis salen de la tabla `categorias`: Ternera, Novilla, Vaca, Ternero, Novillo, Toro. |
+| **Novilla** | Hembra de más de 12 meses **sin partos registrados**. Cuando pare pasa a Vaca. |
+| **Vaquillona** | Sinónimo de novilla de uso corriente en el tambo. **No es una categoría del sistema** (ver más abajo). |
+| **Ascendencia / linaje** | La cadena de madres y padres de un animal, que el sistema arma solo a partir de los partos registrados. |
+| **Consanguinidad** | Parentesco entre la hembra y el reproductor. El sistema busca un ancestro común y **advierte**; no bloquea el servicio. |
+
+> **Una decisión de vocabulario para la Fase 2.** `bd/DatosPrueba.sql` y los flujos
+> de prueba hablan de *vaquillonas*; el código y la base sólo conocen *Novilla*. Las
+> dos palabras son correctas en el tambo, pero el documento tiene que usar una y
+> declarar la otra en el glosario. Es exactamente el tipo de diferencia que la
+> auditoría de tres vías tiene que cazar.
+
+#### Producción
+
+| Término | Qué decir |
+|---|---|
+| **Lactancia** | El período en que la vaca da leche, entre un parto y el secado siguiente. Se numeran: la primera, la segunda. |
+| **Ordeñe por lote** | La medición de los litros de todo el grupo en un turno. Es lo que se hace todos los días. |
+| **Control lechero** | La medición **vaca por vaca**, que se hace una vez por mes. Es lo que permite saber cuánto da cada una. |
+| **Secado** | El cierre deliberado de la lactancia antes del parto siguiente, para que la vaca descanse. Por defecto, **60 días antes del parto probable** (`DIAS_SECADO_ANTES_PARTO`). |
+| **Proyección a 305 días** | Lo que la vaca daría si sostuviera el ritmo hasta el final de una lactancia estándar. **305 días** es el valor de referencia (`DIAS_LACTANCIA_ESTANDAR`). Sirve para comparar vacas que van por distinto momento de su lactancia. |
+
+#### Reproducción
+
+| Término | Qué decir |
+|---|---|
+| **Celo** | El momento en que la hembra acepta el servicio. Se detecta por observación. Edad mínima: **9 meses** (`EDAD_MINIMA_CELO_MESES`). |
+| **Servicio** | El intento de preñar. Por **inseminación artificial** o por **monta natural**. Edad mínima en la hembra: **13 meses** (`EDAD_MINIMA_SERVICIO_HEMBRA_MESES`). |
+| **Pajuela** | La dosis de semen congelado de un toro identificado. Es un insumo: al inseminar, el stock baja. |
+| **Tacto** | La palpación que confirma o descarta la preñez, a los **35 días** del servicio (`DIAS_PARA_TACTO`). |
+| **Gestación** | **283 días** entre el servicio y el parto probable (`GESTACION_DIAS`). De ahí sale la fecha probable de parto. |
+| **Período de espera voluntaria** | Los **45 días** después del parto en que no se sirve a la vaca aunque entre en celo (`DIAS_ESPERA_VOLUNTARIA`). |
+
+#### Sanidad e insumos
+
+| Término | Qué decir |
+|---|---|
+| **Plan sanitario** | La regla que dice qué procedimiento le corresponde a qué categoría, desde qué edad y cada cuántos días. El calendario de pendientes lo arma el sistema solo. |
+| **Período de carencia** | Los días que, después de terminado el tratamiento, el producto sigue presente en el animal. Lo trae el insumo. |
+| **Descarte de leche** | La ventana en que la leche **no se puede vender**: fin del tratamiento más la carencia del producto (`CalcularDescarte`). Mientras esté vigente, el sistema no deja sumar a esa vaca al ordeñe. |
+| **Descorne** | El procedimiento sobre la cría para que no desarrolle cuernos. |
+
+#### Los once parámetros de configuración
+
+Van con su valor por defecto, porque el documento los menciona y la usuaria los
+puede cambiar: días de secado antes del parto, edad mínima al servicio, edad de
+cambio de categoría, litros máximos por control individual, ordeñes por día, días
+de anticipación de secado, de parto, sanitaria y de vencimiento, días de espera
+voluntaria y días para el tacto.
+
+**Las seis categorías ya tienen su descripción escrita en `bd/CreacionDb.sql`.** Se
+generan, no se copian: es el mismo criterio del resto del documento.
 
 ### 12.3 La bibliografía no tiene un solo libro
 
-Seis sitios de documentación oficial más los materiales de Moodle. Pero el
-anteproyecto compara el modelo en cascada, el de prototipos, el incremental y el
-espiral, y describe pruebas de caja negra y caja blanca: eso sale de la
-bibliografía clásica de ingeniería de software, no de `docs.microsoft.com`. **Falta
-citarla.** Es de las cosas que un tutor marca en la primera lectura.
+Hoy son seis sitios de documentación oficial más los materiales de Moodle, y
+ninguna entrada tiene URL —el ejemplo del tutor sí las pone—. Faltan dos familias
+enteras.
+
+**Falta la bibliografía de ingeniería de software.** El anteproyecto compara el
+modelo en cascada, el de prototipos, el incremental y el espiral; define un Plan de
+SQA y un Plan de SCM; describe pruebas de caja negra y caja blanca. Nada de eso
+sale de `docs.microsoft.com`. Las obras que corresponden:
+
+| Para qué sección | Obra |
+|---|---|
+| Ciclos de vida, SQA, SCM, plan de testing | **Pressman**, *Ingeniería del software: un enfoque práctico* |
+| Requerimientos y modelos de proceso | **Sommerville**, *Ingeniería de software* |
+| Casos de uso, diagramas de secuencia y de clases | **Booch, Rumbaugh y Jacobson**, *El lenguaje unificado de modelado* |
+| Normalización, modelo entidad-relación, integridad | **Elmasri y Navathe**, *Fundamentos de sistemas de bases de datos* |
+
+**Falta la bibliografía del dominio, y es la que más pesa.** Hoy las reglas del
+tambo se apoyan sólo en el relevamiento con la usuaria. Eso alcanza para lo que es
+propio del establecimiento —cuántos ordeñes hace, con qué criterio descarta—, pero
+no para los números que son estándar de la actividad: **305 días de lactancia, 60
+de secado, 283 de gestación, las edades mínimas al celo y al servicio**. Esos
+tienen que citar una fuente técnica. En Uruguay las candidatas naturales son
+**INALE**, **INIA** y las facultades de Veterinaria y Agronomía de la UdelaR.
+
+> **Dos reglas al armarla.** Verificar edición y año contra el ejemplar que
+> efectivamente usen: las obras de arriba tienen muchas ediciones y citar una que
+> no se tuvo en la mano se nota. Y **no citar lo que no se leyó** — es preferible
+> una bibliografía corta y honesta que una larga de adorno.
+
+Agregar además la URL y la fecha de último acceso a las seis entradas que ya están,
+como hace el ejemplo.
 
 ### 12.4 Trámite, pero no gratis
 
