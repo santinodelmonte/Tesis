@@ -279,11 +279,11 @@ Sale parejo y es repetible: si cambia una pantalla se vuelve a correr y se rehac
 el documento, sin recortar cuarenta imágenes otra vez. Corre en la máquina de
 ustedes, no acá.
 
-Lo que hay que decidir a mano es **el guion**: qué pantalla y en qué estado. Una
-lista vacía no muestra nada, y las pantallas que valen la pena son las del medio
-—el alta con un error de validación arriba, el árbol de linaje de un animal con
-ascendencia cargada, la alerta de secado con vacas de verdad en la lista—. El
-script las puede provocar todas, pero alguien tiene que decir cuáles.
+**El guion ya está escrito: `docs/guion-capturas.md`.** Ochenta y una capturas
+con su pantalla, su animal del rodeo y para qué sirve cada una en el manual, más
+el orden en que hay que sacarlas —cuatro dependen del estado del sistema— y la
+advertencia de correr las fechas de `DatosPrueba.sql` antes de empezar. El script
+lo ejecuta; no hay que decidir nada pantalla por pantalla.
 
 **Insertarlas en el Word es automático**: es el mismo `d.imagen(ruta, pie)` que
 ya coloca los 49 diagramas de secuencia. Escala a 16 cm de ancho conservando la
