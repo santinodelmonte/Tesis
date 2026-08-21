@@ -524,3 +524,64 @@ El documento está terminado cuando:
 - [ ] El documento se leyó entero de corrido una vez, buscando contradicciones
       entre el anteproyecto (que habla en futuro, de lo que se va a hacer) y el
       proyecto (que habla de lo que se hizo).
+
+---
+
+## 12. Lo que queda afuera de este prompt
+
+Terminadas las cuatro fases, con el código andando, **todavía queda esto**. No está
+en las fases porque no es escribir secciones: es lo que hace que las 230 páginas se
+lean como un documento y no como dos pegados.
+
+### 12.1 El frente del documento habla en futuro
+
+El abstract y la introducción del anteproyecto están escritos **antes** de
+programar, y se nota en cada verbo: «se propone el desarrollo», «el sistema
+facilitará la generación de reportes», «aborda el análisis, diseño y
+planificación». El ejemplo del tutor abre al revés: «El presente trabajo abarca
+todo el proceso de análisis, desarrollo e implementación», «El sistema que se
+implementó es un sistema web».
+
+Un documento que en la página 3 promete lo que en la 150 ya mostró construido está
+mal, aunque las dos partes sean correctas por separado. **Hay que reescribir el
+abstract y la introducción en pasado**, y agregar las palabras clave que el ejemplo
+tiene y el anteproyecto no.
+
+Esto es lo mismo que la Fase 2 pero aplicado al frente: si el anteproyecto y el
+proyecto tienen que decir lo mismo, tampoco pueden estar en tiempos verbales
+distintos.
+
+### 12.2 El glosario es de herramientas, no del tambo
+
+Las catorce entradas actuales explican *Framework*, *Bootstrap*, *CSS3*, *Git*,
+*UML*, *SQA*. No explican ni una palabra del dominio: **lactancia, secado, tacto,
+celo, servicio, monta natural, pajuela, caravana, rodeo, consanguinidad, período de
+carencia, descarte de leche, categoría, vaquillona, novilla, control lechero,
+ordeñe por lote, proyección a 305 días**.
+
+El tribunal sabe qué es un framework. Lo que no tiene por qué saber es qué es un
+tacto o por qué la leche de una vaca tratada no se puede vender. Y esas palabras
+están en cada página del documento. **El glosario del dominio hay que escribirlo**;
+sale de `docs/flujos-de-prueba.md` y del diccionario de clases.
+
+### 12.3 La bibliografía no tiene un solo libro
+
+Seis sitios de documentación oficial más los materiales de Moodle. Pero el
+anteproyecto compara el modelo en cascada, el de prototipos, el incremental y el
+espiral, y describe pruebas de caja negra y caja blanca: eso sale de la
+bibliografía clásica de ingeniería de software, no de `docs.microsoft.com`. **Falta
+citarla.** Es de las cosas que un tutor marca en la primera lectura.
+
+### 12.4 Trámite, pero no gratis
+
+- **Actualizar el índice en Word.** Ver la Fase 4: un clic, pero sin él el índice
+  sale en blanco.
+- **Exportar el PDF final.**
+- **`1.11 Estimación del esfuerzo` y el Anexo.** Siguen sin decidirse con el tutor.
+- **La ronda de correcciones.** Entregar la v1 no es terminar. Conviene tener
+  margen de calendario para una vuelta completa de devolución.
+
+### 12.5 Fuera de alcance
+
+La presentación de la defensa. No es parte del documento y no está en ninguna fase,
+pero existe y sale de este mismo material.
