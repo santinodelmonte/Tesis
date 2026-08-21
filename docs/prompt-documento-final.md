@@ -38,6 +38,28 @@ que se puede probar. Se termina de programar, y recién entonces se escribe.
 Lo único que **sí** se puede adelantar en paralelo está en el punto 9: son las
 tres cosas que no dependen del código.
 
+### El flujo, de una mirada
+
+```
+FASE 1   programar                     Modulo 7 + cache static          ustedes / Claude Code local
+           │
+           ▼
+FASE 2   refactor generar|editar       docs/generar.py                  Claude Code
+           │
+           ├─ por seccion ─┐
+           │   paso 1  generar         .md y .png en docs/              Claude Code
+           │   paso 1b capturas        docs/capturas/*.png              Claude Code local (app corriendo)
+           │   revisar                 se mira el .md y el .png         ustedes / Cowork
+           │   paso 2  editar          Proyecto_v6.docx                 Claude Code
+           │   verificar               se abre el Word                  ustedes
+           └───────────────┘
+           ▼
+FASE 3   unificar                      Tesis.docx                       Claude Code
+           │
+           ▼
+         actualizar indice             abrir en Word, F9                ustedes  ← unico paso manual ineludible
+```
+
 ---
 
 ## 2. La referencia manda
@@ -250,6 +272,24 @@ Fuentes: `docs/catalogo-casos-de-uso.md` para el recorrido,
 `docs/estilos-y-accesibilidad.md` para lo que significa cada color y cada
 señalización de la interfaz.
 
+**Las capturas se sacan con un script, no a mano.** Un recorrido de Playwright
+que haga login, fije el tamaño de ventana, visite cada pantalla del catálogo con
+el rodeo de `bd/DatosPrueba.sql` cargado y escriba `docs/capturas/<pantalla>.png`.
+Sale parejo y es repetible: si cambia una pantalla se vuelve a correr y se rehace
+el documento, sin recortar cuarenta imágenes otra vez. Corre en la máquina de
+ustedes, no acá.
+
+Lo que hay que decidir a mano es **el guion**: qué pantalla y en qué estado. Una
+lista vacía no muestra nada, y las pantallas que valen la pena son las del medio
+—el alta con un error de validación arriba, el árbol de linaje de un animal con
+ascendencia cargada, la alerta de secado con vacas de verdad en la lista—. El
+script las puede provocar todas, pero alguien tiene que decir cuáles.
+
+**Insertarlas en el Word es automático**: es el mismo `d.imagen(ruta, pie)` que
+ya coloca los 49 diagramas de secuencia. Escala a 16 cm de ancho conservando la
+proporción, agrega el pie de figura y `podar()` saca del paquete las imágenes que
+quedaron sin referencia.
+
 Organizado por módulo, en el orden en que la encargada usa el sistema, no en el
 orden en que se programó. Cada pantalla con su captura, para qué sirve, qué
 campos tiene y qué valida. Lo que el sistema calcula solo —la categoría, la
@@ -304,6 +344,15 @@ Un documento que reconoce sus límites se defiende mejor que uno que los esconde
 3. Portada, declaración de autoría, abstract, **palabras clave** (el ejemplo las
    tiene, el anteproyecto no), índice único, glosario, bibliografía y anexo.
 4. El índice se genera, no se escribe. Con números de página reales.
+
+> **El índice es el único paso que no se puede automatizar del todo.** El de
+> `Proyecto_v6.docx` hoy es texto plano: no tiene campo TOC ni un solo `PAGEREF`,
+> por eso tampoco tiene números de página. Los números dependen de la paginación,
+> y la paginación la calcula un procesador de texto, no `python-docx`. La forma
+> correcta es que `armar_tesis.py` inserte un campo `TOC \\o "1-4" \\h \\z \\u`
+> de verdad y que **alguien abra el documento en Word una vez y actualice el
+> campo** (clic derecho sobre el índice, «Actualizar campos», o F9). Es un clic al
+> final de todo, pero hay que acordarse: si no, el índice sale en blanco.
 
 Hacerlo con un script —`docs/armar_tesis.py`— que produzca `Tesis.docx` a partir
 de los dos `.docx`. Es un paso 2, no un paso 1: no deriva nada del código, sólo
@@ -382,8 +431,10 @@ El documento está terminado cuando:
 - [ ] Borrar `Proyecto_v6.docx` y `Tesis.docx` y correr el paso 2 los reconstruye
       completos, sin volver a generar nada. Ninguna sección se perdió por estar
       escrita a mano en el Word.
-- [ ] El índice de `Tesis.docx` tiene números de página reales y el anteproyecto
-      está numerado `1.x`.
+- [ ] `Tesis.docx` tiene un campo TOC real, se actualizó una vez en Word y el
+      índice muestra números de página; el anteproyecto está numerado `1.x`.
+- [ ] Las capturas del manual salieron del script, no de recortes a mano, y se
+      pueden volver a sacar corriéndolo.
 - [ ] Está resuelto qué pasa con `1.11 Estimación del esfuerzo` y con el Anexo.
 - [ ] El documento se leyó entero de corrido una vez, buscando contradicciones
       entre el anteproyecto (que habla en futuro, de lo que se va a hacer) y el
