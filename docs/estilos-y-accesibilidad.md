@@ -199,6 +199,7 @@ deshacer eso es justamente lo que no se quiere.
 | 3.3.1 Identificación de errores | El motivo se muestra en texto junto al campo o arriba del formulario | todas las pantallas |
 | 3.3.2 Etiquetas o instrucciones | Todo campo con su `<label>`; los que no lo llevan visible usan `visually-hidden` | `_Layout` y formularios |
 | 4.1.2 Nombre, función, valor | `aria-current` en el ítem activo, `aria-expanded` en los desplegables, `aria-label` en los botones sin texto | `_Layout` |
+| 4.1.3 Mensajes de estado | La confirmación del registro rápido va en una región `role="status"`: se anuncia sola al volver del guardado, sin que haya que ir a buscarla. Los campos que el evento elegido no usa se esconden con `hidden`, que los saca también del árbol de accesibilidad | `Index.cshtml`, `registroRapido.js` |
 
 ## 8. Lo que queda afuera
 

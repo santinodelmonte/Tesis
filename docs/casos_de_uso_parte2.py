@@ -489,18 +489,37 @@ dict(
         'los días en leche promedio.',
         'El sistema despliega cada grupo de avisos con su cantidad y el acceso directo a la '
         'pantalla que lo resuelve.',
+        'El sistema ofrece, sobre los avisos, el registro rápido de los eventos '
+        'reproductivos que el establecimiento carga a diario —celo, servicio, tacto y '
+        'parto—, con las caravanas que ya figuran en la lista de trabajo de cada uno como '
+        'acceso directo al campo.',
+        'El usuario elige el evento e indica la caravana: el celo y el tacto quedan '
+        'registrados en el propio tablero, con el curso y las reglas de CU20 y CU22.',
     ],
     alternativos='3a. No hay avisos pendientes en un grupo: el sistema lo informa en lugar '
         'de mostrar una lista vacía. 1a. Todavía no hay ningún animal cargado: el tablero '
-        'reemplaza los avisos por la indicación de por dónde empezar la puesta en marcha.',
-    excepcion='—',
-    postcondicion='El usuario conoce el estado del establecimiento sin que se altere ningún '
-        'registro.',
+        'reemplaza los avisos por la indicación de por dónde empezar la puesta en marcha. '
+        '5a. El evento elegido es un servicio o un parto: el sistema no lo registra en el '
+        'tablero y abre CU21 o CU24 con la caravana ya cargada. 5b. El registro rápido se '
+        'guarda: el sistema lo confirma en el tablero y deja el campo de caravana vacío y '
+        'con el foco, conservando el evento y la fecha para el registro siguiente.',
+    excepcion='5c. La caravana no existe o corresponde a un macho: el sistema informa el '
+        'motivo sin abandonar el tablero y conserva lo cargado. 5d. Se quiere registrar un '
+        'tacto sobre una hembra sin servicio pendiente: el sistema informa que hay que '
+        'registrar antes el servicio e impide el registro.',
+    postcondicion='El usuario conoce el estado del establecimiento. La consulta no altera '
+        'ningún registro; si se usó el registro rápido, el celo o el tacto quedan asentados '
+        'con las mismas consecuencias que tienen en su propio caso de uso.',
     reglas='El tablero no calcula nada propio: reúne los mismos avisos que producen los '
         'casos de uso de cada módulo, de modo que no puedan discrepar entre una vista y la '
-        'otra.',
-    validaciones='—',
-    frecuencia='Muy alta, es la pantalla de entrada al sistema.',
+        'otra. El registro rápido tampoco valida por su cuenta: aplica las mismas reglas de '
+        'CU20 y CU22. Sólo se registran en el tablero los eventos que no consumen insumos '
+        'ni dan de alta animales; el servicio descuenta una pajuela del stock y el parto da '
+        'de alta la cría, así que se completan en su propia pantalla.',
+    validaciones='Las de CU20 y CU22 según el evento elegido. La caravana es obligatoria '
+        'para registrar, y opcional para abrir el formulario de servicio o de parto.',
+    frecuencia='Muy alta, es la pantalla de entrada al sistema y la vía habitual de carga '
+        'de los eventos reproductivos diarios.',
 ),
 
 dict(

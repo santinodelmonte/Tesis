@@ -696,6 +696,68 @@ dar de baja el animal. Verifique que siga activo!"*.
 
 ---
 
+## 24. Registro rápido desde el inicio
+
+La tarjeta **Registro rápido** de `Hoy en el tambo` es la vía de carga diaria de los
+eventos reproductivos. Este flujo se puede hacer suelto, y conviene hacerlo **con el
+juego de datos recién cargado** si se quiere probar también la solapa **Tacto**: el
+único servicio en espera de confirmación es el de la `102`, y el flujo 10 lo consume.
+
+**Lo que tiene que verse al entrar.** Arriba de las tres tarjetas de alertas, la
+tarjeta con las cuatro solapas —Celo, Servicio, Tacto, Parto—, con **Celo** marcada, el
+campo de caravana con el foco disponible y, debajo, la fila *Para servir:* con las
+caravanas `115`, `130`, `133` y `158`.
+
+**Un celo, sin tocar el menú.** Apretar la caravana sugerida `130`: llena el campo. La
+fecha ya viene en el día. Apretar **Registrar celo**.
+
+**Esperado.** La página vuelve al tablero con *"Quedó registrado el celo de la caravana
+130"*, el campo de caravana **vacío y con el foco**, la solapa **Celo** todavía
+marcada y la fecha conservada. El aviso trae el enlace **Ver los celos**, donde el
+registro tiene que estar.
+
+**La carga en tanda, que es para lo que está.** Sin tocar nada más, escribir `133` y
+apretar **Registrar celo** otra vez. Son dos registros sin haber entrado al menú ni una
+sola vez: ese es el ahorro que la tarjeta busca, y se nota recién a partir del segundo.
+
+**Un servicio, que no se guarda acá.** Elegir la solapa **Servicio**: desaparecen los
+campos de fecha y observaciones, el botón pasa a decir **Abrir registro de servicio** y
+la fila de sugeridas sigue siendo la de *Para servir*. Apretar `133` y después el
+botón.
+
+**Esperado.** Abre **Registrar Servicio** con la caravana `133` ya cargada. No guardó
+nada: el servicio descuenta una pajuela del stock y se completa en su propia pantalla.
+**Cancelar** para volver.
+
+**Un tacto** *(sólo con el juego de datos recién cargado)*. Solapa **Tacto**: aparece el
+campo **Resultado** y la fila cambia a *Para tactar:* con la `102`. Apretarla, dejar
+**Preñada** y **Registrar tacto**.
+
+**Esperado.** Lo mismo que el flujo 10: la `102` pasa a **Preñada**, se le baja la fecha
+probable de parto a la lactancia en curso y sale de **Tactos Pendientes** —el contador
+de la tarjeta de Reproducción, más abajo en el mismo tablero, tiene que haber bajado en
+uno—.
+
+**Variantes que tienen que fallar.** Todas informan el motivo **sin salir del tablero**
+y conservando lo que se había escrito:
+
+- Solapa **Celo** con la caravana `T-01` (macho) → *"La caravana T-01 corresponde a un
+  macho: los eventos reproductivos se registran sobre la hembra!"*.
+- Solapa **Celo** con la caravana `177` (ternera de 4 meses) → la rechaza por edad
+  mínima de celo, con el mismo mensaje que **Registrar Celo**.
+- Solapa **Celo** con una caravana que no existe, `999` → *"La caravana 999 no existe en
+  el sistema!"*.
+- Solapa **Celo** con el campo vacío → *"Indique la caravana del animal!"*.
+- Solapa **Tacto** con la caravana `130` (vacía, sin servicio) → *"La caravana 130 no
+  tiene un servicio pendiente: hay que registrar el servicio antes del tacto!"*.
+
+**Sin JavaScript.** Vale la pena verlo una vez, porque es lo que sostiene que la
+tarjeta no depende del navegador: desactivándolo, en lugar de una solapa por vez se ven
+los cuatro grupos de campos juntos y un solo botón, y el celo se registra igual. El
+evento viaja como un campo más del formulario y lo resuelve el servidor.
+
+---
+
 ## Cómo dejar todo como estaba
 
 Volver a correr el juego de datos borra lo cargado en estas pruebas y deja el rodeo en
