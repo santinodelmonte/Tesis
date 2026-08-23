@@ -347,7 +347,7 @@ el anteproyecto compromete pruebas automatizadas. No las compromete.
 ### 2.4 Manual de Usuario — ~47 páginas
 
 Es la sección más larga y **la única con una dependencia que no se resuelve sola:
-las capturas de pantalla**. Ver el punto 9.
+las capturas de pantalla**. Ver el punto 10.
 
 Fuentes: `docs/catalogo-casos-de-uso.md` para el recorrido,
 `docs/estilos-y-accesibilidad.md` para lo que significa cada color y cada
@@ -401,7 +401,7 @@ nueva.
 
 ### 2.8 Grado de satisfacción del cliente — ~1 página
 
-**No se puede escribir sin la usuaria.** Ver el punto 9.
+**No se puede escribir sin la usuaria.** Ver el punto 10.
 
 ### 2.9 Conclusiones — ~7 páginas
 
@@ -430,7 +430,7 @@ Un documento que reconoce sus límites se defiende mejor que uno que los esconde
 > `Proyecto_v6.docx` hoy es texto plano: no tiene campo TOC ni un solo `PAGEREF`,
 > por eso tampoco tiene números de página. Los números dependen de la paginación,
 > y la paginación la calcula un procesador de texto, no `python-docx`. La forma
-> correcta es que `armar_tesis.py` inserte un campo `TOC \\o "1-4" \\h \\z \\u`
+> correcta es que `armar_tesis.py` inserte un campo `TOC \o "1-4" \h \z \u`
 > de verdad y que **alguien abra el documento en Word una vez y actualice el
 > campo** (clic derecho sobre el índice, «Actualizar campos», o F9). Es un clic al
 > final de todo, pero hay que acordarse: si no, el índice sale en blanco.
