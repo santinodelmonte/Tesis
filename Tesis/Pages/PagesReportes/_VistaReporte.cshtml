@@ -1,0 +1,63 @@
+@model Tesis.Dominio.Reporte
+@*
+    Vista previa del reporte en pantalla.
+
+    Muestra exactamente las mismas secciones, columnas y filas que van a salir en el
+    PDF y en la planilla, porque las tres reciben el mismo objeto ya armado. Si esto se
+    ve bien, el archivo va a estar bien.
+*@
+@if (Model == null)
+{
+    return;
+}
+
+<div class="mt-4">
+    <h2 class="h5">@Model.Titulo</h2>
+    <p class="text-muted mb-1">@Model.Periodo</p>
+    <p class="text-muted small">
+        Emitido el @Model.FechaEmision.ToString("dd/MM/yyyy") a las @Model.FechaEmision.ToString("HH:mm")
+    </p>
+
+    @foreach (Tesis.Dominio.SeccionReporte seccion in Model.Secciones)
+    {
+        <h3 class="h6 mt-4">@seccion.Titulo</h3>
+
+        @if (!seccion.Filas.Any())
+        {
+            <p class="text-muted fst-italic">Sin registros en el período.</p>
+        }
+        else
+        {
+            @* La tabla scrollea por su cuenta: las del reporte productivo llevan ocho
+               columnas y en una pantalla angosta desbordarian la pagina entera. *@
+            <div class="table-responsive">
+                <table data-paginar="15" class="table table-sm">
+                    <thead>
+                        <tr>
+                            @for (int i = 0; i < seccion.Columnas.Length; i++)
+                            {
+                                <th class="@(seccion.EsNumerica(i) ? "text-end" : "")">@seccion.Columnas[i]</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (string[] fila in seccion.Filas)
+                        {
+                            <tr>
+                                @for (int i = 0; i < fila.Length; i++)
+                                {
+                                    <td class="@(seccion.EsNumerica(i) ? "text-end" : "")">@fila[i]</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @if (seccion.Nota != "")
+        {
+            <p class="text-muted small fst-italic">@seccion.Nota</p>
+        }
+    }
+</div>

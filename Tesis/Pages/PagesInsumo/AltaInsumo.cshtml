@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model Tesis.Pages.PagesInsumo.AltaInsumoModel
 @{
 }
@@ -56,7 +56,7 @@
                 <div class="form-group">
                     <label for="cantidadInicial">Cantidad de la partida:</label>
                     <input type="number" step="0.01" min="0" id="cantidadInicial" name="cantidadInicial"
-                           class="form-control" value="@Model.cantidadInicial" />
+                           class="form-control" value="@Tesis.Pages.Shared.CampoNumerico.Escribir(Model.cantidadInicial)" />
                     <small class="text-muted">
                         Entra como movimiento de ingreso. Cero si todavía no hay mercadería.
                     </small>
@@ -74,7 +74,7 @@
                 <div class="form-group">
                     <label for="stockMinimo">Stock minimo:</label>
                     <input type="number" step="0.01" min="0" id="stockMinimo" name="stockMinimo"
-                           class="form-control" value="@Model.stockMinimo" />
+                           class="form-control" value="@Tesis.Pages.Shared.CampoNumerico.Escribir(Model.stockMinimo)" />
                 </div>
             </div>
             <div class="col-md-3" id="bloqueDescarte" style="display: none">

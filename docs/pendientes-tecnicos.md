@@ -1,15 +1,23 @@
 # Pendientes técnicos
 
-Lo que el código debe y los documentos ya dicen bien. No son desvíos de la
-documentación —para eso está la auditoría, que corrige el documento contra el
-código— sino lo contrario: los dos puntos donde el documento tiene razón y el
-código todavía no lo acompaña.
+Lo que le falta al sistema para estar terminado. Sólo trabajo por hacer: lo que se fue
+corrigiendo dejó de figurar acá y vive en la historia del repositorio.
 
-Verificado contra el código el **13/08/2026**.
+Los módulos 0 a 6 están completos —CU1 a CU43, verificados uno por uno contra
+`catalogo-casos-de-uso.md`—. Lo que sigue es todo lo que queda.
+
+Verificado contra el código el **20/08/2026**.
+
+Los tres puntos están en el orden en que conviene encararlos, y el motivo del orden
+está escrito en cada uno: no es una lista de deseos sino un plan.
 
 ---
 
 ## 1. La caché `static` de la Controladora
+
+**Por qué va primero.** No porque sea lo más grande, sino porque es la base de lo que
+viene. El resumen diario del Módulo 7 es un proceso que corre solo, y es exactamente lo
+que esta caché no soporta. Hacerlo después significa volver a probar todo dos veces.
 
 `Dominio/Controladora.cs:101-120` declara **diecinueve listas `static`**, más la
 configuración (`:99`) y las credenciales (`:346-347`), compartidas por todas las
@@ -33,26 +41,55 @@ Tres modos de falla concretos:
    los datos que no llegaron a la base quedan visibles para todo el proceso. Con listas
    de instancia, el desastre muere con la petición.
 
-**Deja de ser hipotético con el Módulo 7.** CU49 —el resumen diario— es un proceso
-programado que corre solo, a hora fija y sin coordinarse con nadie: va a reemplazar las
-listas mientras la encargada carga un parto. La limitación asumida se sostiene mientras
-el sistema sea de un usuario y sin procesos de fondo, y el alcance del propio proyecto
-dice que no lo va a ser.
-
 **El cambio no es sólo borrar `static` veintiún veces.** `BuscarAnimal` (`:420`) y la
-mayoría de los métodos leen las listas sin llamar antes a `Refrescar()`: sólo 41 de los
-244 lo hacen. Hoy funciona porque la lista es static y alguien la cargó en una petición
+mayoría de los métodos leen las listas sin llamar antes a `Refrescar()`: sólo 41 lo
+hacen. Hoy funciona porque la lista es static y alguien la cargó en una petición
 anterior —lo que además esconde un error latente: recién levantado el servidor, una
 pantalla que llame a `BuscarAnimal` sin pasar por un `Listar` recibe `null`—. La forma
 segura es invocar `Refrescar()` en el constructor: con eso el comportamiento observable
-queda igual y desaparecen los tres modos de falla.
+queda igual, desaparecen los tres modos de falla y se cierra el error latente.
 
-## 2. No hay pruebas automatizadas
+**Costo estimado:** medio día, más recorrer entero el guion de `flujos-de-prueba.md`.
 
-No existe proyecto de tests en el repositorio. El anteproyecto compromete un Plan de
-Testing y la sección 2.3 del Proyecto figura como pendiente; lo que hay hoy es el guion
-manual de `flujos-de-prueba.md`.
+## 2. El Módulo 7 completo
 
-La lógica más testeable sin base de datos es la más delicada: `CalcularCategoria` en
-los bordes, `ListarAscendencia`, `BuscarAncestroComun`, `VerificarConsanguinidad` y
-`EstimarProduccionLactancia`.
+**Es lo más grande que queda: seis casos de uso sin una línea escrita.** No hay ningún
+archivo en `Tesis/` que mencione "Reporte" ni "Telegram". No es alcance opcional: los
+requerimientos RF7.1 a RF7.7 están declarados en el Anteproyecto v6.
+
+| CU | Qué | RF |
+|---|---|---|
+| CU44 | Generar reporte productivo, en PDF y Excel | RF7.1 |
+| CU45 | Generar reporte sanitario | RF7.2 |
+| CU46 | Generar reporte reproductivo | RF7.3 |
+| CU47 | Generar reporte genético | RF7.4 |
+| CU48 | Configurar integración con bot de Telegram | RF7.5 |
+| CU49 | Enviar resumen diario de tareas pendientes | RF7.6, RF7.7 |
+
+**Los reportes (CU44 a CU47) primero**, porque son autocontenidos: los datos ya están
+calculados en la Controladora y lo único nuevo es el formato de salida. Hace falta
+elegir una biblioteca de PDF y otra de Excel, que serían las primeras dependencias
+externas del proyecto más allá del conector de MySQL.
+
+**Telegram y el resumen diario (CU48 y CU49) al final**, que es donde está el riesgo:
+un bot necesita un token, un proceso corriendo y una forma de probarlo sin depender de
+que alguien mire el celular.
+
+Lo que alivia el trabajo de RF7.6 —notificar procedimientos sanitarios pendientes,
+partos próximos, tactos pendientes, secados próximos, stock crítico, vencimientos y fin
+del descarte de leche— es que **esas siete listas ya existen y están calculadas**: son
+las mismas que alimentan el tablero de inicio. Lo que falta construir es el canal, no
+la lógica.
+
+## 3. Rehacer el home
+
+Corrección pedida por el tutor en la reunión del 20/08/2026. **Pendiente de definir qué
+cambia**: hasta que esté escrito, este punto es un recordatorio y no una tarea.
+
+El tablero actual (`Pages/Index.cshtml`) no calcula nada propio: junta las listas de
+trabajo y las alertas que ya viven en la Controladora. Esa decisión conviene conservarla
+en el rediseño, sea cual sea la forma que tome la pantalla. El día que el tablero
+empiece a calcular por su cuenta va a discrepar con los módulos, y nadie va a saber cuál
+de los dos números está bien.
+
+Entra en cualquier hueco del plan: no depende de los otros dos puntos ni los bloquea.

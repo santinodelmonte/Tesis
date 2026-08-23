@@ -190,6 +190,11 @@
 <script>
     // El reproductor es excluyente: se muestra el selector que corresponde al tipo de
     // servicio elegido y se limpia el otro, para que no viajen los dos.
+    //
+    // La comparacion es contra la constante del dominio con su tilde. Que llegue
+    // intacta al navegador depende del codificador que se configura en Program.cs: con
+    // el de fabrica la tilde viajaba como entidad HTML y esta comparacion no coincidia
+    // nunca.
     function cambiarTipoServicio() {
         var tipo = document.getElementById("tipoServicio").value;
         var esInseminacion = tipo === "@Dominio.Servicio.INSEMINACION";

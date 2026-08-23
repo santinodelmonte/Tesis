@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
 namespace Tesis.Pages.PagesIndicadores
@@ -46,7 +46,7 @@ namespace Tesis.Pages.PagesIndicadores
             promedioDiarioRodeo = unaControladora.PromedioDiarioRodeo();
             promedioDiasEnLeche = unaControladora.PromedioDiasEnLeche();
 
-            totalActivos = unaControladora.FiltrarAnimalesXEstado(true).Count;
+            totalActivos = unaControladora.ListarRodeo().Count;
             enLactancia = unaControladora.ContarHembrasXEstadoProductivo(Hembra.EN_LACTANCIA);
             secas = unaControladora.ContarHembrasXEstadoProductivo(Hembra.SECA);
             sinLactancia = unaControladora.ContarHembrasXEstadoProductivo(Hembra.SIN_LACTANCIA);

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -91,17 +91,13 @@ namespace Tesis.Pages.PagesInsumo
             nombre = Request.Form["nombre"];
             tipoInsumo = Request.Form["tipoInsumo"] != "" ? Request.Form["tipoInsumo"] : Insumo.PAJUELA;
 
-            double vCantidadInicial = 0;
-            double.TryParse(Request.Form["cantidadInicial"], out vCantidadInicial);
-            cantidadInicial = vCantidadInicial;
+            cantidadInicial = Shared.CampoNumerico.LeerDecimal(Request.Form["cantidadInicial"]);
 
             fechaVencimiento = Request.Form["fechaVencimiento"] != ""
                 ? Convert.ToDateTime(Request.Form["fechaVencimiento"])
                 : DateTime.MinValue;
 
-            double vStockMinimo = 0;
-            double.TryParse(Request.Form["stockMinimo"], out vStockMinimo);
-            stockMinimo = vStockMinimo;
+            stockMinimo = Shared.CampoNumerico.LeerDecimal(Request.Form["stockMinimo"]);
 
             int vDescarte = 0;
             int.TryParse(Request.Form["periodoDescarteDias"], out vDescarte);

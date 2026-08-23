@@ -1,9 +1,46 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.WebEncoders;
+using System.Globalization;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using Tesis.Dominio;
 using Tesis.Persistencia;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// La cultura con la que el sistema muestra fechas y numeros, fijada a proposito.
+//
+// Sin esta linea, .NET toma la del sistema operativo de la maquina donde corre: el
+// mismo sitio muestra 19/08/2026 en una computadora y 08/19/2026 en otra, y los
+// decimales cambian de coma a punto. Lo que se ve en pantalla no puede depender de
+// como quedo configurada la maquina.
+//
+// Esto es solo la salida. Los campos <input type="number"> del formulario viajan
+// siempre con punto decimal, y se leen con InvariantCulture desde
+// Pages/Shared/CampoNumerico.
+CultureInfo vCultura = new CultureInfo("es-AR");
+
+// Con cero adelante. El patron corto de es-AR es d/M/yyyy y deja las fechas
+// desparejas en las tablas: 5/8/2026 al lado de 19/08/2026.
+vCultura.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
+
+CultureInfo.DefaultThreadCurrentCulture = vCultura;
+CultureInfo.DefaultThreadCurrentUICulture = vCultura;
+
+// El codificador de Razor. El de fabrica solo deja pasar ASCII basico y convierte
+// todo lo demas en entidades HTML: la enie y las tildes salian como &#xF3;. En el
+// texto de la pagina no se nota -el navegador las decodifica- pero adentro de un
+// bloque <script> queda la entidad literal en el string de JavaScript, y una
+// comparacion contra una constante con tilde no coincide nunca.
+//
+// Paso de verdad: el selector de pajuela de Registrar servicio no aparecia jamas,
+// porque comparaba contra "Inseminación artificial" y recibia
+// "Inseminaci&#xF3;n artificial".
+builder.Services.Configure<WebEncoderOptions>(opciones =>
+{
+    opciones.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
+});
 
 builder.Services.AddRazorPages(options =>
 {

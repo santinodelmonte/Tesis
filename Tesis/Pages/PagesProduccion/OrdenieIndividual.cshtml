@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model Tesis.Pages.PagesProduccion.OrdenieIndividualModel
 @{
     ViewData["Title"] = Model.esCorreccion ? "Corregir control" : "Control de una vaca";
@@ -89,7 +89,7 @@
                 <div class="form-group">
                     <label for="litros">Litros:</label>
                     <input type="number" step="0.01" min="0" id="litros" name="litros"
-                           class="form-control" value="@Model.litros" />
+                           class="form-control" value="@Tesis.Pages.Shared.CampoNumerico.Escribir(Model.litros)" />
                 </div>
             </div>
         </div>

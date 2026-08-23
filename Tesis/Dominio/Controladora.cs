@@ -1,4 +1,4 @@
-using Tesis.Persistencia;
+﻿using Tesis.Persistencia;
 
 namespace Tesis.Dominio
 {
@@ -93,42 +93,70 @@ namespace Tesis.Dominio
         public const int GESTACION_DIAS_MINIMA = 240;
         public const int GESTACION_DIAS_MAXIMA = 320;
 
-        // Parametros de manejo del establecimiento. Las constantes de arriba son los
-        // valores por defecto: si la tabla de configuracion esta vacia, el sistema se
-        // comporta como antes de que la configuracion existiera.
-        private static Configuracion mConfiguracion = null;
+        // Las listas cache y los parametros del establecimiento. Son de instancia: cada
+        // Controladora tiene las suyas, las carga al construirse y se las lleva cuando
+        // termina la peticion.
+        //
+        // Fueron estaticas hasta que se vio que no aportaban nada. Como el refresco se
+        // hace una vez por Controladora y no una vez por proceso, compartirlas no
+        // ahorraba una sola consulta entre peticiones: solo servian dentro de una, y
+        // para eso alcanza con campos de instancia. Lo que si tenian era el precio de
+        // la memoria compartida -una peticion recorriendo una lista que otra modifica,
+        // objetos mutados a mitad de uso ajeno, y datos que no llegaron a la base
+        // quedando visibles para todo el proceso-.
+        //
+        // Los parametros de manejo del establecimiento van en el mismo grupo porque se
+        // leen de la misma tabla y en el mismo refresco. Las constantes de mas arriba
+        // son sus valores por defecto: si la tabla de configuracion esta vacia, el
+        // sistema se comporta como antes de que la configuracion existiera.
+        private Configuracion mConfiguracion = null;
 
-        private static List<Raza> mListaRazas = new List<Raza>();
-        private static List<Categoria> mListaCategorias = new List<Categoria>();
-        private static List<Animal> mListaAnimales = new List<Animal>();
-        private static List<Hembra> mListaHembras = new List<Hembra>();
-        private static List<Macho> mListaMachos = new List<Macho>();
+        private List<Raza> mListaRazas = new List<Raza>();
+        private List<Categoria> mListaCategorias = new List<Categoria>();
+        private List<Animal> mListaAnimales = new List<Animal>();
+        private List<Hembra> mListaHembras = new List<Hembra>();
+        private List<Macho> mListaMachos = new List<Macho>();
 
-        private static List<Lactancia> mListaLactancias = new List<Lactancia>();
-        private static List<OrdenieLote> mListaOrdeniesLote = new List<OrdenieLote>();
-        private static List<OrdenieIndividual> mListaOrdeniesIndividual = new List<OrdenieIndividual>();
-        private static List<Celo> mListaCelos = new List<Celo>();
-        private static List<Servicio> mListaServicios = new List<Servicio>();
-        private static List<Tacto> mListaTactos = new List<Tacto>();
-        private static List<Parto> mListaPartos = new List<Parto>();
-        private static List<Insumo> mListaInsumos = new List<Insumo>();
-        private static List<MovimientoStock> mListaMovimientosStock = new List<MovimientoStock>();
-        private static List<PlanSanitario> mListaPlanes = new List<PlanSanitario>();
-        private static List<Diagnostico> mListaDiagnosticos = new List<Diagnostico>();
-        private static List<Tratamiento> mListaTratamientos = new List<Tratamiento>();
-        private static List<Vacunacion> mListaVacunaciones = new List<Vacunacion>();
-        private static List<Descorne> mListaDescornes = new List<Descorne>();
+        private List<Lactancia> mListaLactancias = new List<Lactancia>();
+        private List<OrdenieLote> mListaOrdeniesLote = new List<OrdenieLote>();
+        private List<OrdenieIndividual> mListaOrdeniesIndividual = new List<OrdenieIndividual>();
+        private List<Celo> mListaCelos = new List<Celo>();
+        private List<Servicio> mListaServicios = new List<Servicio>();
+        private List<Tacto> mListaTactos = new List<Tacto>();
+        private List<Parto> mListaPartos = new List<Parto>();
+        private List<Insumo> mListaInsumos = new List<Insumo>();
+        private List<MovimientoStock> mListaMovimientosStock = new List<MovimientoStock>();
+        private List<PlanSanitario> mListaPlanes = new List<PlanSanitario>();
+        private List<Diagnostico> mListaDiagnosticos = new List<Diagnostico>();
+        private List<Tratamiento> mListaTratamientos = new List<Tratamiento>();
+        private List<Vacunacion> mListaVacunaciones = new List<Vacunacion>();
+        private List<Descorne> mListaDescornes = new List<Descorne>();
 
-        // Marca si esta Controladora ya refresco las listas. No es static: cada
-        // peticion arma su propia Controladora y refresca una vez, aunque la pantalla
-        // llame a varios Listar. Las altas y las modificaciones actualizan la cache en
-        // memoria, asi que un Listar posterior dentro de la misma peticion sigue viendo
-        // el dato recien guardado.
+        // Marca que esta Controladora ya cargo sus listas. El constructor la deja en
+        // verdadero, asi que los Refrescar() que quedaron repartidos por la clase son
+        // ahora una confirmacion y no una carga: cuestan nada y siguen documentando que
+        // ese metodo necesita las listas al dia.
+        //
+        // Las altas y las modificaciones actualizan las listas en memoria ademas de
+        // escribir en la base, asi que un Listar posterior dentro de la misma peticion
+        // sigue viendo el dato recien guardado.
         private bool mRefrescado = false;
 
+        // Las listas se cargan al construir y no al primer Listar.
+        //
+        // La mayoria de los metodos de esta clase leen las listas sin llamar antes a
+        // Refrescar: funcionaba porque las listas eran estaticas y alguna peticion
+        // anterior las habia dejado cargadas. Eso escondia un error que aparecia recien
+        // levantado el servidor -una pantalla que llamara a BuscarAnimal sin pasar por
+        // un Listar recibia null- y que con listas de instancia seria permanente.
+        //
+        // Cargar en el constructor lo resuelve de raiz y no cuesta nada nuevo: hoy
+        // cualquier Controladora que toca un Listar ya recarga las diecinueve listas
+        // igual.
         public Controladora()
         {
             Persistencia = new pControladora();
+            this.Refrescar();
         }
 
         // Refresca todas las listas cache de una sola vez y en orden de dependencia.
@@ -352,7 +380,12 @@ namespace Tesis.Dominio
             mContrasenaSistema = pContrasena;
         }
 
-        public bool ValidarCredenciales(string pUsuario, string pContrasena)
+        // Estatico a proposito, y es lo unico de esta clase que lo es junto con las
+        // credenciales mismas: no depende de ningun dato de la base, asi que validar el
+        // acceso no tiene por que construir una Controladora ni abrir una conexion. Eso
+        // es lo que deja funcionar la pantalla de login con el motor apagado, que es
+        // justamente cuando hace falta poder entrar para ver que pasa.
+        public static bool ValidarCredenciales(string pUsuario, string pContrasena)
         {
             // Si la configuracion no trajo credenciales no se habilita el acceso,
             // para que una carga incompleta no deje pasar con los campos vacios.
@@ -872,6 +905,55 @@ namespace Tesis.Dominio
             return "no se identifico el ancestro comun.";
         }
 
+        // El macho que figura como toro de alguna pajuela del stock.
+        //
+        // Junto con EnPie es lo que separa al reproductor del novillo. El toro de
+        // catalogo no integra el rodeo -por eso su en_pie es falso-, pero su destino es
+        // la reproduccion igual que el del toro propio: el semen sirve aunque el animal
+        // no este en el campo. Sin esta condicion caia en Novillo, que la categoria
+        // define justamente como el macho que NO se destina a reproduccion, y el listado
+        // le ofrecia corregir una categoria que estaba bien.
+        //
+        // RF1.8 clasifica a los machos por edad y destino reproductivo. La presencia en
+        // el campo es una forma de destino reproductivo, no la unica.
+        private bool AportaPajuelas(Macho pMacho)
+        {
+            if (pMacho == null)
+            {
+                return false;
+            }
+
+            foreach (Insumo unaPajuela in this.ListarPajuelas())
+            {
+                if (unaPajuela.Toro != null && unaPajuela.Toro.IdAnimal == pMacho.IdAnimal)
+                {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+
+        // El reproductor que aporta semen sin integrar el rodeo: no esta en pie y tiene
+        // pajuelas en el stock.
+        //
+        // Las dos condiciones hacen falta. EnPie sola no alcanza porque tambien esta en
+        // falso en los terneros machos y en el novillo, que si son del establecimiento y
+        // tienen que seguir entrando en los planes sanitarios. Y aportar pajuelas sola
+        // tampoco, porque de un toro propio se puede extraer semen y sigue estando en el
+        // campo.
+        private bool EsToroDeCatalogo(Animal pAnimal)
+        {
+            if (pAnimal == null || !(pAnimal is Macho))
+            {
+                return false;
+            }
+
+            Macho unMacho = (Macho)pAnimal;
+
+            return !unMacho.EnPie && this.AportaPajuelas(unMacho);
+        }
+
         public Categoria CalcularCategoria(Animal pAnimal)
         {
             int vEdadMeses = this.CalcularEdadMeses(pAnimal);
@@ -896,7 +978,8 @@ namespace Tesis.Dominio
             else
             {
                 Macho unMacho = (Macho)pAnimal;
-                if (vEdadMeses > EDAD_MINIMA_SERVICIO_MESES && unMacho.EnPie)
+                if (vEdadMeses > EDAD_MINIMA_SERVICIO_MESES
+                    && (unMacho.EnPie || this.AportaPajuelas(unMacho)))
                 {
                     vNombre = "Toro";
                 }
@@ -1058,6 +1141,45 @@ namespace Tesis.Dominio
                 }
             }
             return _listaAnimalesXEstado;
+        }
+
+        // El rodeo: los animales activos del establecimiento, sin los reproductores de
+        // catalogo.
+        //
+        // Son dos poblaciones distintas y la diferencia no es un detalle de pantalla. El
+        // toro de catalogo no come, no se vacuna, no se ordeña y no se vende: existe en
+        // la base para que las pajuelas tengan padre y la genealogia de las crias por
+        // inseminacion se pueda reconstruir. Contarlo entre los animales del campo
+        // desvirtua cualquier numero que se saque del rodeo.
+        public List<Animal> ListarRodeo()
+        {
+            List<Animal> _listaRodeo = new List<Animal>();
+
+            foreach (Animal unAnimal in this.FiltrarAnimalesXEstado(true))
+            {
+                if (!this.EsToroDeCatalogo(unAnimal))
+                {
+                    _listaRodeo.Add(unAnimal);
+                }
+            }
+            return _listaRodeo;
+        }
+
+        // La otra mitad: los que aportan semen sin integrar el rodeo. Se listan aparte
+        // porque siguen haciendo falta -son el padre de media recria- pero no forman
+        // parte del inventario del campo.
+        public List<Animal> ListarReproductoresDeCatalogo()
+        {
+            List<Animal> _listaCatalogo = new List<Animal>();
+
+            foreach (Animal unAnimal in this.FiltrarAnimalesXEstado(true))
+            {
+                if (this.EsToroDeCatalogo(unAnimal))
+                {
+                    _listaCatalogo.Add(unAnimal);
+                }
+            }
+            return _listaCatalogo;
         }
 
         public List<Animal> FiltrarAnimales(string pNumCaravana, int pIdRaza, int pIdCategoria,
@@ -1721,6 +1843,12 @@ namespace Tesis.Dominio
                 return false;
             }
 
+            if (this.ValidarLoteContraMedido(pOrdenieLote.Fecha, pOrdenieLote.Turno,
+                pOrdenieLote.LitrosTotales, pOrdenieLote.Animales) != "")
+            {
+                return false;
+            }
+
             if (this.BuscarOrdenieLoteXFechaTurno(pOrdenieLote.Fecha, pOrdenieLote.Turno) != null)
             {
                 return false;
@@ -1752,6 +1880,12 @@ namespace Tesis.Dominio
             }
 
             if (pAnimales.Count == 0)
+            {
+                return false;
+            }
+
+            if (this.ValidarLoteContraMedido(unOrdenie.Fecha, unOrdenie.Turno,
+                pLitrosTotales, pAnimales) != "")
             {
                 return false;
             }
@@ -1945,6 +2079,14 @@ namespace Tesis.Dominio
                 return false;
             }
 
+            // El otro lado de la regla del tanque: lo medido entre los animales del
+            // lote no puede pasarse del ordeñe de ese turno.
+            if (this.ValidarMedidoContraLote(pOrdenie.Fecha, pOrdenie.Turno,
+                pOrdenie.Animal.IdAnimal, pOrdenie.Litros, 0) != "")
+            {
+                return false;
+            }
+
             // Se imputa a la lactancia que estaba en curso en la fecha del control, no
             // a la actual: la carga puede ser retroactiva.
             pOrdenie.Lactancia = this.LactanciaDeLaFecha(pOrdenie.Animal, pOrdenie.Fecha);
@@ -1953,7 +2095,17 @@ namespace Tesis.Dominio
                 return false;
             }
 
-            pOrdenie.OrdenieLote = this.BuscarOrdenieLoteXFechaTurno(pOrdenie.Fecha, pOrdenie.Turno);
+            // El control se cuelga del ordeñe del turno solo si el animal integro ese
+            // lote. La vaca con descarte se ordeña en el mismo turno pero su leche no
+            // entra al tanque: colgarla del ordeñe haria que la suma de los controles
+            // del lote superara el total leido, que es justo lo que la verificacion del
+            // juego de datos comprueba que no pase.
+            OrdenieLote unLoteDelTurno = this.BuscarOrdenieLoteXFechaTurno(pOrdenie.Fecha, pOrdenie.Turno);
+
+            pOrdenie.OrdenieLote = unLoteDelTurno != null
+                && this.EstaEnElLote(unLoteDelTurno.Animales, pOrdenie.Animal.IdAnimal)
+                ? unLoteDelTurno
+                : null;
 
             if (Persistencia.AltaOrdenieIndividual(pOrdenie))
             {
@@ -2003,6 +2155,17 @@ namespace Tesis.Dominio
             {
                 return "Los litros tienen que ser un valor positivo y no pueden superar los "
                     + this.Parametros().LitrosMaximosIndividual.ToString("N2") + " litros por control!";
+            }
+
+            // El control que se corrige no cuenta contra si mismo: se compara el valor
+            // nuevo contra los demas del turno.
+            OrdenieIndividual unOrdenie = this.BuscarOrdenieIndividual(pIdOrdenieInd);
+            string vMotivo = this.ValidarMedidoContraLote(unOrdenie.Fecha, unOrdenie.Turno,
+                unOrdenie.Animal != null ? unOrdenie.Animal.IdAnimal : 0, pLitros, pIdOrdenieInd);
+
+            if (vMotivo != "")
+            {
+                return vMotivo;
             }
             return "";
         }
@@ -2098,6 +2261,110 @@ namespace Tesis.Dominio
                 }
             }
             return vTotal;
+        }
+
+        // Lo medido vaca por vaca en un turno, contando unicamente a los animales que
+        // integraron el lote.
+        //
+        // Esa restriccion es la que hace correcta la comparacion contra el tanque. La
+        // vaca con descarte de leche se ordeña y se mide igual -su produccion es real y
+        // pertenece a su lactancia- pero su leche no llega al tanque, y por eso CU12 la
+        // deja fuera del lote. Sumarla daria por invalido un ordeñe que esta bien.
+        //
+        // pIdOrdenieIgnorado permite dejar afuera un control que se esta corrigiendo,
+        // para poder comparar con el valor nuevo y no con el que se va a reemplazar.
+        private double SumarMedidoDelLote(DateTime pFecha, string pTurno, List<Hembra> pAnimales,
+            int pIdOrdenieIgnorado)
+        {
+            double vTotal = 0;
+
+            foreach (OrdenieIndividual unOrdenie in mListaOrdeniesIndividual)
+            {
+                if (unOrdenie.Fecha.Date != pFecha.Date || unOrdenie.Turno != pTurno)
+                {
+                    continue;
+                }
+
+                if (unOrdenie.IdOrdenieInd == pIdOrdenieIgnorado)
+                {
+                    continue;
+                }
+
+                if (unOrdenie.Animal != null && this.EstaEnElLote(pAnimales, unOrdenie.Animal.IdAnimal))
+                {
+                    vTotal = vTotal + unOrdenie.Litros;
+                }
+            }
+            return vTotal;
+        }
+
+        private bool EstaEnElLote(List<Hembra> pAnimales, int pIdAnimal)
+        {
+            if (pAnimales == null)
+            {
+                return false;
+            }
+
+            foreach (Hembra unaHembra in pAnimales)
+            {
+                if (unaHembra.IdAnimal == pIdAnimal)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // CU12 y CU13. Lo medido vaca por vaca en un turno no puede superar lo que salio
+        // del tanque en ese mismo turno: seria repartir entre los animales mas leche de
+        // la que hubo.
+        //
+        // La regla vale en los dos sentidos -al cargar el ordeñe cuando ya hay controles
+        // hechos, y al cargar un control sobre un ordeñe ya cargado- y por eso vive aca
+        // y no en una pantalla, que era donde estaba y solo cubria el primer caso.
+        //
+        // Este es el sentido del ordeñe: se conocen los litros del tanque y los animales
+        // elegidos, y se comparan contra lo que ya estaba medido.
+        public string ValidarLoteContraMedido(DateTime pFecha, string pTurno, double pLitrosLote,
+            List<Hembra> pAnimales)
+        {
+            double vMedido = this.SumarMedidoDelLote(pFecha, pTurno, pAnimales, 0);
+
+            if (vMedido > pLitrosLote)
+            {
+                return "Los controles individuales de ese turno ya suman " + vMedido.ToString("N2")
+                    + " litros entre los animales del lote, mas que el total del ordeñe. "
+                    + "Revise el total del tanque o los controles cargados!";
+            }
+            return "";
+        }
+
+        // El otro sentido: se conoce el control que se quiere guardar y hay que ver si
+        // entra en el ordeñe del turno.
+        //
+        // Devuelve vacio cuando no hay ordeñe de lote cargado -el turno se anota
+        // unicamente vaca por vaca y no hay contra que comparar- y cuando el animal no
+        // integra el lote, que es el caso de la vaca con descarte.
+        public string ValidarMedidoContraLote(DateTime pFecha, string pTurno, int pIdAnimal,
+            double pLitros, int pIdOrdenieIgnorado)
+        {
+            OrdenieLote unLote = this.BuscarOrdenieLoteXFechaTurno(pFecha, pTurno);
+
+            if (unLote == null || !this.EstaEnElLote(unLote.Animales, pIdAnimal))
+            {
+                return "";
+            }
+
+            double vMedido = this.SumarMedidoDelLote(pFecha, pTurno, unLote.Animales, pIdOrdenieIgnorado);
+
+            if (vMedido + pLitros > unLote.LitrosTotales)
+            {
+                return "El ordeñe de ese turno fue de " + unLote.LitrosTotales.ToString("N2")
+                    + " litros y entre los animales del lote ya hay " + vMedido.ToString("N2")
+                    + " medidos: no entran " + pLitros.ToString("N2") + " mas. "
+                    + "Revise los litros o corrija el total del ordeñe!";
+            }
+            return "";
         }
 
         public double SumarLitros(List<OrdenieIndividual> pOrdenies)
@@ -6439,6 +6706,15 @@ namespace Tesis.Dominio
                 return false;
             }
 
+            // El toro de catalogo no esta en el campo: no hay a quien vacunar ni
+            // desparasitar. Sin esto, el plan sin categorias -que alcanza a todo el
+            // rodeo, como el de aftosa- los reclamaba a los tres, y como nunca se les
+            // aplico nada encabezaban el calendario con años de atraso.
+            if (this.EsToroDeCatalogo(pAnimal))
+            {
+                return false;
+            }
+
             if (this.CalcularEdadMeses(pAnimal) < pPlan.EdadInicioMeses)
             {
                 return false;
@@ -6643,6 +6919,432 @@ namespace Tesis.Dominio
                 vPosicion = vPosicion + 1;
             }
             pLista.Insert(vPosicion, pPendiente);
+        }
+        #endregion
+
+        #region REPORTES
+        // Los cuatro reportes del Modulo 7 (CU44 a CU47).
+        //
+        // Lo que arma cada metodo es el contenido: que secciones lleva el reporte, que
+        // columnas y con que filas. El formato de salida -PDF o planilla- lo resuelven
+        // los generadores de Reportes/, que reciben esto ya terminado.
+        //
+        // La razon de que el contenido se decida una sola vez es concreta: si el PDF y
+        // el Excel armaran cada uno sus numeros, tarde o temprano dos versiones del
+        // mismo reporte dirian cosas distintas y nadie sabria a cual creerle.
+
+        // CU44, RF7.1. Produccion general del establecimiento y produccion individual
+        // de cada vaca en ordeñe.
+        public Reporte ArmarReporteProductivo(DateTime pDesde, DateTime pHasta)
+        {
+            this.Refrescar();
+
+            Reporte unReporte = new Reporte("Reporte productivo", this.TextoPeriodo(pDesde, pHasta));
+
+            List<OrdenieLote> _listaOrdenies = this.FiltrarOrdeniesLoteXFecha(pDesde, pHasta);
+            List<OrdenieIndividual> _listaControles = this.FiltrarOrdeniesIndividualXFecha(pDesde, pHasta);
+
+            double vProduccion = this.CalcularProduccionEnRango(pDesde, pHasta, MODALIDAD_LOTE);
+            double vMedido = this.CalcularProduccionEnRango(pDesde, pHasta, MODALIDAD_INDIVIDUAL);
+            double vSinLote = this.SumarLitrosSinOrdenieLote(pDesde, pHasta);
+
+            SeccionReporte unResumen = unReporte.AgregarSeccion("Resumen del período",
+                new string[] { "Concepto", "Valor" });
+            unResumen.ColumnasNumericas.Add(1);
+
+            unResumen.AgregarFila("Producción del período (litros)", vProduccion.ToString("N2"));
+            unResumen.AgregarFila("Ordeñes de lote registrados", _listaOrdenies.Count.ToString());
+            unResumen.AgregarFila("Controles individuales registrados", _listaControles.Count.ToString());
+            unResumen.AgregarFila("Litros medidos vaca por vaca", vMedido.ToString("N2"));
+            unResumen.AgregarFila("Vacas en ordeñe", this.ListarHembrasEnLactancia().Count.ToString());
+            unResumen.AgregarFila("Promedio diario por vaca (litros)", this.PromedioDiarioRodeo().ToString("N2"));
+            unResumen.AgregarFila("Días en leche promedio", this.PromedioDiasEnLeche().ToString("N0"));
+
+            unResumen.Nota = "La producción del período se resuelve turno por turno: el total del tanque "
+                + "cuando el ordeñe está cargado, y la suma de los controles cuando el turno se anotó "
+                + "únicamente vaca por vaca. Las dos fuentes no se suman nunca. De esos litros, "
+                + vSinLote.ToString("N2") + " provienen de turnos sin ordeñe de lote.";
+
+            SeccionReporte unaProduccion = unReporte.AgregarSeccion("Producción del establecimiento",
+                new string[] { "Fecha", "Turno", "Animales", "Litros" });
+            unaProduccion.ColumnasNumericas.Add(2);
+            unaProduccion.ColumnasNumericas.Add(3);
+
+            foreach (OrdenieLote unOrdenie in _listaOrdenies)
+            {
+                unaProduccion.AgregarFila(
+                    unOrdenie.Fecha.ToString("dd/MM/yyyy"),
+                    unOrdenie.Turno,
+                    unOrdenie.Animales != null ? unOrdenie.Animales.Count.ToString() : "0",
+                    unOrdenie.LitrosTotales.ToString("N2"));
+            }
+
+            SeccionReporte unaIndividual = unReporte.AgregarSeccion("Producción por animal",
+                new string[] { "Caravana", "Lactancia", "Inicio", "Días en leche", "Controles",
+                    "Producción estimada", "Promedio diario", "Proyección a 305 días" });
+
+            for (int vIndice = 3; vIndice <= 7; vIndice = vIndice + 1)
+            {
+                unaIndividual.ColumnasNumericas.Add(vIndice);
+            }
+
+            foreach (Lactancia unaLactancia in this.ListarLactanciasActivas())
+            {
+                if (unaLactancia.Animal == null)
+                {
+                    continue;
+                }
+
+                unaIndividual.AgregarFila(
+                    unaLactancia.Animal.NumCaravana,
+                    unaLactancia.NumeroLactancia.ToString(),
+                    unaLactancia.FechaInicio.ToString("dd/MM/yyyy"),
+                    this.DiasEnLeche(unaLactancia).ToString(),
+                    this.FiltrarOrdeniesXLactancia(unaLactancia.IdLactancia).Count.ToString(),
+                    this.EstimarProduccionLactancia(unaLactancia).ToString("N2"),
+                    this.PromedioDiarioLactancia(unaLactancia).ToString("N2"),
+                    this.ProyectarProduccion305(unaLactancia).ToString("N2"));
+            }
+
+            unaIndividual.Nota = "La producción estimada se calcula por el método de intervalos de "
+                + "control y abarca la lactancia completa, no solamente el período consultado. La "
+                + "proyección a 305 días es lineal y sirve para comparar animales entre sí.";
+
+            SeccionReporte unosControles = unReporte.AgregarSeccion("Controles lecheros del período",
+                new string[] { "Fecha", "Turno", "Caravana", "Litros" });
+            unosControles.ColumnasNumericas.Add(3);
+
+            foreach (OrdenieIndividual unControl in _listaControles)
+            {
+                unosControles.AgregarFila(
+                    unControl.Fecha.ToString("dd/MM/yyyy"),
+                    unControl.Turno,
+                    unControl.Animal != null ? unControl.Animal.NumCaravana : "",
+                    unControl.Litros.ToString("N2"));
+            }
+
+            return unReporte;
+        }
+
+        // CU45, RF7.2. Enfermedades, tratamientos y vacunaciones del periodo. Se suman
+        // los descornes, que son el otro procedimiento sanitario que el sistema lleva.
+        public Reporte ArmarReporteSanitario(DateTime pDesde, DateTime pHasta)
+        {
+            this.Refrescar();
+
+            Reporte unReporte = new Reporte("Reporte sanitario", this.TextoPeriodo(pDesde, pHasta));
+
+            SeccionReporte unosDiagnosticos = unReporte.AgregarSeccion("Diagnósticos",
+                new string[] { "Fecha", "Caravana", "Enfermedad o revisación", "Estado" });
+
+            foreach (Diagnostico unDiagnostico in this.ListarDiagnosticos())
+            {
+                if (!this.EnRango(unDiagnostico.FechaDiagnostico, pDesde, pHasta))
+                {
+                    continue;
+                }
+
+                unosDiagnosticos.AgregarFila(
+                    unDiagnostico.FechaDiagnostico.ToString("dd/MM/yyyy"),
+                    unDiagnostico.Animal != null ? unDiagnostico.Animal.NumCaravana : "",
+                    unDiagnostico.Enfermedad,
+                    unDiagnostico.Estado);
+            }
+
+            SeccionReporte unosTratamientos = unReporte.AgregarSeccion("Tratamientos",
+                new string[] { "Inicio", "Caravana", "Producto", "Días", "Dosis diaria",
+                    "Descarte de leche hasta", "Plan", "Diagnóstico" });
+            unosTratamientos.ColumnasNumericas.Add(3);
+
+            foreach (Tratamiento unTratamiento in this.ListarTratamientos())
+            {
+                if (!this.EnRango(unTratamiento.FechaInicio, pDesde, pHasta))
+                {
+                    continue;
+                }
+
+                unosTratamientos.AgregarFila(
+                    unTratamiento.FechaInicio.ToString("dd/MM/yyyy"),
+                    unTratamiento.Animal != null ? unTratamiento.Animal.NumCaravana : "",
+                    unTratamiento.Insumo != null ? unTratamiento.Insumo.Nombre : "",
+                    unTratamiento.DiasDuracion.ToString(),
+                    unTratamiento.DosisDiaria,
+                    unTratamiento.FechaFinDescarte != DateTime.MinValue
+                        ? unTratamiento.FechaFinDescarte.ToString("dd/MM/yyyy") : "Sin descarte",
+                    unTratamiento.Plan != null ? unTratamiento.Plan.Nombre : "Fuera de plan",
+                    unTratamiento.Diagnostico != null ? unTratamiento.Diagnostico.Enfermedad : "Preventivo");
+            }
+
+            SeccionReporte unasVacunaciones = unReporte.AgregarSeccion("Vacunaciones",
+                new string[] { "Fecha", "Caravana", "Vacuna", "Plan" });
+
+            foreach (Vacunacion unaVacunacion in this.ListarVacunaciones())
+            {
+                if (!this.EnRango(unaVacunacion.FechaAplicacion, pDesde, pHasta))
+                {
+                    continue;
+                }
+
+                unasVacunaciones.AgregarFila(
+                    unaVacunacion.FechaAplicacion.ToString("dd/MM/yyyy"),
+                    unaVacunacion.Animal != null ? unaVacunacion.Animal.NumCaravana : "",
+                    unaVacunacion.Insumo != null ? unaVacunacion.Insumo.Nombre : "",
+                    unaVacunacion.Plan != null ? unaVacunacion.Plan.Nombre : "Fuera de plan");
+            }
+
+            SeccionReporte unosDescornes = unReporte.AgregarSeccion("Descornes",
+                new string[] { "Fecha", "Caravana", "Método", "Plan" });
+
+            foreach (Descorne unDescorne in this.ListarDescornes())
+            {
+                if (!this.EnRango(unDescorne.Fecha, pDesde, pHasta))
+                {
+                    continue;
+                }
+
+                unosDescornes.AgregarFila(
+                    unDescorne.Fecha.ToString("dd/MM/yyyy"),
+                    unDescorne.Animal != null ? unDescorne.Animal.NumCaravana : "",
+                    unDescorne.Metodo,
+                    unDescorne.Plan != null ? unDescorne.Plan.Nombre : "Fuera de plan");
+            }
+
+            SeccionReporte unResumen = unReporte.AgregarSeccion("Situación al día de la emisión",
+                new string[] { "Concepto", "Valor" });
+            unResumen.ColumnasNumericas.Add(1);
+
+            unResumen.AgregarFila("Diagnósticos en el período", unosDiagnosticos.Filas.Count.ToString());
+            unResumen.AgregarFila("Tratamientos en el período", unosTratamientos.Filas.Count.ToString());
+            unResumen.AgregarFila("Vacunaciones en el período", unasVacunaciones.Filas.Count.ToString());
+            unResumen.AgregarFila("Descornes en el período", unosDescornes.Filas.Count.ToString());
+            unResumen.AgregarFila("Animales con descarte de leche vigente",
+                this.ListarHembrasEnDescarte().Count.ToString());
+            unResumen.AgregarFila("Procedimientos pendientes en el calendario",
+                this.ObtenerCalendarioSanitario(this.Parametros().DiasAnticipacionSanitaria).Count.ToString());
+
+            return unReporte;
+        }
+
+        // CU46, RF7.3. Servicios, preñeces, partos y secados del periodo, con los
+        // indicadores reproductivos del rodeo.
+        public Reporte ArmarReporteReproductivo(DateTime pDesde, DateTime pHasta)
+        {
+            this.Refrescar();
+
+            Reporte unReporte = new Reporte("Reporte reproductivo", this.TextoPeriodo(pDesde, pHasta));
+
+            SeccionReporte unosServicios = unReporte.AgregarSeccion("Servicios",
+                new string[] { "Fecha", "Caravana", "Tipo", "Reproductor", "Parto probable" });
+
+            foreach (Servicio unServicio in this.ListarServicios())
+            {
+                if (!this.EnRango(unServicio.FechaServicio, pDesde, pHasta))
+                {
+                    continue;
+                }
+
+                Macho unReproductor = this.ToroDelServicio(unServicio);
+
+                unosServicios.AgregarFila(
+                    unServicio.FechaServicio.ToString("dd/MM/yyyy"),
+                    unServicio.Animal != null ? unServicio.Animal.NumCaravana : "",
+                    unServicio.TipoServicio,
+                    unReproductor != null ? unReproductor.NumCaravana : "Sin registrar",
+                    unServicio.FechaProbableParto.ToString("dd/MM/yyyy"));
+            }
+
+            SeccionReporte unosTactos = unReporte.AgregarSeccion("Tactos y confirmación de preñez",
+                new string[] { "Fecha", "Caravana", "Servicio", "Resultado" });
+
+            foreach (Tacto unTacto in this.ListarTactos())
+            {
+                if (!this.EnRango(unTacto.FechaTacto, pDesde, pHasta))
+                {
+                    continue;
+                }
+
+                unosTactos.AgregarFila(
+                    unTacto.FechaTacto.ToString("dd/MM/yyyy"),
+                    unTacto.Servicio != null && unTacto.Servicio.Animal != null
+                        ? unTacto.Servicio.Animal.NumCaravana : "",
+                    unTacto.Servicio != null
+                        ? unTacto.Servicio.FechaServicio.ToString("dd/MM/yyyy") : "",
+                    unTacto.Resultado);
+            }
+
+            SeccionReporte unosPartos = unReporte.AgregarSeccion("Partos",
+                new string[] { "Fecha", "Caravana", "Tipo", "Crías", "Caravanas de las crías" });
+            unosPartos.ColumnasNumericas.Add(3);
+
+            foreach (Parto unParto in this.ListarPartos())
+            {
+                if (!this.EnRango(unParto.FechaParto, pDesde, pHasta))
+                {
+                    continue;
+                }
+
+                List<Animal> _listaCrias = this.CriasDelParto(unParto);
+                string vCaravanas = "";
+
+                foreach (Animal unaCria in _listaCrias)
+                {
+                    vCaravanas = vCaravanas == "" ? unaCria.NumCaravana : vCaravanas + ", " + unaCria.NumCaravana;
+                }
+
+                unosPartos.AgregarFila(
+                    unParto.FechaParto.ToString("dd/MM/yyyy"),
+                    unParto.Madre != null ? unParto.Madre.NumCaravana : "",
+                    unParto.TipoParto,
+                    _listaCrias.Count.ToString(),
+                    vCaravanas == "" ? "Sin crías registradas" : vCaravanas);
+            }
+
+            SeccionReporte unosSecados = unReporte.AgregarSeccion("Secados",
+                new string[] { "Fecha de secado", "Caravana", "Lactancia", "Inicio", "Días en leche" });
+            unosSecados.ColumnasNumericas.Add(2);
+            unosSecados.ColumnasNumericas.Add(4);
+
+            foreach (Lactancia unaLactancia in this.ListarLactancias())
+            {
+                if (unaLactancia.FechaSecado == DateTime.MinValue
+                    || !this.EnRango(unaLactancia.FechaSecado, pDesde, pHasta))
+                {
+                    continue;
+                }
+
+                unosSecados.AgregarFila(
+                    unaLactancia.FechaSecado.ToString("dd/MM/yyyy"),
+                    unaLactancia.Animal != null ? unaLactancia.Animal.NumCaravana : "",
+                    unaLactancia.NumeroLactancia.ToString(),
+                    unaLactancia.FechaInicio.ToString("dd/MM/yyyy"),
+                    this.DiasEnLeche(unaLactancia).ToString());
+            }
+
+            SeccionReporte unosIndicadores = unReporte.AgregarSeccion("Indicadores reproductivos del rodeo",
+                new string[] { "Indicador", "Valor" });
+            unosIndicadores.ColumnasNumericas.Add(1);
+
+            unosIndicadores.AgregarFila("Intervalo entre partos (días)",
+                this.PromedioIntervaloEntrePartos().ToString("N0"));
+            unosIndicadores.AgregarFila("Días abiertos promedio", this.PromedioDiasAbiertos().ToString("N0"));
+            unosIndicadores.AgregarFila("Servicios por preñez", this.ServiciosPorPrenez().ToString("N2"));
+            unosIndicadores.AgregarFila("Hembras preñadas",
+                this.ContarHembrasXEstadoReproductivo(Hembra.PRENADA).ToString());
+            unosIndicadores.AgregarFila("Hembras servidas sin confirmar",
+                this.ContarHembrasXEstadoReproductivo(Hembra.SERVIDA).ToString());
+            unosIndicadores.AgregarFila("Hembras vacías",
+                this.ContarHembrasXEstadoReproductivo(Hembra.VACIA).ToString());
+
+            unosIndicadores.Nota = "Los indicadores describen la situación del rodeo al día de la "
+                + "emisión y no se limitan al período consultado.";
+
+            return unReporte;
+        }
+
+        // CU47, RF7.4. Genealogia del rodeo y rendimiento por linea paterna.
+        //
+        // No lleva rango de fechas: la genealogia no es un hecho que ocurra en un
+        // periodo, es el estado del rodeo.
+        public Reporte ArmarReporteGenetico()
+        {
+            this.Refrescar();
+
+            Reporte unReporte = new Reporte("Reporte genético", "Rodeo al día de la emisión");
+
+            SeccionReporte unaGenealogia = unReporte.AgregarSeccion("Genealogía del rodeo",
+                new string[] { "Caravana", "Categoría", "Raza", "Nacimiento", "Madre", "Padre" });
+
+            foreach (Animal unAnimal in this.ListarRodeo())
+            {
+                unaGenealogia.AgregarFila(
+                    unAnimal.NumCaravana,
+                    unAnimal.Categoria != null ? unAnimal.Categoria.Nombre : "",
+                    unAnimal.Raza != null ? unAnimal.Raza.Nombre : "",
+                    unAnimal.FechaNacimiento.ToString("dd/MM/yyyy"),
+                    unAnimal.Madre != null ? unAnimal.Madre.NumCaravana : "No registrada",
+                    unAnimal.Padre != null ? unAnimal.Padre.NumCaravana : "No registrado");
+            }
+
+            // Descendencia y rendimiento en una sola tabla y no en dos.
+            //
+            // Separarlas parecia mas prolijo hasta que se vio el resultado: en un rodeo
+            // joven, las hijas con genealogia registrada todavia no llegaron a ordeñe y
+            // la tabla de rendimiento quedaba vacia al lado de una de descendencia
+            // llena. Son la misma pregunta -que dio cada reproductor- contestada con el
+            // detalle que haya disponible en cada caso.
+            SeccionReporte unRendimiento = unReporte.AgregarSeccion("Rendimiento por línea paterna",
+                new string[] { "Reproductor", "Raza", "Origen", "Hijas registradas",
+                    "Hijas en ordeñe", "Promedio diario", "Proyección a 305 días" });
+
+            for (int vColumna = 3; vColumna <= 6; vColumna = vColumna + 1)
+            {
+                unRendimiento.ColumnasNumericas.Add(vColumna);
+            }
+
+            foreach (Macho unPadre in this.ListarMachos())
+            {
+                int vDescendencia = 0;
+
+                foreach (Animal unAnimal in this.ListarAnimales())
+                {
+                    if (unAnimal.Padre != null && unAnimal.Padre.IdAnimal == unPadre.IdAnimal)
+                    {
+                        vDescendencia = vDescendencia + 1;
+                    }
+                }
+
+                // Un macho sin descendencia registrada no es una linea genetica: no hay
+                // nada que comparar todavia.
+                if (vDescendencia == 0)
+                {
+                    continue;
+                }
+
+                int vHijasEnOrdenie = 0;
+                double vPromedio = 0;
+                double vProyeccion = 0;
+
+                foreach (Lactancia unaLactancia in this.ListarLactanciasActivas())
+                {
+                    if (unaLactancia.Animal == null || unaLactancia.Animal.Padre == null
+                        || unaLactancia.Animal.Padre.IdAnimal != unPadre.IdAnimal)
+                    {
+                        continue;
+                    }
+
+                    vHijasEnOrdenie = vHijasEnOrdenie + 1;
+                    vPromedio = vPromedio + this.PromedioDiarioLactancia(unaLactancia);
+                    vProyeccion = vProyeccion + this.ProyectarProduccion305(unaLactancia);
+                }
+
+                unRendimiento.AgregarFila(
+                    unPadre.NumCaravana,
+                    unPadre.Raza != null ? unPadre.Raza.Nombre : "",
+                    unPadre.EnPie ? "Toro del rodeo" : "Catálogo, aporta pajuelas",
+                    vDescendencia.ToString(),
+                    vHijasEnOrdenie.ToString(),
+                    vHijasEnOrdenie > 0 ? (vPromedio / vHijasEnOrdenie).ToString("N2") : "Sin datos",
+                    vHijasEnOrdenie > 0 ? (vProyeccion / vHijasEnOrdenie).ToString("N2") : "Sin datos");
+            }
+
+            unRendimiento.Nota = "Los promedios son por hija y sólo se pueden calcular cuando la "
+                + "descendencia llegó a ordeñe y tiene controles lecheros. Un reproductor con hijas "
+                + "registradas y ninguna en ordeñe todavía no se puede comparar contra los demás.";
+
+            return unReporte;
+        }
+
+        // Una fecha cae dentro del rango consultado. Se compara por dia y no por
+        // instante: las fechas del sistema no llevan hora, y un rango que termina hoy
+        // tiene que incluir lo que se cargo hoy.
+        private bool EnRango(DateTime pFecha, DateTime pDesde, DateTime pHasta)
+        {
+            return pFecha.Date >= pDesde.Date && pFecha.Date <= pHasta.Date;
+        }
+
+        private string TextoPeriodo(DateTime pDesde, DateTime pHasta)
+        {
+            return "Período del " + pDesde.ToString("dd/MM/yyyy") + " al " + pHasta.ToString("dd/MM/yyyy");
         }
         #endregion
     }

@@ -199,6 +199,13 @@ namespace Tesis.Pages.PagesReproduccion
             // hembra nace freemartin-, madre que no figuraba prenada, o una duracion de
             // gestacion fuera de rango.
             advertencias = unaControladora.AdvertenciasParto(unParto, _listaCrias);
+
+            // Y las de la genealogia de la cria, que son las mismas que revisa el alta
+            // de animal: sobre todo el parentesco entre la madre y el padre elegido, que
+            // hace que la cria nazca consanguinea. Normalmente ya aviso el servicio, pero
+            // un parto se puede registrar sin servicio previo y el padre se elige a mano.
+            advertencias.AddRange(unaControladora.AdvertenciasGenealogia(fechaParto, madre, unPadre));
+
             if (advertencias.Count > 0 && !confirmado)
             {
                 return Page();

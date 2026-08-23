@@ -63,16 +63,27 @@ Los datos no son al azar: la fecha probable de parto es siempre la del servicio 
 partos coincide con la lactancia abierta, la raza de cada cría sale de la de sus
 padres y el `stock_actual` de cada insumo es exactamente el ingreso menos los
 egresos que dejó cada aplicación. Las dos consultas del final del script comprueban
-lo último y que los controles individuales del 05/08 sumen el total del lote de ese
-día: las dos tienen que devolver cero filas.
+lo último y que los controles individuales del día del control lechero sumen el
+total del lote de ese día: las dos tienen que devolver cero filas.
 
-La fecha de referencia es **2026-08-09**, y el juego está armado para que parado en
-ese día haya trabajo pendiente en todos los tableros: una vaca con descarte de leche
-vigente y fuera del lote de ordeñe, dos partos próximos, un tacto atrasado, tres
-vacas en condiciones de servicio, un ternero sin descornar, dos insumos bajo el
-mínimo y dos partidas por vencer. Vale la pena tenerlo en cuenta al mirar las
-alertas: corriendo el script mucho después de esa fecha, los vencimientos y los
-partos próximos ya habrán pasado.
+**El juego de datos no tiene fechas fijas.** Todas se escriben contra la variable
+`@hoy`, que el script define como `CURDATE()`, así que el rodeo se corre solo al día
+en que se carga y las alertas nunca aparecen vacías por haber quedado viejas. Parado
+en el día de la carga hay trabajo pendiente en todos los tableros: una vaca con
+descarte de leche vigente y fuera del lote de ordeñe, un parto próximo, un tacto
+atrasado, cuatro vacas en condiciones de servicio, una ternera sin vacunar, un
+ternero sin descornar, dos insumos bajo el mínimo y dos partidas por vencer. El
+último ordeñe cargado es el de anteayer: el de ayer y el de hoy son los que se cargan
+a mano al recorrer el sistema.
+
+Para reproducir una situación puntual, el ancla se fija a mano editando esa línea:
+
+```sql
+SET @hoy = DATE('2026-08-19');
+```
+
+Con `SET @hoy = DATE('2026-08-11')` el juego queda idéntico al que tenía fechas
+fijas, que es el que describe `docs/flujos-de-prueba.md`.
 
 El script empieza vaciando las tablas de datos, así que se puede volver a correr.
 No toca razas, categorías ni la fila de configuración, que las deja `CreacionDb.sql`.

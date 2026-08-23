@@ -38,6 +38,14 @@ CREATE DATABASE tambo
     DEFAULT CHARACTER SET utf8mb4
     DEFAULT COLLATE utf8mb4_general_ci;
 
+-- El juego de caracteres de la conexion. Sin esto, el cliente de linea de
+-- comandos interpreta el archivo con el charset que tenga configurado -en
+-- Windows suele ser el de la consola- y las enies y las tildes llegan al
+-- servidor doble codificadas: 'Preñada' se guarda como 'Pre├▒ada' y despues
+-- ninguna comparacion contra la constante del dominio coincide. El archivo
+-- esta en UTF-8 y aca se lo declara.
+SET NAMES utf8mb4;
+
 USE tambo;
 
 -- =====================================================================
@@ -519,7 +527,7 @@ INSERT INTO categorias (nombre, descripcion) VALUES
     ('Vaca', 'Hembra con uno o mas partos registrados.'),
     ('Ternero', 'Macho de hasta 12 meses de edad.'),
     ('Novillo', 'Macho de mas de 12 meses que no se destina a reproduccion.'),
-    ('Toro', 'Macho de mas de 15 meses que integra el rodeo como reproductor.');
+    ('Toro', 'Macho de mas de 15 meses destinado a la reproduccion: el toro en pie o el de catalogo que aporta pajuelas.');
 
 -- La fila unica de configuracion, con los valores por defecto de cada
 -- columna. Si esta fila no existiera el sistema igual funciona: la

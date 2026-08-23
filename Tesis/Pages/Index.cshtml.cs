@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
 namespace Tesis.Pages
@@ -45,7 +45,9 @@ namespace Tesis.Pages
             Configuracion unaConfiguracion = unaControladora.ObtenerConfiguracion();
 
             List<Animal> _listaAnimales = unaControladora.ListarAnimales();
-            totalActivos = unaControladora.FiltrarAnimalesXEstado(true).Count;
+            // El rodeo son los animales del establecimiento: los reproductores de
+            // catalogo no se cuentan, porque no estan en el campo.
+            totalActivos = unaControladora.ListarRodeo().Count;
             sinDatos = _listaAnimales.Count == 0;
 
             vacasParaServir = unaControladora.ListarVacasParaServir().Count;

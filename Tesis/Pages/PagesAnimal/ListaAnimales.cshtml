@@ -81,4 +81,44 @@
 
         </tbody>
     </table>
+
+    @* Los reproductores de catalogo no son parte del rodeo: no comen, no se vacunan y
+       no se venden. Existen para que las pajuelas tengan padre y la genealogia de las
+       crias por inseminacion se pueda reconstruir. Se muestran igual, porque hay que
+       poder consultarlos y corregirles un dato, pero aparte y sin la baja: darlos de
+       baja los sacaria de los desplegables donde si hacen falta. *@
+    @if (Model.reproductoresCatalogo.Any())
+    {
+        <h2 class="h5 mt-4">Reproductores de catálogo</h2>
+        <p class="text-muted">
+            @Model.reproductoresCatalogo.Count toro(s) que aportan pajuelas al stock sin
+            integrar el rodeo. No se cuentan entre los animales del establecimiento ni
+            entran en los planes sanitarios, pero figuran en la genealogía de las crías
+            que nacen por inseminación.
+        </p>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Caravana</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Raza</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Dominio.Animal toro in Model.reproductoresCatalogo)
+                {
+                    <tr>
+                        <td>@toro.NumCaravana</td>
+                        <td>@toro.FechaNacimiento.ToShortDateString()</td>
+                        <td>@(toro.Raza != null ? toro.Raza.Nombre : "")</td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" asp-page="./ModificarAnimal" asp-route-id="@toro.IdAnimal">Modificar</a>
+                            <a class="btn btn-warning btn-sm" asp-page="./DetalleAnimal" asp-route-id="@toro.IdAnimal">Detalle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -90,17 +90,6 @@ namespace Tesis.Pages.PagesProduccion
             litrosIndividualesDelTurno = unaControladora.SumarLitrosIndividualesDelTurno(fecha, turno);
             double vLitrosDelLote = litrosTotales;
 
-            // Justamente por eso el control individual no puede dar mas que el tanque:
-            // seria medir por animal mas leche de la que salio del ordenie.
-            if (litrosIndividualesDelTurno > vLitrosDelLote)
-            {
-                ModelState.AddModelError(string.Empty,
-                    "Los controles individuales de ese turno ya suman " +
-                    litrosIndividualesDelTurno.ToString("N2") + " litros, más que el total del ordeñe. " +
-                    "Revise el total del tanque o los controles cargados.");
-                return Page();
-            }
-
             // Los animales del lote salen de lo que quedo tildado, que puede no ser lo
             // que propuso el sistema: el paso 4 del caso de uso permite sacar los que no
             // se ordeniaron y agregar los que faltan.
@@ -127,6 +116,19 @@ namespace Tesis.Pages.PagesProduccion
                 ModelState.AddModelError(string.Empty,
                     "Los litros no son coherentes con la cantidad de animales del lote: " +
                     _animalesElegidos.Count + " animales no pueden dar " + vLitrosDelLote.ToString("N2") + " litros en un turno.");
+                return Page();
+            }
+
+            // El control individual no puede dar mas que el tanque: seria medir por
+            // animal mas leche de la que salio del ordenie. Se compara recien aca
+            // porque la regla mira solo a los animales del lote, y hasta este punto no
+            // se sabia cuales son.
+            string vMotivo = unaControladora.ValidarLoteContraMedido(fecha, turno,
+                vLitrosDelLote, _animalesElegidos);
+
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
                 return Page();
             }
 
@@ -167,9 +169,7 @@ namespace Tesis.Pages.PagesProduccion
 
             // El campo puede venir con coma o con punto segun el teclado, y vacio si el
             // usuario no lo completo
-            double vLitros = 0;
-            double.TryParse(Request.Form["litrosTotales"], out vLitros);
-            litrosTotales = vLitros;
+            litrosTotales = Shared.CampoNumerico.LeerDecimal(Request.Form["litrosTotales"]);
 
             seleccionados = new List<int>();
             foreach (string? vValor in Request.Form["animales"])

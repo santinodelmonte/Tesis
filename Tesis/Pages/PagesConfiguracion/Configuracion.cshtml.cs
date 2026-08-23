@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Tesis.Dominio;
 
@@ -110,9 +110,7 @@ namespace Tesis.Pages.PagesConfiguracion
             int.TryParse(Request.Form["edadCambioCategoriaMeses"], out vEdadCategoria);
             edadCambioCategoriaMeses = vEdadCategoria;
 
-            double vLitros = 0;
-            double.TryParse(Request.Form["litrosMaximosIndividual"], out vLitros);
-            litrosMaximosIndividual = vLitros;
+            litrosMaximosIndividual = Shared.CampoNumerico.LeerDecimal(Request.Form["litrosMaximosIndividual"]);
 
             int vOrdenies = 0;
             int.TryParse(Request.Form["ordeniesPorDia"], out vOrdenies);
