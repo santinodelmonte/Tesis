@@ -470,7 +470,7 @@ al `.md` con él.
 ## 10. Lo que se puede adelantar mientras se programa
 
 Estas tres no dependen del código y tienen dependencias externas lentas. Conviene
-destrabarlas durante la Fase 1, no esperar a la Fase 2:
+destrabarlas durante la Fase 1, no esperar a la Fase 3:
 
 1. **Subir `EjemploTesis.pdf` al repo.** Bloquea el criterio de forma de 2.3 a
    2.9. Es el primer paso y no cuesta nada.
@@ -492,7 +492,7 @@ sección más larga:
    Code **en la máquina de ustedes**, que sí puede levantar la app y sacarlas con
    Playwright de forma consistente —mismo tamaño de ventana, mismos datos de
    `DatosPrueba.sql`, mismo recorte—. El segundo camino es bastante mejor: son
-   unas cuarenta capturas, más las del Módulo 7, y a mano salen desparejas.
+   **ochenta y una** según `docs/guion-capturas.md`, y a mano salen desparejas.
 
 ---
 
