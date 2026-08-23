@@ -25,16 +25,15 @@ porque tienen la historia cargada que hace falta.
 | **Datos de la clienta** | El nombre del establecimiento va neutro en la pantalla de configuración. |
 | **Una sola sesión** | Todas se sacan de una pasada, en orden. El sistema se va modificando a medida que se cargan cosas y el orden del punto 4 lo tiene en cuenta. |
 
-### La fecha de referencia
+### La fecha se resuelve sola
 
-El rodeo está anclado al **09/08/2026** y las alertas muestran cuentas relativas a
-hoy: `136` pare el 18/08, el descarte de `115` vence el 17/08, el calendario
-sanitario cuenta días. Sacadas fuera de esa ventana, las capturas muestran partos
-vencidos y alertas vacías.
+`bd/DatosPrueba.sql` ancla el rodeo entero a `@hoy = CURDATE()`: las fechas se
+calculan contra el día en que se corre el script, así que **no hay nada que correr a
+mano y las alertas nunca quedan viejas**. Donde este guion o `flujos-de-prueba.md`
+dicen `11/08/2026`, hay que leer *hoy*; `09/08/2026` es anteayer.
 
-**Antes de empezar, correr las fechas de `DatosPrueba.sql` al día en que se saquen**
-—todas en el mismo sentido, como ya explica `flujos-de-prueba.md`— y que el manual
-diga cuál es la fecha de referencia de las imágenes.
+Igual conviene sacar todas las capturas **en una sola sesión**, para que las fechas
+que se ven en pantalla sean coherentes entre una imagen y la siguiente.
 
 ---
 
@@ -89,7 +88,7 @@ que explicarlo con imagen, porque es lo contrario de lo que se espera.
 | `m1-cu04-categoria` | `AltaAnimal` (*detalle*) | Después de **Calcular Categoria**: propone **Vaca** porque tiene partos. *La regla de negocio central del sistema* |
 | `m1-cu04-genealogia` | `AltaAnimal` | **E1** — advertencia con *Guardar de todos modos* |
 | `m1-cu05-foto` | `ModificarAnimal` | Campo de foto con la imagen cargada |
-| `m1-cu11-ficha` | `DetalleAnimal` de `115` | La ficha integral: datos, mastitis en tratamiento, descarte hasta el 17/08, partos, servicios y producción |
+| `m1-cu11-ficha` | `DetalleAnimal` de `115` | La ficha integral: datos, mastitis en tratamiento, descarte de leche vigente, partos, servicios y producción |
 | `m1-cu08-linaje` | `ConsultaLinaje` de `152` | El árbol armado: madre `101`, padre `7HO12165` |
 | `m1-cu09-consanguinidad` | `VerificarConsanguinidad` | **E2** |
 | `m1-cu06-baja` | `BajaAnimal` de `160` | Motivo *Venta*, con la confirmación |
@@ -188,9 +187,10 @@ Cuatro capturas dependen del estado del sistema y hay que sacarlas en su momento
 
 1. **`m5-cu37-critico` antes de `m5-cu35-ingreso`.** Reponer la ivermectina vacía
    la alerta; si se saca después, la pantalla queda en blanco.
-2. **`m2-cu12-descarte` mientras el descarte de `115` esté vigente** (hasta el
-   17/08 del juego de datos). Es la captura que cierra el circuito entre sanidad y
-   producción.
+2. **`m2-cu12-descarte` mientras el descarte de `115` esté vigente.** El rodeo se
+   ancla a `CURDATE()`, así que recién cargado el juego de datos está vigente; si se
+   dejan pasar días de trabajo encima, se vence. Es la captura que cierra el circuito
+   entre sanidad y producción.
 3. **`m2-cu17-alertas` después de confirmar preñeces.** Con el rodeo original la
    pantalla está vacía; se puebla recién cuando hay vacas cuya fecha probable de
    parto entra en la ventana de 60 + 15 días.
@@ -222,14 +222,41 @@ Siete capturas a 390 × 844, en un apartado corto al final del manual:
 
 ---
 
-## 6. Cuentas
+## 6. Las capturas de la sección 2.3 Pruebas
+
+**La sección de Pruebas del ejemplo lleva 69 capturas propias**, y este guion nació
+cubriendo sólo el manual. Hay que ampliarlo, pero **no son capturas nuevas del mismo
+tipo**: son de otra naturaleza y por eso van aparte.
+
+En el manual la captura muestra **una pantalla y para qué sirve**. En Pruebas la
+captura es **la evidencia de un resultado**: se hizo tal cosa y esto es lo que el
+sistema devolvió. Muchas son de pantallas ya fotografiadas, pero en otro momento —
+después de guardar, con el mensaje de confirmación, con la lista ya modificada.
+
+El criterio, siguiendo al ejemplo:
+
+- Las variantes de entrada —login, caravana repetida, litros fuera de rango, rangos
+  de fechas invertidos— van **en tabla, sin captura**.
+- Los recorridos completos van con **`Prueba:` una línea y `Resultado:` la captura**
+  del estado final: el parto que abrió la lactancia y dio de alta la cría, el
+  tratamiento que sacó a la vaca del tanque, la inseminación que descontó la pajuela.
+
+Se sacan en la misma corrida del script, con el sufijo `-resultado`, y se numeran
+por prueba y no por pantalla. La lista concreta se arma al escribir 2.3, cuando esté
+decidido qué recorridos se documentan.
+
+---
+
+## 7. Cuentas
 
 | | |
 |---|---|
-| Escritorio, módulos 0 a 6 | **67** |
-| Móvil | **7** |
-| Módulo 7 | a definir, unas **7** |
-| **Total estimado** | **~81** |
+| 2.4 Manual — escritorio, módulos 0 a 6 | **67** |
+| 2.4 Manual — móvil | **7** |
+| 2.4 Manual — Módulo 7 | a definir, unas **7** |
+| **Subtotal del manual** | **~81** |
+| 2.3 Pruebas — evidencia de resultados | a definir (el ejemplo lleva **69**) |
+| **Total estimado** | **~150** |
 
 De ésas, **siete** son las advertencias y errores del punto 2, y **seis** son pares
 antes/después que muestran el efecto de una acción: la configuración sobre las
@@ -238,13 +265,14 @@ crítico, la vacunación sobre el calendario, el parto sobre la ficha de la madr
 sobre el linaje de la cría. Ese tipo de par es lo que separa un manual de una
 lista de pantallas.
 
-Contra las 47 páginas que el manual ocupa en el ejemplo del tutor, da algo menos
-de dos capturas por página. Es la proporción que corresponde: cada pantalla con su
-imagen y el texto que explica qué hace, qué campos tiene y qué calcula sola.
+El ejemplo tiene 123 imágenes en las 47 páginas de su manual, algo más de dos y
+media por página; las 81 nuestras en la misma extensión dan menos de dos. Es la
+proporción que corresponde: cada pantalla con su imagen y el texto que explica qué
+hace, qué campos tiene y qué calcula sola.
 
 ---
 
-## 7. Decisiones tomadas
+## 8. Decisiones tomadas
 
 - **Sin anotaciones.** Nada de flechas, números en círculos ni recuadros sobre la
   imagen. La captura va limpia, tal como se ve la pantalla, y **la explicación va
