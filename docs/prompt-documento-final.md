@@ -113,13 +113,31 @@ ejemplo. Si el ejemplo documenta pruebas manuales de caja negra y caja blanca,
 nosotros documentamos pruebas manuales de caja negra y caja blanca, y si algún
 documento nuestro promete pruebas automatizadas, **se corrige el documento**.
 
-> **Bloqueante para 2.3–2.9.** El `EjemploTesis.pdf` está en el Drive de Santino
-> (carpeta `Tesis`), no en el repo, y su texto sólo se puede extraer hasta la
-> página 80 aproximadamente por la vía de la nube: justo antes de las secciones
-> que hay que copiar. **Subir `EjemploTesis.pdf` al repo** (raíz o `docs/`) no espera
-> a ninguna fase: está en el punto 10 y conviene hacerlo hoy. Con el archivo local
-> se leen las páginas 152 a 229 sin
-> problema.
+### Qué hay realmente en cada sección del ejemplo
+
+`EjemploTesis.pdf` **ya está en el repo** (raíz). Son 231 páginas y esto es lo que
+trae cada una de las secciones que hay que escribir. Está leído, no supuesto.
+
+| Sección | Imágenes | Cómo está armada |
+|---|---|---|
+| 2.3 Pruebas | **69** | Agrupada por función, no por caso de uso. Dos formatos mezclados: **tablas** de variantes de entrada (`Usuario / Contraseña / Resultado esperado / Resultado` con «Ok»), y **«Prueba: … / Resultado:» + captura**. Sin numerar los casos, sin precondiciones ni postcondiciones. |
+| 2.4 Manual | **123** | Tiene **su propio índice interno**, con numeración propia (`1. Introducción`, `2. Manejo de Usuarios`, `2.1 Inicio de Sesión`…) y sus propios números de página. Es un documento adentro del documento. |
+| 2.5 Deployment | 0 | **No es un instructivo de instalación.** Es qué necesita el servidor, qué necesita el usuario para acceder (navegadores), y quién opera el sistema y con qué capacitación. |
+| 2.6 Seguridad | 0 | Roles y autenticación, cómo se guardan las contraseñas, cómo se evita la inyección SQL, el guardado transaccional, y los respaldos con **periodicidad y dónde se guarda cada copia**. |
+| 2.7 Contingencia | 0 | **Dos párrafos.** Remite al análisis de riesgos ya hecho y dice que el equipo queda disponible después de la entrega. |
+| 2.8 Satisfacción | 0 | **No es una encuesta.** Es el relato de la relación con el cliente a lo largo de las iteraciones y cómo eso acercó el producto a lo que esperaba. |
+| 2.9 Conclusiones | 0 | Diez subtítulos, y el bloque más largo son **los riesgos uno por uno**. Ver el detalle en la Fase 3. |
+| Glosario | — | **Cinco entradas numeradas.** Cuatro técnicas y una del dominio (*tanda*). |
+| Bibliografía | — | Ocho entradas con formato de cita completo, con URL y edición. Incluye **Pressman 7ma ed. 2010** y **Elmasri y Navathe 5ta ed. 2007**. |
+| Anexo | 3 | **Las planillas de Excel que el sistema vino a reemplazar**, cada una con un párrafo que explica para qué se usaba. |
+
+**Dos cosas que nadie habría adivinado y cambian el trabajo:**
+
+1. **La sección de Pruebas lleva 69 capturas.** El guion de `docs/guion-capturas.md`
+   cubre sólo el manual: hay que ampliarlo. En el ejemplo, la evidencia de cada
+   prueba **es** una captura del resultado.
+2. **El Manual de Usuario tiene índice propio.** No es una sección más: se arma como
+   un documento aparte, con su numeración y sus páginas, y después se inserta.
 
 ---
 
@@ -209,17 +227,22 @@ Insumos que ya existen y hay que aprovechar, no rehacer:
 
 **Nada de documentación hasta que esta fase esté cerrada** (salvo lo del punto 10).
 
-El Módulo 7 se construye: el documento final describe un sistema de ocho módulos
-terminados, no siete y una promesa. Implica, en este orden:
+El documento final describe un sistema de ocho módulos terminados, no siete y una
+promesa. **Master ya avanzó y parte del Módulo 7 está construido**, así que lo que
+falta es menos de lo que decía este prompt:
 
-1. Las dos tablas que hoy están en el MER dibujadas con otro relleno por
-   proyectadas: crearlas en `bd/CreacionDb.sql`.
-2. El bot de Telegram y el envío de las alertas de RF7.6 (sanidad pendiente,
-   partos próximos, tactos pendientes, secados próximos, stock crítico,
-   vencimiento de insumos, fin del período de descarte de leche).
-3. El resumen diario, **CU49**, que es un proceso programado.
-4. Las pantallas del módulo, que hoy no existen: los seis diagramas de secuencia
-   del Módulo 7 están armados con los mensajes previstos, no leídos del código.
+| | Estado |
+|---|---|
+| CU44–CU47, los cuatro reportes | **hechos** — `Tesis/Pages/PagesReportes/`, con `GeneradorPdf.cs` y `GeneradorExcel.cs` |
+| CU48, integración con el bot de Telegram | **falta**: no hay nada de Telegram en el código |
+| CU49, resumen diario | **falta**: no hay proceso programado en `Program.cs` |
+| Las dos tablas del Módulo 7 | **faltan**: la última tabla de `bd/CreacionDb.sql` sigue siendo `configuracion` |
+| Las pantallas de configuración del bot | **faltan** |
+
+Lo que queda, en este orden: crear las dos tablas, el bot y el envío de las alertas
+de RF7.6 (sanidad pendiente, partos próximos, tactos pendientes, secados próximos,
+stock crítico, vencimiento de insumos, fin del período de descarte de leche), el
+resumen diario CU49 como proceso programado, y la pantalla de configuración.
 
 > **CU49 obliga a tocar la caché `static` de la Controladora.** Está explicado en
 > `docs/pendientes-tecnicos.md`: hay diecinueve listas `static` compartidas por
@@ -324,93 +347,146 @@ procedimiento:
 4. **Aparte**, correr el paso 2 y verificar en el `.docx` que quedó donde va y con
    el formato de las secciones vecinas. Commit.
 
-### 2.3 Pruebas — ~17 páginas
+### 2.3 Pruebas — 17 páginas, 69 capturas
 
-Fuente: `docs/flujos-de-prueba.md` y el sistema corriendo con
-`bd/DatosPrueba.sql`.
+Fuente: `docs/flujos-de-prueba.md` y el sistema corriendo con `bd/DatosPrueba.sql`.
 
-Del mismo tipo que las del ejemplo. El anteproyecto compromete **caja negra y
-caja blanca**, y ninguna de las dos exige automatización: la de caja blanca es
-recorrer los caminos de la lógica con datos elegidos a propósito. Cubrir al
-menos las cinco piezas delicadas: `CalcularCategoria` en los bordes,
-`ListarAscendencia`, `BuscarAncestroComun`, `VerificarConsanguinidad` y
-`EstimarProduccionLactancia`.
+**La forma la fija el ejemplo, y es más simple de lo que uno tiende a hacer.**
+Arranca con un párrafo que remite al plan de testing del Plan de SQA, y después
+agrupa **por función**, no por caso de uso ni por módulo. Cada grupo usa uno de dos
+formatos:
 
-Cada caso de prueba con su número, la precondición, los datos de entrada, el
-resultado esperado, el obtenido y el veredicto. Los errores encontrados van
-documentados con su corrección, como pide el «Registro y Corrección de Errores»
-del anteproyecto.
+- **Tabla**, cuando lo que se prueba son variantes de entrada. Columnas: los campos
+  que se cargan, *Resultado esperado*, *Resultado*. La última dice «Ok».
+- **`Prueba:` una línea de qué se hizo, `Resultado:` una captura.** La captura *es*
+  la evidencia. Por eso la sección tiene 69 imágenes.
 
-Antes de escribir: **corregir `docs/pendientes-tecnicos.md`**, que hoy afirma que
-el anteproyecto compromete pruebas automatizadas. No las compromete.
+**Nada de numerar los casos, ni precondiciones, ni postcondiciones, ni veredictos.**
+El ejemplo no los usa y el criterio es seguirlo.
 
-### 2.4 Manual de Usuario — ~47 páginas
+Cubrir con tabla las variantes que ya están en los flujos de prueba —el login, el
+alta con caravana repetida, los litros fuera de rango, los rangos de fechas
+invertidos— y con `Prueba:/Resultado:` los recorridos completos: el parto que abre
+la lactancia y da de alta la cría, el tratamiento que saca a la vaca del tanque, la
+inseminación que descuenta la pajuela. Ahí están las cinco piezas delicadas
+—`CalcularCategoria` en los bordes, `ListarAscendencia`, `BuscarAncestroComun`,
+`VerificarConsanguinidad`, `EstimarProduccionLactancia`—, probadas por lo que
+muestran en pantalla.
 
-Es la sección más larga y **la única con una dependencia que no se resuelve sola:
-las capturas de pantalla**. Ver el punto 10.
+Los errores encontrados van con su corrección, como pide el «Registro y Corrección
+de Errores» del anteproyecto.
+
+Antes de escribir: **corregir `docs/pendientes-tecnicos.md`**, que hoy afirma que el
+anteproyecto compromete pruebas automatizadas. No las compromete, y el ejemplo
+tampoco las tiene.
+
+### 2.4 Manual de Usuario — 47 páginas, 123 capturas
+
+**Es un documento adentro del documento.** En el ejemplo abre con **su propio
+índice**, numerado aparte (`1. Introducción`, `2. Manejo de Usuarios`, `2.1 Inicio
+de Sesión`, `3.1.1 Alta Empresa`…) y con sus propios números de página. Se arma como
+pieza separada y se inserta.
 
 Fuentes: `docs/catalogo-casos-de-uso.md` para el recorrido,
 `docs/estilos-y-accesibilidad.md` para lo que significa cada color y cada
 señalización de la interfaz.
 
-**Las capturas se sacan con un script, no a mano.** Un recorrido de Playwright
-que haga login, fije el tamaño de ventana, visite cada pantalla del catálogo con
-el rodeo de `bd/DatosPrueba.sql` cargado y escriba `docs/capturas/<pantalla>.png`.
-Sale parejo y es repetible: si cambia una pantalla se vuelve a correr y se rehace
-el documento, sin recortar cuarenta imágenes otra vez. Corre en la máquina de
-ustedes, no acá.
+**Las capturas se sacan con un script, no a mano.** Un recorrido de Playwright que
+haga login, fije el tamaño de ventana, visite cada pantalla con el rodeo de
+`bd/DatosPrueba.sql` cargado y escriba `docs/capturas/<pantalla>.png`. Sale parejo y
+es repetible. Corre en la máquina de ustedes: el contenedor remoto no tiene `dotnet`
+ni MySQL.
 
-**El guion ya está escrito: `docs/guion-capturas.md`.** Ochenta y una capturas
-con su pantalla, su animal del rodeo y para qué sirve cada una en el manual, más
-el orden en que hay que sacarlas —cuatro dependen del estado del sistema— y la
-advertencia de correr las fechas de `DatosPrueba.sql` antes de empezar. El script
-lo ejecuta; no hay que decidir nada pantalla por pantalla.
-
-**Insertarlas en el Word es automático**: es el mismo `d.imagen(ruta, pie)` que
-ya coloca los 49 diagramas de secuencia. Escala a 16 cm de ancho conservando la
-proporción, agrega el pie de figura y `podar()` saca del paquete las imágenes que
-quedaron sin referencia.
+**El guion está en `docs/guion-capturas.md`**, con la pantalla, el animal del rodeo y
+para qué sirve cada una. Va sin flechas ni números encima: la imagen limpia y **el
+pie de figura cargando la explicación**.
 
 Organizado por módulo, en el orden en que la encargada usa el sistema, no en el
-orden en que se programó. Cada pantalla con su captura, para qué sirve, qué
-campos tiene y qué valida. Lo que el sistema calcula solo —la categoría, la
-fecha probable de parto, la fecha de secado, el fin del período de descarte—
-tiene que quedar explicado ahí, porque es lo que la usuaria no espera.
+orden en que se programó. Lo que el sistema calcula solo —la categoría, la fecha
+probable de parto, la fecha de secado, el fin del período de descarte— tiene que
+quedar explicado ahí, porque es lo que la usuaria no espera.
 
-### 2.5 Deployment — ~1 página
+**Insertarlas en el Word es automático**: el mismo `d.imagen(ruta, pie)` que ya
+coloca los 49 diagramas de secuencia.
 
-Fuente: `bd/LEEME.md` y `Tesis/appsettings.json`. Los dos scripts de base, la
-cadena de conexión, XAMPP con MariaDB, el `dotnet run` y el hosting elegido en el
-anteproyecto. Sumar la puesta en marcha del proceso programado del Módulo 7. Una
-página: no convertirlo en un manual de sistemas.
+### 2.5 Deployment — 1 página, sin imágenes
 
-### 2.6 Política de Seguridad y Respaldos — ~1 página
+**No es un instructivo de instalación.** El ejemplo no pone un solo comando. Dice
+tres cosas: qué necesita el servidor (versiones), qué necesita el usuario para
+acceder (navegadores y conexión), y **quién opera el sistema y con qué preparación**
+—que no hace falta formación técnica, que hay capacitación, manual y conocimiento
+previo del trabajo—.
 
-El sistema es de un solo usuario con credenciales fijas: **decirlo, no
-disimularlo**. Qué se respalda, con qué frecuencia, dónde queda la copia y quién
-la hace. Los respaldos automáticos del hosting ya están comprometidos en el
-control preventivo del riesgo R9 del anteproyecto: usar eso, no inventar otra
-cosa. El token del bot de Telegram es un secreto: decir dónde vive y quién lo rota.
+Para nosotros: .NET y MySQL con sus versiones, el hosting elegido en el
+anteproyecto, los navegadores, **el uso desde el celular en el tambo**, y que la
+encargada opera el sistema sin conocimientos técnicos apoyada en el manual y la
+capacitación. Los scripts de `bd/` y el `dotnet run` son detalle de desarrollo: van
+en `bd/LEEME.md`, no acá.
 
-### 2.7 Plan de contingencia — ~1 página
+### 2.6 Política de Seguridad y Respaldos — 1 página, sin imágenes
 
-Qué hacer si se cae el hosting (R9), si Telegram deja de responder (R6) o si se
-pierden datos. Tiene que ser coherente con esos riesgos: el plan de contingencia
-es la respuesta a los riesgos que el anteproyecto ya identificó, no una lista
-nueva.
+El ejemplo cubre: autenticación y roles, cómo se guardan las contraseñas, cómo se
+evita la inyección SQL, el guardado transaccional, y los respaldos con **su
+periodicidad y dónde vive cada copia**.
 
-### 2.8 Grado de satisfacción del cliente — ~1 página
+Para nosotros, y **sin disimular nada**: el sistema es de un solo usuario con
+credenciales fijas —se dice—; cómo se guarda la contraseña; que las consultas no se
+arman concatenando; los respaldos automáticos del hosting, que ya están
+comprometidos en el control preventivo del riesgo R9. Y el **token del bot de
+Telegram**, que es un secreto: dónde vive y quién lo rota.
 
-**No se puede escribir sin la usuaria.** Ver el punto 10.
+Como hace el ejemplo, cerrar con recomendaciones concretas a la clienta:
+periodicidad del respaldo y dónde guardar la segunda copia.
 
-### 2.9 Conclusiones — ~7 páginas
+### 2.7 Plan de contingencia — 1 página, sin imágenes
 
-Qué se propuso el proyecto y qué quedó funcionando, módulo por módulo. Qué
-resultó más difícil de lo previsto —el dominio ganadero, las reglas que hubo que
-relevar con la usuaria— y qué se aprendió. Qué queda como trabajo futuro.
+**Dos párrafos.** El ejemplo remite al análisis de riesgos ya hecho para lo que pueda
+pasar durante el desarrollo, y para después de la entrega dice que el equipo queda
+disponible hasta que el sistema esté completamente operativo.
 
-Lo que quede abierto de `docs/pendientes-tecnicos.md` va acá, dicho de frente.
-Un documento que reconoce sus límites se defiende mejor que uno que los esconde.
+Lo mismo, nombrando los riesgos que siguen vivos después de entregar: que se caiga
+el hosting (R9) y que Telegram deje de responder (R6). **No inventar una lista
+nueva** — el plan de contingencia es la respuesta a los riesgos que el anteproyecto
+ya identificó.
+
+### 2.8 Grado de satisfacción del cliente — 1 página, sin imágenes
+
+**No es una encuesta, y esto corrige lo que decía antes este prompt.** El ejemplo
+narra la relación con el cliente: las reuniones iniciales donde planteó sus
+problemas, cómo la metodología elegida llevó a mostrarle cada iteración, cómo
+priorizaban juntos los ajustes, y cierra con la instalación de prueba y su reacción.
+
+Para nosotros, con lo que efectivamente pasó: las reuniones de relevamiento donde
+salieron las reglas del tambo, las devoluciones que cambiaron el sistema, y lo que
+la encargada dijo al usarlo. **Una frase suya, dicha de verdad, vale más que
+cualquier métrica inventada** — pero no hace falta un instrumento formal.
+
+### 2.9 Conclusiones — 7 páginas, sin imágenes
+
+El ejemplo la organiza en **diez subtítulos**, y conviene copiar la estructura
+entera:
+
+| | Subtítulo | Qué va |
+|---|---|---|
+| 1 | Dinámica del equipo de trabajo | Cómo se repartió el trabajo, si hubo desacuerdos y cómo se resolvieron |
+| 2 | Relación con el cliente | Disponibilidad, frecuencia del contacto |
+| 3 | Relación con el tutor | Qué aportó |
+| 4 | **Riesgos** | **Los catorce del anteproyecto, uno por uno**: si se dio o no, y si se dio, cómo se resolvió. Es el bloque más largo |
+| 5 | Metodología utilizada | Si el ciclo de vida elegido fue la decisión correcta |
+| 6 | Herramientas utilizadas | Cada una, y si cumplió |
+| 7 | Trabajo colaborativo | Git y cómo se usó |
+| 8 | Producto final | Qué cubre de lo que la clienta necesitaba |
+| 9 | Puntos a mejorar | Lo que quedó corto, dicho de frente |
+| 10 | Conclusión final | Qué dejó el proyecto |
+
+**El punto 4 es el que hace que la sección valga.** El ejemplo recorre sus riesgos y
+en el de errores de especificación hace algo que a nosotros nos sirve como modelo:
+**dice qué requerimientos se quitaron, con fecha y con la reunión donde se acordó
+con el cliente**. Ése es el lugar donde se cuenta lo que la Fase 2 encontró: si un
+requerimiento cambió, acá se dice cuál, cuándo y por qué.
+
+Lo que quede abierto de `docs/pendientes-tecnicos.md` va en el punto 9. Un documento
+que reconoce sus límites se defiende mejor que uno que los esconde.
 
 ---
 
@@ -443,7 +519,11 @@ concatena y renumera lo que ya está escrito.
 
 - **`1.11 Estimación del esfuerzo`** (7 páginas en el ejemplo) no existe en el
   anteproyecto. Hay que escribirla o justificar su ausencia con el tutor.
-- **Anexo**: el ejemplo tiene uno, el anteproyecto no. Decidir qué va.
+- **Anexo**: el ejemplo pone **las planillas de Excel que su sistema vino a
+  reemplazar**, una por página, cada una con un párrafo que explica para qué se
+  usaba. El equivalente nuestro es directo: **los cuadernos y las planillas con que
+  la encargada lleva hoy el tambo**, fotografiados. Es la prueba visual del problema
+  que abre el documento, y cierra el círculo con la Presentación del Problema.
 
 ---
 
@@ -472,27 +552,29 @@ al `.md` con él.
 Estas tres no dependen del código y tienen dependencias externas lentas. Conviene
 destrabarlas durante la Fase 1, no esperar a la Fase 3:
 
-1. **Subir `EjemploTesis.pdf` al repo.** Bloquea el criterio de forma de 2.3 a
-   2.9. Es el primer paso y no cuesta nada.
-2. **La opinión de la usuaria, para 2.8.** Hay que mostrarle el sistema y
-   preguntarle. Sirve una pauta corta y por escrito —qué usa, qué le resultó
-   difícil, qué le ahorró tiempo, qué le falta— y la sección se escribe con sus
-   respuestas. Es una página: no necesita una encuesta formal, pero sí necesita
-   ser real. Se puede hacer con los siete módulos que ya andan.
-3. **`1.11 Estimación del esfuerzo` y el Anexo.** Son del anteproyecto, hablan de
-   lo que se planificó al principio: no cambian con el Módulo 7. Conviene
-   preguntarle al tutor temprano si los pide.
+1. **~~Subir `EjemploTesis.pdf` al repo.~~ Hecho** — está en la raíz, y las
+   secciones 2.3 a 2.9 ya se leyeron. Lo que trae cada una está en el punto 2.
+2. **La opinión de la usuaria, para 2.8.** Mostrarle el sistema y anotar lo que
+   diga. El ejemplo no usa encuesta: narra la relación a lo largo de las
+   iteraciones. Alcanza con eso más **una frase suya dicha de verdad**. Se puede
+   hacer con lo que ya anda.
+3. **Fotografiar los cuadernos y planillas** con que lleva hoy el tambo. Van al
+   Anexo y no dependen de nada.
+4. **`1.11 Estimación del esfuerzo`.** Es del anteproyecto y habla de lo que se
+   planificó al principio: no cambia con el Módulo 7. Preguntarle al tutor temprano
+   si la pide.
 
 Y una que **sí** espera al código, pero que hay que preparar antes porque es la
 sección más larga:
 
-4. **Las capturas de pantalla del manual de usuario.** El contenedor remoto no
+5. **Las capturas de pantalla.** El contenedor remoto no
    tiene `dotnet` ni MySQL, así que el sistema no se puede levantar ahí. Hay dos
    caminos: sacarlas a mano con XAMPP y Visual Studio andando, o correr Claude
    Code **en la máquina de ustedes**, que sí puede levantar la app y sacarlas con
    Playwright de forma consistente —mismo tamaño de ventana, mismos datos de
    `DatosPrueba.sql`, mismo recorte—. El segundo camino es bastante mejor: son
-   **ochenta y una** según `docs/guion-capturas.md`, y a mano salen desparejas.
+   **más de ciento cincuenta** contando las del manual y las 69 que lleva la sección
+   de Pruebas, y a mano salen desparejas.
 
 ---
 
@@ -500,8 +582,10 @@ sección más larga:
 
 El documento está terminado cuando:
 
-- [ ] `EjemploTesis.pdf` está en el repo y las secciones 2.3 a 2.9 se escribieron
-      después de leer su equivalente.
+- [ ] Cada sección de 2.3 a 2.9 copia la forma de su equivalente en el ejemplo:
+      Pruebas sin numerar casos, el Manual con índice propio, Deployment sin
+      instructivo de instalación, Contingencia en dos párrafos, Conclusiones con los
+      diez subtítulos y los catorce riesgos uno por uno.
 - [ ] El Módulo 7 está construido y los diagramas de secuencia del módulo se leen
       del código, no de los mensajes previstos.
 - [ ] El MER no tiene tablas dibujadas como proyectadas.
@@ -521,7 +605,8 @@ El documento está terminado cuando:
       índice muestra números de página; el anteproyecto está numerado `1.x`.
 - [ ] Las capturas del manual salieron del script, no de recortes a mano, y se
       pueden volver a sacar corriéndolo.
-- [ ] Está resuelto qué pasa con `1.11 Estimación del esfuerzo` y con el Anexo.
+- [ ] Está resuelto qué pasa con `1.11 Estimación del esfuerzo`, y el Anexo tiene
+      las fotos de los cuadernos y planillas que el sistema reemplazó.
 - [ ] El documento se leyó entero de corrido una vez, buscando contradicciones
       entre el anteproyecto (que habla en futuro, de lo que se va a hacer) y el
       proyecto (que habla de lo que se hizo).
@@ -558,6 +643,12 @@ Las catorce entradas actuales explican *Framework*, *Bootstrap*, *CSS3*, *Git*,
 *UML*, *SQA*. Ninguna es del dominio. El tribunal sabe qué es un framework; lo que
 no tiene por qué saber es qué es un tacto, ni por qué la leche de una vaca tratada
 no se puede vender. Y esas palabras están en cada página.
+
+**El glosario del ejemplo tiene apenas cinco entradas numeradas**, y una de ellas es
+*tanda*: la palabra del dominio que su lector no podía adivinar. El criterio es
+ése —definir lo que el lector no tiene por qué saber—, no la cantidad. Aplicado a un
+sistema de tambo da veinte entradas, no cinco, porque nuestro dominio tiene veinte
+palabras así.
 
 **Las definiciones no se inventan: los números salen del código.** Cada entrada
 lleva entre paréntesis de dónde sale, para que el glosario quede atado al sistema
@@ -635,10 +726,15 @@ sale de `docs.microsoft.com`. Las obras que corresponden:
 
 | Para qué sección | Obra |
 |---|---|
-| Ciclos de vida, SQA, SCM, plan de testing | **Pressman**, *Ingeniería del software: un enfoque práctico* |
+| Ciclos de vida, SQA, SCM, plan de testing | **Pressman**, *Ingeniería de software, un enfoque práctico* — el ejemplo cita la 7ma ed., McGraw-Hill, 2010 |
+| Normalización, modelo entidad-relación, integridad | **Elmasri y Navathe**, *Fundamentos de Sistemas de Bases de Datos* — el ejemplo cita la 5ta ed., 2007 |
 | Requerimientos y modelos de proceso | **Sommerville**, *Ingeniería de software* |
 | Casos de uso, diagramas de secuencia y de clases | **Booch, Rumbaugh y Jacobson**, *El lenguaje unificado de modelado* |
-| Normalización, modelo entidad-relación, integridad | **Elmasri y Navathe**, *Fundamentos de sistemas de bases de datos* |
+
+**Las dos primeras las cita el propio ejemplo**, así que son exactamente las que el
+tutor espera ver. El formato también sale de ahí: `Apellido, Nombre. Título. ed.
+Ciudad: Editorial, año.` para libros y `Autor. Título [online]. Disponible en
+internet: URL` para lo digital.
 
 **Falta la bibliografía del dominio, y es la que más pesa.** Hoy las reglas del
 tambo se apoyan sólo en el relevamiento con la usuaria. Eso alcanza para lo que es
