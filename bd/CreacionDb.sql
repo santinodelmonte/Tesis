@@ -13,9 +13,12 @@
 --   Modulo 5: Control de Insumos y Stock
 --   Modulo 6: Tablero, Indicadores y Apoyo a la Decision  (no agrega
 --             tablas: todo lo que muestra se deriva de las anteriores)
+--   Modulo 7: Reportes y Notificaciones  (los reportes no agregan
+--             tablas, se arman con lo que ya esta; las notificaciones
+--             si, y estan al final: preferencias_notificacion y alertas)
 --
--- Es el unico script de esquema del sistema: crea las veintidos tablas
--- de una sola vez y sin ALTER TABLE intermedios -salvo las dos claves
+-- Es el unico script de esquema del sistema: crea las veinticuatro
+-- tablas de una sola vez y sin ALTER TABLE intermedios -salvo las dos claves
 -- foraneas recursivas de animales, que no pueden declararse antes de que
 -- existan hembras y machos-, y carga los datos semilla que el sistema no
 -- da de alta por pantalla.
@@ -492,6 +495,23 @@ CREATE TABLE descornes (
 -- Cada columna trae como valor por defecto la constante que reemplaza,
 -- asi que una base recien creada se comporta igual que antes de que la
 -- configuracion existiera.
+--
+-- Las dos ultimas columnas son del Modulo 7 y estan aca por el mismo
+-- motivo que las demas: hay una sola hora de resumen y un solo
+-- destinatario para todo el establecimiento, asi que no son un atributo
+-- de cada tipo de aviso sino un parametro del tambo. chat_telegram
+-- admite nulo porque es el estado normal hasta que alguien vincula la
+-- cuenta, y ese nulo es lo que el sistema lee como "sin vincular".
+--
+-- fecha_ultimo_resumen es el dia en que salio el ultimo resumen, y es lo
+-- que evita el mensaje repetido si el sitio se reinicia. No alcanza con
+-- mirar la tabla de alertas: un dia sin pendientes tambien manda mensaje
+-- -para que el silencio no se confunda con una falla- y no deja ninguna
+-- fila ahi.
+--
+-- El token del bot NO esta aca ni en ninguna tabla: es una credencial y
+-- vive en la configuracion de la aplicacion, igual que la cadena de
+-- conexion y las credenciales de acceso.
 -- ---------------------------------------------------------------------
 CREATE TABLE configuracion (
     id_configuracion              INT(11)      NOT NULL AUTO_INCREMENT,
@@ -506,6 +526,9 @@ CREATE TABLE configuracion (
     dias_anticipacion_vencimiento INT(11)      NOT NULL DEFAULT 30,
     dias_espera_voluntaria        INT(11)      NOT NULL DEFAULT 45,
     dias_para_tacto               INT(11)      NOT NULL DEFAULT 35,
+    hora_resumen                  TIME         NOT NULL DEFAULT '07:00:00',
+    chat_telegram                 VARCHAR(40)  NULL,
+    fecha_ultimo_resumen          DATE         NULL,
     PRIMARY KEY (id_configuracion)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -533,3 +556,81 @@ INSERT INTO categorias (nombre, descripcion) VALUES
 -- columna. Si esta fila no existiera el sistema igual funciona: la
 -- Controladora usa las constantes como respaldo.
 INSERT INTO configuracion (id_configuracion) VALUES (1);
+
+-- =====================================================================
+-- Modulo 7: Notificaciones
+--
+-- El sistema ya sabe todo lo que hay que avisar: las ocho listas de
+-- trabajo del tablero. Lo que estas dos tablas agregan no es informacion
+-- nueva sino el canal -a quien se le avisa, que se le avisa y que se le
+-- avisó ya-.
+--
+-- Van al final porque alertas referencia a animales y a insumos, que se
+-- crean mucho antes.
+-- =====================================================================
+
+-- ---------------------------------------------------------------------
+-- preferencias_notificacion
+-- Un renglon por tipo de aviso, con el interruptor que decide si entra
+-- en el resumen diario. Los ocho tipos se cargan con el esquema y no se
+-- dan de alta desde el sistema: son los ocho contadores del tablero, y
+-- que la lista sea cerrada es lo que garantiza que el resumen y la
+-- pantalla no puedan discrepar.
+--
+-- No guarda el destinatario. Hay uno solo para todo el establecimiento y
+-- esta en configuracion: repetirlo en cada renglon seria el mismo dato
+-- escrito ocho veces.
+-- ---------------------------------------------------------------------
+CREATE TABLE preferencias_notificacion (
+    id_preferencia INT(11)     NOT NULL AUTO_INCREMENT,
+    tipo_alerta    VARCHAR(40) NOT NULL,
+    activa         TINYINT(1)  NOT NULL DEFAULT 1,
+    PRIMARY KEY (id_preferencia),
+    UNIQUE (tipo_alerta)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------
+-- alertas
+-- El registro de lo que se envio. Una fila por pendiente y por dia -la
+-- vaca 136 con parto proximo el 27/08, la partida de aftosa que vence en
+-- seis dias-, no una fila por mensaje: por eso apunta al animal o al
+-- insumo que la origino.
+--
+-- Un pendiente que no se resuelve vuelve a generar su fila al dia
+-- siguiente, y eso es a proposito: el resumen es la lista de tareas del
+-- dia, no un aviso de novedades. Lo que la fecha evita es el duplicado
+-- dentro del mismo dia, que es lo que pasaria si el sitio se reinicia
+-- despues de haber enviado.
+--
+-- id_animal e id_insumo son excluyentes y los dos admiten nulo: unas
+-- alertas nacen de un animal, otras de un insumo. mensaje guarda el
+-- renglon tal como se envio, para que el historial no dependa de que el
+-- calculo siga dando lo mismo meses despues.
+-- ---------------------------------------------------------------------
+CREATE TABLE alertas (
+    id_alerta        INT(11)      NOT NULL AUTO_INCREMENT,
+    tipo_alerta      VARCHAR(40)  NOT NULL,
+    fecha_generacion DATE         NOT NULL,
+    mensaje          VARCHAR(200) NOT NULL,
+    enviada          TINYINT(1)   NOT NULL DEFAULT 0,
+    id_preferencia   INT(11)      NOT NULL,
+    id_animal        INT(11)      NULL,
+    id_insumo        INT(11)      NULL,
+    PRIMARY KEY (id_alerta),
+    FOREIGN KEY (id_preferencia) REFERENCES preferencias_notificacion (id_preferencia),
+    FOREIGN KEY (id_animal) REFERENCES animales (id_animal),
+    FOREIGN KEY (id_insumo) REFERENCES insumos (id_insumo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Los ocho tipos de aviso, activos por defecto. El texto de cada uno es
+-- la constante que usa el codigo (Dominio/PreferenciaNotificacion.cs):
+-- si se cambia una cadena aca hay que cambiarla alla.
+INSERT INTO preferencias_notificacion (tipo_alerta, activa) VALUES
+    ('Sanitario pendiente', 1),
+    ('Parto proximo', 1),
+    ('Tacto pendiente', 1),
+    ('Vaca para servir', 1),
+    ('Secado proximo', 1),
+    ('Fin de descarte', 1),
+    ('Stock critico', 1),
+    ('Vencimiento de insumo', 1);

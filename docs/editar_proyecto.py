@@ -345,9 +345,10 @@ def seccion_modelo_datos(d):
     d.vaciar('2.2.5.1', '2.2.5.2')
     d.parrafo(
         'El modelo entidad-relación reúne las veinticuatro relaciones del esquema. Las '
-        'veintidós primeras corresponden a los módulos construidos; las dos últimas '
-        '—preferencias_notificacion y alertas— corresponden al Módulo 7, que forma '
-        'parte del alcance del proyecto y se encuentra pendiente de implementación.')
+        'dos últimas —preferencias_notificacion y alertas— corresponden al Módulo 7, y '
+        'no guardan información que el sistema no tenga: registran a qué avisos adhirió '
+        'el establecimiento y cuáles se enviaron, porque los pendientes que se avisan se '
+        'derivan de las relaciones anteriores.')
     d.imagen(os.path.join(DIAGRAMAS, 'modelo-entidad-relacion.png'),
              'Figura. Modelo Entidad-Relación.')
 
@@ -426,9 +427,11 @@ def seccion_secuencia(d, casos):
         'la Controladora.')
     d.parrafo(
         'Tres casos se apartan del patrón. El CU 1 no involucra la capa de persistencia, '
-        'porque el sistema opera con un único par de credenciales fijas. El CU 48 '
-        'incorpora la línea de vida BotTelegram. El CU 49 no tiene vista: su actor es el '
-        'proceso programado que dispara el envío del resumen diario.')
+        'porque el sistema opera con un único par de credenciales fijas. Los CU 48 y '
+        'CU 49 incorporan la línea de vida BotTelegram, y el mensaje sale desde la vista '
+        'y desde el proceso, no desde la Controladora: ésta arma el texto, pero salir a '
+        'internet no es parte del dominio. El CU 49, además, no tiene vista, porque su '
+        'actor es el proceso programado que dispara el envío del resumen diario.')
     for caso in casos:
         d.parrafo('CU %d — %s' % (caso['num'], caso['nombre']), negrita=True)
         d.imagen(os.path.join(DIAGRAMAS, 'secuencia', 'secuencia-cu%02d.png' % caso['num']),

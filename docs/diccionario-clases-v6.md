@@ -5,6 +5,21 @@ Generado desde `Tesis/Dominio` y `Tesis/Persistencia` por `diccionario_clases.py
 ## Clases de negocio
 
 
+### Alerta
+
+Un pendiente concreto de un día concreto: el renglón del mensaje y, una vez guardada, el registro de que ese aviso salió.
+
+| Atributo | Tipo | Descripción |
+|---|---|---|
+| IdAlerta | int |  |
+| TipoAlerta | string |  |
+| FechaGeneracion | DateTime | El día del resumen que la incluyó. Un pendiente sin resolver vuelve a generar su alerta al día siguiente. |
+| Mensaje | string | El renglón tal como se envió. Se guarda armado para que el historial no dependa de que el cálculo siga dando lo mismo meses después. |
+| Enviada | bool |  |
+| IdPreferencia | int |  |
+| Animal | Animal | El animal que la originó. Sin valor en los avisos que nacen de un insumo. |
+| Insumo | Insumo | El insumo que la originó. Sin valor por el mismo motivo que Animal. |
+
 ### Animal
 
 | Atributo | Tipo | Descripción |
@@ -64,6 +79,10 @@ No tiene tabla: reúne un animal con los motivos por los que aparece como candid
 | DiasAnticipacionVencimiento | int |  |
 | DiasEsperaVoluntaria | int |  |
 | DiasParaTacto | int |  |
+| HoraResumen | TimeSpan | Hora a la que sale el resumen diario de Telegram. |
+| ChatTelegram | string | Destinatario único de los avisos. Vacío mientras nadie haya vinculado una cuenta. |
+| FechaUltimoResumen | DateTime | Día en que salió el último resumen. Es lo único de la configuración que escribe el sistema y no la encargada. |
+| TelegramVinculado | bool | Derivado: la integración está lista cuando hay a quién escribirle. |
 
 ### ControlDiario
 
@@ -198,6 +217,18 @@ No tiene tabla: es el remanente de una partida, derivado de los movimientos de s
 | Insumo | Insumo |  |
 | Categorias | List<Categoria> |  |
 
+### PreferenciaNotificacion
+
+Un tipo de aviso y el interruptor que decide si entra en el resumen diario. Los ocho son los ocho contadores del tablero de inicio.
+
+| Atributo | Tipo | Descripción |
+|---|---|---|
+| IdPreferencia | int |  |
+| TipoAlerta | string | Cuál de los ocho avisos es. La lista es cerrada: un tipo nuevo es una funcionalidad nueva del sistema, no un dato que el usuario agregue. |
+| Activa | bool | Un aviso apagado deja de enviarse por Telegram y se sigue viendo en el sistema. |
+| Etiqueta | string | El título con el que el aviso aparece en la pantalla y encabeza su bloque del mensaje. Derivado del tipo. |
+| Modulo | string | El módulo del que sale el aviso. Agrupa la pantalla y ordena el mensaje, que se arma por módulo. |
+
 ### ProcedimientoPendiente
 
 No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar el plan con lo aplicado.
@@ -216,6 +247,25 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | IdRaza | int |  |
 | Nombre | string |  |
 | Descripcion | string |  |
+
+### Reporte
+
+| Atributo | Tipo | Descripción |
+|---|---|---|
+| Titulo | string |  |
+| Periodo | string |  |
+| FechaEmision | DateTime |  |
+| Secciones | List<SeccionReporte> |  |
+
+### SeccionReporte
+
+| Atributo | Tipo | Descripción |
+|---|---|---|
+| Titulo | string |  |
+| Columnas | string[] |  |
+| Filas | List<string[]> |  |
+| ColumnasNumericas | List<int> |  |
+| Nota | string |  |
 
 ### Servicio
 
@@ -299,7 +349,7 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | ListarCategorias | List<Categoria> | — |
 | BuscarCategoria | Categoria | int pId |
 
-### Animales (28 métodos)
+### Animales (30 métodos)
 
 | Método | Devuelve | Parámetros |
 |---|---|---|
@@ -330,6 +380,8 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | FiltrarAnimalesXRaza | List<Animal> | int pIdRaza |
 | FiltrarAnimalesXCategoria | List<Animal> | int pIdCategoria |
 | FiltrarAnimalesXEstado | List<Animal> | bool pActivo |
+| ListarRodeo | List<Animal> | — |
+| ListarReproductoresDeCatalogo | List<Animal> | — |
 | FiltrarAnimales | List<Animal> | string pNumCaravana, int pIdRaza, int pIdCategoria, int pActivo, int pEdadDesde, int pEdadHasta |
 
 ### Hembras (8 métodos)
@@ -392,7 +444,7 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | ListarTurnosSoloConControlIndividual | List<OrdenieLote> | — |
 | FiltrarOrdeniesLoteXFecha | List<OrdenieLote> | DateTime pDesde, DateTime pHasta |
 
-### Ordenies Individuales (15 métodos)
+### Ordenies Individuales (17 métodos)
 
 | Método | Devuelve | Parámetros |
 |---|---|---|
@@ -406,6 +458,8 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | EliminarOrdenieIndividual | bool | int pIdOrdenieInd |
 | SumarLitrosSinOrdenieLote | double | DateTime pDesde, DateTime pHasta |
 | SumarLitrosIndividualesDelTurno | double | DateTime pFecha, string pTurno |
+| ValidarLoteContraMedido | string | DateTime pFecha, string pTurno, double pLitrosLote, List<Hembra> pAnimales |
+| ValidarMedidoContraLote | string | DateTime pFecha, string pTurno, int pIdAnimal, double pLitros, int pIdOrdenieIgnorado |
 | SumarLitros | double | List<OrdenieIndividual> pOrdenies |
 | FiltrarOrdeniesXLactancia | List<OrdenieIndividual> | int pIdLactancia |
 | FiltrarOrdeniesIndividualXFecha | List<OrdenieIndividual> | DateTime pDesde, DateTime pHasta |
@@ -622,6 +676,30 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | EstaVencido | bool | ProcedimientoPendiente pPendiente |
 | DiasParaAplicar | int | ProcedimientoPendiente pPendiente |
 
+### Reportes (4 métodos)
+
+| Método | Devuelve | Parámetros |
+|---|---|---|
+| ArmarReporteProductivo | Reporte | DateTime pDesde, DateTime pHasta |
+| ArmarReporteSanitario | Reporte | DateTime pDesde, DateTime pHasta |
+| ArmarReporteReproductivo | Reporte | DateTime pDesde, DateTime pHasta |
+| ArmarReporteGenetico | Reporte | — |
+
+### Notificaciones (10 métodos)
+
+| Método | Devuelve | Parámetros |
+|---|---|---|
+| ListarPreferencias | List<PreferenciaNotificacion> | — |
+| ModificarNotificaciones | bool | TimeSpan pHoraResumen, List<PreferenciaNotificacion> pListaPreferencias |
+| ValidarHoraResumen | string | TimeSpan pHoraResumen |
+| ValidarChatTelegram | string | string pChat |
+| VincularTelegram | bool | string pChat |
+| GenerarAlertasDelDia | List<Alerta> | — |
+| ArmarMensajeResumen | string | List<Alerta> pListaAlertas |
+| RegistrarEnvioResumen | bool | List<Alerta> pListaAlertas, DateTime pFecha |
+| ResumenEnviado | bool | DateTime pFecha |
+| ContarAlertas | int | DateTime pFecha |
+
 ## pControladora
 
 
@@ -631,6 +709,15 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 |---|---|---|
 | ObtenerConfiguracion | Configuracion | — |
 | ModificarConfiguracion | bool | Configuracion pConfiguracionNueva |
+
+### Notificaciones (4 métodos)
+
+| Método | Devuelve | Parámetros |
+|---|---|---|
+| ListarPreferencias | List<PreferenciaNotificacion> | — |
+| ModificarPreferencia | bool | PreferenciaNotificacion pPreferencia |
+| RegistrarAlertas | bool | List<Alerta> pListaAlertas |
+| ContarAlertas | int | DateTime pFecha |
 
 ### Razas (2 métodos)
 
@@ -800,6 +887,13 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 ## Clases de acceso a datos
 
 
+### pAlerta
+
+| Método | Devuelve | Parámetros |
+|---|---|---|
+| RegistrarAlertas | bool | List<Alerta> pListaAlertas |
+| ContarAlertas | int | DateTime pFecha |
+
 ### pAnimal
 
 | Método | Devuelve | Parámetros |
@@ -962,6 +1056,13 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | ListarPlanes | List<PlanSanitario> | List<Insumo> pListaInsumos, List<Categoria> pListaCategorias |
 | AltaPlan | bool | PlanSanitario pPlan |
 | ModificarPlan | bool | PlanSanitario pPlan |
+
+### pPreferenciaNotificacion
+
+| Método | Devuelve | Parámetros |
+|---|---|---|
+| ListarPreferencias | List<PreferenciaNotificacion> | — |
+| ModificarPreferencia | bool | PreferenciaNotificacion pPreferencia |
 
 ### pRaza
 

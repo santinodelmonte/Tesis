@@ -2028,23 +2028,23 @@ Curso Básico:
 
 2. El sistema despliega las instrucciones para vincular la cuenta con el bot.
 
-3. El usuario completa la vinculación desde Telegram.
+3. El usuario le escribe al bot desde Telegram, recibe el identificador de su chat y lo ingresa en el sistema.
 
-4. El sistema confirma el vínculo y despliega los tipos de aviso disponibles: procedimientos sanitarios pendientes, partos próximos, tactos pendientes, secados próximos, stock crítico, vencimiento de insumos y fin del período de descarte.
+4. El sistema envía un mensaje de prueba a ese chat y, si llega, guarda la vinculación y despliega la hora del resumen y los ocho tipos de aviso disponibles: procedimientos sanitarios pendientes, partos próximos, tactos pendientes, vacas para servir, secados próximos, fin del período de descarte, stock crítico y vencimiento de insumos.
 
-5. El usuario selecciona los avisos que desea recibir y presiona “Guardar”.
+5. El usuario elige la hora del resumen, selecciona los avisos que desea recibir y presiona “Guardar”.
 
-6. El sistema almacena las preferencias y envía un mensaje de prueba.
+6. El sistema almacena las preferencias.
 
-Cursos Alternativos: 5a. El usuario desactiva un tipo de aviso: el sistema deja de enviarlo, sin afectar su visualización dentro del sistema.
+Cursos Alternativos: 3a. El sistema ya estaba vinculado a otro chat: el nuevo reemplaza al anterior, porque el destinatario es uno solo. 5a. El usuario desactiva un tipo de aviso: el sistema deja de enviarlo, sin afectar su visualización dentro del sistema.
 
-Cursos de Excepción: 3a. La vinculación no se completa: el sistema informa que no pudo establecerse y conserva la configuración anterior. 6a. El envío de prueba falla: el sistema informa la situación e indica revisar la vinculación.
+Cursos de Excepción: 4a. El mensaje de prueba no llega: el sistema informa la situación, indica revisar el identificador y conserva la vinculación anterior, de modo que un intento fallido no deja al establecimiento sin avisos.
 
-Post-condición: El sistema queda habilitado para enviar los avisos seleccionados al destinatario vinculado.
+Post-condición: El sistema queda habilitado para enviar los avisos seleccionados al destinatario vinculado, a la hora elegida.
 
-Reglas de Negocio: Los avisos enviados son los mismos que el sistema muestra en pantalla: la notificación es un canal de entrega, no una fuente de información distinta. La falla del envío no interrumpe la operación del sistema.
+Reglas de Negocio: Los avisos enviados son los mismos que el sistema muestra en pantalla: la notificación es un canal de entrega, no una fuente de información distinta. El destinatario es uno solo para todo el establecimiento, que tiene una sola usuaria. La falla del envío no interrumpe la operación del sistema.
 
-Validaciones: La vinculación con el bot es obligatoria antes de seleccionar avisos.
+Validaciones: La vinculación con el bot es obligatoria antes de seleccionar avisos. El identificador de chat es el número que devuelve Telegram. La hora del resumen debe estar entre las 00:00 y las 23:59.
 
 Frecuencia de Uso: Muy baja, una vez al poner el sistema en marcha.
 
@@ -2068,7 +2068,7 @@ Curso Básico:
 
 1. El proceso programado se ejecuta a la hora configurada.
 
-2. El sistema reúne las tareas pendientes del día: procedimientos sanitarios vencidos y por vencer, partos y secados próximos, tactos pendientes, hembras para servir, insumos en stock crítico y partidas próximas a vencer.
+2. El sistema reúne las tareas pendientes del día de los tipos de aviso activos: procedimientos sanitarios vencidos y por vencer, partos y secados próximos, tactos pendientes, vacas para servir, animales que terminan el descarte de leche, insumos en stock crítico y partidas próximas a vencer.
 
 3. El sistema arma el mensaje agrupando las tareas por módulo.
 
@@ -2076,13 +2076,13 @@ Curso Básico:
 
 5. El sistema registra el envío.
 
-Cursos Alternativos: 2a. No hay tareas pendientes: el sistema envía igualmente el resumen indicando que no hay pendientes, de modo que el silencio no se confunda con una falla del envío.
+Cursos Alternativos: 1a. El sistema no estaba en funcionamiento a la hora configurada: el resumen sale cuando vuelve a estarlo, en lugar de saltear el día. 1b. El usuario le escribe “/resumen” al bot: el sistema responde con el mismo mensaje en el momento, sin que eso reemplace al envío automático del día. 2a. No hay tareas pendientes: el sistema envía igualmente el resumen indicando que no hay pendientes, de modo que el silencio no se confunda con una falla del envío.
 
-Cursos de Excepción: 4a. El envío falla: el sistema registra el error y reintenta en el siguiente ciclo, sin interrumpir su funcionamiento.
+Cursos de Excepción: 4a. El envío falla: el sistema registra el error y reintenta más tarde, sin interrumpir su funcionamiento y sin dar el día por enviado.
 
 Post-condición: La encargada recibe el resumen del día en su teléfono, sin necesidad de ingresar al sistema.
 
-Reglas de Negocio: El resumen se construye con los mismos cálculos que alimentan el tablero de inicio (CU40) y el calendario sanitario (CU31), de modo que las tres vistas no puedan discrepar.
+Reglas de Negocio: El resumen se construye con los mismos cálculos que alimentan el tablero de inicio (CU40) y el calendario sanitario (CU31), de modo que las tres vistas no puedan discrepar. Un pendiente que no se resuelve vuelve a aparecer al día siguiente: el resumen es la lista de tareas del día y no un aviso de novedades. El resumen se envía una sola vez por día, aunque el sistema se reinicie.
 
 Validaciones: —
 

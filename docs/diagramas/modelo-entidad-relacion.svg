@@ -67,12 +67,12 @@
 <path d="M 255.2 354.2 L 245.0 355.5 L 253.5 361.2" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <line x1="932.5" y1="434.0" x2="932.5" y2="191.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 936.1 200.6 L 932.5 191.0 L 928.9 200.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<line x1="1197.5" y1="172.0" x2="1197.5" y2="146.0" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 1201.1 155.6 L 1197.5 146.0 L 1193.9 155.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<line x1="1090.0" y1="247.0" x2="245.0" y2="355.5" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 254.1 350.7 L 245.0 355.5 L 255.0 357.8" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<line x1="1090.0" y1="247.0" x2="510.0" y2="123.5" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 520.1 122.0 L 510.0 123.5 L 518.6 129.0" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<line x1="1197.5" y1="157.0" x2="1197.5" y2="131.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 1201.1 140.6 L 1197.5 131.0 L 1193.9 140.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<line x1="1090.0" y1="232.0" x2="245.0" y2="355.5" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 254.0 350.5 L 245.0 355.5 L 255.0 357.7" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<line x1="1090.0" y1="232.0" x2="510.0" y2="123.5" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 520.1 121.7 L 510.0 123.5 L 518.8 128.8" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <rect x="30.0" y="56.0" width="215.0" height="75.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
 <path d="M 31.0 80.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
 <line x1="30.0" y1="80.0" x2="245.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
@@ -328,7 +328,7 @@
 <text x="1033.0" y="529.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
 <text x="832.0" y="544.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_plan</text>
 <text x="1033.0" y="544.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
-<rect x="825.0" y="580.0" width="215.0" height="210.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<rect x="825.0" y="580.0" width="215.0" height="255.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
 <path d="M 826.0 604.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
 <line x1="825.0" y1="604.0" x2="1040.0" y2="604.0" stroke="#40484f" stroke-width="1.3"/>
 <text x="932.5" y="592.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">configuracion</text>
@@ -345,8 +345,11 @@
 <text x="832.0" y="750.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_anticipacion_vencimiento</text>
 <text x="832.0" y="765.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_espera_voluntaria</text>
 <text x="832.0" y="780.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">dias_para_tacto</text>
-<rect x="1090.0" y="56.0" width="215.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
-<path d="M 1091.0 80.0 h 213.0 v -22.0 h -213.0 Z" fill="#e6e8ea"/>
+<text x="832.0" y="795.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">hora_resumen</text>
+<text x="832.0" y="810.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">chat_telegram</text>
+<text x="832.0" y="825.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_ultimo_resumen</text>
+<rect x="1090.0" y="56.0" width="215.0" height="75.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 1091.0 80.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
 <line x1="1090.0" y1="80.0" x2="1305.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
 <text x="1197.5" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">preferencias_notificacion</text>
 <text x="1097.0" y="91.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_preferencia</text>
@@ -354,21 +357,20 @@
 <text x="1097.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_alerta</text>
 <text x="1298.0" y="106.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">CA</text>
 <text x="1097.0" y="121.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">activa</text>
-<text x="1097.0" y="136.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">destinatario</text>
-<rect x="1090.0" y="172.0" width="215.0" height="150.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
-<path d="M 1091.0 196.0 h 213.0 v -22.0 h -213.0 Z" fill="#e6e8ea"/>
-<line x1="1090.0" y1="196.0" x2="1305.0" y2="196.0" stroke="#40484f" stroke-width="1.3"/>
-<text x="1197.5" y="184.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">alertas</text>
-<text x="1097.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_alerta</text>
-<text x="1298.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
-<text x="1097.0" y="222.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_alerta</text>
-<text x="1097.0" y="237.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_generacion</text>
-<text x="1097.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">mensaje</text>
-<text x="1097.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">enviada</text>
-<text x="1097.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_preferencia</text>
+<rect x="1090.0" y="157.0" width="215.0" height="150.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 1091.0 181.0 h 213.0 v -22.0 h -213.0 Z" fill="#f4f6f8"/>
+<line x1="1090.0" y1="181.0" x2="1305.0" y2="181.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="1197.5" y="169.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">alertas</text>
+<text x="1097.0" y="192.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_alerta</text>
+<text x="1298.0" y="192.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">PK</text>
+<text x="1097.0" y="207.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">tipo_alerta</text>
+<text x="1097.0" y="222.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">fecha_generacion</text>
+<text x="1097.0" y="237.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">mensaje</text>
+<text x="1097.0" y="252.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">enviada</text>
+<text x="1097.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_preferencia</text>
+<text x="1298.0" y="267.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
+<text x="1097.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
 <text x="1298.0" y="282.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
-<text x="1097.0" y="297.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_animal</text>
+<text x="1097.0" y="297.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
 <text x="1298.0" y="297.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
-<text x="1097.0" y="312.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">id_insumo</text>
-<text x="1298.0" y="312.5" font-family="Helvetica, Arial, sans-serif" font-size="8" font-weight="600" fill="#12181d" text-anchor="end" dominant-baseline="middle">FK</text>
 </svg>

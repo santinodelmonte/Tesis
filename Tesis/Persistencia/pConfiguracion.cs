@@ -34,7 +34,12 @@ namespace Tesis.Persistencia
                 int.Parse(fila["dias_anticipacion_sanitaria"].ToString()),
                 int.Parse(fila["dias_anticipacion_vencimiento"].ToString()),
                 int.Parse(fila["dias_espera_voluntaria"].ToString()),
-                int.Parse(fila["dias_para_tacto"].ToString())
+                int.Parse(fila["dias_para_tacto"].ToString()),
+                // MySQL devuelve TIME como TimeSpan, no como DateTime
+                (TimeSpan)fila["hora_resumen"],
+                fila["chat_telegram"] != DBNull.Value ? fila["chat_telegram"].ToString() : "",
+                fila["fecha_ultimo_resumen"] != DBNull.Value
+                    ? Convert.ToDateTime(fila["fecha_ultimo_resumen"]) : DateTime.MinValue
                 );
         }
 
@@ -52,7 +57,10 @@ namespace Tesis.Persistencia
                 + "dias_anticipacion_sanitaria = @dias_anticipacion_sanitaria,"
                 + "dias_anticipacion_vencimiento = @dias_anticipacion_vencimiento,"
                 + "dias_espera_voluntaria = @dias_espera_voluntaria,"
-                + "dias_para_tacto = @dias_para_tacto "
+                + "dias_para_tacto = @dias_para_tacto,"
+                + "hora_resumen = @hora_resumen,"
+                + "chat_telegram = @chat_telegram,"
+                + "fecha_ultimo_resumen = @fecha_ultimo_resumen "
                 + "WHERE id_configuracion = @id_configuracion";
 
             Dictionary<string, object?> parametros = new Dictionary<string, object?>
@@ -68,6 +76,12 @@ namespace Tesis.Persistencia
                 { "@dias_anticipacion_vencimiento", pConfiguracion.DiasAnticipacionVencimiento },
                 { "@dias_espera_voluntaria", pConfiguracion.DiasEsperaVoluntaria },
                 { "@dias_para_tacto", pConfiguracion.DiasParaTacto },
+                { "@hora_resumen", pConfiguracion.HoraResumen },
+                // El vacio se guarda como NULL: la columna admite nulo justamente para
+                // representar el establecimiento que todavia no vinculo ninguna cuenta.
+                { "@chat_telegram", pConfiguracion.ChatTelegram != "" ? (object)pConfiguracion.ChatTelegram : null },
+                { "@fecha_ultimo_resumen", pConfiguracion.FechaUltimoResumen != DateTime.MinValue
+                    ? (object)pConfiguracion.FechaUltimoResumen.Date : null },
                 { "@id_configuracion", pConfiguracion.IdConfiguracion }
             };
 

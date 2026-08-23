@@ -369,3 +369,9 @@ Tesis/wwwroot/fotos/
 # Volcados de la base que deja bd/actualizar.ps1 antes de tocar nada. Son datos
 # del establecimiento y pueden pesar: se guardan, no se versionan.
 respaldos/
+
+# El token del bot de Telegram. Es una credencial -quien lo tiene maneja el bot- y
+# Telegram revoca solo los que aparecen en un repositorio publico. El archivo de
+# desarrollo deja de versionarse por eso; appsettings.Development.json.ejemplo queda
+# como plantilla de lo que hay que completar.
+Tesis/appsettings.Development.json

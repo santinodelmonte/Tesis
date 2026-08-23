@@ -78,7 +78,11 @@ namespace Tesis.Pages.PagesConfiguracion
             return new Configuracion(0, diasSecadoAntesParto, edadMinimaServicioMeses,
                 edadCambioCategoriaMeses, litrosMaximosIndividual, ordeniesPorDia,
                 diasAnticipacionSecado, diasAnticipacionParto, diasAnticipacionSanitaria,
-                diasAnticipacionVencimiento, diasEsperaVoluntaria, diasParaTacto);
+                diasAnticipacionVencimiento, diasEsperaVoluntaria, diasParaTacto,
+                // La hora del resumen, el chat de Telegram y la fecha del ultimo envio
+                // estan en la misma fila pero no en esta pantalla. Van vacios y la
+                // Controladora los repone con lo que ya habia guardado.
+                TimeSpan.Zero, "", DateTime.MinValue);
         }
 
         private void LeerConfiguracion(Configuracion pConfiguracion)

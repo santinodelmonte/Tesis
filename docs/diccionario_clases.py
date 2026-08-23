@@ -15,6 +15,31 @@ from codigo import dominio, persistencia  # noqa: E402
 
 # Descripcion de cada atributo. Lo que el nombre no dice por si solo.
 NOTAS = {
+    ('PreferenciaNotificacion', 'TipoAlerta'): 'Cuál de los ocho avisos es. La lista '
+        'es cerrada: un tipo nuevo es una funcionalidad nueva del sistema, no un dato '
+        'que el usuario agregue.',
+    ('PreferenciaNotificacion', 'Activa'): 'Un aviso apagado deja de enviarse por '
+        'Telegram y se sigue viendo en el sistema.',
+    ('PreferenciaNotificacion', 'Etiqueta'): 'El título con el que el aviso aparece en '
+        'la pantalla y encabeza su bloque del mensaje. Derivado del tipo.',
+    ('PreferenciaNotificacion', 'Modulo'): 'El módulo del que sale el aviso. Agrupa la '
+        'pantalla y ordena el mensaje, que se arma por módulo.',
+    ('Alerta', 'Mensaje'): 'El renglón tal como se envió. Se guarda armado para que el '
+        'historial no dependa de que el cálculo siga dando lo mismo meses después.',
+    ('Alerta', 'FechaGeneracion'): 'El día del resumen que la incluyó. Un pendiente sin '
+        'resolver vuelve a generar su alerta al día siguiente.',
+    ('Alerta', 'Animal'): 'El animal que la originó. Sin valor en los avisos que nacen '
+        'de un insumo.',
+    ('Alerta', 'Insumo'): 'El insumo que la originó. Sin valor por el mismo motivo que '
+        'Animal.',
+    ('Configuracion', 'HoraResumen'): 'Hora a la que sale el resumen diario de '
+        'Telegram.',
+    ('Configuracion', 'ChatTelegram'): 'Destinatario único de los avisos. Vacío '
+        'mientras nadie haya vinculado una cuenta.',
+    ('Configuracion', 'FechaUltimoResumen'): 'Día en que salió el último resumen. Es lo '
+        'único de la configuración que escribe el sistema y no la encargada.',
+    ('Configuracion', 'TelegramVinculado'): 'Derivado: la integración está lista cuando '
+        'hay a quién escribirle.',
     ('Animal', 'Activo'): 'Falso cuando el animal está dado de baja.',
     ('Animal', 'FechaBaja'): 'Fecha de salida del rodeo. Sin valor mientras el animal '
         'está activo.',
@@ -66,6 +91,10 @@ SIN_TABLA = {
         'los movimientos de stock.',
     'ProcedimientoPendiente': 'No tiene tabla: es un pendiente del calendario '
         'sanitario, derivado de comparar el plan con lo aplicado.',
+    'PreferenciaNotificacion': 'Un tipo de aviso y el interruptor que decide si entra '
+        'en el resumen diario. Los ocho son los ocho contadores del tablero de inicio.',
+    'Alerta': 'Un pendiente concreto de un día concreto: el renglón del mensaje y, una '
+        'vez guardada, el registro de que ese aviso salió.',
 }
 
 

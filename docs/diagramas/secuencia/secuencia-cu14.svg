@@ -70,13 +70,13 @@
 <text x="886.0" y="820.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">16. EjecutarConsulta()</text>
 <line x1="284.0" y1="876.0" x2="456.0" y2="876.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 879.6 L 456.0 876.0 L 446.4 872.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="370.0" y="866.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">17. CalcularProduccionTotal()</text>
+<text x="370.0" y="866.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">17. FiltrarOrdeniesLoteXFecha()</text>
 <path d="M 456.0 922.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 465.6 940.4 L 456.0 944.0 L 465.6 947.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="498.0" y="933.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">18. valida en memoria</text>
 <line x1="284.0" y1="968.0" x2="456.0" y2="968.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 971.6 L 456.0 968.0 L 446.4 964.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="370.0" y="958.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">19. FiltrarOrdeniesXLactancia()</text>
+<text x="370.0" y="958.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">19. FiltrarOrdeniesIndividualXFecha()</text>
 <path d="M 456.0 1014.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 465.6 1032.4 L 456.0 1036.0 L 465.6 1039.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="498.0" y="1025.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">20. valida en memoria</text>

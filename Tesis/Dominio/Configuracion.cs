@@ -23,6 +23,9 @@ namespace Tesis.Dominio
         private int mDiasAnticipacionVencimiento;
         private int mDiasEsperaVoluntaria;
         private int mDiasParaTacto;
+        private TimeSpan mHoraResumen;
+        private string mChatTelegram = "";
+        private DateTime mFechaUltimoResumen;
 
         public int IdConfiguracion { get { return mIdConfiguracion; } set { mIdConfiguracion = value; } }
 
@@ -56,11 +59,36 @@ namespace Tesis.Dominio
         // De aca sale la lista con la que se arma la visita del veterinario.
         public int DiasParaTacto { get { return mDiasParaTacto; } set { mDiasParaTacto = value; } }
 
+        // Hora a la que sale el resumen diario de Telegram (RF7.7). Es un parametro de
+        // manejo como los demas: hay tambos que quieren el mensaje antes del ordenie de
+        // la maniana y otros la noche anterior.
+        public TimeSpan HoraResumen { get { return mHoraResumen; } set { mHoraResumen = value; } }
+
+        // El chat de Telegram al que se le manda. Vacio mientras nadie haya vinculado
+        // una cuenta, que es como el sistema sabe que la integracion no esta lista.
+        //
+        // Es uno solo para todo el establecimiento: el sistema tiene una unica usuaria.
+        // El token del bot no esta aca ni en la base -es una credencial- y lo carga
+        // Program.cs desde la configuracion de la aplicacion.
+        public string ChatTelegram { get { return mChatTelegram; } set { mChatTelegram = value ?? ""; } }
+
+        // El dia en que salio el ultimo resumen. Es lo unico de esta clase que el
+        // sistema escribe solo: lo demas lo decide la encargada.
+        //
+        // Sirve para no mandar dos veces el mismo resumen si el sitio se reinicia. La
+        // tabla de alertas no alcanza para saberlo, porque el dia sin pendientes manda
+        // mensaje igual y no genera ninguna alerta.
+        public DateTime FechaUltimoResumen { get { return mFechaUltimoResumen; } set { mFechaUltimoResumen = value; } }
+
+        // La integracion esta lista cuando hay a quien escribirle.
+        public bool TelegramVinculado { get { return mChatTelegram != ""; } }
+
         public Configuracion(int pIdConfiguracion, int pDiasSecadoAntesParto,
             int pEdadMinimaServicioMeses, int pEdadCambioCategoriaMeses,
             double pLitrosMaximosIndividual, int pOrdeniesPorDia, int pDiasAnticipacionSecado,
             int pDiasAnticipacionParto, int pDiasAnticipacionSanitaria, int pDiasAnticipacionVencimiento,
-            int pDiasEsperaVoluntaria, int pDiasParaTacto)
+            int pDiasEsperaVoluntaria, int pDiasParaTacto, TimeSpan pHoraResumen,
+            string pChatTelegram, DateTime pFechaUltimoResumen)
         {
             mIdConfiguracion = pIdConfiguracion;
             mDiasSecadoAntesParto = pDiasSecadoAntesParto;
@@ -74,6 +102,9 @@ namespace Tesis.Dominio
             mDiasAnticipacionVencimiento = pDiasAnticipacionVencimiento;
             mDiasEsperaVoluntaria = pDiasEsperaVoluntaria;
             mDiasParaTacto = pDiasParaTacto;
+            mHoraResumen = pHoraResumen;
+            mChatTelegram = pChatTelegram ?? "";
+            mFechaUltimoResumen = pFechaUltimoResumen;
         }
     }
 }

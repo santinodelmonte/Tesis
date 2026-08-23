@@ -18,6 +18,28 @@ namespace Tesis.Persistencia
         }
         #endregion
 
+        #region NOTIFICACIONES
+        public List<PreferenciaNotificacion> ListarPreferencias()
+        {
+            return new pPreferenciaNotificacion().ListarPreferencias();
+        }
+
+        public bool ModificarPreferencia(PreferenciaNotificacion pPreferencia)
+        {
+            return new pPreferenciaNotificacion().ModificarPreferencia(pPreferencia);
+        }
+
+        public bool RegistrarEnvioResumen(List<Alerta> pListaAlertas)
+        {
+            return new pAlerta().RegistrarAlertas(pListaAlertas);
+        }
+
+        public int ContarAlertas(DateTime pFecha)
+        {
+            return new pAlerta().ContarAlertas(pFecha);
+        }
+        #endregion
+
         #region RAZAS
         public List<Raza> ListarRazas()
         {

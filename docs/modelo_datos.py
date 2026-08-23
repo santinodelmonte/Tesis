@@ -14,32 +14,6 @@ sys.path.insert(0, os.path.join(AQUI, 'diagramas'))
 
 from esquema import leer  # noqa: E402
 
-# Las dos tablas del Modulo 7, que esta pendiente de implementacion. Se describen
-# igual porque el modulo forma parte del alcance del proyecto.
-PENDIENTES = {
-    'preferencias_notificacion': [
-        ('id_preferencia', 'INT(11)', False, 'PK'),
-        ('tipo_alerta', 'VARCHAR(40)', False, 'CA'),
-        ('activa', 'TINYINT(1)', False, ''),
-        ('destinatario', 'VARCHAR(60)', True, ''),
-    ],
-    'alertas': [
-        ('id_alerta', 'INT(11)', False, 'PK'),
-        ('tipo_alerta', 'VARCHAR(40)', False, ''),
-        ('fecha_generacion', 'DATE', False, ''),
-        ('mensaje', 'VARCHAR(200)', False, ''),
-        ('enviada', 'TINYINT(1)', False, ''),
-        ('id_preferencia', 'INT(11)', False, 'FK'),
-        ('id_animal', 'INT(11)', True, 'FK'),
-        ('id_insumo', 'INT(11)', True, 'FK'),
-    ],
-}
-
-CLAVES_PENDIENTES = {
-    'preferencias_notificacion': ('id_preferencia', 'tipo_alerta', '—'),
-    'alertas': ('id_alerta', '—', 'id_preferencia, id_animal, id_insumo'),
-}
-
 # Observaciones por columna. Solo estan las que dicen algo que el DDL no dice.
 NOTAS = {
     ('animales', 'activo'): 'Marca la baja lógica. La baja nunca elimina la fila: '
@@ -107,6 +81,27 @@ NOTAS = {
     ('descornes', 'id_plan'): 'Ídem vacunaciones. El descorne es de aplicación única.',
     ('configuracion', 'id_configuracion'): 'Tabla de una sola fila: el sistema lee '
         'siempre la primera y escribe sobre ella. No hay alta de configuraciones.',
+    ('configuracion', 'hora_resumen'): 'Hora a la que sale el resumen diario de '
+        'Telegram. Es un parámetro de manejo como los demás: hay una sola para todo el '
+        'establecimiento.',
+    ('configuracion', 'chat_telegram'): 'Destinatario único de los avisos. Nulo '
+        'mientras nadie haya vinculado una cuenta, y ese nulo es lo que el sistema lee '
+        'como integración sin configurar. El token del bot no está en la base: es una '
+        'credencial y vive en la configuración de la aplicación.',
+    ('configuracion', 'fecha_ultimo_resumen'): 'Día en que salió el último resumen. '
+        'Evita el mensaje repetido cuando el sitio se reinicia: la tabla de alertas no '
+        'puede responder por un día sin pendientes, porque ese día no genera filas.',
+    ('preferencias_notificacion', 'tipo_alerta'): 'Los ocho tipos se cargan con el '
+        'esquema y el sistema no da de alta ninguno: son los ocho contadores del '
+        'tablero de inicio, y que la lista sea cerrada es lo que garantiza que el '
+        'resumen y las pantallas no puedan discrepar.',
+    ('preferencias_notificacion', 'activa'): 'Un aviso apagado deja de enviarse por '
+        'Telegram y se sigue viendo en el sistema.',
+    ('alertas', 'fecha_generacion'): 'Un pendiente que no se resuelve genera su fila '
+        'otra vez al día siguiente: el resumen es la lista de tareas del día, no un '
+        'aviso de novedades.',
+    ('alertas', 'mensaje'): 'El renglón tal como se envió. Se guarda armado para que '
+        'el historial no dependa de que el cálculo siga dando lo mismo meses después.',
     ('alertas', 'id_animal'): 'Nulo según el tipo de alerta: unas se originan en un '
         'animal y otras en un insumo.',
     ('alertas', 'id_insumo'): 'Nulo por el mismo motivo que id_animal.',
@@ -144,11 +139,7 @@ def normalizacion():
     tablas, _ = leer()
     salida = []
     for nombre in ORDEN:
-        if nombre in PENDIENTES:
-            columnas = [c[0] for c in PENDIENTES[nombre]]
-        else:
-            columnas = [c.nombre for c in tablas[nombre].columnas]
-        salida.append((nombre, columnas))
+        salida.append((nombre, [c.nombre for c in tablas[nombre].columnas]))
     return salida
 
 
@@ -157,9 +148,6 @@ def claves():
     tablas, _ = leer()
     filas = []
     for nombre in ORDEN:
-        if nombre in PENDIENTES:
-            filas.append((nombre,) + CLAVES_PENDIENTES[nombre])
-            continue
         tabla = tablas[nombre]
         alternas = ', '.join(', '.join(g) for g in tabla.unicas)
         foraneas = ', '.join(', '.join(cols) for cols, _, _, _ in tabla.fks)
@@ -173,24 +161,11 @@ def integridad():
     salida = []
     for nombre in ORDEN:
         filas = []
-        if nombre in PENDIENTES:
-            for campo, tipo, nulo, marca in PENDIENTES[nombre]:
-                restr = []
-                if marca == 'PK':
-                    restr += ['PK', 'Auto increment']
-                elif marca == 'FK':
-                    restr.append('FK')
-                elif marca == 'CA':
-                    restr.append('Único')
-                restr.append('Nulo' if nulo else 'No nulo')
-                filas.append((campo, tipo, ', '.join(restr),
-                              NOTAS.get((nombre, campo), '')))
-        else:
-            tabla = tablas[nombre]
-            for columna in tabla.columnas:
-                filas.append((columna.nombre, columna.tipo,
-                              _restricciones(columna, tabla),
-                              NOTAS.get((nombre, columna.nombre), '')))
+        tabla = tablas[nombre]
+        for columna in tabla.columnas:
+            filas.append((columna.nombre, columna.tipo,
+                          _restricciones(columna, tabla),
+                          NOTAS.get((nombre, columna.nombre), '')))
         salida.append((nombre, filas))
     return salida
 

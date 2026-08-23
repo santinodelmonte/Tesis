@@ -27,19 +27,19 @@
 <text x="498.0" y="197.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">2. valida en memoria</text>
 <line x1="284.0" y1="232.0" x2="456.0" y2="232.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 235.6 L 456.0 232.0 L 446.4 228.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="370.0" y="222.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">3. BuscarMacho()</text>
+<text x="370.0" y="222.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">3. ValidarGenealogia()</text>
 <path d="M 456.0 278.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 465.6 296.4 L 456.0 300.0 L 465.6 303.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="498.0" y="289.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">4. valida en memoria</text>
 <line x1="284.0" y1="324.0" x2="456.0" y2="324.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 327.6 L 456.0 324.0 L 446.4 320.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="370.0" y="314.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">5. ValidarGenealogia()</text>
+<text x="370.0" y="314.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">5. AdvertenciasParto()</text>
 <path d="M 456.0 370.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 465.6 388.4 L 456.0 392.0 L 465.6 395.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="498.0" y="381.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">6. valida en memoria</text>
 <line x1="284.0" y1="416.0" x2="456.0" y2="416.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 419.6 L 456.0 416.0 L 446.4 412.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="370.0" y="406.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">7. AdvertenciasParto()</text>
+<text x="370.0" y="406.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">7. AdvertenciasGenealogia()</text>
 <path d="M 456.0 462.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 465.6 480.4 L 456.0 484.0 L 465.6 487.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="498.0" y="473.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">8. valida en memoria</text>

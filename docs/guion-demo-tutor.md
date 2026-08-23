@@ -4,7 +4,7 @@ Reunion del **20/08/2026**. El tutor vio un avance del Modulo 1 en construccion:
 demo tiene que mostrarle el sistema entero y, sobre todo, que las reglas del negocio
 estan adentro del sistema y no en la cabeza del que carga.
 
-Duracion objetivo: **45 a 55 minutos** de recorrido, mas preguntas. Si el tiempo se
+Duracion objetivo: **50 a 60 minutos** de recorrido, mas preguntas. Si el tiempo se
 achica, los tramos marcados **[nucleo]** son los que no se sacan; los marcados
 **[opcional]** se cuentan en vez de mostrarse.
 
@@ -784,7 +784,49 @@ Distinguir explicitamente los dos mecanismos, porque son decisiones distintas:
 
 ---
 
-## 10. Cierre — 2 min
+## 10. Lo que llega al telefono [nucleo] — 4 min
+
+Es el unico tramo donde el sistema hace algo sin que nadie lo abra, asi que conviene
+que sea el ultimo: cierra la idea de que los datos cargados sirven aunque la encargada
+no este mirando la pantalla.
+
+**Antes de la reunion** hay que tener el bot vinculado y el token cargado
+(`bd/LEEME.md`, punto 7). Se prueba mandandole `/resumen` al bot y viendo que conteste.
+
+### 10.1 De donde sale el mensaje
+
+**Reportes y notificaciones → Notificaciones.** Mostrar la pantalla: el chat vinculado,
+la hora del resumen y los ocho interruptores, agrupados por modulo.
+
+**La frase:** son los ocho contadores del tablero de inicio, ni uno mas. El aviso no
+calcula nada por su cuenta; es un canal de entrega.
+
+### 10.2 El mensaje, al lado del tablero
+
+Poner el telefono a la vista y escribirle **`/resumen`** al bot. Llega el mensaje
+agrupado por modulo.
+
+Abrir el tablero de inicio en la pantalla, al lado. **Recorrer los numeros de a uno**:
+las vacas para servir, el tacto pendiente, el parto proximo, los insumos bajo el
+minimo. Tienen que coincidir, y coinciden porque salen del mismo calculo.
+
+### 10.3 Apagar un aviso
+
+Destildar **Stock critico**, guardar, y volver a pedir `/resumen`: el bloque
+desaparecio. Ir despues a **Insumos → Alertas de Stock**: los dos insumos siguen ahi.
+
+**La frase:** apagar un aviso apaga el mensaje, no la informacion.
+
+Volver a tildarlo antes de seguir.
+
+**Si preguntan por el envio automatico:** el resumen sale solo a la hora configurada,
+una vez por dia, y lo manda un proceso que vive adentro del sitio. Con el sitio
+apagado no sale; si el sitio estuvo caido a esa hora, sale cuando vuelve a levantar en
+lugar de saltear el dia.
+
+---
+
+## 11. Cierre — 2 min
 
 Tres frases, y despues preguntas:
 
@@ -794,10 +836,9 @@ Tres frases, y despues preguntas:
 2. **El sistema distingue lo imposible de lo sospechoso.** Lo primero se bloquea con
    el motivo; lo segundo se advierte y el usuario confirma. Trabar todo haria
    imposible cargar un rodeo real.
-3. **Lo que falta, esta anotado.** `docs/pendientes-tecnicos.md` tiene los dos temas
-   abiertos: la cache `static` de la Controladora, que bajo concurrencia real habria
-   que revisar, y la ausencia de pruebas automatizadas. Decirlo antes de que lo
-   pregunte suma mas que esconderlo.
+3. **Lo que falta, esta anotado.** `docs/pendientes-tecnicos.md` tiene lo que queda
+   abierto: el rediseno del home que el tutor pidio, y la ausencia de pruebas
+   automatizadas. Decirlo antes de que lo pregunte suma mas que esconderlo.
 
 ---
 
@@ -914,6 +955,7 @@ pajuela `29HO18296` (3, bajo minimo).
 | Se rompio el juego de datos en medio de la demo | Volver a correr `bd/DatosPrueba.sql`. Tarda segundos, vacia las tablas de datos y deja el rodeo como al empezar, anclado al dia de hoy. |
 | Las alertas aparecen vacias | El script de datos no corrio completo. Correrlo de nuevo y mirar que las dos consultas del final devuelvan cero filas. |
 | Una pantalla tira error | Seguir con el tramo siguiente y anotarlo. No debuggear en vivo. |
+| El bot no contesta | Seguir con la pantalla de notificaciones, que se explica sola, y mostrar el ultimo resumen que si salio -la fecha figura ahi-. No pelear con la conexion en vivo. |
 | Sobra tiempo | Los tramos `[opcional]`: buscar y filtrar, historial y metrica, insumos completo, planes sanitarios. |
 | Falta tiempo | Saltar el 3.6 y el tramo 7, y comprimir el 4 a la carga del lote, que es donde esta el cruce con Sanidad. |
 
