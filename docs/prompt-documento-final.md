@@ -37,7 +37,7 @@ trabajo que hay que rehacer. Con el Módulo 7 en curso cambian el MER, los
 diagramas de secuencia, el diccionario de clases, las pantallas del manual y lo
 que se puede probar. Se termina de programar, y recién entonces se escribe.
 
-Lo único que **sí** se puede adelantar en paralelo está en el punto 9: son las
+Lo único que **sí** se puede adelantar en paralelo está en el punto 10: son las
 tres cosas que no dependen del código.
 
 ### El flujo, de una mirada
@@ -116,8 +116,9 @@ documento nuestro promete pruebas automatizadas, **se corrige el documento**.
 > **Bloqueante para 2.3–2.9.** El `EjemploTesis.pdf` está en el Drive de Santino
 > (carpeta `Tesis`), no en el repo, y su texto sólo se puede extraer hasta la
 > página 80 aproximadamente por la vía de la nube: justo antes de las secciones
-> que hay que copiar. **Subir `EjemploTesis.pdf` al repo** (raíz o `docs/`) es el
-> primer paso de la Fase 2; con el archivo local se leen las páginas 152 a 229 sin
+> que hay que copiar. **Subir `EjemploTesis.pdf` al repo** (raíz o `docs/`) no espera
+> a ninguna fase: está en el punto 10 y conviene hacerlo hoy. Con el archivo local
+> se leen las páginas 152 a 229 sin
 > problema.
 
 ---
@@ -166,7 +167,7 @@ contenido mientras escribe el documento. Los tres módulos ya saben escribir su
 `.md` —`modelo-datos-v6.md`, `diccionario-clases-v6.md`, `casos-de-uso-v6.md`—,
 así que la separación es corta: un `docs/generar.py` que los corra a todos junto
 con los de `docs/diagramas/`, y un `editar_proyecto.py` que lea de disco en lugar
-de importar. Hacerlo **al empezar la Fase 2**, antes de escribir las secciones
+de importar. Hacerlo **al empezar la Fase 3**, antes de escribir las secciones
 nuevas, para que nazcan con la forma correcta.
 
 Las secciones nuevas siguen el mismo camino: 2.3 a 2.9 se escriben como markdown
@@ -206,7 +207,7 @@ Insumos que ya existen y hay que aprovechar, no rehacer:
 
 ## 5. Fase 1 — Terminar el código
 
-**Nada de documentación hasta que esta fase esté cerrada** (salvo lo del punto 9).
+**Nada de documentación hasta que esta fase esté cerrada** (salvo lo del punto 10).
 
 El Módulo 7 se construye: el documento final describe un sistema de ocho módulos
 terminados, no siete y una promesa. Implica, en este orden:
