@@ -766,13 +766,15 @@ dict(
 dict(
     modulo=7, num=49,
     nombre='Enviar Resumen Diario de Tareas Pendientes',
-    actores='Sistema (actor principal); Encargada del sector (destinataria)',
+    actores='Encargada del sector',
     tipo='Primario',
-    descripcion='El sistema envía, mediante un proceso programado, un resumen diario con '
-        'las tareas pendientes del establecimiento.',
+    descripcion='La encargada recibe, sin tener que pedirlo, un resumen diario con las '
+        'tareas pendientes del establecimiento, de modo que empiece la jornada sabiendo '
+        'qué animales necesitan atención.',
     rf='RF7.7',
-    precondicion='La integración con el bot de Telegram debe estar configurada y activa.',
-    desencadenante='Se alcanza la hora programada para el envío del resumen.',
+    precondicion='La integración con el bot de mensajería debe estar configurada y activa.',
+    desencadenante='Se alcanza la hora configurada para el envío del resumen. El caso de '
+        'uso lo dispara el tiempo, no una acción de la encargada.',
     curso=[
         'El proceso programado se ejecuta a la hora configurada.',
         'El sistema reúne las tareas pendientes del día: procedimientos sanitarios vencidos '
