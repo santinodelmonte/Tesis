@@ -16,7 +16,7 @@ porque tienen la historia cargada que hace falta.
 
 | | |
 |---|---|
-| **Tamaño** | 1280 × 800 en escritorio. Las del apartado móvil, 390 × 844. |
+| **Tamaño** | 1280 × 800 en escritorio. Las del apartado móvil, **375 × 812**: el RNF de Compatibilidad promete que el uso desde el celular está verificado «a partir de los 375 píxeles de ancho», así que la captura tiene que ser a ese ancho para que pruebe lo que el documento afirma. |
 | **Estado** | Siempre con el rodeo de `DatosPrueba.sql` cargado. **Ninguna lista vacía**: una pantalla sin datos no enseña nada. |
 | **Sesión** | Iniciada como `sofia`. La contraseña nunca se ve escrita. |
 | **Nombre del archivo** | `m<módulo>-cu<número>-<slug>.png`, por ejemplo `m1-cu04-alta-categoria.png`. El número de CU es el de `docs/catalogo-casos-de-uso.md`. |
@@ -208,7 +208,7 @@ El sistema se construyó para usarse en el tambo: están `tablaMovil.js`, las me
 queries de `site.css` y `arbol.css`, y `docs/estilos-y-accesibilidad.md` lo
 documenta. **Si se construyó y no se muestra, en la defensa lo van a preguntar.**
 
-Siete capturas a 390 × 844, en un apartado corto al final del manual:
+Siete capturas a 375 × 812, en un apartado corto al final del manual:
 
 | Archivo | Qué muestra |
 |---|---|

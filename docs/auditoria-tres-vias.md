@@ -92,13 +92,17 @@ sería otra cosa.
 
 **El código tiene razón.** El RF está mal redactado, no el sistema.
 
-> **Propuesta:** reescribir RF3.10 como «…impedir el registro de un celo en un animal
-> que no alcanzó la edad mínima de detección de celo, y de un servicio en uno que no
-> alcanzó la edad mínima al servicio configurada, y el de cualquier evento con fecha
-> posterior a la baja del animal».
->
-> **Pregunta:** ¿se aprueba la redacción? Toca también CU20 y CU21, que referencian
-> RF3.10.
+**RESUELTO — aprobado el 26/08, con la condición de que el RF sea medible.** Queda:
+
+> **RF3.10 Validaciones reproductivas:** El sistema debe impedir el registro de un
+> celo en un animal que no alcanzó la **edad mínima de detección de celo, de 9
+> meses**; el de un servicio en un animal que no alcanzó la **edad mínima al
+> servicio configurada, de 13 meses por defecto**; y el de cualquier evento cuya
+> fecha sea posterior a la fecha de baja del animal.
+
+Los dos umbrales quedan escritos con su número, que es lo que lo vuelve verificable:
+se puede tomar un animal, mirar su edad y decir si el sistema cumple o no. Toca
+también CU20 y CU21, que referencian RF3.10.
 
 ### H2 — El sistema valida algo que ningún requerimiento pide
 
@@ -112,12 +116,14 @@ Es una validación **buena** —cierra el circuito entre las dos formas de medir
 incluye; RF2.3 dice que el control lechero «convive con el registro por lote, sin
 sumarse a él», que es la convivencia, no la verificación cruzada.
 
-> **Propuesta:** agregarla a RF2.2, que es la lista de validaciones de producción:
-> «…y que los controles individuales de un turno no superen el total registrado para
-> ese turno por lote».
->
-> **Pregunta:** ¿va en RF2.2 o prefieren un RF2.14 nuevo? Va en RF2.2, salvo que
-> quieran que se vea como funcionalidad aparte en la lista de requerimientos.
+**RESUELTO — aprobado el 26/08, va en RF2.2.** Queda:
+
+> **RF2.2 Validación de producción:** El sistema debe validar que los litros
+> ingresados sean valores positivos; que no superen el **máximo configurado por
+> control individual, de 100 litros por defecto**; que en el registro por lote no
+> superen ese máximo multiplicado por la cantidad de animales del lote; y que **la
+> suma de los controles individuales de un turno no supere el total registrado para
+> ese turno por lote**, ni un control nuevo haga que lo supere.
 
 ### H3 — Hay una pantalla que nadie pidió
 
@@ -132,12 +138,9 @@ En inglés, con el texto de ejemplo de Microsoft. No está en el menú, pero **l
 responde**: cualquiera que escriba `/Privacy` la ve. Ningún caso de uso la describe y
 ningún requerimiento la pide.
 
-> **Propuesta:** borrarla, junto con `Privacy.cshtml.cs`. Es un cambio de código, no
-> de documento, y por eso se pregunta antes.
->
-> **Pregunta:** ¿la borramos? Si por alguna razón la cátedra pide una política de
-> privacidad, hay que escribirla en serio y darle su RF; dejarla como está es la
-> única opción que no sirve.
+**RESUELTO — aprobado el 26/08. Borrada.** `Privacy.cshtml` y `Privacy.cshtml.cs`
+salieron del proyecto. No las referenciaba nadie: ni el menú, ni una redirección, ni
+un test.
 
 ### H4 — El parámetro «edad mínima al servicio» no alcanza a los machos
 
@@ -152,12 +155,18 @@ una vaquillona, pero un macho sigue pasando a Toro a los 15.
 El código lo hace a propósito y lo dice: *«la hembra y el macho entran en servicio a
 edades distintas… exigirle los 15 del toro rechazaba partos legítimos»*.
 
-> **Propuesta:** aclarar en RF0.3 que el parámetro es la edad mínima al servicio **de
-> la hembra**, y dejar los 15 meses del macho como constante del dominio, mencionada
-> en RF1.8.
+**RESUELTO — aprobado el 26/08.** Queda, con los números a la vista:
+
+> **RF0.3** — el parámetro pasa a llamarse «edad mínima al servicio **de la
+> hembra**».
 >
-> **Pregunta:** ¿se aprueba? Es la misma familia que H1: el sistema distingue dos
-> cosas que el documento nombra con una sola palabra.
+> **RF1.8 Clasificación automática:** El sistema debe clasificar automáticamente a
+> los animales según su sexo, su edad y su condición reproductiva. La hembra es
+> **ternera** hasta la edad de cambio de categoría configurada —**12 meses** por
+> defecto—, **vaquillona** desde esa edad y mientras no tenga partos registrados, y
+> **vaca** desde su primer parto. El macho es **ternero** hasta esa misma edad,
+> **toro** si supera los **15 meses** e integra el rodeo como reproductor, y
+> **novillo** en cualquier otro caso.
 
 ### H5 — El documento usa dos palabras para la misma categoría
 
@@ -165,11 +174,68 @@ edades distintas… exigirle los 15 del toro rechazaba partos legítimos»*.
 y la tabla `categorias` sólo conocen **Novilla**. Las dos son correctas en el tambo y
 significan lo mismo: hembra de más de 12 meses sin partos.
 
-> **Propuesta:** el documento usa **Novilla** —que es lo que la usuaria ve en
-> pantalla— y el glosario declara *vaquillona* como sinónimo de uso corriente. Los
-> comentarios del código y los datos de prueba pueden quedar como están.
+**RESUELTO al revés de lo propuesto — aprobado el 26/08: se usa «vaquillona».** El
+uso corriente en el tambo es *vaquillona*, y el documento habla el idioma de la
+usuaria.
+
+> **Y eso obliga a cambiar el sistema, no sólo el documento.** Hoy la pantalla
+> muestra **Novilla**: si el documento dice *vaquillona* y la captura dice *Novilla*,
+> volvemos a tener las tres patas diciendo cosas distintas, que es justo lo que esta
+> auditoría existe para evitar.
 >
-> **Pregunta:** ¿de acuerdo, o prefieren al revés?
+> Por suerte el cambio es de dos líneas: `Controladora.cs:971` (`vNombre =
+> "Novilla"`) y la fila de la tabla `categorias` en `bd/CreacionDb.sql:526`. Las
+> demás tablas apuntan a la categoría por `id_categoria`, así que renombrar la
+> etiqueta no toca un solo dato.
+>
+> **Queda pendiente de que lo confirmen**, porque es un cambio de código y de datos
+> que no estaba en la pregunta original. El glosario declara **novilla** como
+> sinónimo.
+
+### H6 — Las credenciales viajan con el código, y el propio anteproyecto dice que no deberían
+
+Apareció al escribir la sección 2.6, y es el hallazgo más serio de los seis.
+
+**El RNF de Seguridad dice**, con todas las letras: *«Las credenciales de acceso y la
+cadena de conexión a la base de datos **no deben residir en el código fuente**, y las
+consultas deben construirse de forma parametrizada»*.
+
+La segunda mitad **se cumple sin fisuras**: hay 78 parámetros `@nombre` distintos en
+la capa de persistencia y **un único punto** donde se cargan valores
+(`pConexion.cs:139`). No hay una sola consulta armada concatenando entrada del
+usuario. Ese RNF se puede defender.
+
+La primera mitad, no. `Tesis/appsettings.json` está **versionado en el repositorio**:
+
+```json
+"ConnectionStrings": { "Tambo": "server=localhost; ...; uid=root; pwd=; ..." },
+"Seguridad": { "Usuario": "sofia", "Contrasena": "tambo2026" }
+```
+
+En texto plano, sin hash, y **en el historial de Git desde el commit `41f50db`** —o
+sea que borrarlo del archivo hoy no lo saca del historial.
+
+**La arquitectura ya es la correcta, y eso achica el problema.** `Program.cs:62-66`
+lee la cadena de conexión y las credenciales de la configuración y se las pasa a
+`pConexion.Configurar` y a `Controladora.ConfigurarCredenciales`; el comentario que
+tiene encima dice, textual, *«no estan escritos en el codigo fuente»*. El código hace
+lo que el RNF pide.
+
+**El defecto es de una sola línea: el repositorio publica los valores.** No hay que
+refactorizar nada, sólo dejar de versionar los datos reales.
+
+> **Propuesta:** dejar en `appsettings.json` sólo los marcadores, y que los valores
+> reales vengan de fuera —el panel del hosting en producción, `dotnet user-secrets`
+> en desarrollo—. No hay que tocar una línea de lógica: el mecanismo de lectura ya
+> está y sigue funcionando igual.
+>
+> **Pregunta:** ¿lo hacemos? Es la única de las seis que cambia el comportamiento del
+> despliegue, y **la sección 2.6 no se puede terminar hasta decidirlo**: o el código
+> se acomoda al RNF, o hay que reescribir el RNF para que diga lo que el sistema
+> hace. Lo primero es mejor y es barato.
+>
+> Aparte, y aunque se arregle: la contraseña `tambo2026` estuvo en un repositorio.
+> **Conviene cambiarla antes de la entrega**, y no reutilizarla en el hosting.
 
 ---
 
