@@ -770,7 +770,21 @@ como hace el ejemplo.
 - **La ronda de correcciones.** Entregar la v1 no es terminar. Conviene tener
   margen de calendario para una vuelta completa de devolución.
 
-### 12.5 Fuera de alcance
+### 12.5 La preparación del repositorio de entrega
+
+Está decidida y documentada aparte, en **`docs/entrega-repositorio.md`**: el
+repositorio que se entrega es **nuevo**, con el código y el documento único, sin el
+andamiaje de `docs/`. Se prepara al final, no ahora, y `docs/verificar_entrega.py`
+comprueba que haya quedado como corresponde.
+
+Dos cosas de ese documento importan antes del final, y por eso se anotan también acá:
+
+- **Las credenciales de `Tesis/appsettings.json` tienen que estar resueltas antes** —
+  hallazgo H6 de la auditoría—, o viajan al repositorio limpio.
+- **El repositorio nuevo se crea con la rama `main`**, que es la que el anteproyecto
+  declara. Eso resuelve una de las tres partes del hallazgo H8 sin tocar el documento.
+
+### 12.6 Fuera de alcance
 
 La presentación de la defensa. No es parte del documento y no está en ninguna fase,
 pero existe y sale de este mismo material.
