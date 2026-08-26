@@ -24,9 +24,10 @@ sys.path.insert(0, DIAGRAMAS)
 import modelo_datos  # noqa: E402
 import diccionario_clases  # noqa: E402
 from render_casos_de_uso import cargar, lineas  # noqa: E402
+import render_markdown  # noqa: E402
 
 ENTRADA = os.path.join(RAIZ, 'Proyecto_v5.docx')
-SALIDA = os.path.join(RAIZ, 'Proyecto_v6.docx')
+SALIDA = os.path.join(RAIZ, 'Proyecto_v7.docx')
 
 ANCHO_MAXIMO_CM = 16.0
 
@@ -502,6 +503,40 @@ def seccion_analisis(d):
     return nuevo
 
 
+
+# --------------------------------------------------------- secciones 2.3 a 2.9
+
+# Cada una se escribe como markdown en docs/ y se vuelca acá. El titulo de la seccion
+# ya esta en el documento: lo que se reemplaza es el "Pendiente." que hay debajo.
+# El manual va con titulos_como_parrafo: tiene numeracion propia y su propio indice.
+SECCIONES = [
+    ('2.3', '2.4', 'seccion-2-3-pruebas.md', False),
+    ('2.4', '2.5', 'seccion-2-4-manual.md', True),
+    ('2.5', '2.6', 'seccion-2-5-deployment.md', False),
+    ('2.6', '2.7', 'seccion-2-6-seguridad.md', False),
+    ('2.7', '2.8', 'seccion-2-7-contingencia.md', False),
+    ('2.8', '2.9', 'seccion-2-8-satisfaccion.md', False),
+    ('2.9', 'Glosario', 'seccion-2-9-conclusiones.md', False),
+]
+
+
+def secciones_finales(d):
+    """Vuelca las secciones que existan. Las que no, dejan su 'Pendiente.'."""
+    faltantes = []
+    for titulo, hasta, archivo, plano in SECCIONES:
+        ruta = os.path.join(AQUI, archivo)
+        if not os.path.exists(ruta):
+            continue
+        try:
+            d.vaciar(titulo, hasta)
+        except LookupError:
+            print('  aviso: no se encontro la seccion', titulo)
+            continue
+        faltantes.extend(render_markdown.volcar(d, ruta, titulos_como_parrafo=plano))
+        print('  volcada %s desde %s' % (titulo, archivo))
+    return faltantes
+
+
 # --------------------------------------------------------------------------- principal
 
 def main():
@@ -516,9 +551,12 @@ def main():
     seccion_modelo_datos(d)
     seccion_secuencia(d, casos)
     seccion_diccionario(d)
+    faltantes = secciones_finales(d)
 
     d.guardar(SALIDA)
     print('guardado', SALIDA)
+    if faltantes:
+        print('faltan %d capturas; el documento las marca en su lugar' % len(faltantes))
 
 
 if __name__ == '__main__':
