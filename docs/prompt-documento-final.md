@@ -69,7 +69,7 @@ FASE 4   unificar                      Tesis.docx                       Claude C
 
 ## 2. La referencia manda
 
-El ejemplo del tutor tiene 229 páginas y esta estructura:
+El ejemplo del tutor tiene 231 páginas y esta estructura, según su índice:
 
 | | Sección | Páginas |
 |---|---|---|
@@ -102,16 +102,14 @@ El ejemplo del tutor tiene 229 páginas y esta estructura:
 | | Bibliografía utilizada | 228 |
 | | Anexo | 229 |
 
-**El criterio de profundidad lo fija el ejemplo, no nuestro apetito.** Antes de
-escribir cualquiera de las secciones 2.3 a 2.9 hay que **leer la sección
-equivalente del ejemplo** y copiar su forma: qué tablas usa, cuántas capturas
-pone, si numera los casos de prueba, si el manual va por pantalla o por tarea.
-Si el ejemplo resuelve el Deployment en una página, nosotros también.
+**El criterio de profundidad lo fija el ejemplo, no nuestro apetito.** Si el
+ejemplo resuelve el Deployment en una página, nosotros también. Las páginas de
+arriba son el presupuesto de cada sección, y el detalle de cómo está armada cada
+una está leído y anotado abajo.
 
-Esto vale sobre todo para **2.3 Pruebas**: se hace del mismo tipo que el
-ejemplo. Si el ejemplo documenta pruebas manuales de caja negra y caja blanca,
-nosotros documentamos pruebas manuales de caja negra y caja blanca, y si algún
-documento nuestro promete pruebas automatizadas, **se corrige el documento**.
+Esto vale sobre todo para **2.3 Pruebas**: el ejemplo documenta pruebas
+**manuales**, sin una sola automatizada. Nosotros igual, y si algún documento
+nuestro promete pruebas automatizadas, **se corrige el documento**.
 
 ### Qué hay realmente en cada sección del ejemplo
 
@@ -336,6 +334,14 @@ pasada—. Las correcciones de esta fase se anotan igual, en un
 documento vivo, y la alternativa —dejarlo diciendo algo que el sistema no hace— es
 peor. Lo que no se puede hacer es cambiarlo en silencio: por eso el registro.
 
+**Y hay dónde contarlo: el ejemplo ya resolvió cómo.** En sus Conclusiones, dentro
+del riesgo de errores de especificación, dice qué requerimientos se quitaron, **con
+fecha y con la reunión donde se acordó con el cliente**. Lo que encuentre esta
+auditoría se cuenta ahí, en el punto 4 de 2.9, con ese mismo formato. Una
+divergencia explicada así no resta: muestra que el proyecto se gestionó.
+
+---
+
 ## 7. Fase 3 — Cerrar 2.3 a 2.9
 
 Primero el refactor del punto 3. Después, para **cada** sección, siempre el mismo
@@ -549,7 +555,7 @@ al `.md` con él.
 
 ## 10. Lo que se puede adelantar mientras se programa
 
-Estas tres no dependen del código y tienen dependencias externas lentas. Conviene
+Estas no dependen del código y tienen dependencias externas lentas. Conviene
 destrabarlas durante la Fase 1, no esperar a la Fase 3:
 
 1. **~~Subir `EjemploTesis.pdf` al repo.~~ Hecho** — está en la raíz, y las
@@ -603,8 +609,8 @@ El documento está terminado cuando:
       escrita a mano en el Word.
 - [ ] `Tesis.docx` tiene un campo TOC real, se actualizó una vez en Word y el
       índice muestra números de página; el anteproyecto está numerado `1.x`.
-- [ ] Las capturas del manual salieron del script, no de recortes a mano, y se
-      pueden volver a sacar corriéndolo.
+- [ ] Las capturas —las del manual y las de la evidencia de Pruebas— salieron del
+      script, no de recortes a mano, y se pueden volver a sacar corriéndolo.
 - [ ] Está resuelto qué pasa con `1.11 Estimación del esfuerzo`, y el Anexo tiene
       las fotos de los cuadernos y planillas que el sistema reemplazó.
 - [ ] El documento se leyó entero de corrido una vez, buscando contradicciones
@@ -616,7 +622,8 @@ El documento está terminado cuando:
 ## 12. Lo que queda afuera de este prompt
 
 Terminadas las cuatro fases, con el código andando, **todavía queda esto**. No está
-en las fases porque no es escribir secciones: es lo que hace que las 230 páginas se
+en las fases porque no es escribir secciones: es lo que hace que las 230 y pico de
+páginas se
 lean como un documento y no como dos pegados.
 
 ### 12.1 El frente del documento habla en futuro
@@ -757,7 +764,8 @@ como hace el ejemplo.
 - **Actualizar el índice en Word.** Ver la Fase 4: un clic, pero sin él el índice
   sale en blanco.
 - **Exportar el PDF final.**
-- **`1.11 Estimación del esfuerzo` y el Anexo.** Siguen sin decidirse con el tutor.
+- **`1.11 Estimación del esfuerzo`.** Sigue sin decidirse con el tutor. El Anexo ya
+  está resuelto: son las fotos de los cuadernos y planillas del tambo.
 - **La ronda de correcciones.** Entregar la v1 no es terminar. Conviene tener
   margen de calendario para una vuelta completa de devolución.
 
