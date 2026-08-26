@@ -56,6 +56,12 @@ def escribir(p, titulo, cuerpo=None, salto=True):
     for otro in p.runs[1:]:
         otro._element.getparent().remove(otro._element)
 
+    # Los runs que viven adentro de un w:hyperlink no aparecen en p.runs, asi que la
+    # linea de arriba no los toca y el texto viejo sobrevive al lado del nuevo. Pasaba
+    # en las entradas de la bibliografia que tenian el titulo enlazado.
+    for enlace in p._element.findall(qn('w:hyperlink')):
+        p._element.remove(enlace)
+
     elem = run._element
     for hijo in list(elem):
         if hijo.tag != qn('w:rPr'):
@@ -738,6 +744,188 @@ agregar_a(
     'categoría del animal en la edad de cambio, el alcance de la verificación de '
     'consanguinidad y la estimación de producción de una lactancia abierta y de una '
     'cerrada—, verificados desde la pantalla que los muestra.')
+
+# ===========================================================================================
+# v7 - el frente del documento, el glosario y la bibliografia (punto 12 del prompt)
+# ===========================================================================================
+
+# ------------------------------------------------------------ el abstract habla en pasado
+#
+# El abstract y la introduccion se escribieron antes de programar y prometian lo que el
+# documento, doscientas paginas despues, ya muestra construido. El ejemplo de la catedra
+# abre al reves: cuenta lo que se hizo. Un documento que en la pagina 3 promete lo que en
+# la 150 exhibe terminado esta mal aunque las dos partes sean correctas por separado.
+
+escribir(
+    buscar('El presente proyecto aborda el análisis'),
+    'El presente trabajo abarca el análisis, el diseño, el desarrollo y la implementación '
+    'de un sistema de gestión integral para un establecimiento lechero ubicado en Colonia '
+    'Cosmopolita, Uruguay. El proyecto surgió de la necesidad de digitalizar y centralizar '
+    'la información vinculada a los procesos productivos, reproductivos y sanitarios del '
+    'tambo.')
+
+escribir(
+    buscar('Actualmente, la gestión del establecimiento'),
+    'Antes del sistema, la gestión del establecimiento se realizaba mediante registros '
+    'manuales en cuadernos y pizarrones, lo que generaba dispersión de la información, '
+    'dificultades para acceder a los datos históricos y limitaciones para analizar los '
+    'indicadores del rodeo. Esa situación impactaba directamente en la eficiencia '
+    'operativa y en la toma de decisiones.')
+
+escribir(
+    buscar('En este contexto, se propone el desarrollo'),
+    'El sistema que se implementó es una aplicación web que registra y organiza la '
+    'información del rodeo: el seguimiento individual de cada animal y su genealogía, el '
+    'control de la producción de leche por lote y por animal, la gestión reproductiva '
+    'completa —celo, servicio, tacto y parto—, la sanidad con sus planes preventivos y la '
+    'administración de insumos con su stock. Genera además reportes en PDF y en Excel, y '
+    'envía alertas y un resumen diario de tareas pendientes a través de un bot de Telegram.')
+
+escribir(
+    buscar('El objetivo principal del proyecto es proporcionar'),
+    'Una particularidad del sistema es que las reglas del tambo viven dentro de él y no en '
+    'la memoria de quien carga los datos: la categoría del animal, la fecha probable de '
+    'parto, la fecha recomendada de secado y el período en que la leche no se puede vender '
+    'los calcula el sistema, y un dato cargado una sola vez propaga sus consecuencias a los '
+    'demás módulos. Para su construcción se adoptó una arquitectura en tres capas '
+    '—presentación, dominio y persistencia—, desarrollada en C# sobre .NET con MySQL como '
+    'gestor de base de datos.')
+
+# ----------------------------------------------------------------------- palabras clave
+#
+# El ejemplo de la catedra las tiene despues del abstract; el anteproyecto no las traia.
+
+_ultimo_abstract = buscar('Una particularidad del sistema es que las reglas')
+
+# El cuerpo se clona de un parrafo normal -el ultimo del abstract- y el titulo del
+# encabezado ABSTRACT, para que cada uno herede el formato que le corresponde.
+_cuerpo_pc = clonar_despues(
+    _ultimo_abstract,
+    'Tambo · Ganadería lechera · Gestión del rodeo · Producción de leche · Control '
+    'lechero · Gestión reproductiva · Sanidad animal · Trazabilidad · Aplicación web · '
+    'C# · .NET · MySQL · Telegram')
+_titulo_pc = clonar_antes(buscar('ABSTRACT'), _cuerpo_pc, 'PALABRAS CLAVE')
+
+
+# ------------------------------------------------------------ la introduccion, en pasado
+
+escribir(
+    buscar('El presente proyecto surge como respuesta'),
+    'Este proyecto se realizó como respuesta a esa problemática, enfocado en la '
+    'digitalización y centralización de la operativa de un tambo de Colonia Cosmopolita. '
+    'Desde una perspectiva académica, el trabajo permitió integrar y aplicar los '
+    'conocimientos técnicos adquiridos a lo largo de la carrera de Analista Programador, '
+    'recorriendo el ciclo de vida completo del desarrollo de software: el relevamiento con '
+    'la usuaria, el análisis, el diseño, la construcción, las pruebas y la puesta en '
+    'funcionamiento.')
+
+escribir(
+    buscar('El alcance de la solución propuesta se centra'),
+    'El alcance del sistema se centró estrictamente en la gestión interna del '
+    'establecimiento. Los datos aislados de los cuadernos pasaron a ser información '
+    'estructurada, y la administración cuenta hoy con una herramienta que resguarda la '
+    'integridad de los registros, calcula los indicadores del rodeo y avisa de las tareas '
+    'pendientes sin que haya que ir a buscarlas.')
+
+
+# ----------------------------------------------------------------------------- glosario
+#
+# Las catorce entradas explicaban framework, Bootstrap y UML, y ninguna palabra del tambo.
+# El tribunal sabe que es un framework; lo que no tiene por que saber es que es un tacto ni
+# por que la leche de una vaca tratada no se puede vender. Los numeros salen del codigo.
+
+GLOSARIO = [
+    ('Ascendencia', 'cadena de progenitores de un animal. El sistema la arma a partir de la madre y el padre registrados en cada alta y en cada parto, y la presenta como un árbol navegable.'),
+    ('Bootstrap', 'framework CSS utilizado para facilitar el diseño visual y adaptable de la interfaz del sistema.'),
+    ('Caravana', 'identificación individual del animal, única dentro del sistema. Es la forma en que la encargada lo nombra en el trabajo diario.'),
+    ('Categoría', 'clasificación del animal según su sexo, su edad y su condición reproductiva: ternera, vaquillona y vaca en las hembras; ternero, novillo y toro en los machos. Es un valor derivado que el sistema calcula y propone, no un dato que se carga.'),
+    ('Celo', 'período en que la hembra acepta el servicio. Se detecta por observación directa del comportamiento del animal. El sistema admite registrarlo a partir de los nueve meses de edad.'),
+    ('Consanguinidad', 'parentesco entre la hembra y el reproductor con el que se la pretende servir. El sistema compara la ascendencia de ambos hasta el nivel de los abuelos y advierte si encuentra un antepasado común, sin impedir el registro del servicio.'),
+    ('Control lechero', 'medición de la producción de leche animal por animal, que en el establecimiento se realiza una vez por mes. Es lo que permite conocer el rendimiento individual de cada vaca.'),
+    ('CSS3', 'lenguaje utilizado para definir estilos y diseño visual de páginas web.'),
+    ('Descarte de leche', 'período durante el cual la leche de un animal tratado no puede destinarse a la venta. El sistema lo calcula sumando a la fecha de fin del tratamiento el período de carencia del producto aplicado, e impide sumar al ordeñe al animal mientras esté vigente.'),
+    ('Descorne', 'procedimiento que se realiza sobre la cría para evitar el desarrollo de los cuernos. Es de aplicación única en la vida del animal.'),
+    ('Framework', 'estructura o conjunto de herramientas y componentes reutilizables que facilitan el desarrollo de aplicaciones de software.'),
+    ('Gestación', 'período que transcurre entre el servicio y el parto. El sistema utiliza doscientos ochenta y tres días para calcular la fecha probable de parto.'),
+    ('Git', 'sistema de control de versiones utilizado para administrar los cambios realizados sobre el proyecto.'),
+    ('GitHub', 'plataforma utilizada para almacenar y sincronizar el repositorio remoto del sistema.'),
+]
+GLOSARIO_EXTRA = [
+    ('HTML5', 'lenguaje de marcado utilizado para la estructura y contenido de la aplicación web.'),
+    ('Inseminación artificial', 'servicio realizado con semen congelado de un toro de catálogo, en lugar de con un toro presente en el establecimiento.'),
+    ('Iteración', 'período de desarrollo donde se implementa un conjunto específico de funcionalidades del sistema.'),
+    ('JavaScript', 'lenguaje de programación utilizado para desarrollar funcionalidades dinámicas e interactivas en la aplicación web.'),
+    ('Lactancia', 'período durante el cual la vaca produce leche, entre un parto y el secado siguiente. Las lactancias de cada animal se numeran de forma correlativa.'),
+    ('Monta natural', 'servicio realizado por un toro que integra el rodeo del establecimiento.'),
+    ('MySQL', 'sistema de gestión de bases de datos utilizado para almacenar y administrar la información del sistema.'),
+    ('Novilla', 'denominación técnica de la vaquillona. El sistema y este documento utilizan vaquillona, que es el término de uso corriente en el establecimiento.'),
+    ('Ordeñe por lote', 'medición de los litros totales producidos por el grupo de animales en ordeñe durante un turno. Es el registro que se realiza todos los días.'),
+    ('Pajuela', 'dosis de semen congelado proveniente de un toro identificado, utilizada en la inseminación artificial. El sistema la administra como un insumo y descuenta su stock al registrar el servicio.'),
+    ('Período de carencia', 'cantidad de días que, una vez finalizado el tratamiento, el producto veterinario permanece presente en el animal. Es un dato propio de cada insumo.'),
+    ('Período de espera voluntaria', 'días posteriores al parto durante los cuales no se sirve a la vaca aunque manifieste celo, para permitir su recuperación. El sistema utiliza cuarenta y cinco días.'),
+    ('Plan sanitario', 'regla que define qué procedimiento corresponde a qué categoría de animales, desde qué edad y con qué periodicidad. A partir de los planes configurados y de las aplicaciones ya registradas, el sistema arma el calendario de procedimientos pendientes.'),
+    ('Proyección a 305 días', 'estimación de lo que una vaca produciría si sostuviera su ritmo actual durante una lactancia estándar de trescientos cinco días. Es un cálculo lineal que sirve para comparar animales que atraviesan distintos momentos de su lactancia, no para pronosticar producción.'),
+    ('Rodeo', 'conjunto de animales que integran el establecimiento.'),
+    ('SCM', '(Software Configuration Management) gestión encargada de controlar y administrar los componentes del proyecto.'),
+    ('Secado', 'cierre deliberado de la lactancia con anterioridad al parto siguiente, para que la vaca descanse. El sistema recomienda realizarlo sesenta días antes de la fecha probable de parto.'),
+    ('Servicio', 'intento de preñar a una hembra, ya sea por monta natural o por inseminación artificial. El sistema admite registrarlo a partir de los trece meses de edad.'),
+    ('SQA', '(Software Quality Assurance) conjunto de actividades destinadas a garantizar la calidad del software desarrollado.'),
+    ('Tacto', 'palpación mediante la cual se confirma o se descarta la preñez de una hembra servida. El sistema la incorpora a la lista de tactos pendientes a los treinta y cinco días del servicio.'),
+    ('Testing', 'proceso de pruebas realizado para verificar el correcto funcionamiento del sistema.'),
+    ('UML', 'lenguaje de modelado utilizado para representar gráficamente distintos componentes y procesos del sistema.'),
+    ('Vaquillona', 'hembra de más de doce meses que todavía no ha tenido partos. Al registrarse su primer parto pasa a ser vaca.'),
+    ('Versionado', 'proceso mediante el cual se controlan las diferentes versiones del sistema durante el desarrollo.'),
+]
+
+_viejos_glosario = ['Framework:', 'Bootstrap:', 'CSS3:', 'Git:', 'GitHub:', 'HTML5:',
+                    'Iteración:', 'JavaScript:', 'SCM:', 'SQA:', 'MySQL:', 'Testing:',
+                    'UML:', 'Versionado:']
+_ultimo = None
+for _prefijo, (_termino, _definicion) in zip(_viejos_glosario, GLOSARIO):
+    _ultimo = buscar(_prefijo)
+    escribir(_ultimo, _termino + ': ' + _definicion, salto=False)
+for _termino, _definicion in GLOSARIO_EXTRA:
+    _ultimo = clonar_despues(_ultimo, _termino + ': ' + _definicion, salto=False)
+
+
+# ------------------------------------------------------------------------- bibliografia
+#
+# Eran seis sitios de documentacion y los materiales de Moodle, sin un solo libro y sin
+# una sola URL. El anteproyecto compara cuatro modelos de ciclo de vida y define planes de
+# SQA y de SCM: eso no sale de la documentacion de un framework.
+
+_enlaces = [
+    ('Microsoft .NET Documentation',
+     'Documentación oficial de .NET utilizada como referencia para arquitectura, desarrollo backend, acceso a datos y configuración del sistema. Disponible en internet: https://learn.microsoft.com/dotnet/. Último acceso: agosto de 2026.'),
+    ('MySQL Documentation',
+     'Documentación oficial de MySQL utilizada como referencia para modelado, administración y consultas de base de datos. Disponible en internet: https://dev.mysql.com/doc/. Último acceso: agosto de 2026.'),
+    ('Bootstrap Documentation',
+     'Documentación oficial utilizada para el diseño responsive y la construcción de interfaces web adaptables. Disponible en internet: https://getbootstrap.com/docs/. Último acceso: agosto de 2026.'),
+    ('Telegram Bot API Documentation',
+     'Documentación oficial utilizada para la integración del sistema de notificaciones mediante bots de Telegram. Disponible en internet: https://core.telegram.org/bots/api. Último acceso: agosto de 2026.'),
+    ('Visual Studio',
+     'Sitio oficial utilizado como referencia para herramientas y entorno de desarrollo compatible con .NET y MySQL. Disponible en internet: https://visualstudio.microsoft.com/. Último acceso: agosto de 2026.'),
+    ('SmarterASP.NET',
+     'Sitio oficial del servicio de hosting seleccionado para el despliegue del sistema. Disponible en internet: https://www.smarterasp.net/. Último acceso: agosto de 2026.'),
+]
+
+# Los parrafos se toman ANTES de escribir nada. Buscar por prefijo despues de clonar
+# devuelve el clon y no el original, y la bibliografia se pisa a si misma.
+_parrafos_enlaces = [buscar(_titulo_enlace) for _titulo_enlace, _ in _enlaces]
+_primera = _parrafos_enlaces[0]
+
+for _parrafo, (_titulo_enlace, _cuerpo_enlace) in zip(_parrafos_enlaces, _enlaces):
+    escribir(_parrafo, _titulo_enlace, _cuerpo_enlace)
+
+# Los libros van antes de la documentacion en linea, en el orden en que se listan.
+_libros = [
+    'Pressman, Roger S. Ingeniería del software: un enfoque práctico. 7ma. ed. México: McGraw-Hill, 2010.',
+    'Sommerville, Ian. Ingeniería de software. 9na. ed. México: Pearson Educación, 2011.',
+    'Elmasri, Ramez; Navathe, Shamkant B. Fundamentos de sistemas de bases de datos. 5ta. ed. Madrid: Pearson Addison-Wesley, 2007.',
+    'Booch, Grady; Rumbaugh, James; Jacobson, Ivar. El lenguaje unificado de modelado. 2da. ed. Madrid: Pearson Addison-Wesley, 2006.',
+]
+for _libro in reversed(_libros):
+    clonar_antes(_primera, _primera, _libro)
 
 
 doc.save(RUTA_SALIDA)

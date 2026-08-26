@@ -117,6 +117,71 @@ cerrada— se siguen verificando, pero **desde la pantalla**, como pruebas funci
 Quedan mencionados en el objetivo de las pruebas de caja negra y documentados en la
 sección 2.3.
 
+## 7. El frente del documento habla en pasado
+
+El abstract y la introducción se escribieron **antes** de programar, y prometían lo que
+el documento, doscientas páginas después, ya muestra construido. El ejemplo de la
+cátedra abre al revés: cuenta lo que se hizo.
+
+| Antes | Ahora |
+|---|---|
+| «El presente proyecto **aborda** el análisis, diseño y **planificación**…» | «El presente trabajo **abarca** el análisis, el diseño, el desarrollo y la implementación…» |
+| «**Actualmente**, la gestión se realiza mediante registros manuales» | «**Antes del sistema**, la gestión se realizaba mediante registros manuales» |
+| «**se propone el desarrollo** de una solución que permita…» | «**El sistema que se implementó** es una aplicación web que registra y organiza…» |
+| «El objetivo principal **es proporcionar** una herramienta que optimice…» | Pasa a contar la particularidad del sistema: **las reglas del tambo viven dentro de él** y no en la memoria de quien carga los datos |
+| «El presente proyecto **surge** como respuesta…» | «Este proyecto **se realizó** como respuesta…» |
+| «El alcance de la solución **propuesta** se centra…» | «El alcance del sistema **se centró**… Los datos aislados **pasaron a ser** información estructurada» |
+
+Se agregó **PALABRAS CLAVE** después del abstract, que el ejemplo tiene y el
+anteproyecto no traía.
+
+## 8. El glosario pasa de 14 entradas a 38
+
+Las catorce explicaban *framework*, *Bootstrap*, *CSS3*, *Git*, *UML*… y **ninguna
+palabra del tambo**. El tribunal sabe qué es un framework; lo que no tiene por qué saber
+es qué es un tacto, ni por qué la leche de una vaca tratada no se puede vender.
+
+Se agregaron **veinticuatro términos del dominio**, en orden alfabético junto con los
+técnicos que ya estaban: ascendencia, caravana, categoría, celo, consanguinidad, control
+lechero, descarte de leche, descorne, gestación, inseminación artificial, lactancia,
+monta natural, novilla, ordeñe por lote, pajuela, período de carencia, período de espera
+voluntaria, plan sanitario, proyección a 305 días, rodeo, secado, servicio, tacto y
+vaquillona.
+
+**Los números salen del código, no de la memoria:** los 283 días de gestación, los 60
+del secado, los 35 del tacto, los 45 de espera voluntaria, los 9 meses de edad mínima al
+celo, los 13 al servicio y los 305 de la lactancia estándar son las constantes de
+`Controladora.cs`.
+
+Dos entradas resuelven la decisión de vocabulario del punto 5: **vaquillona** es el
+término que usa el documento y **novilla** queda declarada como su denominación técnica.
+
+## 9. La bibliografía suma cuatro libros y las URL que faltaban
+
+Eran seis sitios de documentación y los materiales de Moodle, **sin un solo libro y sin
+una sola URL**. El anteproyecto compara cuatro modelos de ciclo de vida y define planes
+de SQA y de SCM: eso no sale de la documentación de un framework.
+
+| Obra | Para qué sección |
+|---|---|
+| **Pressman**, *Ingeniería del software: un enfoque práctico*, 7ma. ed., 2010 | Ciclos de vida, SQA, SCM, plan de testing |
+| **Sommerville**, *Ingeniería de software*, 9na. ed., 2011 | Requerimientos y modelos de proceso |
+| **Elmasri y Navathe**, *Fundamentos de sistemas de bases de datos*, 5ta. ed., 2007 | Normalización, MER, integridad |
+| **Booch, Rumbaugh y Jacobson**, *El lenguaje unificado de modelado*, 2da. ed., 2006 | Casos de uso, secuencia, clases |
+
+Las dos primeras **las cita el propio ejemplo del tutor**, así que son exactamente las
+que espera ver. A las seis entradas en línea se les agregó la URL y se les actualizó la
+fecha de último acceso.
+
+> **Antes de entregar hay que verificar edición y año contra el ejemplar que usen.** Las
+> cuatro obras tienen muchas ediciones, y citar una que no se tuvo en la mano se nota.
+> Y no citar lo que no se leyó: es preferible una bibliografía corta y honesta.
+
+**Falta todavía la bibliografía del dominio.** Los números que son estándar de la
+actividad —305 días, 60 de secado, 283 de gestación, las edades mínimas— hoy se apoyan
+sólo en el relevamiento con la usuaria. Las candidatas son INALE, INIA y las facultades
+de Veterinaria y Agronomía de la UdelaR, y quedan pendientes de que alguien las lea.
+
 ---
 
 ## Lo que queda pendiente
