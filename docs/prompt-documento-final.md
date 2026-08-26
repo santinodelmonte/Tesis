@@ -403,8 +403,9 @@ haga login, fije el tamaño de ventana, visite cada pantalla con el rodeo de
 es repetible. Corre en la máquina de ustedes: el contenedor remoto no tiene `dotnet`
 ni MySQL.
 
-**El guion está en `docs/guion-capturas.md`**, con la pantalla, el animal del rodeo y
-para qué sirve cada una. Va sin flechas ni números encima: la imagen limpia y **el
+**El guion está en `docs/guion-capturas.md`** —77 capturas con su pantalla y su animal
+del rodeo—, y `docs/verificar_capturas.py` comprueba que coincida con lo que el manual
+pide. Va sin flechas ni números encima: la imagen limpia y **el
 pie de figura cargando la explicación**.
 
 Organizado por módulo, en el orden en que la encargada usa el sistema, no en el
@@ -579,8 +580,8 @@ sección más larga:
    Code **en la máquina de ustedes**, que sí puede levantar la app y sacarlas con
    Playwright de forma consistente —mismo tamaño de ventana, mismos datos de
    `DatosPrueba.sql`, mismo recorte—. El segundo camino es bastante mejor: son
-   **más de ciento cincuenta** contando las del manual y las 69 que lleva la sección
-   de Pruebas, y a mano salen desparejas.
+   **145 o más** contando las 77 del manual y las que lleve la sección de Pruebas —el
+   ejemplo del tutor tiene 69—, y a mano salen desparejas.
 
 ---
 

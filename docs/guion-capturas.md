@@ -173,11 +173,17 @@ que explicarlo con imagen, porque es lo contrario de lo que se espera.
 
 ### Módulo 7 — Reportes y Notificaciones
 
-**Se define cuando el módulo esté construido.** Van a hacer falta al menos: los
-cuatro reportes (productivo, sanitario, reproductivo, genético), la pantalla de
-configuración del bot, y —la más valiosa— **una foto del celular con el resumen
-diario recibido en Telegram**. Esa última no la puede sacar Playwright: es una
-captura del teléfono.
+Las tres que el manual ya tiene escritas con su pie, y que se sacan cuando el módulo
+esté terminado:
+
+| Archivo | Pantalla | Estado a fotografiar |
+|---|---|---|
+| `m7-reportes` | `ReporteProductivo` | Un reporte en pantalla, con sus botones de descarga en PDF y Excel |
+| `m7-configuracion-bot` | pantalla del canal de notificaciones | El destinatario cargado y el mensaje de prueba |
+| `m7-resumen-telegram` | **el celular** | El resumen diario recibido. **No la puede sacar Playwright**: es una foto del teléfono |
+
+Los cuatro reportes comparten pantalla y controles, así que alcanza con fotografiar
+uno y decir en el texto que los otros tres son iguales.
 
 ---
 
@@ -253,10 +259,15 @@ decidido qué recorridos se documentan.
 |---|---|
 | 2.4 Manual — escritorio, módulos 0 a 6 | **67** |
 | 2.4 Manual — móvil | **7** |
-| 2.4 Manual — Módulo 7 | a definir, unas **7** |
-| **Subtotal del manual** | **~81** |
+| 2.4 Manual — Módulo 7 | **3** |
+| **Subtotal del manual** | **77** |
 | 2.3 Pruebas — evidencia de resultados | a definir (el ejemplo lleva **69**) |
-| **Total estimado** | **~150** |
+| **Total estimado** | **~145** |
+
+Las 77 del manual **ya no son una estimación**: son las que
+`docs/seccion-2-4-manual.md` pide, cada una con su pie de figura escrito.
+`docs/verificar_capturas.py` comprueba que las dos listas coincidan y avisa si se
+desincronizan.
 
 De ésas, **siete** son las advertencias y errores del punto 2, y **seis** son pares
 antes/después que muestran el efecto de una acción: la configuración sobre las
@@ -266,7 +277,7 @@ sobre el linaje de la cría. Ese tipo de par es lo que separa un manual de una
 lista de pantallas.
 
 El ejemplo tiene 123 imágenes en las 47 páginas de su manual, algo más de dos y
-media por página; las 81 nuestras en la misma extensión dan menos de dos. Es la
+media por página; las 77 nuestras en la misma extensión dan menos de dos. Es la
 proporción que corresponde: cada pantalla con su imagen y el texto que explica qué
 hace, qué campos tiene y qué calcula sola.
 
