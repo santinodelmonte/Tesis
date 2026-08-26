@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Produce Anteproyecto_v6.docx aplicando sobre el v5 los cambios de la sincronizacion.
+"""Produce Anteproyecto_v7.docx aplicando sobre el v5 dos tandas de cambios.
 
 El v6 dice lo que el sistema hace: cada requerimiento que este script reescribe o
 agrega esta verificado contra Tesis/Dominio, Tesis/Persistencia, Tesis/Pages y
-bd/CreacionDb.sql. El resumen de lo que cambio esta en docs/cambios-anteproyecto-v6.md.
+bd/CreacionDb.sql. El resumen de la primera tanda esta en docs/cambios-anteproyecto-v6.md.
+
+La segunda tanda -el bloque v7 del final- corrige lo que encontro la revision de
+ingenieria de software de docs/revision-tutor.md: objetivos que prometian porcentajes
+sin linea base, requerimientos que no se podian verificar y actores del sistema
+mezclados con interesados del proyecto. El resumen esta en
+docs/cambios-anteproyecto-v7.md.
 
 Trabaja sobre el .docx original conservando estilos, numeraciones y formato: los
 requerimientos nuevos se crean clonando un requerimiento existente del mismo modulo,
@@ -17,7 +23,7 @@ import os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 RUTA_ENTRADA = os.path.join(RAIZ, 'Anteproyecto_v5.docx')
-RUTA_SALIDA = os.path.join(RAIZ, 'Anteproyecto_v6.docx')
+RUTA_SALIDA = os.path.join(RAIZ, 'Anteproyecto_v7.docx')
 
 doc = Document(RUTA_ENTRADA)
 BULLET = '●​ '
@@ -543,6 +549,166 @@ for encabezado, introduccion, items in iteraciones:
     ultimo = viejos[min(len(items), len(viejos)) - 1]
     for texto_item in items[len(viejos):]:
         ultimo = clonar_despues(ultimo, texto_item)
+
+
+# ===========================================================================================
+# v7 - correcciones de la revision de ingenieria de software (docs/revision-tutor.md)
+# ===========================================================================================
+
+# --------------------------------------------------------------- actores contra interesados
+#
+# La lista mezclaba a quien opera el sistema con quien recibe su informacion, y metia
+# adentro a los propios desarrolladores, que no son usuarios: eso chocaba con RF0.1, que
+# dice que hay un unico par de credenciales y ninguna administracion de usuarios, y hacia
+# parecer un error que los diagramas de casos de uso tengan un solo actor. El error estaba
+# en la lista.
+
+escribir(
+    buscar('Con las necesidades ya definidas'),
+    'Con las necesidades ya definidas, el siguiente paso fue identificar quiénes harán '
+    'uso del sistema y cómo interactúan con la información. Conviene distinguir dos '
+    'grupos: el actor del sistema, que es quien opera la aplicación, y los demás '
+    'interesados, que reciben o aportan información pero no ingresan a ella.')
+
+escribir(
+    buscar('Sofía (Encargada del Sector)'),
+    'Sofía (Encargada del Sector) — único actor del sistema. Tiene permisos totales para '
+    'la carga de datos, la consulta de alertas y la generación de reportes, y es quien '
+    'opera el sistema en el día a día. Es la única persona que ingresa a la aplicación, '
+    'de acuerdo con RF0.1.')
+
+escribir(
+    buscar('Tamberos (Actores Operativos)'),
+    'Tamberos — interesados operativos. Ejecutan las tareas diarias del establecimiento '
+    '(ordeñe, vacunación, partos) y registran los datos primarios en soportes físicos '
+    '—cuadernos y pizarrones— para que Sofía los cargue después. No operan el sistema.')
+
+escribir(
+    buscar('Juan Vila (Dueño)'),
+    'Juan Vila (Dueño) — interesado. Recibe los reportes de producción y sanidad para la '
+    'toma de decisiones económicas del establecimiento. No opera el sistema.')
+
+escribir(
+    buscar('Médico Veterinario'),
+    'Médico Veterinario — interesado externo. Usa la información sanitaria y genética que '
+    'el sistema produce para ajustar los planes de vacunación y las estrategias de cruce. '
+    'No opera el sistema.')
+
+# Santino y Alejo son el equipo de desarrollo, no usuarios del sistema. Su lugar es
+# INTEGRANTES Y ROLES, donde ya figuran.
+_desarrolladores = buscar('Administradores del Sistema')
+_desarrolladores._element.getparent().remove(_desarrolladores._element)
+
+
+# ------------------------------------------------------------------- objetivos verificables
+#
+# Cinco objetivos prometian reducir algo un ochenta, un sesenta, un cincuenta o un cuarenta
+# por ciento, y nadie midio el estado anterior: sin linea base no se pueden declarar
+# cumplidos ni incumplidos, y en las conclusiones hay que decir si se cumplieron. Se
+# reemplazan por metas que se verifican mirando el sistema terminado.
+
+escribir(
+    buscar(BULLET + 'Centralizar la información del rodeo'),
+    BULLET + 'Centralizar en un único repositorio la información del rodeo que hoy se '
+    'lleva en cuadernos y pizarrones, de modo que la identificación, la producción, la '
+    'reproducción y la sanidad de cada animal se consulten desde un solo lugar.')
+
+escribir(
+    buscar(BULLET + 'Disminuir los errores asociados a la transcripción'),
+    BULLET + 'Reducir los errores de transcripción sustituyendo la copia manual entre '
+    'soportes por un único registro validado en el momento de la carga, con los datos '
+    'derivados —categoría, fecha probable de parto, fecha de secado y fin del período de '
+    'descarte— calculados por el sistema y no escritos a mano.')
+
+escribir(
+    buscar(BULLET + 'Reducir en un 50% el tiempo requerido'),
+    BULLET + 'Reducir el tiempo necesario para consultar la información histórica de un '
+    'animal, de modo que su ficha integral —linaje, producción, reproducción y sanidad— '
+    'se obtenga en una sola pantalla a partir del número de caravana.')
+
+escribir(
+    buscar(BULLET + 'Optimizar el seguimiento reproductivo'),
+    BULLET + 'Dar seguimiento al ciclo reproductivo completo de cada hembra, registrando '
+    'celo, servicio, tacto y parto, y manteniendo su estado reproductivo actualizado a '
+    'partir de esos eventos.')
+
+escribir(
+    buscar(BULLET + 'Implementar un control de insumos'),
+    BULLET + 'Implementar un control de insumos que descuente el stock al aplicarlos, '
+    'avise cuando un insumo alcance su mínimo configurado y anticipe el vencimiento de '
+    'cada partida, para evitar faltantes de recursos críticos.')
+
+escribir(
+    buscar(BULLET + 'Reducir en un 40% el tiempo operativo'),
+    BULLET + 'Reducir la carga operativa del registro diario, de modo que cada evento se '
+    'anote una sola vez y el sistema propague sus consecuencias a los demás módulos sin '
+    'intervención adicional.')
+
+
+# ------------------------------------------------------- requerimientos que no se verificaban
+
+# RF1.1 decia que la categoria se ingresa y RF1.8 que el sistema la calcula. El sistema
+# hace una tercera cosa: la propone y el usuario acepta o sustituye.
+escribir(
+    buscar('RF1.1'), 'RF1.1 Alta de animales:',
+    'El sistema debe permitir registrar nuevos animales ingresando número de caravana, '
+    'fecha de nacimiento, sexo y raza, y proponiendo la categoría que corresponde a partir '
+    'del sexo, la fecha de nacimiento y la cantidad de partos, que el usuario puede '
+    'aceptar o sustituir.')
+
+# "Actualizar informacion" no dice que se puede cambiar: un sistema que no deja cambiar
+# nada cumple el requerimiento igual. La lista sale de leer ModificarAnimal.cshtml, no de
+# suponerla: la caravana tambien se modifica -se corrige una mal tipeada- y el conteo de
+# partos tambien, que es como se ajusta el historial de un animal comprado.
+escribir(
+    buscar('RF1.3'), 'RF1.3 Modificación de animales:',
+    'El sistema debe permitir modificar el número de caravana, la fecha de nacimiento, la '
+    'raza, la categoría, la fotografía, la madre, el padre, la cantidad de partos '
+    'registrados y, en los machos, el destino reproductivo de un animal ya dado de alta, '
+    'aplicando las mismas validaciones de unicidad y de genealogía que el alta.')
+
+# El total diario no era verificable porque RF2.3 dice que el lote y el control individual
+# no se suman dentro del mismo turno: habia que decir entonces que entra en el total.
+escribir(
+    buscar('RF2.4'), 'RF2.4 Total diario general:',
+    'El sistema debe calcular la producción total del establecimiento en una fecha como la '
+    'suma de sus turnos, tomando de cada turno el registro por lote cuando existe y la '
+    'suma de los controles individuales cuando el turno se anotó únicamente animal por '
+    'animal, de modo que ninguna medición se cuente dos veces.')
+
+# "Almacenar" es una afirmacion sobre la implementacion: no se puede verificar desde afuera.
+escribir(
+    buscar('RF2.5'), 'RF2.5 Historial productivo individual:',
+    'El sistema debe registrar los controles individuales de cada animal y permitir '
+    'consultarlos, imputados a la lactancia en curso en la fecha del control.')
+
+# "Integrarse con un bot" no dice que resultado produce: un sistema que se conecta y no
+# manda nada lo cumple. El comportamiento estaba en RF7.6; aca queda la configuracion.
+escribir(
+    buscar('RF7.5'), 'RF7.5 Configuración del canal de notificaciones:',
+    'El sistema debe permitir configurar el canal de mensajería por el que envía las '
+    'notificaciones, registrando el destinatario y permitiendo verificar la conexión '
+    'mediante un mensaje de prueba antes de darla por activa.')
+
+
+# ------------------------------------- requerimientos no funcionales que no eran medibles
+
+# "Interfaz simple, intuitiva y de facil aprendizaje" no se puede verificar. La metrica se
+# comprueba el dia de la capacitacion, y de paso da material para 2.8.
+agregar_a(
+    buscar('El sistema debe presentar una interfaz simple'),
+    ' El criterio de verificación es que la encargada complete sin asistencia las cinco '
+    'tareas de uso diario —registrar el ordeñe del turno, un celo, un servicio, un '
+    'tratamiento y consultar la ficha de un animal— después de una única sesión de '
+    'capacitación.')
+
+# La mantenibilidad se apoya en una decision de arquitectura que ya se tomo, y asi se
+# puede verificar leyendo el codigo.
+agregar_a(
+    buscar('El sistema debe ser desarrollado de tal forma'),
+    ' El criterio de verificación es la separación en tres capas —presentación, dominio y '
+    'persistencia—, de modo que un cambio en el acceso a datos no obligue a modificar las '
+    'pantallas ni la lógica de negocio.')
 
 
 doc.save(RUTA_SALIDA)

@@ -2052,17 +2052,17 @@ Frecuencia de Uso: Muy baja, una vez al poner el sistema en marcha.
 
 Nombre del CU: Enviar Resumen Diario de Tareas Pendientes
 
-Actores: Sistema (actor principal); Encargada del sector (destinataria)
+Actores: Encargada del sector
 
 Tipo: Primario
 
-Descripción: El sistema envía, mediante un proceso programado, un resumen diario con las tareas pendientes del establecimiento.
+Descripción: La encargada recibe, sin tener que pedirlo, un resumen diario con las tareas pendientes del establecimiento, de modo que empiece la jornada sabiendo qué animales necesitan atención.
 
 Referencia a Requerimientos Funcionales: RF7.7
 
-Pre-condición: La integración con el bot de Telegram debe estar configurada y activa.
+Pre-condición: La integración con el bot de mensajería debe estar configurada y activa.
 
-Desencadenante: Se alcanza la hora programada para el envío del resumen.
+Desencadenante: Se alcanza la hora configurada para el envío del resumen. El caso de uso lo dispara el tiempo, no una acción de la encargada.
 
 Curso Básico:
 
