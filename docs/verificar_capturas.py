@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-"""Compara las capturas que el manual pide contra las que el guion define.
+"""Compara las capturas que las secciones piden contra las que el guion define.
 
-Las dos listas se escriben por separado y se desincronizan solas: una captura que el
-manual pide y el guion no define no se saca nunca, y el hueco aparece recien en el
-.docx. Esto lo dice antes.
+Las listas se escriben por separado -el manual, las pruebas y el guion- y se
+desincronizan solas: una captura que una seccion pide y el guion no define no se saca
+nunca, y el hueco aparece recien en el .docx. Esto lo dice antes.
 """
 import os
 import re
 import sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-MANUAL = os.path.join(AQUI, 'seccion-2-4-manual.md')
+SECCIONES = [os.path.join(AQUI, 'seccion-2-4-manual.md'),
+             os.path.join(AQUI, 'seccion-2-3-pruebas.md')]
 GUION = os.path.join(AQUI, 'guion-capturas.md')
 CAPTURAS = os.path.join(AQUI, 'capturas')
 
@@ -21,20 +22,23 @@ def leer(ruta):
 
 
 def main():
-    pedidas = set(re.findall(r'\[captura: ([a-z0-9\-]+)\]', leer(MANUAL)))
+    pedidas = set()
+    for ruta in SECCIONES:
+        if os.path.exists(ruta):
+            pedidas |= set(re.findall(r'\[captura: ([a-z0-9\-]+)\]', leer(ruta)))
     definidas = set(re.findall(r'^\| `([a-z0-9\-]+)`', leer(GUION), re.M))
 
     sin_guion = sorted(pedidas - definidas)
     sin_usar = sorted(definidas - pedidas)
 
-    print('el manual pide %d capturas | el guion define %d' % (len(pedidas), len(definidas)))
+    print('las secciones piden %d capturas | el guion define %d' % (len(pedidas), len(definidas)))
 
     if sin_guion:
-        print('\nEl manual las pide y el guion no las define:')
+        print('\nLas secciones las piden y el guion no las define:')
         for nombre in sin_guion:
             print('  -', nombre)
     if sin_usar:
-        print('\nEl guion las define y el manual no las usa:')
+        print('\nEl guion las define y ninguna seccion las usa:')
         for nombre in sin_usar:
             print('  -', nombre)
 

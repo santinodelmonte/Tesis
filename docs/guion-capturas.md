@@ -247,9 +247,43 @@ El criterio, siguiendo al ejemplo:
   del estado final: el parto que abrió la lactancia y dio de alta la cría, el
   tratamiento que sacó a la vaca del tanque, la inseminación que descontó la pajuela.
 
-Se sacan en la misma corrida del script, con el sufijo `-resultado`, y se numeran
-por prueba y no por pantalla. La lista concreta se arma al escribir 2.3, cuando esté
-decidido qué recorridos se documentan.
+**La lista ya está armada**, porque 2.3 está escrita. Son **29**, con el prefijo `t-`
+para distinguirlas de las del manual:
+
+| Archivo | Qué evidencia |
+|---|---|
+| `t-acceso-directo` | La redirección al login al pedir una pantalla interna sin sesión |
+| `t-acceso-atras` | El botón atrás del navegador después de cerrar sesión |
+| `t-alta-categoria` | La categoría propuesta tras presionar *Calcular Categoría* |
+| `t-alta-genealogia` | La advertencia de genealogía con *Guardar de todos modos* |
+| `t-ficha-integral` | La ficha con diagnóstico, descarte, partos, servicios y producción |
+| `t-linaje-arbol` | El árbol armado a partir de los progenitores registrados |
+| `t-consanguinidad` | El parentesco detectado, con el antepasado común nombrado |
+| `t-ordenie-descarte` | La vaca en tratamiento que no se puede sumar al lote |
+| `t-control-seca` | El rechazo del control a una vaca seca |
+| `t-correccion-control` | Fecha, turno y caravana bloqueados al corregir |
+| `t-eliminar-lote` | Los controles individuales que sobreviven al borrar el lote |
+| `t-lactancia-manual` | El número de lactancia propuesto |
+| `t-servicio-ia` | La FPP calculada y el stock de la pajuela descontado |
+| `t-servicio-consanguineo` | La advertencia de parentesco con *Registrar de todos modos* |
+| `t-tacto` | *Ver servicio* con el parto proyectado, antes de confirmar |
+| `t-parto` | El formulario con el servicio cargado y el padre propuesto |
+| `t-parto-efecto` | La madre después: en lactancia, vacía, con la lactancia nueva |
+| `t-parto-linaje` | El linaje de la cría, armado solo |
+| `t-parto-doble` | Un parto y una lactancia para dos crías, con el aviso de freemartin |
+| `t-tratamiento-descarte` | El descarte de leche calculado con la carencia del producto |
+| `t-tratamiento-ordenie` | El animal tratado, ausente del lote de ordeñe |
+| `t-plan-calendario` | El calendario poblado por el plan nuevo |
+| `t-vacunacion` | El stock descontado y el animal fuera del calendario |
+| `t-stock-antes` | Las alertas de stock crítico antes de reponer |
+| `t-stock-despues` | Las mismas alertas, vacías |
+| `t-movimientos` | El ingreso y los egresos con su motivo |
+| `t-indicadores` | Los indicadores movidos por el secado y el parto |
+| `t-descarte` | Las candidatas con sus motivos |
+| `t-configuracion-efecto` | La alerta de parto ampliada por el parámetro |
+
+Se sacan en la misma corrida del script que las del manual, pero **después de haber
+hecho la acción que evidencian**: son el estado final, no la pantalla en blanco.
 
 ---
 
@@ -261,13 +295,17 @@ decidido qué recorridos se documentan.
 | 2.4 Manual — móvil | **7** |
 | 2.4 Manual — Módulo 7 | **3** |
 | **Subtotal del manual** | **77** |
-| 2.3 Pruebas — evidencia de resultados | a definir (el ejemplo lleva **69**) |
-| **Total estimado** | **~145** |
+| 2.3 Pruebas — evidencia de resultados | **29** |
+| **Total** | **106** |
 
-Las 77 del manual **ya no son una estimación**: son las que
-`docs/seccion-2-4-manual.md` pide, cada una con su pie de figura escrito.
-`docs/verificar_capturas.py` comprueba que las dos listas coincidan y avisa si se
-desincronizan.
+**Ninguno de los dos números es una estimación**: son las capturas que
+`docs/seccion-2-4-manual.md` y `docs/seccion-2-3-pruebas.md` piden, cada una en su
+lugar. `docs/verificar_capturas.py` comprueba que las listas coincidan con este guion
+y avisa si se desincronizan.
+
+El ejemplo del tutor tiene 69 en su sección de pruebas contra nuestras 29, y la
+diferencia es de criterio: él fotografía también las variantes de entrada que acá van
+en tabla. Las tablas dicen lo mismo en menos espacio.
 
 De ésas, **siete** son las advertencias y errores del punto 2, y **seis** son pares
 antes/después que muestran el efecto de una acción: la configuración sobre las

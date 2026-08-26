@@ -237,6 +237,36 @@ refactorizar nada, sólo dejar de versionar los datos reales.
 > Aparte, y aunque se arregle: la contraseña `tambo2026` estuvo en un repositorio.
 > **Conviene cambiarla antes de la entrega**, y no reutilizarla en el hosting.
 
+### H7 — La verificación de consanguinidad llega hasta los abuelos, y RF1.7 sugiere más
+
+Apareció al escribir las pruebas de caja blanca de la sección 2.3.
+
+**RF1.7 dice:** «verificando si existe un ancestro común dentro de **la ascendencia
+registrada** de ambos». Leído así, la verificación abarca toda la genealogía cargada.
+
+**Lo que hace el código.** `ListarAscendencia` (`:1037`) recorre exactamente **dos
+generaciones**: los padres del animal y los padres de cada uno de ellos. Con el propio
+animal, la lista llega a siete integrantes y ahí termina. El comentario de
+`BuscarAncestroComun` lo dice sin vueltas: *«Hay parentesco directo si coincide algun
+ancestro hasta el nivel de los abuelos»*.
+
+**La consecuencia concreta:** dos animales emparentados por un **bisabuelo compartido**
+no se detectan. Para las decisiones de cruza del establecimiento el alcance alcanza —el
+parentesco cercano es el que importa— pero el requerimiento promete más de lo que hay.
+
+> **Propuesta:** precisar RF1.7 —«…verificando si existe un ancestro común entre los
+> progenitores y los abuelos de ambos»— y sumarlo a las Limitaciones, donde ya están la
+> proyección lineal a 305 días y los umbrales fijos del descarte. **No tocar el código**:
+> ampliar la profundidad cambiaría el comportamiento del sistema por una razón
+> documental, que es exactamente al revés de como debe ser.
+>
+> **Pregunta:** ¿se aprueba? Es de la misma familia que H1 y H4: el documento dice en
+> general lo que el sistema hace acotado.
+
+**Ya se corrigió el manual**, que afirmaba que el sistema detecta parentesco «en
+cualquier nivel». Era falso y lo escribí yo en la sección 2.4; ahora dice hasta los
+abuelos.
+
 ---
 
 ## 4. El Módulo 7, que está a mitad de camino

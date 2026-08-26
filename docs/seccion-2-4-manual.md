@@ -290,13 +290,15 @@ tabla, y recentrar en cualquier animal para seguir desde ahí.
 un servicio: *¿esta hembra y este reproductor son parientes?*
 
 `[captura: m1-cu09-consanguinidad]`
-> Verificación de consanguinidad. El sistema recorre la ascendencia registrada de los
-> dos animales y avisa que encontró un ancestro común, diciendo cuál es.
+> Verificación de consanguinidad. El sistema compara la ascendencia de los dos animales
+> hasta los abuelos y avisa que encontró un antepasado en común, diciendo cuál es.
 
-**La advertencia es informativa: no impide nada.** El sistema no busca sólo el
-parentesco directo — recorre la ascendencia de ambos y avisa si encuentra un ancestro
-común en cualquier nivel. Si se elige el mismo animal en los dos campos, responde *«No
-puede verificar un animal contra sí mismo!»*.
+**La advertencia es informativa: no impide nada.** El sistema no se limita al
+parentesco directo: compara **la ascendencia de los dos animales hasta el nivel de los
+abuelos** —padres y abuelos de cada uno— y avisa si encuentra un antepasado en común.
+Un parentesco más lejano que un bisabuelo compartido no lo detecta. Si se elige el
+mismo animal en los dos campos, responde *«No puede verificar un animal contra sí
+mismo!»*.
 
 ### 4.8 Dar de baja y reactivar
 
