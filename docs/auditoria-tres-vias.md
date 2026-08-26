@@ -239,7 +239,7 @@ refactorizar nada, sólo dejar de versionar los datos reales.
 
 ### H7 — La verificación de consanguinidad llega hasta los abuelos, y RF1.7 sugiere más
 
-Apareció al escribir las pruebas de caja blanca de la sección 2.3.
+Apareció al escribir los casos de borde de la sección 2.3.
 
 **RF1.7 dice:** «verificando si existe un ancestro común dentro de **la ascendencia
 registrada** de ambos». Leído así, la verificación abarca toda la genealogía cargada.
@@ -266,6 +266,35 @@ parentesco cercano es el que importa— pero el requerimiento promete más de lo
 **Ya se corrigió el manual**, que afirmaba que el sistema detecta parentesco «en
 cualquier nivel». Era falso y lo escribí yo en la sección 2.4; ahora dice hasta los
 abuelos.
+
+### H8 — El anteproyecto promete convenciones de versionado que el repositorio no usa
+
+La sección **Control de Versionado** describe cómo se trabaja con Git. Es de las pocas
+partes del documento que **un tribunal puede verificar en treinta segundos**, abriendo
+el repositorio en GitHub. Hoy no coincide en tres puntos:
+
+| El anteproyecto dice | El repositorio tiene |
+|---|---|
+| «La rama principal (**main**) contendrá únicamente versiones estables» | La rama principal se llama **`master`** |
+| Ramas nombradas `feature/gestion-animales`, `feature/control-sanitario`, `feature/reportes`, `feature/reproduccion` | **Ninguna rama `feature/`.** Las once ramas siguen el patrón `claude/<descripción>-<sufijo>` |
+| «Las versiones estables serán identificadas mediante **numeración incremental**» | **No hay un solo tag** en el repositorio |
+
+Los ejemplos de ramas son especialmente delicados porque están **escritos uno por uno
+en el documento**: no es una convención general que se pueda leer con flexibilidad, son
+cuatro nombres concretos que no existen.
+
+> **Propuesta:** corregir el documento, no el repositorio. Que diga que la rama estable
+> es `master`, que las ramas de trabajo se nombran por la funcionalidad que desarrollan
+> —con los nombres reales como ejemplo— y que las versiones se identifican por los
+> documentos entregados (v5, v6, v7) en lugar de por tags.
+>
+> **La alternativa es peor:** renombrar la rama principal y crear tags a esta altura
+> sería maquillar el repositorio para que se parezca al documento, que es al revés de
+> como venimos trabajando.
+>
+> **Pregunta:** ¿se aprueba? Si además quieren empezar a etiquetar las entregas con
+> tags de ahora en más, eso sí tiene valor propio y se puede documentar como práctica
+> adoptada.
 
 ---
 

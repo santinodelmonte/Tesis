@@ -729,8 +729,8 @@ enteras.
 
 **Falta la bibliografía de ingeniería de software.** El anteproyecto compara el
 modelo en cascada, el de prototipos, el incremental y el espiral; define un Plan de
-SQA y un Plan de SCM; describe pruebas de caja negra y caja blanca. Nada de eso
-sale de `docs.microsoft.com`. Las obras que corresponden:
+SQA y un Plan de SCM; define un plan de testing. Nada de eso sale de
+`docs.microsoft.com`. Las obras que corresponden:
 
 | Para qué sección | Obra |
 |---|---|

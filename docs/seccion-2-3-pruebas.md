@@ -400,105 +400,51 @@ partos registrados no cambian: cambia con cuánta anticipación el sistema avisa
 
 ---
 
-## Pruebas de caja blanca
+## Casos de borde
 
-Las pruebas anteriores verifican el sistema desde la pantalla, sin mirar cómo está
-resuelto por dentro. Las que siguen hacen lo contrario: **recorren los caminos de la
-lógica con datos elegidos a propósito para pasar por cada uno**, y se concentran en los
-cinco cálculos de los que dependen las decisiones del establecimiento.
+Tres verificaciones que no salen de una pantalla sino de elegir el dato justo. Se
+prueban desde la interfaz como cualquier otra, pero los datos están elegidos a
+propósito.
 
-El resultado se verifica en la pantalla que muestra cada cálculo, de modo que la prueba
-también es reproducible por quien no lea el código.
-
-### Cálculo de la categoría
-
-La clasificación tiene **seis salidas** y se decide con tres datos: el sexo, la edad en
-meses y —según el sexo— la cantidad de partos o el destino reproductivo. Se prueba un
-animal por camino, eligiendo las edades **en el borde**, que es donde un error de
-comparación no se nota con datos cómodos.
+**La categoría, en el borde de la edad de cambio.**
 
 | Sexo | Edad | Partos / destino | Categoría esperada | Resultado |
 |---|---|---|---|---|
 | Hembra | cualquiera | 1 parto o más | **Vaca** | |
-| Hembra | justo **por debajo** de la edad de cambio | sin partos | **Ternera** | |
-| Hembra | **exactamente** la edad de cambio | sin partos | **Ternera** — la comparación es *mayor a*, no *mayor o igual* | |
-| Hembra | justo **por encima** de la edad de cambio | sin partos | **Vaquillona** | |
-| Macho | por encima de la edad mínima al servicio | integra el rodeo como reproductor | **Toro** | |
-| Macho | por encima de la edad mínima al servicio | no reproductor | **Novillo** | |
+| Hembra | un día **antes** de la edad de cambio | sin partos | **Ternera** | |
+| Hembra | **el día exacto** de la edad de cambio | sin partos | **Ternera** | |
+| Hembra | un día **después** | sin partos | **Vaquillona** | |
+| Macho | por encima de la edad mínima al servicio, reproductor | — | **Toro** | |
+| Macho | por encima de la edad mínima al servicio, no reproductor | — | **Novillo** | |
 | Macho | por debajo de la edad de cambio | — | **Ternero** | |
 
-**El caso del medio es el que justifica la prueba.** La condición del código compara con
-*mayor estricto*, así que un animal que cumple **exactamente** la edad de cambio todavía
-es ternera: recién al día siguiente pasa a vaquillona. Es correcto y deliberado, pero es
-el tipo de borde que hay que dejar verificado.
+El caso del medio es el que justifica la prueba: el animal que cumple **exactamente**
+la edad de cambio todavía es ternera, y recién al día siguiente pasa a vaquillona.
 
-### Ascendencia y ancestro común
-
-El armado de la ascendencia recorre **dos generaciones**: los padres del animal y los
-padres de cada uno de ellos. Con el propio animal incluido, la lista puede tener hasta
-**siete integrantes**.
-
-| Genealogía cargada | Ascendencia esperada | Resultado |
-|---|---|---|
-| Animal sin progenitores | Sólo el animal | |
-| Animal con madre, sin abuelos | El animal y la madre | |
-| Animal con madre y con los dos abuelos maternos | Cuatro integrantes | |
-| Animal con los dos progenitores y los cuatro abuelos | Los siete | |
-
-La búsqueda de ancestro común compara las dos ascendencias y devuelve **el primero que
-coincide**.
+**El alcance de la verificación de consanguinidad.**
 
 | Relación entre los animales | Resultado esperado | Resultado |
 |---|---|---|
-| Padre e hija | Detecta: el padre está en la ascendencia de la hija | |
-| Medios hermanos por padre | Detecta: el padre común está en las dos | |
-| Nieta y abuelo | Detecta: el abuelo está en la ascendencia de la nieta | |
+| Padre e hija | Detecta el parentesco | |
+| Medios hermanos por padre | Detecta el parentesco | |
+| Nieta y abuelo | Detecta el parentesco | |
 | Primos por bisabuelo | **No detecta** | |
 | Sin relación | No detecta | |
 
-> **El anteúltimo caso es un límite del sistema y hay que decirlo.** Como la ascendencia
-> llega hasta los abuelos, un parentesco que dependa de un **bisabuelo compartido** no se
-> detecta. Para las decisiones de cruza del establecimiento el alcance es suficiente —el
-> parentesco cercano es el que importa—, pero es una limitación real y no un error de
-> carga.
+La anteúltima fila es un límite del sistema, no un error de carga: la verificación
+compara la ascendencia hasta el nivel de los abuelos, y un parentesco que dependa de un
+bisabuelo compartido queda fuera. Está declarado en las limitaciones del proyecto.
 
-### Verificación de consanguinidad
+**La estimación de la lactancia, abierta y cerrada.**
 
-Es la capa que la pantalla consume, y su comportamiento es de una sola línea: **hay
-consanguinidad si existe ancestro común**. Lo importante de esta prueba no es el valor
-que devuelve sino **qué hace el sistema con él**: advertir sin bloquear.
-
-| Caso | Resultado esperado | Resultado |
+| Situación de la lactancia | Resultado esperado | Resultado |
 |---|---|---|
-| Hembra y reproductor con ancestro común | Advierte, nombra el antepasado y **permite registrar el servicio** | |
-| Hembra y reproductor sin relación | No advierte | |
+| Sin ningún control cargado | Estimación **0** | |
+| Con controles, lactancia **abierta** | La estimación crece día a día aunque no se cargue nada | |
+| Con controles, lactancia **cerrada** por secado | La estimación queda fija | |
 
-### Estimación de la producción de una lactancia
-
-Es el cálculo con más caminos y el que sostiene el ranking de lactancias y el criterio de
-producción baja del descarte. Estima el total producido **integrando entre controles**,
-en tres tramos:
-
-1. **Del parto al primer control**, con el valor de ese primer control.
-2. **Entre cada par de controles**, con el promedio de los dos.
-3. **Del último control al cierre**, con el valor del último. El cierre es la fecha de
-   secado si la lactancia está cerrada, y el día de hoy si sigue abierta.
-
-| Situación de la lactancia | Camino que recorre | Resultado esperado | Resultado |
-|---|---|---|---|
-| Sin ningún control cargado | Salida temprana | Estimación **0** | |
-| Un solo control, cargado el día del parto | Sólo el tramo final | Litros del control × días desde el parto | |
-| Un solo control, cargado días después del parto | Tramo inicial y tramo final | Suma de los dos tramos | |
-| Varios controles, lactancia abierta | Los tres tramos, con el cierre en la fecha de hoy | Estimación creciente día a día | |
-| Varios controles, lactancia cerrada por secado | Los tres tramos, con el cierre en la fecha de secado | Estimación estable: no cambia al pasar los días | |
-
-**Las dos últimas filas son la prueba que importa.** Una lactancia abierta se estima
-contra el día de hoy, así que su total crece solo aunque no se cargue nada; una cerrada
-queda fija. Verificarlo evita interpretar mal el ranking de producción.
-
-La **proyección a 305 días** se apoya en esta estimación y es lineal: sirve para comparar
-animales que van por distinto momento de su lactancia, no para pronosticar. Está declarado
-así en las limitaciones del proyecto.
+Una lactancia abierta se estima contra el día de hoy; una cerrada, contra su fecha de
+secado. Verificarlo evita interpretar mal el ranking de producción.
 
 ---
 

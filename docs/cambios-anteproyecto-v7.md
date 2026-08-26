@@ -99,6 +99,24 @@ El actor principal es quien persigue la meta, y quien quiere enterarse de sus ta
 del día es la encargada. Que el curso básico arranque en el sistema está permitido: es
 un caso de uso disparado por tiempo.
 
+## 6. El plan de testing ya no promete caja blanca
+
+**Criterio: si el ejemplo de la cátedra no documenta pruebas de caja blanca, nosotros
+tampoco — y lo que el anteproyecto prometía se corrige.** Un plan que compromete algo
+que el proyecto después no hace es peor que un plan más corto.
+
+| Antes | Ahora |
+|---|---|
+| «se realizarán pruebas de caja negra **y caja blanca**» | «se realizarán pruebas de caja negra sobre cada funcionalidad… documentadas con los datos utilizados, el resultado esperado y el obtenido» |
+| Subtítulo **Pruebas de Caja Blanca** con su párrafo | **Eliminado** |
+
+**Lo que la caja blanca aportaba no se pierde.** Los casos de borde de los cálculos que
+el sistema resuelve solo —la categoría en la edad de cambio, el alcance de la
+verificación de consanguinidad, la estimación de una lactancia abierta contra una
+cerrada— se siguen verificando, pero **desde la pantalla**, como pruebas funcionales.
+Quedan mencionados en el objetivo de las pruebas de caja negra y documentados en la
+sección 2.3.
+
 ---
 
 ## Lo que queda pendiente

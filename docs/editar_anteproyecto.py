@@ -710,6 +710,35 @@ agregar_a(
     'persistencia—, de modo que un cambio en el acceso a datos no obligue a modificar las '
     'pantallas ni la lógica de negocio.')
 
+# ---------------------------------------------------------------- el plan de testing
+#
+# El anteproyecto comprometia pruebas de caja negra y de caja blanca. Se quita la caja
+# blanca: el trabajo documenta las pruebas del mismo tipo que la referencia de la
+# catedra, que son funcionales, y un plan que promete algo que el proyecto despues no
+# hace es peor que un plan mas corto.
+
+escribir(
+    buscar('Una vez finalizadas las funcionalidades principales'),
+    'Una vez finalizadas las funcionalidades principales del proyecto se realizarán '
+    'pruebas de caja negra sobre cada funcionalidad, con la finalidad de detectar '
+    'errores funcionales, inconsistencias lógicas y comportamientos inesperados. Las '
+    'pruebas se documentan con los datos utilizados, el resultado esperado y el '
+    'obtenido.')
+
+_titulo_blanca = buscar('Pruebas de Caja Blanca')
+_cuerpo_blanca = buscar('Las pruebas de caja blanca')
+for _p in (_cuerpo_blanca, _titulo_blanca):
+    _p._element.getparent().remove(_p._element)
+
+# Lo que la caja blanca aportaba -verificar los calculos en sus bordes- no se pierde:
+# pasa a ser parte de lo que la caja negra comprueba, probado desde la pantalla.
+agregar_a(
+    buscar('El objetivo será comprobar que el sistema responda'),
+    ' Se incluyen los casos de borde de los cálculos que el sistema resuelve solo —la '
+    'categoría del animal en la edad de cambio, el alcance de la verificación de '
+    'consanguinidad y la estimación de producción de una lactancia abierta y de una '
+    'cerrada—, verificados desde la pantalla que los muestra.')
+
 
 doc.save(RUTA_SALIDA)
 print('guardado', RUTA_SALIDA)
