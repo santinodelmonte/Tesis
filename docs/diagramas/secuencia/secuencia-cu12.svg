@@ -46,13 +46,13 @@
 <text x="498.0" y="473.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">8. valida en memoria</text>
 <line x1="284.0" y1="508.0" x2="456.0" y2="508.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 511.6 L 456.0 508.0 L 446.4 504.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="370.0" y="498.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">9. BuscarHembra()</text>
+<text x="370.0" y="498.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">9. ValidarLitrosLote()</text>
 <path d="M 456.0 554.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 465.6 572.4 L 456.0 576.0 L 465.6 579.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="498.0" y="565.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">10. valida en memoria</text>
 <line x1="284.0" y1="600.0" x2="456.0" y2="600.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 603.6 L 456.0 600.0 L 446.4 596.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="370.0" y="590.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">11. ValidarLitrosLote()</text>
+<text x="370.0" y="590.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">11. ValidarLoteContraMedido()</text>
 <path d="M 456.0 646.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 465.6 664.4 L 456.0 668.0 L 465.6 671.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="498.0" y="657.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">12. valida en memoria</text>

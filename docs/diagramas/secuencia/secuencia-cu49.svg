@@ -1,34 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="404" height="568" viewBox="0 0 404 568">
+<svg xmlns="http://www.w3.org/2000/svg" width="1092" height="890" viewBox="0 0 1092 890">
 <rect width="100%" height="100%" fill="#ffffff"/>
-<text x="202.0" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU49 — Enviar Resumen Diario de Tareas Pendientes</text>
+<text x="546.0" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU49 — Enviar Resumen Diario de Tareas Pendientes</text>
 <rect x="40.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
 <text x="112.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Proceso programado</text>
-<rect x="111.0" y="102.0" width="2.0" height="438.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="111.0" y="102.0" width="2.0" height="760.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
 <rect x="212.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
 <text x="284.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Controladora</text>
-<rect x="283.0" y="102.0" width="2.0" height="438.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="283.0" y="102.0" width="2.0" height="760.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="384.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="456.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pControladora</text>
+<rect x="455.0" y="102.0" width="2.0" height="760.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="556.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="628.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pX (entidad)</text>
+<rect x="627.0" y="102.0" width="2.0" height="760.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="728.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="800.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pConexion</text>
+<rect x="799.0" y="102.0" width="2.0" height="760.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="900.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="972.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">BotTelegram</text>
+<rect x="971.0" y="102.0" width="2.0" height="760.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
 <line x1="112.0" y1="140.0" x2="284.0" y2="140.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 274.4 143.6 L 284.0 140.0 L 274.4 136.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="198.0" y="130.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">1. ObtenerCalendarioSanitario()</text>
-<path d="M 284.0 186.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 293.6 204.4 L 284.0 208.0 L 293.6 211.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="326.0" y="197.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">2. valida en memoria</text>
-<line x1="112.0" y1="232.0" x2="284.0" y2="232.0" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 274.4 235.6 L 284.0 232.0 L 274.4 228.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="198.0" y="222.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">3. ListarAlertasParto()</text>
-<path d="M 284.0 278.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 293.6 296.4 L 284.0 300.0 L 293.6 303.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="326.0" y="289.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">4. valida en memoria</text>
+<text x="198.0" y="130.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">1. ObtenerConfiguracion()</text>
+<line x1="284.0" y1="186.0" x2="456.0" y2="186.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 446.4 189.6 L 456.0 186.0 L 446.4 182.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="370.0" y="176.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">2. ObtenerConfiguracion()</text>
+<line x1="456.0" y1="232.0" x2="628.0" y2="232.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 618.4 235.6 L 628.0 232.0 L 618.4 228.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="542.0" y="222.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">3. ObtenerConfiguracion()</text>
+<line x1="628.0" y1="278.0" x2="800.0" y2="278.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 790.4 281.6 L 800.0 278.0 L 790.4 274.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="714.0" y="268.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">4. EjecutarConsulta()</text>
 <line x1="112.0" y1="324.0" x2="284.0" y2="324.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 274.4 327.6 L 284.0 324.0 L 274.4 320.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="198.0" y="314.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">5. ArmarResumen()</text>
+<text x="198.0" y="314.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">5. GenerarAlertasDelDia()</text>
 <path d="M 284.0 370.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 293.6 388.4 L 284.0 392.0 L 293.6 395.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="326.0" y="381.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">6. valida en memoria</text>
 <line x1="112.0" y1="416.0" x2="284.0" y2="416.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 274.4 419.6 L 284.0 416.0 L 274.4 412.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="198.0" y="406.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">7. EnviarMensaje()</text>
+<text x="198.0" y="406.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">7. ArmarMensajeResumen()</text>
 <path d="M 284.0 462.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 293.6 480.4 L 284.0 484.0 L 293.6 487.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="326.0" y="473.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">8. valida en memoria</text>
+<line x1="112.0" y1="508.0" x2="284.0" y2="508.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 274.4 511.6 L 284.0 508.0 L 274.4 504.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="198.0" y="498.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">9. ResumenEnviado()</text>
+<path d="M 284.0 554.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 293.6 572.4 L 284.0 576.0 L 293.6 579.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="326.0" y="565.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">10. valida en memoria</text>
+<line x1="112.0" y1="600.0" x2="284.0" y2="600.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 274.4 603.6 L 284.0 600.0 L 274.4 596.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="198.0" y="590.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">11. RegistrarEnvioResumen()</text>
+<line x1="284.0" y1="646.0" x2="456.0" y2="646.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 446.4 649.6 L 456.0 646.0 L 446.4 642.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="370.0" y="636.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">12. RegistrarEnvioResumen()</text>
+<line x1="456.0" y1="692.0" x2="628.0" y2="692.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 618.4 695.6 L 628.0 692.0 L 618.4 688.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="542.0" y="682.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">13. RegistrarEnvioResumen()</text>
+<line x1="628.0" y1="738.0" x2="800.0" y2="738.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 790.4 741.6 L 800.0 738.0 L 790.4 734.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="714.0" y="728.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">14. EjecutarConsulta()</text>
+<line x1="112.0" y1="784.0" x2="972.0" y2="784.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 962.4 787.6 L 972.0 784.0 L 962.4 780.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="542.0" y="774.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">15. EnviarMensaje()</text>
 </svg>

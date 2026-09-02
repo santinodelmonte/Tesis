@@ -1,16 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="555" viewBox="0 0 760 555">
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="585" viewBox="0 0 760 585">
 <rect width="100%" height="100%" fill="#ffffff"/>
 <text x="380.0" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Diagrama de Dominio — clase Controladora</text>
-<line x1="360.0" y1="243.5" x2="430.0" y2="107.0" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 428.8 117.2 L 430.0 107.0 L 422.4 113.9" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="386.6" y="183.6" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">valida contra</text>
-<line x1="360.0" y1="243.5" x2="430.0" y2="205.0" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 423.3 212.8 L 430.0 205.0 L 419.9 206.5" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="386.6" y="220.9" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">delega la escritura</text>
-<line x1="360.0" y1="243.5" x2="430.0" y2="314.0" stroke="#40484f" stroke-width="1.2"/>
-<path d="M 420.7 309.7 L 430.0 314.0 L 425.8 304.7" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="386.6" y="262.3" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">construye</text>
-<rect x="30.0" y="56.0" width="330.0" height="375.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<line x1="360.0" y1="258.5" x2="430.0" y2="107.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 429.2 117.2 L 430.0 107.0 L 422.7 114.2" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="386.6" y="192.9" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">valida contra</text>
+<line x1="360.0" y1="258.5" x2="430.0" y2="205.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 424.6 213.7 L 430.0 205.0 L 420.2 208.0" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="386.6" y="230.2" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">delega la escritura</text>
+<line x1="360.0" y1="258.5" x2="430.0" y2="314.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 420.2 310.9 L 430.0 314.0 L 424.7 305.2" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="386.6" y="271.6" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">construye</text>
+<rect x="30.0" y="56.0" width="330.0" height="405.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
 <path d="M 31.0 80.0 h 328.0 v -22.0 h -328.0 Z" fill="#f4f6f8"/>
 <line x1="30.0" y1="80.0" x2="360.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
 <text x="195.0" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Controladora</text>
@@ -37,9 +37,11 @@
 <text x="37.0" y="391.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Indicadores</text>
 <text x="37.0" y="406.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Listas De Trabajo</text>
 <text x="37.0" y="421.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Calendario Sanitario</text>
+<text x="37.0" y="436.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Reportes</text>
+<text x="37.0" y="451.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Notificaciones</text>
 <rect x="430.0" y="70.0" width="300.0" height="74.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
-<text x="580.0" y="100.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Listas static en memoria (caché del rodeo y de</text>
-<text x="580.0" y="113.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">sus eventos)</text>
+<text x="580.0" y="100.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Listas de instancia en memoria (caché del</text>
+<text x="580.0" y="113.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">rodeo y de sus eventos)</text>
 <rect x="430.0" y="175.0" width="300.0" height="60.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
 <text x="580.0" y="205.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pControladora (capa de persistencia)</text>
 <rect x="430.0" y="268.0" width="300.0" height="92.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>

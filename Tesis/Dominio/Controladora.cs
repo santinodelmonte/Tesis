@@ -58,6 +58,14 @@ namespace Tesis.Dominio
         public const int DIAS_ANTICIPACION_SANITARIA = 30;
         public const int DIAS_ANTICIPACION_VENCIMIENTO = 30;
 
+        // Constante del modulo 7: la hora a la que sale el resumen diario mientras
+        // nadie la haya cambiado. Las siete de la maniana es antes del ordenie, que es
+        // cuando la lista de tareas todavia sirve para ordenar el dia.
+        //
+        // Es un TimeSpan y no un entero, asi que va como static readonly: const solo
+        // admite tipos primitivos.
+        public static readonly TimeSpan HORA_RESUMEN = new TimeSpan(7, 0, 0);
+
         // Cada aplicacion consume una dosis del biologico (CU29, paso 6).
         public const double UNIDADES_POR_VACUNACION = 1;
 
@@ -240,7 +248,8 @@ namespace Tesis.Dominio
             return new Configuracion(0, DIAS_SECADO_ANTES_PARTO, EDAD_MINIMA_SERVICIO_HEMBRA_MESES,
                 EDAD_CAMBIO_CATEGORIA_MESES, LITROS_MAXIMOS_INDIVIDUAL, ORDENIES_POR_DIA,
                 DIAS_ANTICIPACION_SECADO, DIAS_ANTICIPACION_PARTO, DIAS_ANTICIPACION_SANITARIA,
-                DIAS_ANTICIPACION_VENCIMIENTO, DIAS_ESPERA_VOLUNTARIA, DIAS_PARA_TACTO);
+                DIAS_ANTICIPACION_VENCIMIENTO, DIAS_ESPERA_VOLUNTARIA, DIAS_PARA_TACTO,
+                HORA_RESUMEN, "", DateTime.MinValue);
         }
 
         public Configuracion ObtenerConfiguracion()
@@ -330,6 +339,15 @@ namespace Tesis.Dominio
 
             pConfiguracionNueva.IdConfiguracion = unaConfiguracion.IdConfiguracion;
 
+            // Los tres campos del Modulo 7 viven en la misma fila pero no en este
+            // formulario: se guardan desde la pantalla de notificaciones y los escribe
+            // el proceso del resumen. Se copian de lo que ya estaba, porque el UPDATE
+            // reescribe la fila entera y si no vinieran quedarian en blanco -o sea que
+            // guardar los dias de secado desvincularia el bot-.
+            pConfiguracionNueva.HoraResumen = unaConfiguracion.HoraResumen;
+            pConfiguracionNueva.ChatTelegram = unaConfiguracion.ChatTelegram;
+            pConfiguracionNueva.FechaUltimoResumen = unaConfiguracion.FechaUltimoResumen;
+
             if (Persistencia.ModificarConfiguracion(pConfiguracionNueva))
             {
                 mConfiguracion = pConfiguracionNueva;
@@ -337,6 +355,26 @@ namespace Tesis.Dominio
             }
             return false;
 
+        }
+
+        // Escribe la fila de configuracion tal cual viene. Es el camino de los campos
+        // del Modulo 7: no pasan por ValidarConfiguracion porque esa validacion es la
+        // de los parametros de manejo -rangos de dias, litros, ordenies- y no tiene
+        // nada que decir sobre una hora o un identificador de chat, que se validan
+        // aparte.
+        private bool GuardarConfiguracion(Configuracion pConfiguracion)
+        {
+            if (pConfiguracion.IdConfiguracion == 0)
+            {
+                return false;
+            }
+
+            if (Persistencia.ModificarConfiguracion(pConfiguracion))
+            {
+                mConfiguracion = pConfiguracion;
+                return true;
+            }
+            return false;
         }
 
         // Los turnos de ordenie que ofrece el sistema, armados a partir de la cantidad
@@ -7345,6 +7383,401 @@ namespace Tesis.Dominio
         private string TextoPeriodo(DateTime pDesde, DateTime pHasta)
         {
             return "Período del " + pDesde.ToString("dd/MM/yyyy") + " al " + pHasta.ToString("dd/MM/yyyy");
+        }
+        #endregion
+
+        #region NOTIFICACIONES
+        // El Modulo 7 no calcula nada propio. Las ocho listas de pendientes que
+        // alimentan el resumen son las mismas que alimentan el tablero de inicio y las
+        // pantallas de alerta de cada modulo: lo que se agrega aca es el canal.
+        //
+        // Ni las preferencias ni las alertas entran en Refrescar. Ese metodo existe
+        // para que las entidades que se referencian entre si -el servicio y su hembra,
+        // el ordenie individual y su lactancia- apunten a los mismos objetos, y estas
+        // dos tablas no participan de ese grafo: nadie las referencia y ellas no
+        // referencian nada que se mute. Cargarlas en cada peticion seria una consulta
+        // de mas en las cincuenta pantallas que no las usan.
+
+        // Los ocho tipos de aviso con su interruptor, en el orden en que se cargaron.
+        public List<PreferenciaNotificacion> ListarPreferencias()
+        {
+            return Persistencia.ListarPreferencias();
+        }
+
+        // Guarda la hora del resumen y los ocho interruptores. Van juntos porque son la
+        // misma pantalla y el mismo boton: CU48 los guarda de una.
+        public bool ModificarNotificaciones(TimeSpan pHoraResumen,
+            List<PreferenciaNotificacion> pListaPreferencias)
+        {
+            if (this.ValidarHoraResumen(pHoraResumen) != "")
+            {
+                return false;
+            }
+
+            foreach (PreferenciaNotificacion unaPreferencia in pListaPreferencias)
+            {
+                if (!Persistencia.ModificarPreferencia(unaPreferencia))
+                {
+                    return false;
+                }
+            }
+
+            Configuracion unaConfiguracion = this.ObtenerConfiguracion();
+            unaConfiguracion.HoraResumen = pHoraResumen;
+            return this.GuardarConfiguracion(unaConfiguracion);
+        }
+
+        // Un TimeSpan de un dia entero no es una hora del dia. Llega asi desde el
+        // formulario, que devuelve texto.
+        public string ValidarHoraResumen(TimeSpan pHoraResumen)
+        {
+            if (pHoraResumen < TimeSpan.Zero || pHoraResumen >= TimeSpan.FromHours(24))
+            {
+                return "La hora del resumen tiene que estar entre las 00:00 y las 23:59.";
+            }
+            return "";
+        }
+
+        // El identificador de chat que devuelve Telegram es un numero entero, negativo
+        // cuando el destino es un grupo. No se valida contra Telegram aca: de eso se
+        // encarga el mensaje de prueba que manda la pantalla, que es la unica forma
+        // real de saber si el bot puede escribirle a ese chat.
+        public string ValidarChatTelegram(string pChat)
+        {
+            if (pChat == null || pChat.Trim() == "")
+            {
+                return "Hay que indicar el identificador de chat de Telegram.";
+            }
+
+            string vChat = pChat.Trim();
+            string vDigitos = vChat.StartsWith("-") ? vChat.Substring(1) : vChat;
+
+            if (vDigitos == "" || vDigitos.Length > 39)
+            {
+                return "El identificador de chat no tiene el formato que devuelve Telegram.";
+            }
+
+            foreach (char unCaracter in vDigitos)
+            {
+                if (!char.IsDigit(unCaracter))
+                {
+                    return "El identificador de chat es un numero: revise que no haya quedado "
+                        + "pegado el nombre de usuario.";
+                }
+            }
+            return "";
+        }
+
+        public bool VincularTelegram(string pChat)
+        {
+            if (this.ValidarChatTelegram(pChat) != "")
+            {
+                return false;
+            }
+
+            Configuracion unaConfiguracion = this.ObtenerConfiguracion();
+            unaConfiguracion.ChatTelegram = pChat.Trim();
+            return this.GuardarConfiguracion(unaConfiguracion);
+        }
+
+        // Las alertas del dia: un renglon por pendiente, ya redactado, y solo de los
+        // tipos que estan activos.
+        //
+        // El orden de los bloques es el de PreferenciaNotificacion.Tipos, que es el del
+        // tablero. Que el mensaje se arme recorriendo las preferencias y no una lista
+        // escrita a mano es lo que hace que apagar un aviso lo saque del mensaje sin
+        // tocar ninguna otra linea.
+        public List<Alerta> GenerarAlertasDelDia()
+        {
+            List<Alerta> _listaAlertas = new List<Alerta>();
+            DateTime vHoy = DateTime.Now.Date;
+
+            foreach (PreferenciaNotificacion unaPreferencia in this.ListarPreferencias())
+            {
+                if (!unaPreferencia.Activa)
+                {
+                    continue;
+                }
+
+                foreach (Alerta unaAlerta in this.GenerarAlertasXTipo(unaPreferencia, vHoy))
+                {
+                    _listaAlertas.Add(unaAlerta);
+                }
+            }
+            return _listaAlertas;
+        }
+
+        private List<Alerta> GenerarAlertasXTipo(PreferenciaNotificacion pPreferencia, DateTime pFecha)
+        {
+            List<Alerta> _listaAlertas = new List<Alerta>();
+
+            switch (pPreferencia.TipoAlerta)
+            {
+                case PreferenciaNotificacion.SANITARIO_PENDIENTE:
+                    foreach (ProcedimientoPendiente unPendiente in this.ObtenerCalendarioSanitario(
+                        this.Parametros().DiasAnticipacionSanitaria))
+                    {
+                        string vCuando = this.EstaVencido(unPendiente)
+                            ? "vencido desde el " + unPendiente.ProximaAplicacion.ToString("dd/MM")
+                            : "vence el " + unPendiente.ProximaAplicacion.ToString("dd/MM");
+
+                        _listaAlertas.Add(this.ArmarAlerta(pPreferencia, pFecha,
+                            "Caravana " + unPendiente.Animal.NumCaravana + " - "
+                            + unPendiente.Plan.Nombre + ", " + vCuando,
+                            unPendiente.Animal, null));
+                    }
+                    break;
+
+                case PreferenciaNotificacion.PARTO_PROXIMO:
+                    foreach (Servicio unServicio in this.ListarAlertasParto())
+                    {
+                        _listaAlertas.Add(this.ArmarAlerta(pPreferencia, pFecha,
+                            "Caravana " + unServicio.Animal.NumCaravana + " - parto probable el "
+                            + unServicio.FechaProbableParto.ToString("dd/MM")
+                            + this.TextoDias(unServicio.FechaProbableParto),
+                            unServicio.Animal, null));
+                    }
+                    break;
+
+                case PreferenciaNotificacion.TACTO_PENDIENTE:
+                    foreach (Servicio unServicio in this.ListarTactosPendientes())
+                    {
+                        _listaAlertas.Add(this.ArmarAlerta(pPreferencia, pFecha,
+                            "Caravana " + unServicio.Animal.NumCaravana + " - servida el "
+                            + unServicio.FechaServicio.ToString("dd/MM") + ", hace "
+                            + (int)(DateTime.Now.Date - unServicio.FechaServicio.Date).TotalDays + " dias",
+                            unServicio.Animal, null));
+                    }
+                    break;
+
+                case PreferenciaNotificacion.VACA_PARA_SERVIR:
+                    foreach (Hembra unaHembra in this.ListarVacasParaServir())
+                    {
+                        _listaAlertas.Add(this.ArmarAlerta(pPreferencia, pFecha,
+                            "Caravana " + unaHembra.NumCaravana + " - " + this.MotivoParaServir(unaHembra),
+                            unaHembra, null));
+                    }
+                    break;
+
+                case PreferenciaNotificacion.SECADO_PROXIMO:
+                    foreach (Hembra unaHembra in this.ListarAlertasSecado())
+                    {
+                        _listaAlertas.Add(this.ArmarAlerta(pPreferencia, pFecha,
+                            "Caravana " + unaHembra.NumCaravana + " - secar el "
+                            + this.CalcularFechaSecado(unaHembra).ToString("dd/MM")
+                            + this.TextoDias(this.CalcularFechaSecado(unaHembra)),
+                            unaHembra, null));
+                    }
+                    break;
+
+                case PreferenciaNotificacion.FIN_DESCARTE:
+                    foreach (Hembra unaHembra in this.ListarHembrasEnDescarte())
+                    {
+                        _listaAlertas.Add(this.ArmarAlerta(pPreferencia, pFecha,
+                            "Caravana " + unaHembra.NumCaravana + " - la leche vuelve al tanque el "
+                            + this.FechaFinDescarte(unaHembra).AddDays(1).ToString("dd/MM"),
+                            unaHembra, null));
+                    }
+                    break;
+
+                case PreferenciaNotificacion.STOCK_CRITICO:
+                    foreach (Insumo unInsumo in this.ListarAlertasStock())
+                    {
+                        _listaAlertas.Add(this.ArmarAlerta(pPreferencia, pFecha,
+                            unInsumo.Nombre + " - quedan " + unInsumo.StockActual
+                            + " sobre un minimo de " + unInsumo.StockMinimo,
+                            null, unInsumo));
+                    }
+                    break;
+
+                case PreferenciaNotificacion.VENCIMIENTO_INSUMO:
+                    foreach (PartidaVencimiento unaPartida in this.ListarAlertasVencimiento(
+                        this.Parametros().DiasAnticipacionVencimiento))
+                    {
+                        string vCuando = this.EstaVencida(unaPartida)
+                            ? "vencida el " + unaPartida.Partida.FechaVencimiento.ToString("dd/MM")
+                            : "vence el " + unaPartida.Partida.FechaVencimiento.ToString("dd/MM");
+
+                        _listaAlertas.Add(this.ArmarAlerta(pPreferencia, pFecha,
+                            unaPartida.Partida.Insumo.Nombre + " - " + vCuando + ", quedan "
+                            + unaPartida.Remanente,
+                            null, unaPartida.Partida.Insumo));
+                    }
+                    break;
+            }
+            return _listaAlertas;
+        }
+
+        private Alerta ArmarAlerta(PreferenciaNotificacion pPreferencia, DateTime pFecha,
+            string pMensaje, Animal pAnimal, Insumo pInsumo)
+        {
+            // El mensaje se recorta al ancho de la columna. Es el unico lugar donde el
+            // texto puede pasarse de largo: el nombre de un insumo o de un plan lo
+            // escribe la usuaria y no tiene tope util.
+            string vMensaje = pMensaje.Length > 200 ? pMensaje.Substring(0, 200) : pMensaje;
+
+            return new Alerta(0, pPreferencia.TipoAlerta, pFecha, vMensaje, false,
+                pPreferencia.IdPreferencia, pAnimal, pInsumo);
+        }
+
+        // " (en 6 dias)", " (hoy)" o " (hace 2 dias)". Sale entre parentesis detras de
+        // la fecha porque en el telefono se lee la cuenta hecha, no el almanaque.
+        private string TextoDias(DateTime pFecha)
+        {
+            if (pFecha == DateTime.MinValue)
+            {
+                return "";
+            }
+
+            int vDias = (int)(pFecha.Date - DateTime.Now.Date).TotalDays;
+
+            if (vDias == 0)
+            {
+                return " (hoy)";
+            }
+            if (vDias > 0)
+            {
+                return " (en " + vDias + " dias)";
+            }
+            return " (hace " + (-vDias) + " dias)";
+        }
+
+        // Cuantos renglones muestra cada bloque del resumen antes de cortar con un "y
+        // faltan tantos". Son dos motivos, y los dos importan: en el telefono un bloque
+        // de sesenta renglones no se lee, y Telegram rechaza los mensajes de mas de
+        // 4096 caracteres -una campania de vacunacion que alcanza al rodeo entero
+        // pasaria ese limite y el resumen no llegaria-.
+        public const int RENGLONES_POR_BLOQUE = 10;
+
+        // Tope duro del mensaje. Telegram rechaza los de mas de 4096 caracteres y se
+        // deja margen: el corte por bloque ya hace casi todo el trabajo, pero ocho
+        // bloques llenos con nombres de insumo largos podrian pasarse igual, y un
+        // mensaje rechazado no llega en absoluto.
+        public const int LARGO_MAXIMO_MENSAJE = 3900;
+
+        // El texto del resumen diario, agrupado por modulo y por tipo de aviso, tal
+        // como pide el paso 3 de CU49.
+        //
+        // Formato HTML porque es lo que entiende Telegram y lo unico que se usa son
+        // negritas para los titulos. Lo que viene de la base -el numero de caravana, el
+        // nombre de un insumo- se escapa: un insumo llamado "Ivermectina <1%>" romperia
+        // el mensaje entero y Telegram lo rechazaria.
+        //
+        // El mensaje no reemplaza a la pantalla: dice que hay que hacer y cuanto hay,
+        // y el detalle completo esta en el sistema.
+        public string ArmarMensajeResumen(List<Alerta> pListaAlertas)
+        {
+            string vMensaje = "<b>Tareas pendientes del " + DateTime.Now.ToString("dd/MM/yyyy") + "</b>";
+
+            if (pListaAlertas.Count == 0)
+            {
+                // Un dia sin pendientes manda mensaje igual: si el sistema callara, el
+                // silencio no se distinguiria de un envio que fallo.
+                return vMensaje + "\n\nNo hay tareas pendientes.";
+            }
+
+            string vModuloAnterior = "";
+
+            foreach (PreferenciaNotificacion unaPreferencia in this.ListarPreferencias())
+            {
+                List<Alerta> _listaXTipo = this.FiltrarAlertasXTipo(pListaAlertas, unaPreferencia.TipoAlerta);
+
+                if (_listaXTipo.Count == 0)
+                {
+                    continue;
+                }
+
+                if (unaPreferencia.Modulo != vModuloAnterior)
+                {
+                    vMensaje = vMensaje + "\n\n<b>" + unaPreferencia.Modulo + "</b>";
+                    vModuloAnterior = unaPreferencia.Modulo;
+                }
+
+                vMensaje = vMensaje + "\n\n" + unaPreferencia.Etiqueta
+                    + " (" + _listaXTipo.Count + ")";
+
+                int vRenglon = 0;
+
+                foreach (Alerta unaAlerta in _listaXTipo)
+                {
+                    if (vRenglon == RENGLONES_POR_BLOQUE)
+                    {
+                        vMensaje = vMensaje + "\n- y " + (_listaXTipo.Count - vRenglon)
+                            + " mas, en el sistema";
+                        break;
+                    }
+
+                    vMensaje = vMensaje + "\n- " + this.EscaparHtml(unaAlerta.Mensaje);
+                    vRenglon = vRenglon + 1;
+                }
+            }
+
+            if (vMensaje.Length > LARGO_MAXIMO_MENSAJE)
+            {
+                // Se corta en un fin de renglon y no en el caracter justo: ningun
+                // titulo abre y cierra su negrita en dos renglones distintos, asi que
+                // cortando ahi el HTML nunca queda partido al medio. Un <b> sin su </b>
+                // hace que Telegram rechace el mensaje entero.
+                int vCorte = vMensaje.LastIndexOf("\n", LARGO_MAXIMO_MENSAJE);
+
+                vMensaje = vMensaje.Substring(0, vCorte > 0 ? vCorte : LARGO_MAXIMO_MENSAJE)
+                    + "\n\n(el resumen sigue en el sistema)";
+            }
+            return vMensaje;
+        }
+
+        private List<Alerta> FiltrarAlertasXTipo(List<Alerta> pListaAlertas, string pTipoAlerta)
+        {
+            List<Alerta> _listaXTipo = new List<Alerta>();
+
+            foreach (Alerta unaAlerta in pListaAlertas)
+            {
+                if (unaAlerta.TipoAlerta == pTipoAlerta)
+                {
+                    _listaXTipo.Add(unaAlerta);
+                }
+            }
+            return _listaXTipo;
+        }
+
+        private string EscaparHtml(string pTexto)
+        {
+            return pTexto.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+        }
+
+        // Deja registrado el envio: las alertas una por una y la fecha del resumen en la
+        // configuracion.
+        //
+        // La fecha va aunque no haya habido ninguna alerta, y es lo unico que impide el
+        // mensaje repetido cuando el sitio se reinicia: la tabla de alertas no puede
+        // responder por un dia sin pendientes, porque ese dia no genera filas.
+        public bool RegistrarEnvioResumen(List<Alerta> pListaAlertas, DateTime pFecha)
+        {
+            foreach (Alerta unaAlerta in pListaAlertas)
+            {
+                unaAlerta.Enviada = true;
+            }
+
+            if (!Persistencia.RegistrarEnvioResumen(pListaAlertas))
+            {
+                return false;
+            }
+
+            Configuracion unaConfiguracion = this.ObtenerConfiguracion();
+            unaConfiguracion.FechaUltimoResumen = pFecha.Date;
+            return this.GuardarConfiguracion(unaConfiguracion);
+        }
+
+        // Si el resumen de una fecha ya salio. Lo consulta el proceso programado antes
+        // de armar nada.
+        public bool ResumenEnviado(DateTime pFecha)
+        {
+            return this.ObtenerConfiguracion().FechaUltimoResumen.Date == pFecha.Date;
+        }
+
+        public int ContarAlertas(DateTime pFecha)
+        {
+            return Persistencia.ContarAlertas(pFecha);
         }
         #endregion
     }

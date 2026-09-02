@@ -7,6 +7,10 @@
 <line x1="135.0" y1="595.0" x2="135.0" y2="468.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 138.6 477.6 L 135.0 468.0 L 131.4 477.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="135.0" y="538.7" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">hereda</text>
+<line x1="1078.0" y1="805.0" x2="240.0" y2="363.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 250.2 364.3 L 240.0 363.0 L 246.8 370.7" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<line x1="1078.0" y1="805.0" x2="502.0" y2="123.5" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 510.9 128.5 L 502.0 123.5 L 505.4 133.2" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <line x1="135.0" y1="258.0" x2="135.0" y2="131.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 138.6 140.6 L 135.0 131.0 L 131.4 140.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <line x1="135.0" y1="258.0" x2="135.0" y2="232.0" stroke="#40484f" stroke-width="1.2"/>
@@ -51,6 +55,8 @@
 <path d="M 249.0 358.0 L 240.0 363.0 L 250.0 365.1" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <line x1="921.0" y1="232.0" x2="921.0" y2="206.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 924.6 215.6 L 921.0 206.0 L 917.4 215.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<line x1="1183.0" y1="442.0" x2="1183.0" y2="468.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 1179.4 458.4 L 1183.0 468.0 L 1186.6 458.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <line x1="554.0" y1="247.0" x2="240.0" y2="531.5" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 244.7 522.4 L 240.0 531.5 L 249.5 527.7" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <line x1="554.0" y1="247.0" x2="240.0" y2="617.5" stroke="#40484f" stroke-width="1.2"/>
@@ -285,7 +291,7 @@
 <text x="823.0" y="896.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Observaciones: string</text>
 <text x="823.0" y="911.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Animal: Animal</text>
 <text x="823.0" y="926.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Plan: PlanSanitario</text>
-<rect x="1078.0" y="56.0" width="210.0" height="210.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<rect x="1078.0" y="56.0" width="210.0" height="270.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
 <path d="M 1079.0 80.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
 <line x1="1078.0" y1="80.0" x2="1288.0" y2="80.0" stroke="#40484f" stroke-width="1.3"/>
 <text x="1183.0" y="68.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Configuracion</text>
@@ -301,4 +307,46 @@
 <text x="1085.0" y="226.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">DiasAnticipacionVencimiento: int</text>
 <text x="1085.0" y="241.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">DiasEsperaVoluntaria: int</text>
 <text x="1085.0" y="256.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">DiasParaTacto: int</text>
+<text x="1085.0" y="271.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">HoraResumen: TimeSpan</text>
+<text x="1085.0" y="286.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ChatTelegram: string</text>
+<text x="1085.0" y="301.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">FechaUltimoResumen: DateTime</text>
+<text x="1085.0" y="316.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">TelegramVinculado: bool</text>
+<rect x="1078.0" y="352.0" width="210.0" height="90.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 1079.0 376.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="1078.0" y1="376.0" x2="1288.0" y2="376.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="1183.0" y="364.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Reporte</text>
+<text x="1085.0" y="387.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Titulo: string</text>
+<text x="1085.0" y="402.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Periodo: string</text>
+<text x="1085.0" y="417.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">FechaEmision: DateTime</text>
+<text x="1085.0" y="432.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Secciones: List&lt;SeccionReporte&gt;</text>
+<rect x="1078.0" y="468.0" width="210.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 1079.0 492.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="1078.0" y1="492.0" x2="1288.0" y2="492.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="1183.0" y="480.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">SeccionReporte</text>
+<text x="1085.0" y="503.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Titulo: string</text>
+<text x="1085.0" y="518.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Columnas: string[]</text>
+<text x="1085.0" y="533.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Filas: List&lt;string[]&gt;</text>
+<text x="1085.0" y="548.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">ColumnasNumericas: List&lt;int&gt;</text>
+<text x="1085.0" y="563.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Nota: string</text>
+<rect x="1078.0" y="599.0" width="210.0" height="105.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 1079.0 623.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="1078.0" y1="623.0" x2="1288.0" y2="623.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="1183.0" y="611.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">PreferenciaNotificacion</text>
+<text x="1085.0" y="634.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">IdPreferencia: int</text>
+<text x="1085.0" y="649.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">TipoAlerta: string</text>
+<text x="1085.0" y="664.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Activa: bool</text>
+<text x="1085.0" y="679.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Etiqueta: string</text>
+<text x="1085.0" y="694.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Modulo: string</text>
+<rect x="1078.0" y="730.0" width="210.0" height="150.0" rx="3" fill="#ffffff" stroke="#40484f" stroke-width="1.3"/>
+<path d="M 1079.0 754.0 h 208.0 v -22.0 h -208.0 Z" fill="#f4f6f8"/>
+<line x1="1078.0" y1="754.0" x2="1288.0" y2="754.0" stroke="#40484f" stroke-width="1.3"/>
+<text x="1183.0" y="742.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Alerta</text>
+<text x="1085.0" y="765.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">IdAlerta: int</text>
+<text x="1085.0" y="780.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">TipoAlerta: string</text>
+<text x="1085.0" y="795.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">FechaGeneracion: DateTime</text>
+<text x="1085.0" y="810.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Mensaje: string</text>
+<text x="1085.0" y="825.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Enviada: bool</text>
+<text x="1085.0" y="840.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">IdPreferencia: int</text>
+<text x="1085.0" y="855.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Animal: Animal</text>
+<text x="1085.0" y="870.5" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#12181d" text-anchor="start" dominant-baseline="middle">Insumo: Insumo</text>
 </svg>

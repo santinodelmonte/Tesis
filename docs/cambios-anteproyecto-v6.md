@@ -63,7 +63,7 @@ De 55 requerimientos se pasó a 74, en siete módulos en lugar de seis: 20 nuevo
 | RF6.3 | Candidatas a descarte |
 | RF6.4 | Buscador de caravana |
 
-### Requerimientos corregidos (13)
+### Requerimientos corregidos (16)
 
 | | Qué decía | Qué dice |
 |---|---|---|
@@ -80,6 +80,9 @@ De 55 requerimientos se pasó a 74, en siete módulos en lugar de seis: 20 nuevo
 | RF3.8 | registra los datos de la cría | da de alta la cría como animal del rodeo |
 | RF5.3 | descuenta el stock | la cantidad se **ingresa**, no se calcula |
 | RF5.7 y RF5.8 | vencimiento del insumo | vencimiento **por partida**, consumo a la que vence primero |
+| RF7.5 | integrarse con un bot | agrega que el destinatario es **uno solo** para todo el establecimiento |
+| RF7.6 | siete tipos de aviso | **ocho**: suma *vacas para servir*, que el requerimiento omitía y el curso básico de CU49 sí pedía. Son los ocho contadores del tablero de inicio. Agrega que cada aviso se activa y desactiva por separado |
+| RF7.7 | un resumen diario | agrega que la **hora es configurable** por el establecimiento |
 
 ### Renumeración
 
@@ -87,6 +90,12 @@ El Módulo 2 se corre un lugar desde RF2.3 en adelante, porque los dos requerimi
 de ordeñe por turno se unificaron en uno. El Módulo 6 anterior pasa a ser el 7, con
 RF6.1–RF6.7 renumerados a RF7.1–RF7.7. Es la única renumeración: los módulos 1, 3, 4 y
 5 conservan la numeración de la v5.
+
+Las tres correcciones del Módulo 7 se hicieron al implementarlo, y son de la misma
+naturaleza que las demás: el sistema construido es el que manda. La de RF7.6 corrige,
+además, una contradicción interna del propio documento —el requerimiento enumeraba
+siete avisos y el curso básico de CU49 enumeraba otros siete, con una diferencia en
+cada lista—.
 
 **Esto impacta en el Proyecto**: cada caso de uso referencia sus requerimientos por
 número, y los cuarenta y nueve casos de uso de la v6 ya citan la numeración nueva. La
@@ -121,8 +130,8 @@ iteración, y el desarrollo real las agrupó de a dos, dejando dos iteraciones e
 —la cuarta y la quinta— para trabajo transversal que el plan no preveía: reglas de
 negocio, parámetros configurables, tablero, accesibilidad y corrección de registros.
 
-Las cinco primeras figuran como completadas. La sexta —reportes, Telegram y
-notificaciones— es la que resta.
+Las seis figuran como completadas: la sexta —reportes, Telegram y notificaciones— se
+cerró el 23/08/2026.
 
 ---
 

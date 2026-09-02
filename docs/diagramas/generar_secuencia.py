@@ -6,8 +6,8 @@ Se extraen las llamadas a la Controladora en el orden en que aparecen en el arch
 y para cada una se busca en pControladora a que clase de persistencia deriva. Asi el
 diagrama muestra el recorrido real entre capas y no una version idealizada.
 
-Los casos del Modulo 7 no tienen pantalla porque el modulo esta pendiente: sus
-diagramas se arman con los mensajes previstos, declarados en PREVISTOS.
+El unico caso sin pantalla es CU49, cuyo actor es el proceso programado que envia el
+resumen diario: sus mensajes se leen del servicio, que cumple el mismo papel.
 """
 import os
 import re
@@ -74,25 +74,32 @@ PANTALLAS = {
     41: ['PagesIndicadores/Indicadores'],
     42: ['PagesIndicadores/CandidatasDescarte'],
     43: ['PagesAnimal/DetalleAnimal'],
+    44: ['PagesReportes/ReporteProductivo'],
+    45: ['PagesReportes/ReporteSanitario'],
+    46: ['PagesReportes/ReporteReproductivo'],
+    47: ['PagesReportes/ReporteGenetico'],
+    48: ['PagesNotificaciones/Notificaciones'],
 }
 
-# Modulo 7: pendiente de implementacion, sin pantalla de la cual leer.
-PREVISTOS = {
-    44: ['CalcularProduccionEnRango', 'FiltrarOrdeniesLoteXFecha', 'ArmarReporte',
-         'DescargarArchivo'],
-    45: ['FiltrarTratamientosXAnimal', 'ListarVacunaciones', 'ArmarReporte',
-         'DescargarArchivo'],
-    46: ['ListarServicios', 'ListarPartos', 'ListarTactos', 'ArmarReporte',
-         'DescargarArchivo'],
-    47: ['ListarAscendencia', 'ListarDescendencia', 'EstimarProduccionLactancia',
-         'ArmarReporte'],
-    48: ['ObtenerPreferencias', 'VincularBot', 'ModificarPreferencias',
-         'EnviarMensajePrueba'],
-    49: ['ObtenerCalendarioSanitario', 'ListarAlertasParto', 'ListarTactosPendientes',
-         'ListarAlertasStock', 'ArmarResumen', 'EnviarMensaje'],
+# Archivos que completan un caso de uso sin ser una pantalla, con la ruta relativa a
+# Tesis/. Los cuatro reportes comparten la clase base que resuelve la descarga, y CU49
+# no tiene pantalla en absoluto: su actor es el proceso programado, y el servicio que
+# lo implementa es lo que cumple el papel de la vista.
+BASE_REPORTES = 'Pages/PagesReportes/ModeloReporte.cs'
+
+PROCESOS = {
+    44: [BASE_REPORTES],
+    45: [BASE_REPORTES],
+    46: [BASE_REPORTES],
+    47: [BASE_REPORTES],
+    49: ['Notificaciones/ServicioNotificaciones.cs'],
 }
 
-LLAMADA = re.compile(r'unaControladora\.([A-Za-z]\w*)\s*\(')
+# Cualquier variable de instancia de la Controladora: unaControladora en la mayoria de
+# las pantallas, pControladoraDominio en las de reporte. Tiene que empezar en
+# minuscula, para no confundir una instancia con las llamadas estaticas de la clase
+# -ValidarCredenciales-, que no son parte del recorrido entre capas.
+LLAMADA = re.compile(r'\b[a-z]\w*[Cc]ontroladora\w*\.([A-Za-z]\w*)\s*\(')
 DERIVA = re.compile(
     r'public\s+[\w<>,\[\]\?\.]+\s+(\w+)\s*\([^)]*\)\s*\{\s*(?:return\s+)?new\s+(p\w+)\(\)',
     re.S)
@@ -113,12 +120,13 @@ def mapa_persistencia():
 
 def llamadas_de(caso):
     """Metodos de la Controladora que invoca la pantalla del caso de uso."""
-    if caso['num'] in PREVISTOS:
-        return PREVISTOS[caso['num']]
-
     vistos = []
-    for pagina in PANTALLAS.get(caso['num'], []):
-        ruta = os.path.join(PAGINAS, pagina + '.cshtml.cs')
+    rutas = [os.path.join(PAGINAS, p + '.cshtml.cs')
+             for p in PANTALLAS.get(caso['num'], [])]
+    for archivo in PROCESOS.get(caso['num'], []):
+        rutas.append(os.path.join(RAIZ, 'Tesis', archivo))
+
+    for ruta in rutas:
         if not os.path.exists(ruta):
             continue
         texto = re.sub(r'//[^\n]*', '', open(ruta, encoding='utf-8').read())
@@ -149,7 +157,6 @@ def seleccionar(metodos):
 
 def diagrama(caso, mapa):
     metodos = seleccionar(llamadas_de(caso))
-    pendiente = caso['num'] in PREVISTOS
 
     clases = []
     for metodo in metodos:
@@ -158,7 +165,7 @@ def diagrama(caso, mapa):
             clases.append(clase)
 
     # Las lineas de vida se arman con un indice por rol, porque no todos los casos
-    # tienen las mismas: CU49 no tiene vista y CU48 suma el bot.
+    # tienen las mismas: CU49 no tiene vista, y los dos casos del bot lo suman.
     lineas, papel = [], {}
 
     def linea(nombre, rol):
@@ -175,7 +182,7 @@ def diagrama(caso, mapa):
         linea('pControladora', 'fachada')
         linea(clases[0] if len(clases) == 1 else 'pX (entidad)', 'datos')
         linea('pConexion', 'conexion')
-    if caso['num'] == 48:
+    if caso['num'] in (48, 49):
         linea('BotTelegram', 'bot')
 
     # Los mensajes se calculan antes de dibujar: la altura del lienzo y la de las
@@ -196,7 +203,12 @@ def diagrama(caso, mapa):
                           '%d. valida en memoria' % indice))
             indice += 1
     if 'bot' in papel:
-        guion.append(('controladora', 'bot', '%d. Enviar()' % indice))
+        # El mensaje sale desde donde se pide -la pantalla en CU48, el proceso
+        # programado en CU49- y no desde la Controladora, que arma el texto pero no
+        # sale a internet. Es el mismo reparto que en los reportes, donde la
+        # Controladora arma el reporte y la pantalla genera el archivo.
+        guion.append(('vista' if 'vista' in papel else 'actor', 'bot',
+                      '%d. EnviarMensaje()' % indice))
 
     ancho_columna = 172
     ancho = 60 + len(lineas) * ancho_columna
@@ -227,7 +239,7 @@ def diagrama(caso, mapa):
         d.flecha_mensaje(cabeza(desde), cabeza(hasta), y, texto)
         y += paso
 
-    return d, pendiente
+    return d
 
 
 def main():
@@ -238,7 +250,7 @@ def main():
     for caso in casos:
         if not llamadas_de(caso):
             sin_llamadas.append(caso['num'])
-        d, _ = diagrama(caso, mapa)
+        d = diagrama(caso, mapa)
         escribir(d, salida)
     print('%d diagramas de secuencia' % len(casos))
     if sin_llamadas:

@@ -363,13 +363,16 @@ reportes = [
     ('RF6.4', 'RF7.4 Reportes genéticos:',
      'El sistema debe generar reportes de genealogía y rendimiento por línea genética.'),
     ('RF6.5', 'RF7.5 Integración con Telegram:',
-     'El sistema debe integrarse con un bot de Telegram.'),
+     'El sistema debe integrarse con un bot de Telegram, vinculando un destinatario '
+     'único para todo el establecimiento.'),
     ('RF6.6', 'RF7.6 Notificaciones automáticas:',
      'El sistema debe enviar alertas automáticas sobre procedimientos sanitarios '
-     'pendientes, partos próximos, tactos pendientes, secados próximos, stock crítico, '
-     'vencimiento de insumos y fin del período de descarte de leche.'),
+     'pendientes, partos próximos, tactos pendientes, vacas para servir, secados '
+     'próximos, fin del período de descarte de leche, stock crítico y vencimiento de '
+     'insumos, permitiendo activar y desactivar cada tipo de aviso por separado.'),
     ('RF6.7', 'RF7.7 Resumen diario:',
-     'El sistema debe enviar un resumen diario de las tareas pendientes.'),
+     'El sistema debe enviar un resumen diario de las tareas pendientes, a una hora '
+     'configurable por el establecimiento.'),
 ]
 for prefijo, titulo, cuerpo in reportes:
     escribir(buscar(prefijo), titulo, cuerpo)
@@ -468,8 +471,7 @@ clonar_despues(
 
 escribir(
     buscar('El desarrollo será dividido en seis incrementos'),
-    'El desarrollo fue dividido en seis incrementos principales. Los cinco primeros se '
-    'encuentran completados y el sexto es el que resta.')
+    'El desarrollo fue dividido en seis incrementos principales, todos completados.')
 
 iteraciones = [
     ('Primera Iteración',
@@ -518,7 +520,7 @@ iteraciones = [
       'Reorganización de la navegación.',
       'Pruebas funcionales.']),
     ('Sexta Iteración',
-     'En la sexta y última iteración se desarrollarán los reportes y las notificaciones, '
+     'En la sexta y última iteración se desarrollaron los reportes y las notificaciones, '
      'junto con las validaciones finales del sistema.',
      ['Reportes productivos, sanitarios, reproductivos y genéticos.',
       'Integración con el bot de Telegram.',

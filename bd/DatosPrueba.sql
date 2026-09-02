@@ -75,6 +75,12 @@ SET @hoy = CURDATE();
 -- ---------------------------------------------------------------------
 SET FOREIGN_KEY_CHECKS = 0;
 
+-- Las alertas van primero: apuntan a los animales y a los insumos que se
+-- borran mas abajo, asi que dejarlas seria dejar un historial que habla de
+-- un rodeo que ya no existe. Las preferencias no se tocan: son datos
+-- semilla, como las razas y las categorias.
+TRUNCATE TABLE alertas;
+
 TRUNCATE TABLE ordenie_lote_animales;
 TRUNCATE TABLE ordenies_individual;
 TRUNCATE TABLE ordenies_lote;
@@ -96,6 +102,11 @@ TRUNCATE TABLE machos;
 TRUNCATE TABLE animales;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- El resumen del dia vuelve a quedar pendiente. Sin esto, recargar el juego
+-- de datos una maniana en que el resumen ya habia salido dejaria al bot
+-- callado hasta el dia siguiente, justo cuando hay algo nuevo que mostrar.
+UPDATE configuracion SET fecha_ultimo_resumen = NULL;
 
 
 -- =====================================================================
