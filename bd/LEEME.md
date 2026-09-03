@@ -38,6 +38,44 @@ mysqldump -u root -p tambo > respaldo_tambo.sql
 No hay script de actualización incremental: una base vieja se rehace corriendo
 `CreacionDb.sql` de nuevo, y lo que se quiera conservar se restaura del respaldo.
 
+### Si la base es anterior al ensanchado de `tipo_servicio`
+
+`servicios.tipo_servicio` pasó de `VARCHAR(20)` a `VARCHAR(30)`. Con 20 no entraba
+`'Inseminación artificial'`, que son 23 caracteres, y eso rompía de dos maneras
+distintas según cómo esté configurado el motor:
+
+- **En modo estricto** —el de fábrica desde MySQL 5.7 y MariaDB 10.2— el alta se
+  rechaza con `ERROR 1406 Data too long`. Cargando `DatosPrueba.sql` la corrida se
+  corta ahí y quedan sin datos `servicios`, `tactos` y todo lo que viene después.
+- **En modo permisivo** es peor, porque no avisa: guarda `'Inseminación artific'`
+  truncado, y a partir de ahí ninguna comparación contra `Servicio.INSEMINACION`
+  vuelve a dar verdadero. El síntoma es que el selector de pajuela de **Registrar
+  Servicio** no aparece nunca.
+
+Rehacer la base con `CreacionDb.sql` ya la deja bien. Para una base con datos que
+no se quieren perder, el arreglo son dos sentencias, y **las dos hacen falta**: el
+`ALTER` ensancha la columna y el `UPDATE` repara los valores que se hayan guardado
+truncados mientras era angosta.
+
+```sql
+ALTER TABLE servicios MODIFY tipo_servicio VARCHAR(30) NOT NULL;
+```
+
+```sql
+UPDATE servicios SET tipo_servicio = 'Inseminación artificial'
+ WHERE tipo_servicio <> 'Inseminación artificial'
+   AND tipo_servicio LIKE 'Inseminaci%';
+```
+
+Para saber de antemano si hay algo que reparar:
+
+```sql
+SELECT tipo_servicio, COUNT(*) FROM servicios GROUP BY tipo_servicio;
+```
+
+Tienen que salir sólo `Monta natural` e `Inseminación artificial`. Cualquier otra
+fila es un valor truncado.
+
 **Sobre la foto del animal:** la columna `foto` de `animales` guarda el nombre del
 archivo, no la imagen. Las imágenes viven en `Tesis/wwwroot/fotos`, así que **esa
 carpeta hay que respaldarla aparte del dump de la base**: un dump solo no alcanza
