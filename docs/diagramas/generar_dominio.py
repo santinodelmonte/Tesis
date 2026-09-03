@@ -23,7 +23,8 @@ COLUMNAS_ENTIDADES = [
     ['Celo', 'Servicio', 'Tacto', 'Parto', 'ControlDiario', 'CandidataDescarte'],
     ['PlanSanitario', 'ProcedimientoPendiente', 'Diagnostico', 'Tratamiento',
      'Vacunacion', 'Descorne'],
-    ['Configuracion'],
+    ['Configuracion', 'Reporte', 'SeccionReporte', 'PreferenciaNotificacion',
+     'Alerta'],
 ]
 
 
@@ -104,7 +105,7 @@ def diagrama_controladora(clases):
 
     caja = d.tabla(30, 56, 'Controladora', filas, 330)
     d.caja(430, 70, 300, 74,
-           'Listas static en memoria\n(caché del rodeo y de sus eventos)')
+           'Listas de instancia en memoria\n(caché del rodeo y de sus eventos)')
     d.caja(430, 175, 300, 60, 'pControladora\n(capa de persistencia)', negrita=True)
     d.caja(430, 268, 300, 92,
            'Clases de negocio\nAnimal, Hembra, Macho, Lactancia,\nServicio, Tratamiento, …')

@@ -25,8 +25,8 @@ Generado desde `bd/CreacionDb.sql` por `modelo_datos.py`. No editar a mano.
 - **tratamientos** = {id_tratamiento, fecha_inicio, dias_duracion, dosis_diaria, cantidad_insumo, id_animal, fecha_fin_descarte, id_diagnostico, id_insumo, id_plan}
 - **vacunaciones** = {id_vacunacion, fecha_aplicacion, id_animal, id_insumo, id_plan}
 - **descornes** = {id_descorne, fecha, metodo, observaciones, id_animal, id_plan}
-- **configuracion** = {id_configuracion, dias_secado_antes_parto, edad_minima_servicio_meses, edad_cambio_categoria_meses, litros_maximos_individual, ordenies_por_dia, dias_anticipacion_secado, dias_anticipacion_parto, dias_anticipacion_sanitaria, dias_anticipacion_vencimiento, dias_espera_voluntaria, dias_para_tacto}
-- **preferencias_notificacion** = {id_preferencia, tipo_alerta, activa, destinatario}
+- **configuracion** = {id_configuracion, dias_secado_antes_parto, edad_minima_servicio_meses, edad_cambio_categoria_meses, litros_maximos_individual, ordenies_por_dia, dias_anticipacion_secado, dias_anticipacion_parto, dias_anticipacion_sanitaria, dias_anticipacion_vencimiento, dias_espera_voluntaria, dias_para_tacto, hora_resumen, chat_telegram, fecha_ultimo_resumen}
+- **preferencias_notificacion** = {id_preferencia, tipo_alerta, activa}
 - **alertas** = {id_alerta, tipo_alerta, fecha_generacion, mensaje, enviada, id_preferencia, id_animal, id_insumo}
 
 ## 2.2.5.3 Tabla de Claves
@@ -295,15 +295,17 @@ Generado desde `bd/CreacionDb.sql` por `modelo_datos.py`. No editar a mano.
 | dias_anticipacion_vencimiento | INT(11) | No nulo |  |
 | dias_espera_voluntaria | INT(11) | No nulo |  |
 | dias_para_tacto | INT(11) | No nulo |  |
+| hora_resumen | TIME | No nulo | Hora a la que sale el resumen diario de Telegram. Es un parámetro de manejo como los demás: hay una sola para todo el establecimiento. |
+| chat_telegram | VARCHAR(40) | Nulo | Destinatario único de los avisos. Nulo mientras nadie haya vinculado una cuenta, y ese nulo es lo que el sistema lee como integración sin configurar. El token del bot no está en la base: es una credencial y vive en la configuración de la aplicación. |
+| fecha_ultimo_resumen | DATE | Nulo | Día en que salió el último resumen. Evita el mensaje repetido cuando el sitio se reinicia: la tabla de alertas no puede responder por un día sin pendientes, porque ese día no genera filas. |
 
 ### Tabla: preferencias_notificacion
 
 | Campo | Tipo | Restricciones | Observaciones |
 |---|---|---|---|
 | id_preferencia | INT(11) | PK, Auto increment, No nulo |  |
-| tipo_alerta | VARCHAR(40) | Único, No nulo |  |
-| activa | TINYINT(1) | No nulo |  |
-| destinatario | VARCHAR(60) | Nulo |  |
+| tipo_alerta | VARCHAR(40) | Único, No nulo | Los ocho tipos se cargan con el esquema y el sistema no da de alta ninguno: son los ocho contadores del tablero de inicio, y que la lista sea cerrada es lo que garantiza que el resumen y las pantallas no puedan discrepar. |
+| activa | TINYINT(1) | No nulo | Un aviso apagado deja de enviarse por Telegram y se sigue viendo en el sistema. |
 
 ### Tabla: alertas
 
@@ -311,9 +313,9 @@ Generado desde `bd/CreacionDb.sql` por `modelo_datos.py`. No editar a mano.
 |---|---|---|---|
 | id_alerta | INT(11) | PK, Auto increment, No nulo |  |
 | tipo_alerta | VARCHAR(40) | No nulo |  |
-| fecha_generacion | DATE | No nulo |  |
-| mensaje | VARCHAR(200) | No nulo |  |
+| fecha_generacion | DATE | No nulo | Un pendiente que no se resuelve genera su fila otra vez al día siguiente: el resumen es la lista de tareas del día, no un aviso de novedades. |
+| mensaje | VARCHAR(200) | No nulo | El renglón tal como se envió. Se guarda armado para que el historial no dependa de que el cálculo siga dando lo mismo meses después. |
 | enviada | TINYINT(1) | No nulo |  |
-| id_preferencia | INT(11) | FK, No nulo |  |
-| id_animal | INT(11) | FK, Nulo | Nulo según el tipo de alerta: unas se originan en un animal y otras en un insumo. |
-| id_insumo | INT(11) | FK, Nulo | Nulo por el mismo motivo que id_animal. |
+| id_preferencia | INT(11) | FK → preferencias_notificacion, No nulo |  |
+| id_animal | INT(11) | FK → animales, Nulo | Nulo según el tipo de alerta: unas se originan en un animal y otras en un insumo. |
+| id_insumo | INT(11) | FK → insumos, Nulo | Nulo por el mismo motivo que id_animal. |

@@ -5,5 +5,8 @@
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning"
     }
+  },
+  "Telegram": {
+    "Token": "PEGAR ACA EL TOKEN QUE DEVUELVE BOTFATHER"
   }
 }

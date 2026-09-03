@@ -4,7 +4,7 @@ La carpeta tiene dos scripts y nada más:
 
 | Script | Qué hace |
 |---|---|
-| `CreacionDb.sql` | Crea la base `tambo` completa: las veintidós tablas y los datos semilla |
+| `CreacionDb.sql` | Crea la base `tambo` completa: las veinticuatro tablas y los datos semilla |
 | `DatosPrueba.sql` | Carga un rodeo de prueba sobre una base ya creada |
 
 > **El entorno de desarrollo usa XAMPP.** El motor que trae XAMPP es MariaDB, que
@@ -24,8 +24,9 @@ mysql -u root -p < bd/CreacionDb.sql
 ```
 
 O abrirlo en MySQL Workbench y ejecutarlo entero. Crea la base `tambo` con las
-veintidós tablas y carga las razas, las categorías y la fila de parámetros del
-establecimiento, que son los tres datos que el sistema no da de alta por pantalla.
+veinticuatro tablas y carga las razas, las categorías, la fila de parámetros del
+establecimiento y los ocho tipos de aviso, que son los cuatro datos que el sistema no da
+de alta por pantalla.
 
 **El script empieza borrando la base `tambo` si ya existe, con todos sus datos.**
 Eso es lo que le permite dejar siempre el mismo esquema por más veces que se
@@ -124,7 +125,10 @@ Con `SET @hoy = DATE('2026-08-11')` el juego queda idéntico al que tenía fecha
 fijas, que es el que describe `docs/flujos-de-prueba.md`.
 
 El script empieza vaciando las tablas de datos, así que se puede volver a correr.
-No toca razas, categorías ni la fila de configuración, que las deja `CreacionDb.sql`.
+No toca razas, categorías, los ocho tipos de aviso ni los parámetros de la fila de
+configuración, que los deja `CreacionDb.sql`. Sí borra las alertas ya enviadas —apuntan
+a animales e insumos que el script está por reemplazar— y deja el resumen del día como
+pendiente, para que el bot vuelva a mandarlo con el rodeo recién cargado.
 
 ## 3. Carga inicial del rodeo
 
@@ -192,7 +196,49 @@ dotnet user-secrets set "Seguridad:Contrasena" "LA_CONTRASENA" --project Tesis/T
 Todo el sitio queda detrás del login: sin sesión iniciada cualquier página redirige
 a `/PagesSeguridad/Login`.
 
-## 7. Correr
+## 7. El token del bot de Telegram
+
+Sin token, el sistema funciona igual: la pantalla **Reportes y notificaciones →
+Notificaciones** avisa que falta y el proceso del resumen diario no arranca. Con token,
+hay que completar además la vinculación desde esa pantalla.
+
+El token **no va en `appsettings.json`**, que está versionado. Es una credencial —quien
+lo tiene maneja el bot— y Telegram revoca solo los que aparecen en un repositorio
+público. Va en `appsettings.Development.json`, que no se versiona:
+
+```json
+"Telegram": {
+  "Token": "1234567890:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+El repositorio trae `Tesis/appsettings.Development.json.ejemplo` como plantilla: se copia
+sin la extensión `.ejemplo` y se completa. Igual que la cadena de conexión, también se
+puede usar user-secrets:
+
+```bash
+dotnet user-secrets set "Telegram:Token" "EL_TOKEN" --project Tesis/Tesis.csproj
+```
+
+**En el hosting el archivo de desarrollo no se lee**, porque sólo carga en el entorno
+Development. Ahí el token va como variable de entorno, con dos guiones bajos en lugar de
+los dos puntos:
+
+```
+Telegram__Token=1234567890:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+**Y la zona horaria.** El resumen sale a la hora que dice el reloj del servidor, igual
+que se calculan la fecha probable de parto, los vencimientos y el fin del descarte: todo
+el sistema razona en hora local. Un servidor en UTC corre las ocho horas al resumen y,
+peor, al día que el sistema considera "hoy". Se resuelve en el hosting con la variable
+de entorno del sistema operativo:
+
+```
+TZ=America/Argentina/Buenos_Aires
+```
+
+## 8. Correr
 
 ```bash
 dotnet run --project Tesis/Tesis.csproj
@@ -201,9 +247,9 @@ dotnet run --project Tesis/Tesis.csproj
 Queda en `http://localhost:5174`. El login está en `/PagesSeguridad/Login` y el
 listado de animales en `/PagesAnimal/ListaAnimales`.
 
-## 8. Parámetros de manejo y constantes de negocio
+## 9. Parámetros de manejo y constantes de negocio
 
-Los **once parámetros de manejo** del establecimiento viven en la tabla
+Los **doce parámetros de manejo** del establecimiento viven en la tabla
 `configuracion` y se editan desde **Configuración** en el menú. `CreacionDb.sql`
 crea la tabla con un valor por defecto en cada columna y deja cargada la única fila.
 
@@ -220,8 +266,9 @@ crea la tabla con un valor por defecto en cada columna y deja cargada la única 
 | `dias_anticipacion_vencimiento` | 30 |
 | `dias_espera_voluntaria` | 45 |
 | `dias_para_tacto` | 35 |
+| `hora_resumen` | 07:00 |
 
-Las mismas once figuran como constantes en `Dominio/Controladora.cs`, pero ahí son
+Las mismas doce figuran como constantes en `Dominio/Controladora.cs`, pero ahí son
 sólo el valor de respaldo: si la fila de configuración no existiera, el sistema se
 comporta como antes de que la configuración existiera.
 
@@ -246,3 +293,8 @@ no es una decisión del establecimiento:
 
 El período de carencia y el stock mínimo tampoco están acá: son datos del producto
 y viven en `insumos`.
+
+Las otras dos columnas de `configuracion` no son parámetros de manejo y no se editan
+desde esa pantalla: `chat_telegram` lo escribe la pantalla de notificaciones al vincular
+la cuenta, y `fecha_ultimo_resumen` lo escribe el proceso del resumen —es lo único de la
+tabla que decide el sistema y no la encargada—.

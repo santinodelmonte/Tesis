@@ -1,25 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1092" height="384" viewBox="0 0 1092 384">
+<svg xmlns="http://www.w3.org/2000/svg" width="1092" height="844" viewBox="0 0 1092 844">
 <rect width="100%" height="100%" fill="#ffffff"/>
 <text x="546.0" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">CU31 — Consultar Calendario Sanitario</text>
 <rect x="40.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
 <text x="112.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Encargada</text>
-<rect x="111.0" y="102.0" width="2.0" height="254.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="111.0" y="102.0" width="2.0" height="714.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
 <rect x="212.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
 <text x="284.0" y="72.1" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Consultar Calendario</text>
 <text x="284.0" y="85.9" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Sanit</text>
-<rect x="283.0" y="102.0" width="2.0" height="254.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="283.0" y="102.0" width="2.0" height="714.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
 <rect x="384.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
 <text x="456.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Controladora</text>
-<rect x="455.0" y="102.0" width="2.0" height="254.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="455.0" y="102.0" width="2.0" height="714.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
 <rect x="556.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
 <text x="628.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pControladora</text>
-<rect x="627.0" y="102.0" width="2.0" height="254.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="627.0" y="102.0" width="2.0" height="714.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
 <rect x="728.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
-<text x="800.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pConfiguracion</text>
-<rect x="799.0" y="102.0" width="2.0" height="254.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<text x="800.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pX (entidad)</text>
+<rect x="799.0" y="102.0" width="2.0" height="714.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
 <rect x="900.0" y="56.0" width="144.0" height="46.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
 <text x="972.0" y="79.0" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">pConexion</text>
-<rect x="971.0" y="102.0" width="2.0" height="254.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
+<rect x="971.0" y="102.0" width="2.0" height="714.0" rx="3" fill="#40484f" stroke="#40484f" stroke-width="1.2"/>
 <line x1="284.0" y1="140.0" x2="456.0" y2="140.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 143.6 L 456.0 140.0 L 446.4 136.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="370.0" y="130.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">1. ObtenerConfiguracion()</text>
@@ -32,4 +32,34 @@
 <line x1="800.0" y1="278.0" x2="972.0" y2="278.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 962.4 281.6 L 972.0 278.0 L 962.4 274.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="886.0" y="268.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">4. EjecutarConsulta()</text>
+<line x1="284.0" y1="324.0" x2="456.0" y2="324.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 446.4 327.6 L 456.0 324.0 L 446.4 320.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="370.0" y="314.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">5. ListarCategorias()</text>
+<line x1="456.0" y1="370.0" x2="628.0" y2="370.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 618.4 373.6 L 628.0 370.0 L 618.4 366.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="542.0" y="360.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">6. ListarCategorias()</text>
+<line x1="628.0" y1="416.0" x2="800.0" y2="416.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 790.4 419.6 L 800.0 416.0 L 790.4 412.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="714.0" y="406.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">7. ListarCategorias()</text>
+<line x1="800.0" y1="462.0" x2="972.0" y2="462.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 962.4 465.6 L 972.0 462.0 L 962.4 458.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="886.0" y="452.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">8. EjecutarConsulta()</text>
+<line x1="284.0" y1="508.0" x2="456.0" y2="508.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 446.4 511.6 L 456.0 508.0 L 446.4 504.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="370.0" y="498.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">9. FiltrarCalendario()</text>
+<path d="M 456.0 554.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 465.6 572.4 L 456.0 576.0 L 465.6 579.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="498.0" y="565.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">10. valida en memoria</text>
+<line x1="284.0" y1="600.0" x2="456.0" y2="600.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 446.4 603.6 L 456.0 600.0 L 446.4 596.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="370.0" y="590.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">11. DiasParaAplicar()</text>
+<path d="M 456.0 646.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 465.6 664.4 L 456.0 668.0 L 465.6 671.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="498.0" y="657.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">12. valida en memoria</text>
+<line x1="284.0" y1="692.0" x2="456.0" y2="692.0" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 446.4 695.6 L 456.0 692.0 L 446.4 688.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="370.0" y="682.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">13. EstaVencido()</text>
+<path d="M 456.0 738.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<path d="M 465.6 756.4 L 456.0 760.0 L 465.6 763.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
+<text x="498.0" y="749.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">14. valida en memoria</text>
 </svg>

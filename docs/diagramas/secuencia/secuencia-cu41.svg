@@ -64,7 +64,7 @@
 <text x="498.0" y="749.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">14. valida en memoria</text>
 <line x1="284.0" y1="784.0" x2="456.0" y2="784.0" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 446.4 787.6 L 456.0 784.0 L 446.4 780.4" fill="none" stroke="#40484f" stroke-width="1.2"/>
-<text x="370.0" y="774.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">15. FiltrarAnimalesXEstado()</text>
+<text x="370.0" y="774.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="middle" dominant-baseline="middle">15. ContarHembrasXEstadoProductivo()</text>
 <path d="M 456.0 830.0 h 34 v 22 h -34" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <path d="M 465.6 848.4 L 456.0 852.0 L 465.6 855.6" fill="none" stroke="#40484f" stroke-width="1.2"/>
 <text x="498.0" y="841.0" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#12181d" text-anchor="start" dominant-baseline="middle">16. valida en memoria</text>

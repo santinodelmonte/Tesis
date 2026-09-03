@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using Tesis.Dominio;
+using Tesis.Notificaciones;
 using Tesis.Persistencia;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,6 +66,19 @@ pConexion.Configurar(builder.Configuration.GetConnectionString("Tambo") ?? "");
 Controladora.ConfigurarCredenciales(
     builder.Configuration["Seguridad:Usuario"] ?? "",
     builder.Configuration["Seguridad:Contrasena"] ?? "");
+
+// El token del bot de Telegram, por el mismo motivo y por el mismo camino: es una
+// credencial -quien lo tiene maneja el bot- y no puede estar escrita en el codigo.
+//
+// En desarrollo se lee de appsettings.Development.json, que no se versiona. En el
+// hosting, de la variable de entorno Telegram__Token, porque ese archivo no se
+// publica. Sin token el sistema funciona igual: la pantalla de notificaciones avisa
+// que falta y el proceso del resumen no arranca.
+BotTelegram.Configurar(builder.Configuration["Telegram:Token"] ?? "");
+
+// El proceso programado de CU49. Arranca con el sitio, escucha los mensajes que le
+// llegan al bot y manda el resumen diario a la hora configurada.
+builder.Services.AddHostedService<ServicioNotificaciones>();
 
 var app = builder.Build();
 

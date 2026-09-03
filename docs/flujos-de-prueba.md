@@ -696,7 +696,58 @@ dar de baja el animal. Verifique que siga activo!"*.
 
 ---
 
-## 24. Registro rápido desde el inicio
+## 24. Reportes
+
+**Pasos.** **Reportes y notificaciones → Productivo**. Dejar el período que viene
+propuesto —del primero del mes a hoy— y **Consultar**. Después **PDF** y **Excel**.
+
+**Esperado.** Los dos archivos traen exactamente lo que se ve en pantalla. Repetir con
+**Sanitario**, **Reproductivo** y **Genético**: el genético no usa período, porque la
+genealogía no depende de un rango de fechas.
+
+---
+
+## 25. Notificaciones por Telegram
+
+Este flujo necesita el token del bot cargado (`bd/LEEME.md`, punto 7) y el sitio
+corriendo. Sin token, la pantalla lo dice y no deja vincular: ése es el primer caso a
+probar.
+
+**Pasos.**
+
+1. Abrir Telegram, buscar el bot del establecimiento y escribirle `/start`. Contesta con
+   el identificador del chat.
+2. En el sistema, **Reportes y notificaciones → Notificaciones**. Pegar ese número y
+   **Vincular y probar**.
+3. Elegir la hora del resumen, dejar los ocho avisos tildados y **Guardar**.
+
+**Esperado.** Al vincular llega un mensaje de confirmación a Telegram y la pantalla
+muestra el chat vinculado. Si el mensaje no llega, la vinculación **no** se guarda y la
+anterior se conserva.
+
+**El resumen.** Con el juego de datos recién cargado, poner la hora del resumen un
+minuto adelante del reloj y esperar. Tiene que llegar un mensaje agrupado por módulo con
+los mismos números que muestra el tablero de inicio: cuatro vacas para servir, un tacto
+pendiente, un parto próximo, los procedimientos sanitarios del calendario, dos insumos
+bajo el mínimo y dos partidas por vencer. **Ese contraste es la prueba**: el mensaje y
+el tablero no pueden discrepar en ningún número.
+
+**Variantes que tienen que pasar.**
+
+- Escribirle `/resumen` al bot → contesta con el mismo mensaje en el momento, y eso
+  **no** cancela el envío automático del día.
+- Destildar *Stock crítico*, guardar y pedir `/resumen` → el bloque de stock desaparece
+  del mensaje, y **Insumos → Alertas de Stock** sigue mostrando los dos insumos.
+- Reiniciar el sitio después de que el resumen salió → no se manda de nuevo.
+- Poner un identificador de chat con letras → lo rechaza sin salir a internet.
+- Escribirle al bot desde otra cuenta de Telegram y pedir `/resumen` → contesta que ese
+  chat no está vinculado, sin mostrar ni un dato del rodeo.
+
+Al terminar, dejar la hora del resumen como estaba y volver a tildar los ocho avisos.
+
+---
+
+## 26. Registro rápido desde el inicio
 
 La tarjeta **Registro rápido** de `Hoy en el tambo` es la vía de carga diaria de los
 eventos reproductivos. Este flujo se puede hacer suelto, y conviene hacerlo **con el
@@ -766,3 +817,7 @@ el estado original:
 ```bash
 mysql -u root -p < bd/DatosPrueba.sql
 ```
+
+Eso también borra las alertas enviadas y deja el resumen del día como pendiente, así que
+el bot vuelve a mandarlo. Lo que no toca es la vinculación con Telegram ni los ocho
+interruptores: se configuran una vez y sobreviven a la recarga.

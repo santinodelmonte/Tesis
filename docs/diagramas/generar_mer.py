@@ -9,27 +9,6 @@ sys.path.insert(0, AQUI)
 from esquema import leer  # noqa: E402
 from lib_diagramas import Diagrama, escribir  # noqa: E402
 
-# Las dos tablas del Modulo 7 no estan en el DDL porque el modulo esta pendiente.
-# Se declaran aca para que el modelo muestre el esquema completo del sistema, y se
-# dibujan con otro relleno para que se distinga lo construido de lo proyectado.
-PENDIENTES = {
-    'preferencias_notificacion': [
-        ('id_preferencia', 'PK'), ('tipo_alerta', 'CA'), ('activa', ''),
-        ('destinatario', ''),
-    ],
-    'alertas': [
-        ('id_alerta', 'PK'), ('tipo_alerta', ''), ('fecha_generacion', ''),
-        ('mensaje', ''), ('enviada', ''), ('id_preferencia', 'FK'),
-        ('id_animal', 'FK'), ('id_insumo', 'FK'),
-    ],
-}
-
-FK_PENDIENTES = [
-    ('alertas', 'preferencias_notificacion'),
-    ('alertas', 'animales'),
-    ('alertas', 'insumos'),
-]
-
 COLUMNAS = [
     ['razas', 'categorias', 'animales', 'hembras', 'machos'],
     ['insumos', 'movimientos_stock', 'lactancias', 'ordenies_lote',
@@ -44,7 +23,6 @@ ANCHO_TABLA = 215
 SEPARACION_X = 265
 SEPARACION_Y = 26
 X0, Y0 = 30, 56
-RELLENO_PENDIENTE = '#e6e8ea'
 
 
 def main():
@@ -53,7 +31,6 @@ def main():
     filas_por_tabla = {}
     for nombre, tabla in tablas.items():
         filas_por_tabla[nombre] = [(c.nombre, c.marca) for c in tabla.columnas]
-    filas_por_tabla.update(PENDIENTES)
 
     alto = Y0
     for columna in COLUMNAS:
@@ -72,8 +49,7 @@ def main():
         y = Y0
         for nombre in columna:
             filas = filas_por_tabla[nombre]
-            estilo = {'relleno': RELLENO_PENDIENTE} if nombre in PENDIENTES else {}
-            figura = d.tabla(x, y, nombre, filas, ANCHO_TABLA, **estilo)
+            figura = d.tabla(x, y, nombre, filas, ANCHO_TABLA)
             puestas[nombre] = figura
             y += figura.alto + SEPARACION_Y
 
@@ -95,8 +71,6 @@ def main():
     for nombre, tabla in tablas.items():
         for _, destino, _, _ in tabla.fks:
             unir(nombre, destino)
-    for hijo, padre in FK_PENDIENTES:
-        unir(hijo, padre)
 
     base = escribir(d, AQUI)
     print(os.path.basename(base), '|', len(puestas), 'tablas |', ancho, 'x', alto)
