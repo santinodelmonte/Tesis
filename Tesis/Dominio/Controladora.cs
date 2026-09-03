@@ -3606,24 +3606,50 @@ namespace Tesis.Dominio
             return unUltimoTacto;
         }
 
+        // CU22. Lo que impide registrar el tacto, o una cadena vacia si se puede.
+        //
+        // Estas condiciones ya estaban escritas tres veces: las verificaba AltaTacto
+        // devolviendo false sin decir por que, las repetia la pantalla Registrar tacto
+        // para poder mostrar el motivo, y ValidarModificarTacto las tenia de nuevo para
+        // la correccion. Al abrirse una segunda entrada por el registro rapido del
+        // inicio habrian quedado cuatro copias, asi que viven aca y las tres las piden.
+        public string ValidarTacto(Tacto pTacto)
+        {
+            if (pTacto.Servicio == null || pTacto.Servicio.Animal == null)
+            {
+                return "Hay que indicar el servicio al que corresponde el tacto!";
+            }
+
+            if (pTacto.Resultado != Tacto.PRENADA && pTacto.Resultado != Tacto.VACIA
+                && pTacto.Resultado != Tacto.DUDOSA)
+            {
+                return "Hay que indicar el resultado del tacto!";
+            }
+
+            if (pTacto.FechaTacto > DateTime.Now)
+            {
+                return "La fecha del tacto no puede ser posterior a la fecha actual!";
+            }
+
+            // Comparadas por dia y no por instante, que es como ya lo hacia la
+            // correccion. Con las fechas guardadas como DATE las dos formas dan igual;
+            // comparar por dia es lo que sostiene que un tacto hecho la misma jornada
+            // del servicio se pueda registrar aunque alguna llegue con hora.
+            if (pTacto.FechaTacto.Date < pTacto.Servicio.FechaServicio.Date)
+            {
+                return "El tacto no puede ser anterior al servicio del "
+                    + pTacto.Servicio.FechaServicio.ToShortDateString() + "!";
+            }
+            return "";
+        }
+
         // CU22. El tacto mueve el estado reproductivo y nunca el productivo: una vaca en
         // lactancia confirmada prenada sigue produciendo. Con resultado positivo, ademas,
         // baja la fecha probable de parto a la lactancia en curso, que es de donde CU17
         // saca la fecha recomendada de secado.
         public bool AltaTacto(Tacto pTacto)
         {
-            if (pTacto.Servicio == null || pTacto.Servicio.Animal == null)
-            {
-                return false;
-            }
-
-            if (pTacto.Resultado != Tacto.PRENADA && pTacto.Resultado != Tacto.VACIA
-                && pTacto.Resultado != Tacto.DUDOSA)
-            {
-                return false;
-            }
-
-            if (pTacto.FechaTacto > DateTime.Now || pTacto.FechaTacto < pTacto.Servicio.FechaServicio)
+            if (this.ValidarTacto(pTacto) != "")
             {
                 return false;
             }
@@ -3683,9 +3709,10 @@ namespace Tesis.Dominio
 
         }
 
-        // Lo que impide corregir el tacto, o una cadena vacia si se puede. Son las
-        // mismas condiciones que valida el alta: el control se hace sobre un servicio,
-        // despues de ese servicio y no en el futuro, y con uno de los tres resultados.
+        // Lo que impide corregir el tacto, o una cadena vacia si se puede. Un tacto
+        // corregido tiene que seguir siendo un tacto posible, asi que despues de
+        // comprobar que el registro y el servicio existen la revision es la del alta,
+        // hecha sobre el servicio al que se lo quiere mover.
         public string ValidarModificarTacto(int pIdTacto, int pIdServicio, DateTime pFechaTacto,
             string pResultado)
         {
@@ -3702,22 +3729,7 @@ namespace Tesis.Dominio
                 return "Hay que indicar el servicio al que corresponde el tacto!";
             }
 
-            if (pResultado != Tacto.PRENADA && pResultado != Tacto.VACIA && pResultado != Tacto.DUDOSA)
-            {
-                return "Hay que indicar el resultado del tacto!";
-            }
-
-            if (pFechaTacto > DateTime.Now)
-            {
-                return "La fecha del tacto no puede ser posterior a la fecha actual!";
-            }
-
-            if (pFechaTacto.Date < unServicio.FechaServicio.Date)
-            {
-                return "El tacto no puede ser anterior al servicio del "
-                    + unServicio.FechaServicio.ToShortDateString() + "!";
-            }
-            return "";
+            return this.ValidarTacto(new Tacto(pIdTacto, pFechaTacto, pResultado, "", unServicio));
         }
 
         // Corregir un tacto es la correccion que mas se nota: cambia si la vaca figura
