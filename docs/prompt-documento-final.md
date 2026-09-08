@@ -15,9 +15,9 @@ Llegar a **un solo documento** con la forma de `EjemploTesis.pdf` —la tesis qu
 dio el tutor como modelo—, partiendo de los dos que ya existen:
 
 ```
-Anteproyecto_v6.docx  ──┐
+Anteproyecto_v8.docx  ──┐
                         ├──►  Tesis.docx  (1. Anteproyecto / 2. Proyecto / Glosario / Bibliografía / Anexo)
-Proyecto_v6.docx      ──┘
+Proyecto_v7.docx      ──┘
 ```
 
 Cuatro fases, **en este orden y sin solaparlas**:
@@ -55,7 +55,7 @@ FASE 3   refactor generar|editar       docs/generar.py                  Claude C
            │   paso 1  generar         .md y .png en docs/              Claude Code
            │   paso 1b capturas        docs/capturas/*.png              Claude Code local (app corriendo)
            │   revisar                 se mira el .md y el .png         ustedes / Cowork
-           │   paso 2  editar          Proyecto_v6.docx                 Claude Code
+           │   paso 2  editar          Proyecto_v7.docx                 Claude Code
            │   verificar               se abre el Word                  ustedes
            └───────────────┘
            ▼
@@ -146,7 +146,7 @@ commits distintos**:
 
 ```
 paso 1   generar      bd/CreacionDb.sql + Tesis/   ──►   docs/*.md  y  docs/diagramas/*.png
-paso 2   editar       docs/*.md + docs/diagramas/  ──►   Proyecto_v6.docx
+paso 2   editar       docs/*.md + docs/diagramas/  ──►   Proyecto_v7.docx
 ```
 
 **El paso 2 no genera nada.** Toma los archivos que ya están en `docs/` y los
@@ -193,7 +193,7 @@ en `docs/`, y el paso 2 las vuelca. No se escriben directamente en Word.
 
 ## 4. Estado de partida
 
-`Proyecto_v6.docx`, contenido por sección:
+`Proyecto_v7.docx`, contenido por sección:
 
 | Sección | Estado |
 |---|---|
@@ -510,7 +510,7 @@ que reconoce sus límites se defiende mejor que uno que los esconde.
 4. El índice se genera, no se escribe. Con números de página reales.
 
 > **El índice es el único paso que no se puede automatizar del todo.** El de
-> `Proyecto_v6.docx` hoy es texto plano: no tiene campo TOC ni un solo `PAGEREF`,
+> `Proyecto_v7.docx` hoy es texto plano: no tiene campo TOC ni un solo `PAGEREF`,
 > por eso tampoco tiene números de página. Los números dependen de la paginación,
 > y la paginación la calcula un procesador de texto, no `python-docx`. La forma
 > correcta es que `armar_tesis.py` inserte un campo `TOC \o "1-4" \h \z \u`
@@ -605,7 +605,7 @@ El documento está terminado cuando:
       `cambios-anteproyecto-v7.md`.
 - [ ] Generar y editar son dos comandos separados, y el de editar corta con un
       mensaje claro si algún artefacto de `docs/` es más viejo que su fuente.
-- [ ] Borrar `Proyecto_v6.docx` y `Tesis.docx` y correr el paso 2 los reconstruye
+- [ ] Borrar `Proyecto_v7.docx` y `Tesis.docx` y correr el paso 2 los reconstruye
       completos, sin volver a generar nada. Ninguna sección se perdió por estar
       escrita a mano en el Word.
 - [ ] `Tesis.docx` tiene un campo TOC real, se actualizó una vez en Word y el
@@ -668,17 +668,19 @@ como el resto del documento.
 |---|---|
 | **Rodeo** | El conjunto de animales del establecimiento. |
 | **Caravana** | La identificación individual del animal, única en el sistema. Es la forma en que la encargada lo nombra: no se usa el identificador interno. |
-| **Categoría** | Valor **derivado**, no cargado: el sistema lo calcula con el sexo, la edad y la cantidad de partos, y lo propone al usuario. Las seis salen de la tabla `categorias`: Ternera, Novilla, Vaca, Ternero, Novillo, Toro. |
-| **Novilla** | Hembra de más de 12 meses **sin partos registrados**. Cuando pare pasa a Vaca. |
-| **Vaquillona** | Sinónimo de novilla de uso corriente en el tambo. **No es una categoría del sistema** (ver más abajo). |
+| **Categoría** | Valor **derivado**, no cargado: el sistema lo calcula con el sexo, la edad y la cantidad de partos, y lo propone al usuario. Las seis salen de la tabla `categorias`: Ternera, Vaquillona, Vaca, Ternero, Novillo, Toro. |
+| **Vaquillona** | Hembra de más de 12 meses **sin partos registrados**. Cuando pare pasa a Vaca. Es una de las seis categorías del sistema. |
+| **Novilla** | Sinónimo de vaquillona. **No se usa**: ni en el documento ni en la pantalla. |
 | **Ascendencia / linaje** | La cadena de madres y padres de un animal, que el sistema arma solo a partir de los partos registrados. |
 | **Consanguinidad** | Parentesco entre la hembra y el reproductor. El sistema busca un ancestro común y **advierte**; no bloquea el servicio. |
 
-> **Una decisión de vocabulario para la Fase 2.** `bd/DatosPrueba.sql` y los flujos
-> de prueba hablan de *vaquillonas*; el código y la base sólo conocen *Novilla*. Las
-> dos palabras son correctas en el tambo, pero el documento tiene que usar una y
-> declarar la otra en el glosario. Es exactamente el tipo de diferencia que la
-> auditoría de tres vías tiene que cazar.
+> **La decisión de vocabulario está tomada, y se aplicó al sistema (08/09/2026).** El
+> juego de datos y los flujos de prueba hablaban de *vaquillonas* y el código sólo
+> conocía *Novilla*. Se resolvió a favor de **vaquillona**, que es el uso corriente en
+> el tambo, y por eso el cambio no fue sólo del documento: se renombró la categoría en
+> `Controladora.cs` y en `bd/CreacionDb.sql`, para que la pantalla y el texto digan la
+> misma palabra. Es el hallazgo H5 de la auditoría de tres vías, y el único de los
+> trece que pidió tocar código.
 
 #### Producción
 

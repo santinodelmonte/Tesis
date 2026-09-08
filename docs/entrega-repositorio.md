@@ -64,14 +64,14 @@ cd ..
 cp -r Tesis Tesis-entrega
 cd Tesis-entrega
 rm -rf .git docs .claude EjemploTesis.pdf
-rm -f Anteproyecto_v5.docx Anteproyecto_v5.docx.pdf Anteproyecto_v6.docx Anteproyecto_v7.docx
-rm -f Proyecto_v5.docx Proyecto_v5.pdf Proyecto_v6.docx
+rm -f Anteproyecto_v*.docx Anteproyecto_v5.docx.pdf
+rm -f Proyecto_v*.docx Proyecto_v5.pdf
 
 # 2. Dejar el documento final con un nombre que se entienda solo
 #    (copiarlo desde donde esté: Tesis.docx y Tesis.pdf)
 
 # 3. Repositorio nuevo
-git init -b main
+git init -b master
 git add .
 git commit -m "Sistema de gestion de tambo"
 

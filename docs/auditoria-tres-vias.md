@@ -4,7 +4,11 @@ Fase 2 del `prompt-documento-final.md`. La regla es que los tres digan exactamen
 lo mismo. Ante la duda manda el código, **pero nada se aplica sin consultar**: esta
 lista es para que la respondan, no para que el agente decida.
 
-Hecha el **26/08/2026**, contra `HEAD` de `claude/thesis-project-document-prompt-nj7ffh`.
+Primera pasada el **26/08/2026**, contra `HEAD` de
+`claude/thesis-project-document-prompt-nj7ffh`. **Segunda pasada el 08/09/2026**,
+contra `master`: el Módulo 7, que en agosto todavía no existía, y los cuatro
+requerimientos que habían quedado sin verificar a nivel de línea. Los hallazgos
+nuevos son H9 a H13.
 
 ---
 
@@ -12,7 +16,7 @@ Hecha el **26/08/2026**, contra `HEAD` de `claude/thesis-project-document-prompt
 
 | Vía | Fuente |
 |---|---|
-| Anteproyecto | `Anteproyecto_v6.docx` — los **74 requerimientos funcionales**, extraídos con su texto completo |
+| Anteproyecto | `Anteproyecto_v6.docx` en la primera pasada, `Anteproyecto_v7.docx` en la segunda — los **74 requerimientos funcionales**, extraídos con su texto completo |
 | Proyecto | `docs/catalogo-casos-de-uso.md` — los **49 casos de uso** y sus referencias a RF |
 | Código | `Tesis/Dominio/Controladora.cs` (252 métodos públicos), las 58 páginas, y `bd/CreacionDb.sql` |
 
@@ -52,12 +56,23 @@ un requerimiento.
 | `ListarRodeo` | RF6.2 |
 | `ValidarLoteContraMedido`, `ValidarMedidoContraLote` | **ningún RF** → hallazgo 2 |
 
+**En la segunda pasada la medición se repitió, y sigue sin eliminarse un solo método.**
+Contra el mismo commit `822a591` hay hoy **diecinueve métodos nuevos**: los ocho de
+arriba, once del Módulo 7 y `ValidarTacto`.
+
+| Método nuevo desde el 26/08 | Lo cubre |
+|---|---|
+| `VincularTelegram`, `ValidarChatTelegram` | RF7.5 |
+| `ListarPreferencias`, `ModificarNotificaciones`, `ValidarHoraResumen` | RF7.6 → H10 y H11 |
+| `GenerarAlertasDelDia`, `ArmarMensajeResumen`, `RegistrarEnvioResumen`, `ResumenEnviado`, `ContarAlertas` | RF7.7 |
+| `ValidarTacto` | RF3.4 y RF3.5 — la validación del tacto, extraída del alta porque el registro rápido del tablero la necesita por separado |
+
 **Los requerimientos que fijan números están todos bien.** Se verificaron uno por
 uno contra las constantes del código:
 
 | RF | Lo que afirma | Código |
 |---|---|---|
-| RF0.3 | Once parámetros configurables | Los once, en `Configuracion.cs` |
+| RF0.3 | Once parámetros configurables | Los once, en `Configuracion.cs` — y desde el Módulo 7 hay un doceavo que el RF no nombra → **H11** |
 | RF2.2 | Que el lote no supere el máximo × cantidad de animales | `Controladora.cs:1779` |
 | RF2.6 | Proyección lineal a 305 días | `DIAS_LACTANCIA_ESTANDAR = 305` |
 | RF3.11 | Cinco advertencias que no bloquean | Las cinco, incluida la gestación fuera de 240–320 días |
@@ -67,7 +82,9 @@ uno contra las constantes del código:
 | RF5.10 | Contra-movimiento que devuelve el stock | `Controladora.cs:2593` |
 
 Es un resultado bueno y conviene decirlo: **la parte difícil ya estaba hecha.** Lo
-que sigue son cinco hallazgos, y ninguno es grave.
+que sigue son trece hallazgos —ocho de la primera pasada, cinco de la segunda— y
+ninguno es grave. **Doce de los trece se corrigen escribiendo, no programando**; el
+único que pide tocar código es H5, y porque así se resolvió.
 
 ---
 
@@ -178,19 +195,28 @@ significan lo mismo: hembra de más de 12 meses sin partos.
 uso corriente en el tambo es *vaquillona*, y el documento habla el idioma de la
 usuaria.
 
-> **Y eso obliga a cambiar el sistema, no sólo el documento.** Hoy la pantalla
-> muestra **Novilla**: si el documento dice *vaquillona* y la captura dice *Novilla*,
-> volvemos a tener las tres patas diciendo cosas distintas, que es justo lo que esta
-> auditoría existe para evitar.
->
-> Por suerte el cambio es de dos líneas: `Controladora.cs:971` (`vNombre =
-> "Novilla"`) y la fila de la tabla `categorias` en `bd/CreacionDb.sql:526`. Las
-> demás tablas apuntan a la categoría por `id_categoria`, así que renombrar la
-> etiqueta no toca un solo dato.
->
-> **Queda pendiente de que lo confirmen**, porque es un cambio de código y de datos
-> que no estaba en la pregunta original. El glosario declara **novilla** como
-> sinónimo.
+**APLICADO al sistema el 08/09/2026.** Era el único de los trece hallazgos que pedía
+tocar código, porque la palabra sale en pantalla: si el documento dice *vaquillona* y
+la captura dice *Novilla*, volvemos a tener las tres patas diciendo cosas distintas,
+que es justo lo que esta auditoría existe para evitar.
+
+El cambio fue de dos líneas de comportamiento más cuatro comentarios:
+
+| Archivo | Qué cambió |
+|---|---|
+| `Tesis/Dominio/Controladora.cs:1009` | `vNombre = "Vaquillona"` en `CalcularCategoria` |
+| `bd/CreacionDb.sql:558` | la fila semilla de `categorias` |
+| `Controladora.cs:4073` y `:4467`, `pAnimal.cs:167`, `pParto.cs:250` | los comentarios de RF1.9, que decían «vuelve a ser novilla» |
+
+**No se tocó un solo dato.** Las demás tablas apuntan a la categoría por
+`id_categoria` y `bd/DatosPrueba.sql` también —usa los ids 2 y 3 y ningún nombre—, así
+que la vaquillona sigue siendo la categoría 2. La búsqueda de `CalcularCategoria` es
+por nombre contra la tabla (`:1034`), y por eso los dos cambios van juntos o ninguno:
+con uno solo, el cálculo de categoría devolvería `null` para toda hembra de más de doce
+meses sin partos.
+
+`dotnet build` sale con 0 errores después del cambio. El glosario del documento declara
+**novilla** como sinónimo que no se usa.
 
 ### H6 — Las credenciales viajan con el código, y el propio anteproyecto dice que no deberían
 
@@ -296,41 +322,318 @@ cuatro nombres concretos que no existen.
 > tags de ahora en más, eso sí tiene valor propio y se puede documentar como práctica
 > adoptada.
 
----
+### H9 — RF7.6 enumera siete avisos y el sistema manda ocho
 
-## 4. El Módulo 7, que está a mitad de camino
+**El anteproyecto dice** que el sistema envía alertas sobre «procedimientos sanitarios
+pendientes, partos próximos, tactos pendientes, secados próximos, stock crítico,
+vencimiento de insumos y fin del período de descarte de leche». Son **siete**.
 
-No es un hallazgo: es trabajo en curso. Pero define qué se puede escribir hoy.
+**El código tiene ocho**, y la lista es cerrada a propósito —`PreferenciaNotificacion.Tipos()`
+y el `INSERT` de `preferencias_notificacion` en `bd/CreacionDb.sql:637`—:
 
-| RF | Estado |
+| Tipo en el código | ¿Está en RF7.6? |
 |---|---|
-| RF7.1 Reportes productivos | **hecho** — `PagesReportes/ReporteProductivo`, con `GeneradorPdf` y `GeneradorExcel` |
-| RF7.2 Reportes sanitarios | **hecho** |
-| RF7.3 Reportes reproductivos | **hecho** |
-| RF7.4 Reportes genéticos | **hecho** |
-| RF7.5 Integración con Telegram | **falta** — no hay una línea de Telegram en el código |
-| RF7.6 Notificaciones automáticas | **falta** |
-| RF7.7 Resumen diario | **falta** — las 37 líneas nuevas de `Program.cs` son cultura y codificación, no un proceso programado |
+| `Sanitario pendiente` | sí |
+| `Parto proximo` | sí |
+| `Tacto pendiente` | sí |
+| **`Vaca para servir`** | **no** |
+| `Secado proximo` | sí |
+| `Fin de descarte` | sí |
+| `Stock critico` | sí |
+| `Vencimiento de insumo` | sí |
 
-Las dos tablas del Módulo 7 tampoco están: la última de `bd/CreacionDb.sql` sigue
-siendo `configuracion`. **Cuando el bot esté, hay que volver a correr esta auditoría
-sobre RF7.5 a RF7.7 y nada más.**
+El que falta no es un aviso menor: es el que abre el ciclo reproductivo —la vaca que
+pasó la espera voluntaria y todavía no fue servida—, sale de `ListarVacasParaServir` y
+es uno de los ocho contadores del tablero de inicio.
+
+**El código tiene razón.** El RF se escribió cuando el Módulo 7 no existía y la lista
+salió de memoria, no del tablero.
+
+> **Propuesta:** agregar «vacas en condiciones de ser servidas» a la enumeración de
+> RF7.6. Es un aviso más en una lista, no cambia nada más.
+
+### H10 — RF7.6 no dice por dónde salen las alertas, y que se puedan apagar no lo pide ningún requerimiento
+
+Dos cosas de la misma redacción.
+
+**Por dónde salen.** RF7.6 dice «enviar alertas automáticas» y RF7.7, «enviar un
+resumen diario». Leídos juntos parecen **dos canales**: un aviso cuando el pendiente
+aparece, y además un resumen. **El sistema tiene uno solo**: los ocho tipos se arman en
+`GenerarAlertasDelDia` (`:7502`) y salen agrupados por módulo dentro del mensaje
+diario, o a pedido con el comando `/resumen`. No hay envío en el momento del evento.
+
+Y está bien que no lo haya: un pendiente no «ocurre» en un instante —la vaca entra en
+la lista de tactos porque pasaron los días, no porque alguien apretó algo—, así que no
+hay un momento en el que disparar el aviso. El día es la unidad natural.
+
+**Que se puedan apagar.** La pantalla de Notificaciones deja activar y desactivar cada
+uno de los ocho tipos, y apagarlo lo saca del mensaje sin sacarlo del sistema. Es la
+mitad de CU48 y **ningún RF lo describe**: RF7.5 habla del destinatario y del mensaje
+de prueba, RF7.6 de qué se avisa, ninguno de que se pueda elegir. Es de la familia de
+H2 —el sistema hace algo bueno que el documento no pide—.
+
+> **Propuesta:** RF7.6 pasa a decir que el sistema debe enviar automáticamente, **en el
+> resumen diario**, alertas sobre los ocho tipos, y **permitir activar o desactivar
+> cada tipo por separado**. Con eso RF7.6 y RF7.7 dejan de leerse como dos canales y la
+> selección deja de ser una función huérfana.
+
+### H11 — La hora del resumen es configurable y ningún requerimiento lo dice
+
+`configuracion` tiene `hora_resumen` (`TIME`, `07:00` por defecto), se edita desde la
+pantalla de Notificaciones, se valida en `ValidarHoraResumen` (`:7444`) y el proceso la
+relee cada cinco minutos.
+
+**RF0.3 enumera once parámetros configurables** y los once están —lo verificó la pasada
+del 26/08—. Éste es el **doceavo**, y no está en RF0.3 ni en RF7.5 ni en RF7.7. Se le
+escapó a las dos vías: RF0.3 se escribió antes del Módulo 7, y la revisión de RF7.5 se
+concentró en el mensaje de prueba.
+
+Que viva en otra pantalla es correcto —se configura una vez, junto con el destinatario,
+y no es un parámetro de manejo del rodeo—, pero el documento tiene que decirlo en algún
+lado.
+
+**En la misma bolsa:** el comando **`/resumen`**, que devuelve las tareas del día a
+pedido y sólo al chat vinculado, tampoco lo pide ningún RF.
+
+> **Propuesta:** que RF7.7 diga «…un resumen diario de las tareas pendientes **a la hora
+> configurada**, y permitir consultarlo a demanda desde el mismo canal». Los dos
+> agregados entran en una sola frase y no tocan RF0.3, que sigue siendo de parámetros de
+> manejo.
+
+### H12 — RF1.14 dice «la edad mínima al servicio»; el código exige esa edad más la gestación, y con dos umbrales distintos
+
+**El anteproyecto dice** que se impide «un progenitor cuya fecha de nacimiento no
+admita la edad mínima al servicio».
+
+**El código exige más que eso**, y con razón: para ser progenitor no alcanza con haber
+tenido edad de servicio, hay que haber tenido edad de servicio **nueve meses antes de
+que naciera la cría** (`ValidarGenealogia`, `:846`):
+
+| | Fórmula | Valor por defecto | ¿Configurable? |
+|---|---|---|---|
+| Madre | `Parametros().EdadMinimaServicioMeses + GESTACION_MESES` | 13 + 9 = **22 meses** | **sí**, el sumando de la edad |
+| Padre | `EDAD_MINIMA_SERVICIO_MESES + GESTACION_MESES` (`:24`, `:26`) | 15 + 9 = **24 meses** | no |
+
+Es exactamente el mismo par de problemas que H1 y H4 juntos: el documento dice «la edad
+mínima al servicio» en singular cuando hay dos umbrales, y omite la gestación. Y la
+asimetría no es un descuido: la constante de 15 meses del macho es la misma que decide
+la categoría Toro, y ya quedó documentada en RF1.8 por H4.
+
+**El código tiene razón.** El RF describe menos de lo que el sistema controla.
+
+> **Propuesta:** RF1.14 pasa a decir «…un progenitor cuya fecha de nacimiento no admita
+> **la edad mínima al servicio más los nueve meses de gestación —22 meses para la madre,
+> con la edad configurable, y 24 para el padre—**». Queda medible: se toman dos fechas
+> de nacimiento y se sabe si el sistema cumple.
+
+### H13 — RF1.14 promete advertir por un progenitor «dado de baja»; el sistema advierte por uno que ya lo estaba en la fecha que corresponde
+
+**El anteproyecto dice** que el sistema «debe advertir cuando el progenitor elegido se
+encuentre dado de baja». En presente: si hoy está de baja, avisa.
+
+**El código no hace eso**, y no debería (`AdvertenciasGenealogia`, `:900`):
+
+| Progenitor | Cuándo advierte |
+|---|---|
+| Madre | si figuraba de baja **antes de la fecha de nacimiento de la cría** |
+| Padre | si figuraba de baja **antes de la concepción**, o sea nueve meses antes |
+
+O sea que una vaca vendida el año pasado **no genera advertencia** al cargarle un
+ternero que parió hace tres años, y así tiene que ser: la mitad del rodeo histórico
+está de baja y una advertencia en cada carga es una advertencia que nadie lee.
+
+La distinción del padre es más fina todavía, y el código la explica: *«el semen
+congelado sigue sirviendo años después de que el toro murió»*. Por eso el texto de esa
+advertencia termina con «Es correcto si la cría vino de una pajuela suya».
+
+**El código tiene razón.**
+
+> **Propuesta:** RF1.14 pasa a decir «…y debe advertir cuando el progenitor elegido
+> **figurara dado de baja antes de la fecha en que debió engendrar a la cría —el parto
+> para la madre, la concepción para el padre—**». Es la misma familia que H1, H4, H7 y
+> H12: el documento dice en general lo que el sistema hace acotado.
+>
+> **Y de paso, una imprecisión menor del mismo RF:** «un progenitor que figure en su
+> propia descendencia» se lee mal —«su» cae sobre «un progenitor», y un animal en su
+> propia descendencia es otra cosa—. Lo que el código impide es que el progenitor
+> elegido descienda **del animal** que se está cargando (`ListarDescendencia`, `:805`,
+> que recorre la descendencia completa y no sólo los hijos directos). Conviene escribirlo
+> así.
 
 ---
 
-## 5. Lo que queda por verificar a nivel de línea
+## 4. El Módulo 7, auditado
 
-Para ser exactos sobre el alcance de esta pasada: se verificaron contra el código
-**todos los RF que afirman un número o un comportamiento concreto**. Los que dicen
-«el sistema debe permitir registrar X» se dieron por cubiertos con la existencia de
-la pantalla y del método, sin seguir cada campo.
+La pasada del 26/08 dejó esto escrito: *«Cuando el bot esté, hay que volver a correr
+esta auditoría sobre RF7.5 a RF7.7 y nada más»*. El bot está desde el 23/08 —y su
+manejo de errores se corrigió el 08/09—, así que se corrió.
 
-Quedan en ese grupo, y conviene mirarlos al escribir el manual —que obliga a recorrer
-cada pantalla campo por campo—: **RF1.14** (las tres validaciones de genealogía
-imposible), **RF4.5** (que el calendario calcule pendientes *y* vencidos), **RF4.9**
-(que las cuatro entidades sanitarias se puedan corregir y eliminar) y **RF5.8** (que
-el consumo se impute a la partida que vence primero).
+| RF | Estado | Verificado contra |
+|---|---|---|
+| RF7.1 a RF7.4 Reportes | **cumple**, ya estaba | `PagesReportes/`, `GeneradorPdf`, `GeneradorExcel` |
+| RF7.5 Canal de notificaciones | **cumple** | `PagesNotificaciones/Notificaciones.cshtml.cs`, `VincularTelegram` (`:7483`) |
+| RF7.6 Notificaciones automáticas | **cumple, con dos correcciones de redacción** | `GenerarAlertasXTipo` (`:7522`) → H9 y H10 |
+| RF7.7 Resumen diario | **cumple, con una corrección de redacción** | `ServicioNotificaciones.RevisarResumen` → H11 |
 
-Escribir el manual **es** la forma de terminar esta auditoría: no hay mejor manera de
-verificar que el documento dice lo que el sistema hace que documentar pantalla por
-pantalla lo que la pantalla muestra.
+**Las dos tablas que faltaban están.** `bd/CreacionDb.sql` termina hoy en
+`preferencias_notificacion` y `alertas`, y `configuracion` sumó `hora_resumen`,
+`chat_telegram` y `fecha_ultimo_resumen`. La observación de la pasada anterior —«la
+última de `CreacionDb.sql` sigue siendo `configuracion`»— quedó saldada.
+
+**RF7.5 se cumple en el orden correcto, que era lo difícil.** El requerimiento pide
+verificar la conexión «mediante un mensaje de prueba **antes de darla por activa**», y
+`OnPostVincular` manda el mensaje **primero** y guarda **después**: si Telegram
+rechaza, la configuración anterior queda intacta, que es el curso de excepción 3a de
+CU48. Lo fácil habría sido guardar y probar, y entonces un identificador mal copiado
+dejaba el sistema apuntando a un chat que no existe.
+
+**Lo que el resumen no hace, y es deliberado:** no calcula nada propio.
+`GenerarAlertasDelDia` recorre las preferencias activas y le pide a la Controladora
+**las mismas listas que alimentan el tablero de inicio**. Por eso el mensaje y la
+pantalla no pueden discrepar en un número, que es la regla de negocio de CU49.
+
+**Los tres hallazgos son de redacción del documento y ninguno pide tocar código:** H9
+(falta un aviso en la enumeración), H10 (no dice que salen en el resumen, ni que se
+pueden apagar) y H11 (la hora configurable y el `/resumen` a pedido no están en ningún
+RF).
+
+---
+
+## 5. Lo que quedaba por verificar a nivel de línea, verificado
+
+La pasada del 26/08 dejó cuatro requerimientos dados por cubiertos «con la existencia
+de la pantalla y del método», sin seguir cada campo. Se siguieron.
+
+### RF1.14 Validación del árbol genealógico — **cumple, con dos correcciones de redacción**
+
+Las tres imposibilidades están en `ValidarGenealogia` (`:846`), que corre en el alta
+(`:530`), en la modificación (`:582`) y en la cría que nace de un parto (`:4012`,
+`:4296`):
+
+| Lo que el RF promete | Dónde está | |
+|---|---|---|
+| Un animal como progenitor de sí mismo | `:850` a `:857`, madre y padre por separado | ✔ |
+| Un progenitor que figure en la descendencia | `:859` a `:872`, con `ListarDescendencia` recursiva | ✔ |
+| Un progenitor cuya edad no admita la concepción | `:875` a `:887` | ✔ **pero el RF dice menos que el código → H12** |
+| Advertir por el progenitor dado de baja | `AdvertenciasGenealogia` (`:900`), sin bloquear | ✔ **con distinto criterio del que el RF anuncia → H13** |
+
+La separación entre lo que bloquea y lo que sólo advierte está explicada en el código y
+es la decisión correcta: las imposibilidades trancan, y lo que en un tambo real puede
+ser cierto aunque parezca un error —una madre dada de baja, un padre muerto que dejó
+pajuelas— avisa y deja guardar, porque trabarlo haría imposible la carga inicial del
+rodeo.
+
+### RF4.5 Calendario sanitario — **cumple entero**
+
+| Lo que el RF promete | Dónde está |
+|---|---|
+| Vacunaciones, desparasitaciones **y** descornes | `UltimaAplicacion` (`:6792`) ramifica por los tres tipos de `PlanSanitario` y busca en `vacunaciones`, `tratamientos` y `descornes` respectivamente |
+| Pendientes **y vencidos** | `CalcularPendientes` (`:6867`) sólo pone cota superior —`vProxima > vLimite` descarta lo lejano—, así que **todo lo atrasado entra**; `EstaVencido` (`:6940`) los distingue y quedan primero por orden de fecha |
+| Calculados a partir de los planes configurados | `ListarPlanesActivos` y `PlanAlcanzaAnimal` (`:6752`): edad de inicio y categorías alcanzadas |
+| …y de las aplicaciones ya registradas | `ProximaAplicacion` (`:6843`): nunca aplicado → el día en que el animal alcanza la edad de inicio; ya aplicado → última aplicación más la periodicidad |
+
+Dos exclusiones que el RF no menciona y que **no lo contradicen**: el animal dado de
+baja no figura (`!pAnimal.Activo`) y el toro de catálogo tampoco, porque no está en el
+campo. La segunda tiene su comentario en el código y nació de un error real: sin ella
+los toros de catálogo encabezaban el calendario con años de atraso.
+
+También quedó verificado el curso alternativo 7a: `FiltrarCalendario` (`:6917`) filtra
+por tipo de procedimiento y por categoría.
+
+### RF4.9 Corrección y eliminación de eventos sanitarios — **cumple entero**
+
+| Entidad | Modificar | Eliminar | Devolución al stock |
+|---|---|---|---|
+| Diagnóstico | `:5125` | `:5172` | **no corresponde**: no descuenta insumo |
+| Tratamiento | `:5364` | `:5438` | ✔ contra-movimiento por la cantidad aplicada |
+| Vacunación | `:5678` | `:5731` | ✔ contra-movimiento por `UNIDADES_POR_VACUNACION` |
+| Descorne | `:5873` | `:5915` | **no corresponde**: `Descorne` no tiene insumo ni cantidad |
+
+Los cuatro tienen su `Validar…` separado del método que ejecuta, y la eliminación se
+bloquea con explicación cuando hay algo colgando —el diagnóstico con tratamientos
+aplicados manda a borrar primero los tratamientos, y nombra cuántos son—.
+
+**La modificación también mueve el stock**, no sólo la eliminación:
+`MovimientosPorCambioDeInsumo` arma el par de movimientos cuando la corrección cambia
+el insumo aplicado, sin borrar el egreso original. Es la misma decisión de RF5.10
+—contra-movimiento de ajuste, no borrado— aplicada acá.
+
+> **Precisión menor, sin propuesta formal.** El RF dice «devolviendo al stock los
+> insumos que se habían descontado», que es exacto para las dos entidades que
+> descuentan y vacío para las otras dos. Se puede dejar como está: la frase no afirma
+> que las cuatro descuenten.
+
+### RF5.8 Alertas de vencimiento — **cumple entero, y la parte difícil es la segunda mitad**
+
+| Lo que el RF promete | Dónde está |
+|---|---|
+| Notificar los próximos vencimientos | `ListarAlertasVencimiento` (`:4881`), en pantalla, en el tablero y en el resumen diario |
+| Con la anticipación **configurada** | `Parametros().DiasAnticipacionVencimiento`, 30 días por defecto, editable — es uno de los once de RF0.3 |
+| Imputando el consumo a la partida que vence primero | `ListarPartidas` (`:4834`) |
+
+La imputación es lo que había que mirar de cerca, porque **el modelo no vincula el
+egreso con la partida de la que salió**: los movimientos de ingreso son las partidas y
+los egresos son un total. `ListarPartidas` resuelve eso ordenando las partidas por
+fecha de vencimiento e imputándoles el consumo acumulado en ese orden, hasta agotarlo.
+Es FEFO, y es el orden en que se usan los productos en el tambo.
+
+**El caso de borde está resuelto, y es el que se suele errar:** la partida **sin** fecha
+de vencimiento no queda primera por tener la fecha vacía. `ClaveVencimiento` (`:4954`)
+convierte el `MinValue` en `MaxValue`, así que va **al final** y consume última. Si
+fuera al revés, una partida sin vencimiento se comería el consumo del rodeo entero y
+todas las partidas con fecha quedarían enteras, alertando por unidades que ya no
+existen.
+
+Tampoco alertan las partidas agotadas ni las que no declaran vencimiento (`:4890`), que
+es lo correcto: no se puede tirar lo que no queda.
+
+---
+
+## 6. Lo aprobado, aplicado — el Anteproyecto v8
+
+Al ir a aplicar las resoluciones apareció un hallazgo del circuito y no del documento:
+`editar_anteproyecto.py` tenía bloque `v6` y bloque `v7` y **ninguno para la auditoría**,
+así que las resoluciones estaban escritas acá, aprobadas, y sin quién las aplicara.
+
+Y una sorpresa a favor: **el script estaba más adelantado que su salida.** Desde el
+02/09 ya traía RF7.6 con los ocho avisos y RF7.7 con la hora configurable —el Módulo 7
+los corrigió al escribirse—, pero el `.docx` no se había regenerado. H9, buena parte de
+H10 y la mitad de H11 se arreglaron **regenerando**. Es el modo de falla propio de un
+documento que se genera: el script y su salida discrepan en silencio, y lo que el
+tribunal lee es la salida.
+
+**El 08/09/2026 se agregó el bloque `v8` y se produjo `Anteproyecto_v8.docx`.** Siguen
+siendo **74 requerimientos, en el mismo orden** —verificado sobre el documento generado—.
+
+| Hallazgo | Dónde impactó | Estado |
+|---|---|---|
+| H1 | RF3.10, con los umbrales de 9 y 13 meses | **aplicado** |
+| H2 | RF2.2, con la validación cruzada lote / control individual | **aplicado** |
+| H3 | `Privacy.cshtml` | **ya estaba hecho**: la pantalla se borró |
+| H4 | RF0.3 «de la hembra» y RF1.8 con los seis cortes | **aplicado** |
+| H5 | «vaquillona» en RF1.8 | **aplicado**, y el código y la base desde el 08/09 |
+| H6 | credenciales versionadas | **abierto**, se resuelve al armar el repositorio de entrega |
+| H7 | RF1.7 «entre los progenitores y los abuelos», y una limitación nueva | **aplicado** |
+| H8 | Control de Versionado: `master`, sin las cuatro ramas inventadas, versiones por entrega documental | **aplicado** |
+| H9, H10, H11 | RF7.6 y RF7.7 | **aplicado** (parte, regenerando) |
+| H12, H13 | RF1.14 | **aplicado** |
+
+**El Proyecto se corrigió en la misma tanda y pasa a ser `Proyecto_v7.docx`:** CU2, CU4,
+CU9, CU20, CU21 y el análisis de 2.1 repetían con sus palabras lo que los requerimientos
+ahora dicen distinto. CU48 y CU49 no hubo que tocarlos —se habían escrito leyendo el
+código del Módulo 7—. Regenerarlo destapó, además, tres cosas escritas y nunca
+publicadas: el registro rápido en CU40, el actor de CU49 y un método de más en el
+diccionario.
+
+**De los trece hallazgos quedan doce cerrados.** El único abierto es H6, que no es del
+documento sino del despliegue, y se resuelve al armar el repositorio de entrega.
+
+El detalle de cada cambio, con su porqué, está en `docs/cambios-anteproyecto-v8.md`.
+
+> **Una decisión que se tomó al aplicar H8 y conviene tener a mano**, porque se aparta de
+> lo que esta auditoría había propuesto. La propuesta era reemplazar las cuatro ramas
+> `feature/…` inventadas por los nombres reales del repositorio; se optó por **quitarlas
+> sin reemplazo**. El repositorio de entrega se arma de cero (`docs/entrega-repositorio.md`),
+> así que los nombres reales tampoco van a existir en él: **un ejemplo que se puede
+> desmentir es peor que ninguno**. La convención —nombre descriptivo por funcionalidad,
+> integración por Pull Requests— es verdadera en los dos repositorios.

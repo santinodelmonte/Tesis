@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Arma Proyecto_v6.docx reemplazando las secciones de diseño del Proyecto_v5.
+"""Arma Proyecto_v7.docx reemplazando las secciones de diseño del Proyecto_v5.
 
 Trabaja sobre el .docx original: conserva portada, indice, estilos, encabezados y
 las secciones que no cambian. De cada seccion que si cambia borra el contenido que
@@ -26,7 +26,7 @@ import diccionario_clases  # noqa: E402
 from render_casos_de_uso import cargar, lineas  # noqa: E402
 
 ENTRADA = os.path.join(RAIZ, 'Proyecto_v5.docx')
-SALIDA = os.path.join(RAIZ, 'Proyecto_v6.docx')
+SALIDA = os.path.join(RAIZ, 'Proyecto_v7.docx')
 
 ANCHO_MAXIMO_CM = 16.0
 
@@ -501,6 +501,25 @@ def seccion_analisis(d):
         'insumos y stock (movimientos, control de stock mínimo y vencimientos por '
         'partida); tablero, indicadores y apoyo a la decisión de descarte; y, '
         'finalmente, reportes y notificaciones.')
+    d.cuerpo.remove(elemento)
+
+    # Auditoria de tres vias, hallazgos H5 y H7. La categoria de la hembra de mas de doce
+    # meses sin partos se llama vaquillona -es lo que dice la pantalla desde el 08/09- y el
+    # control de consanguinidad no recorre la genealogia entera: llega hasta los abuelos.
+    i = d.buscar('El principal desafío del análisis')
+    elemento = list(d.cuerpo.iterchildren())[i]
+    d.cursor = elemento
+    nuevo = d.parrafo(
+        'El principal desafío del análisis reside en las reglas de negocio propias del '
+        'tambo. La categoría del animal (ternero, vaquillona, vaca, entre otras) '
+        'constituye un valor derivado que el sistema calcula automáticamente a partir del '
+        'sexo, la edad y la cantidad de partos, y que se propone al usuario como valor por '
+        'defecto admitiendo su ajuste manual ante situaciones puntuales. El control de '
+        'consanguinidad exige recorrer los progenitores y los abuelos de los animales '
+        'involucrados en busca de un ancestro común. El manejo de insumos, por su parte, '
+        'requiere disparar alertas tanto por stock crítico como por proximidad de '
+        'vencimiento, considerando que un mismo insumo puede tener varias partidas con '
+        'fechas de vencimiento distintas.')
     d.cuerpo.remove(elemento)
     return nuevo
 

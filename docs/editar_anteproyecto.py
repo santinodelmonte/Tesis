@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Produce Anteproyecto_v7.docx aplicando sobre el v5 dos tandas de cambios.
+"""Produce Anteproyecto_v8.docx aplicando sobre el v5 tres tandas de cambios.
 
 El v6 dice lo que el sistema hace: cada requerimiento que este script reescribe o
 agrega esta verificado contra Tesis/Dominio, Tesis/Persistencia, Tesis/Pages y
@@ -10,6 +10,11 @@ ingenieria de software de docs/revision-tutor.md: objetivos que prometian porcen
 sin linea base, requerimientos que no se podian verificar y actores del sistema
 mezclados con interesados del proyecto. El resumen esta en
 docs/cambios-anteproyecto-v7.md.
+
+La tercera tanda -el bloque v8- aplica lo que aprobo la auditoria de tres vias de
+docs/auditoria-tres-vias.md: los trece hallazgos en que el documento afirmaba algo
+distinto de lo que el sistema hace, o lo decia en general y el sistema lo hace acotado.
+El resumen esta en docs/cambios-anteproyecto-v8.md.
 
 Trabaja sobre el .docx original conservando estilos, numeraciones y formato: los
 requerimientos nuevos se crean clonando un requerimiento existente del mismo modulo,
@@ -23,7 +28,7 @@ import os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 RUTA_ENTRADA = os.path.join(RAIZ, 'Anteproyecto_v5.docx')
-RUTA_SALIDA = os.path.join(RAIZ, 'Anteproyecto_v7.docx')
+RUTA_SALIDA = os.path.join(RAIZ, 'Anteproyecto_v8.docx')
 
 doc = Document(RUTA_ENTRADA)
 BULLET = '●​ '
@@ -740,6 +745,215 @@ agregar_a(
     'categoría del animal en la edad de cambio, el alcance de la verificación de '
     'consanguinidad y la estimación de producción de una lactancia abierta y de una '
     'cerrada—, verificados desde la pantalla que los muestra.')
+
+
+# ===========================================================================================
+# v8 - correcciones de la auditoria de tres vias (docs/auditoria-tres-vias.md)
+# ===========================================================================================
+#
+# La tanda anterior corrigio como estaban escritos los requerimientos. Esta corrige lo que
+# dicen: donde el documento afirma algo distinto de lo que el sistema hace, o lo dice en
+# general y el sistema lo hace acotado. Cada texto de aca esta verificado contra el codigo,
+# y el hallazgo que lo origina esta identificado en el comentario.
+#
+# Ningun requerimiento se agrega, se quita ni se renumera: siguen siendo 74.
+
+
+# --------------------------------------------------------------------------- H4: RF0.3
+#
+# El parametro no alcanza a los machos. La categoria Toro se decide con
+# EDAD_MINIMA_SERVICIO_MESES, que es una constante de 15 meses y no el parametro: si la
+# encargada lo cambia a 20, cambia cuando puede servir a una vaquillona y el macho sigue
+# pasando a Toro a los 15. El nombre del parametro tiene que decir a quien alcanza.
+
+escribir(
+    buscar('RF0.3'), 'RF0.3 Configuración de parámetros de manejo:',
+    'El sistema debe permitir configurar los parámetros de manejo del establecimiento '
+    '—días de secado previos al parto, edad mínima al servicio de la hembra, edad de '
+    'cambio de categoría, litros máximos admitidos por control, cantidad de ordeñes '
+    'diarios, espera voluntaria posparto, días para el tacto y la anticipación de cada '
+    'uno de los cuatro avisos—, validando que cada valor quede dentro de su rango '
+    'admitido y aplicando valores por defecto mientras no se configuren.')
+
+
+# --------------------------------------------------------------------------- H7: RF1.7
+#
+# "Dentro de la ascendencia registrada de ambos" se lee como toda la genealogia cargada.
+# ListarAscendencia recorre exactamente dos generaciones: los padres y los abuelos. Con el
+# propio animal la lista llega a siete integrantes y ahi termina. Se precisa el documento y
+# no se amplia el codigo: cambiar el comportamiento del sistema por una razon documental es
+# al reves de como debe ser.
+
+escribir(
+    buscar('RF1.7'), 'RF1.7 Prevención de consanguinidad:',
+    'El sistema debe advertir el parentesco entre una hembra y un posible reproductor, '
+    'verificando si existe un ancestro común entre los progenitores y los abuelos de '
+    'ambos. La advertencia es informativa y no impide registrar el servicio.')
+
+# El alcance de la verificacion es una limitacion del sistema y va donde ya estan la
+# proyeccion lineal a 305 dias y los umbrales fijos del descarte.
+clonar_despues(
+    buscar(BULLET + 'Los umbrales que determinan las candidatas'),
+    BULLET + 'La verificación de consanguinidad alcanza a los progenitores y a los '
+    'abuelos de cada animal, y no a la genealogía completa.')
+
+
+# --------------------------------------------------------------------- H4 y H5: RF1.8
+#
+# La clasificacion automatica es la regla de negocio mas vistosa del sistema y el
+# requerimiento no decia ningun corte: asi escrito no se puede verificar. Los cortes salen
+# de CalcularCategoria. La hembra de mas de doce meses sin partos se llama VAQUILLONA
+# -hallazgo H5, aplicado al sistema el 08/09/2026-, que es como se la nombra en el tambo y
+# es lo que dice la pantalla.
+
+escribir(
+    buscar('RF1.8'), 'RF1.8 Clasificación automática:',
+    'El sistema debe clasificar automáticamente a los animales según su sexo, su edad y '
+    'su condición reproductiva. La hembra es ternera hasta la edad de cambio de '
+    'categoría configurada, de 12 meses por defecto; vaquillona desde esa edad y '
+    'mientras no tenga partos registrados; y vaca desde su primer parto. El macho es '
+    'ternero hasta esa misma edad; toro si supera los 15 meses e integra el rodeo como '
+    'reproductor; y novillo en cualquier otro caso.')
+
+
+# ------------------------------------------------------------------- H12 y H13: RF1.14
+#
+# Dos correcciones sobre el mismo requerimiento.
+#
+# La edad (H12): el RF pedia "la edad minima al servicio" y ValidarGenealogia exige esa
+# edad mas los nueve meses de gestacion, porque para ser progenitor no alcanza con haber
+# tenido edad de servicio alguna vez sino nueve meses antes del nacimiento. Y son dos
+# umbrales, no uno: la madre usa el parametro configurable y el padre la constante de 15
+# meses, la misma que decide la categoria Toro.
+#
+# La baja (H13): el RF prometia advertir por un progenitor que "se encuentre dado de baja",
+# en presente, y AdvertenciasGenealogia advierte por uno que ya lo estaba en la fecha que
+# corresponde -el parto para la madre, la concepcion para el padre, porque el semen
+# congelado sigue sirviendo despues de muerto el toro-. Advertir en presente llenaria de
+# avisos la carga del rodeo historico, que esta casi entero dado de baja.
+#
+# De paso se corrige "su propia descendencia", que se lee sobre el progenitor y describe
+# algo imposible: lo que el sistema impide es que el progenitor descienda del animal que se
+# esta cargando.
+
+escribir(
+    buscar('RF1.14'), 'RF1.14 Validación del árbol genealógico:',
+    'El sistema debe impedir el registro de una genealogía imposible: un animal como '
+    'progenitor de sí mismo, un progenitor que figure entre los descendientes de ese '
+    'mismo animal, o un progenitor cuya fecha de nacimiento no admita la edad mínima al '
+    'servicio más los nueve meses de gestación —22 meses para la madre, con la edad '
+    'mínima configurable, y 24 meses para el padre—. Debe advertir, además, cuando el '
+    'progenitor elegido figurara dado de baja antes de la fecha en que debió engendrar a '
+    'la cría: la del parto para la madre y la de la concepción para el padre.')
+
+
+# --------------------------------------------------------------------------- H2: RF2.2
+#
+# ValidarLoteContraMedido y ValidarMedidoContraLote verifican que los controles
+# individuales de un turno no sumen mas de lo que dio el tanque, y que un control nuevo
+# entre en ese total. Es una validacion buena -cierra el circuito entre las dos formas de
+# medir- que no estaba en ningun requerimiento: RF2.2 enumeraba las validaciones de
+# produccion sin incluirla y RF2.3 habla de la convivencia, que no es la verificacion
+# cruzada. Se aprovecha para escribir el maximo con su valor por defecto.
+
+escribir(
+    buscar('RF2.2'), 'RF2.2 Validación de producción:',
+    'El sistema debe validar que los litros ingresados sean valores positivos; que no '
+    'superen el máximo configurado por control individual, de 100 litros por defecto; '
+    'que en el registro por lote no superen ese máximo multiplicado por la cantidad de '
+    'animales del lote; y que la suma de los controles individuales de un turno no supere '
+    'el total registrado para ese turno por lote, ni un control nuevo haga que lo supere.')
+
+
+# -------------------------------------------------------------------------- H1: RF3.10
+#
+# El requerimiento daba por hecho que el celo y el servicio comparten la misma edad minima
+# y el sistema usa dos: nueve meses para el celo, constantes, y la edad minima al servicio
+# configurada para el servicio, trece por defecto. La razon esta en el codigo y es de
+# negocio: la vaquillona manifiesta celo bastante antes de que el servicio sea conveniente,
+# asi que el celo se detecta y se anota, y servirla a los nueve meses seria otra cosa. Los
+# dos numeros quedan escritos, que es lo que vuelve verificable el requerimiento.
+#
+# Toca tambien CU20 y CU21, que referencian RF3.10.
+
+escribir(
+    buscar('RF3.10'), 'RF3.10 Validaciones reproductivas:',
+    'El sistema debe impedir el registro de un celo en un animal que no alcanzó la edad '
+    'mínima de detección de celo, de 9 meses; el de un servicio en un animal que no '
+    'alcanzó la edad mínima al servicio configurada, de 13 meses por defecto; y el de '
+    'cualquier evento cuya fecha sea posterior a la fecha de baja del animal.',
+    salto=False)
+
+
+# -------------------------------------------------------------------- H10 y H11: RF7.6 y RF7.7
+#
+# RF7.6 y RF7.7 se leian como dos canales -un aviso cuando el pendiente aparece y ademas un
+# resumen- y hay uno solo: los ocho tipos se arman en GenerarAlertasDelDia y salen agrupados
+# dentro del mensaje diario. Esta bien que sea asi: un pendiente no ocurre en un instante
+# -la vaca entra en la lista de tactos porque pasaron los dias, no porque alguien apreto
+# algo-, de modo que no hay un momento en el que disparar el aviso, y el dia es la unidad
+# natural.
+#
+# RF7.7 suma la consulta a demanda, que es el comando /resumen del bot y no estaba en
+# ningun requerimiento.
+
+escribir(
+    buscar('RF7.6'), 'RF7.6 Notificaciones automáticas:',
+    'El sistema debe enviar automáticamente, dentro del resumen diario, alertas sobre '
+    'procedimientos sanitarios pendientes, partos próximos, tactos pendientes, vacas para '
+    'servir, secados próximos, fin del período de descarte de leche, stock crítico y '
+    'vencimiento de insumos, permitiendo activar y desactivar cada tipo de aviso por '
+    'separado.')
+
+escribir(
+    buscar('RF7.7'), 'RF7.7 Resumen diario:',
+    'El sistema debe enviar un resumen diario de las tareas pendientes a la hora '
+    'configurada por el establecimiento, y permitir consultarlo a demanda desde el mismo '
+    'canal de mensajería.')
+
+
+# ------------------------------------------------------------------ H8: control de versionado
+#
+# Es de las pocas partes del documento que un tribunal puede verificar en treinta segundos,
+# abriendo el repositorio. Prometia una rama principal llamada main, cuatro ramas feature/
+# escritas una por una y versiones estables identificadas por numeracion incremental. La
+# rama principal se llama master, ninguna de las cuatro ramas existe y no hay un solo tag.
+#
+# Se corrige el documento y no el repositorio: renombrar la rama y crear tags a esta altura
+# seria maquillar el repositorio para que se parezca al documento, que es al reves de como
+# se viene trabajando. Los cuatro nombres de ejemplo se quitan en lugar de reemplazarse por
+# los reales, porque el repositorio de entrega se arma de cero y esos nombres tampoco van a
+# existir en el: un ejemplo que se puede desmentir es peor que ninguno.
+
+escribir(
+    buscar('Para mantener una organización adecuada'),
+    'Para mantener una organización adecuada del desarrollo, se utilizará una estructura '
+    'basada en ramas. La rama principal (master) contendrá únicamente versiones estables '
+    'y funcionales del sistema, mientras que las nuevas funcionalidades, correcciones o '
+    'pruebas serán desarrolladas en ramas secundarias independientes antes de ser '
+    'integradas al entorno principal.')
+
+escribir(
+    buscar('La nomenclatura de las ramas'),
+    'La nomenclatura de las ramas sigue un criterio descriptivo según la funcionalidad '
+    'desarrollada, de modo que sea posible identificar el propósito de cada modificación '
+    'realizada dentro del proyecto. La integración a la rama principal se realiza '
+    'mediante Pull Requests, que dejan asentado qué se incorporó y cuándo.')
+
+# Los cuatro ejemplos inventados y el parrafo que los cerraba.
+for _nombre in ('feature/gestion-animales', 'feature/control-sanitario',
+                'feature/reportes', 'feature/reproduccion',
+                'De esta manera, será posible identificar'):
+    _p = buscar(_nombre)
+    _p._element.getparent().remove(_p._element)
+
+escribir(
+    buscar('Las versiones estables del sistema'),
+    'Las versiones estables del sistema se identifican por las entregas documentales que '
+    'las acompañan —el anteproyecto y el proyecto en sus sucesivas versiones—, cada una '
+    'de las cuales corresponde al estado del sistema en ese momento e incluye las '
+    'funcionalidades implementadas hasta entonces, junto con las correcciones y mejoras '
+    'correspondientes.')
 
 
 doc.save(RUTA_SALIDA)
