@@ -487,3 +487,108 @@ hr {
     box-shadow: var(--tambo-sombra);
     padding: 2rem;
 }
+
+/* =====================================================================
+   Registro rápido
+
+   La tarjeta de carga del inicio. Está arriba de las alertas y tiene el
+   borde de marca porque es lo único de esa pantalla donde se escribe:
+   todo lo demás se lee. Es lo que la distingue de las tres tarjetas de
+   abajo sin necesidad de hacerla más grande.
+
+   Los grupos de campos que no corresponden al evento elegido se esconden
+   con el atributo hidden, y por eso acá no hay ninguna clase de estado:
+   el navegador ya sabe qué hacer con hidden, y lo que se esconde así sale
+   también del árbol de accesibilidad.
+   ===================================================================== */
+
+.tarjeta-registro {
+    border-color: var(--tambo-verde-200);
+    border-left: 3px solid var(--tambo-verde-600);
+}
+
+.registro-bajada {
+    color: var(--tambo-gris-600);
+    font-size: var(--tambo-texto-sm);
+    max-width: 70ch;
+    margin-bottom: 1rem;
+}
+
+.registro-confirmacion {
+    padding: 0.5rem 0.75rem;
+    font-size: var(--tambo-texto-sm);
+}
+
+/* El grupo de eventos es un fieldset para que el lector de pantalla lea
+   la pregunta antes de las cuatro opciones. El borde y el margen que
+   trae de fábrica sobran: la pregunta ya alcanza como separación. */
+.registro-eventos {
+    border: 0;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.registro-leyenda {
+    float: none;
+    width: auto;
+    font-size: var(--tambo-texto-sm);
+    color: var(--tambo-gris-600);
+    margin-bottom: 0.35rem;
+}
+
+/* Los cuatro eventos, uno al lado del otro. Envuelven en lugar de
+   achicarse: en un teléfono quedan dos arriba y dos abajo, con el alto de
+   toque completo, en vez de cuatro botones angostos. */
+.registro-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.registro-opciones .btn {
+    min-height: var(--tambo-toque-minimo);
+}
+
+/* Las caravanas que ya están en una lista de trabajo. Van en una fila que
+   envuelve, con la etiqueta adelante para que se entienda de dónde salen. */
+.registro-sugeridas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+    font-size: var(--tambo-texto-sm);
+}
+
+.registro-sugeridas-titulo {
+    color: var(--tambo-gris-600);
+    margin-right: 0.15rem;
+}
+
+.registro-sugeridas-vacio {
+    color: var(--tambo-gris-600);
+    font-style: italic;
+}
+
+/* La caravana sugerida no es un botón de acción: no guarda nada, sólo
+   llena el campo. Por eso es neutra y no lleva ninguno de los colores con
+   significado del sistema. */
+.registro-chip {
+    border: 1px solid var(--tambo-gris-200);
+    background-color: var(--tambo-gris-50);
+    color: var(--tambo-gris-900);
+    font-variant-numeric: tabular-nums;
+    min-height: var(--tambo-toque-minimo);
+}
+
+.registro-chip:hover {
+    border-color: var(--tambo-verde-500);
+    background-color: var(--tambo-verde-50);
+    color: var(--tambo-verde-700);
+}
+
+.registro-acciones {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--tambo-gris-200);
+}

@@ -289,10 +289,19 @@ CREATE TABLE celos (
 -- pajuela de la inseminacion artificial. Son mutuamente excluyentes: la
 -- restriccion se controla en la Controladora, porque MySQL no admite una
 -- expresion de este tipo en un CHECK sobre columnas de otras tablas.
+--
+-- tipo_servicio guarda una de las dos constantes de Dominio/Servicio.cs, y
+-- la mas larga -'Inseminacion artificial'- son 23 caracteres. Con los 20
+-- que tenia antes no entraba, y fallaba de dos maneras segun como este
+-- configurado el motor: en modo estricto -el de fabrica desde MySQL 5.7-
+-- rechazaba el alta, y en modo permisivo la guardaba truncada, que es
+-- peor porque no avisa y despues ninguna comparacion contra la constante
+-- vuelve a coincidir. Son 30 por lo mismo que tipo_parto y tipo_insumo:
+-- es el ancho que el esquema usa para este tipo de columna.
 -- ---------------------------------------------------------------------
 CREATE TABLE servicios (
     id_servicio          INT(11)      NOT NULL AUTO_INCREMENT,
-    tipo_servicio        VARCHAR(20)  NOT NULL,
+    tipo_servicio        VARCHAR(30)  NOT NULL,
     fecha_servicio       DATE         NOT NULL,
     fecha_probable_parto DATE         NOT NULL,
     observaciones        VARCHAR(200) NULL,

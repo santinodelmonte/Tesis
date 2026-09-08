@@ -2,6 +2,19 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Hoy en el tambo";
+
+    // Los cuatro eventos de la tarjeta de registro rápido, escritos como datos y no
+    // como marcado repetido cuatro veces.
+    var vEventos = new[]
+    {
+        new { Valor = IndexModel.EVENTO_CELO,     Texto = "Celo" },
+        new { Valor = IndexModel.EVENTO_SERVICIO, Texto = "Servicio" },
+        new { Valor = IndexModel.EVENTO_TACTO,    Texto = "Tacto" },
+        new { Valor = IndexModel.EVENTO_PARTO,    Texto = "Parto" }
+    };
+}
+@section Scripts {
+    <script src="~/js/registroRapido.js" asp-append-version="true"></script>
 }
 
 <div class="text-center mb-4">
@@ -22,6 +35,226 @@
 }
 else
 {
+    @*
+        Registro rápido.
+
+        El relevamiento con la encargada del sector dio que lo que se carga a diario
+        son los eventos reproductivos, y que cada uno costaba cuatro clics de menú
+        repetidos una vez por animal. Los cuatro están acá, pero no todos hacen lo
+        mismo: el celo y el tacto se guardan sin salir del tablero, y el servicio y el
+        parto abren su formulario con la caravana ya puesta. El motivo del corte está
+        en Index.cshtml.cs, y se explica en la propia tarjeta para que no parezca que a
+        dos de los botones les falta algo.
+    *@
+    <div class="card tarjeta-registro mb-4">
+        <div class="card-body">
+            <h2 class="h5 card-title">Registro rápido</h2>
+            <p class="registro-bajada">
+                Lo que se carga todos los días, sin pasar por el menú. El celo y el tacto
+                quedan registrados acá mismo. El servicio y el parto abren su formulario
+                &mdash;el primero descuenta una pajuela del stock y el segundo da de alta
+                la cría&mdash; con la caravana ya cargada.
+            </p>
+
+            @if (Model.hayConfirmacion)
+            {
+                <div class="alert alert-success registro-confirmacion" role="status">
+                    Quedó registrado el
+                    @(Model.eventoGuardado == IndexModel.EVENTO_CELO ? "celo" : "tacto")
+                    de la caravana <strong>@Model.caravanaGuardada</strong>.
+                    @if (Model.eventoGuardado == IndexModel.EVENTO_CELO)
+                    {
+                        <a asp-page="/PagesReproduccion/ListaCelos">Ver los celos</a>
+                    }
+                    else
+                    {
+                        <a asp-page="/PagesReproduccion/ListaTactos">Ver los tactos</a>
+                    }
+                </div>
+            }
+
+            <form method="post" data-registro-rapido="1">
+                @* El evento es un campo del formulario y no un botón distinto: así el
+                   servidor decide con él y la tarjeta funciona sin JavaScript. *@
+                <fieldset class="registro-eventos">
+                    <legend class="registro-leyenda">¿Qué se registra?</legend>
+                    <div class="registro-opciones">
+                        @foreach (var item in vEventos)
+                        {
+                            <input type="radio" class="btn-check" name="evento"
+                                   id="evento-@item.Valor" value="@item.Valor"
+                                   checked="@(Model.evento == item.Valor)" autocomplete="off" />
+                            <label class="btn btn-outline-primary" for="evento-@item.Valor">
+                                @item.Texto
+                            </label>
+                        }
+                    </div>
+                </fieldset>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="numCaravana">Caravana:</label>
+                            <div class="input-group">
+                                @* Se escribe a mano, que es lo que permite encadenar
+                                   cargas sin tocar el mouse. La lista de sugerencias del
+                                   navegador completa sobre las hembras del rodeo, y el
+                                   botón abre el mismo selector del resto del sistema. *@
+                                <input type="text" id="numCaravana" name="numCaravana"
+                                       class="form-control" list="caravanasHembras"
+                                       autocomplete="off" maxlength="20"
+                                       autofocus="@Model.hayConfirmacion"
+                                       value="@Model.numCaravana" />
+                                <button type="button" class="btn btn-secondary"
+                                        onclick="abrirSelectorAnimal('numCaravana', 'numCaravana', 'Seleccionar hembra', 'H', true)">
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" data-registro-para="celo tacto">
+                        <div class="form-group">
+                            <label for="fecha">Fecha:</label>
+                            <input type="date" id="fecha" name="fecha" class="form-control"
+                                   value="@Model.fecha.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" data-registro-para="tacto">
+                        <div class="form-group">
+                            <label for="resultado">Resultado:</label>
+                            <select id="resultado" name="resultado" asp-for="resultado"
+                                    class="form-control">
+                                <option value="@Dominio.Tacto.PRENADA">@Dominio.Tacto.PRENADA</option>
+                                <option value="@Dominio.Tacto.VACIA">@Dominio.Tacto.VACIA</option>
+                                <option value="@Dominio.Tacto.DUDOSA">@Dominio.Tacto.DUDOSA</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" data-registro-para="celo tacto">
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <label for="observaciones">Observaciones:</label>
+                            <input type="text" id="observaciones" name="observaciones"
+                                   class="form-control" maxlength="200"
+                                   value="@Model.observaciones" />
+                        </div>
+                    </div>
+                </div>
+
+                @*
+                    Las caravanas que el sistema ya sabe que corresponden hoy. Salen de
+                    las mismas listas de trabajo que cuentan las alertas de más abajo, y
+                    tocar una llena el campo: en el caso más frecuente &mdash;cargarle el
+                    evento a un animal que ya está en una lista&mdash; no hay nada que
+                    tipear.
+                *@
+                <div class="registro-sugeridas" data-registro-para="celo servicio"
+                     role="group" aria-label="Caravanas en condiciones de servicio">
+                    <span class="registro-sugeridas-titulo">Para servir:</span>
+                    @if (Model.sugeridasParaServir.Count == 0)
+                    {
+                        <span class="registro-sugeridas-vacio">
+                            ninguna vaca en condiciones hoy
+                        </span>
+                    }
+                    else
+                    {
+                        @foreach (string caravana in Model.sugeridasParaServir)
+                        {
+                            <button type="button" class="btn btn-sm registro-chip"
+                                    data-registro-caravana="@caravana">@caravana</button>
+                        }
+                        @if (Model.vacasParaServir > Model.sugeridasParaServir.Count)
+                        {
+                            <a asp-page="/PagesReproduccion/VacasParaServir">
+                                ver las @Model.vacasParaServir
+                            </a>
+                        }
+                    }
+                </div>
+
+                <div class="registro-sugeridas" data-registro-para="tacto"
+                     role="group" aria-label="Caravanas con tacto pendiente">
+                    <span class="registro-sugeridas-titulo">Para tactar:</span>
+                    @if (Model.sugeridasParaTactar.Count == 0)
+                    {
+                        <span class="registro-sugeridas-vacio">
+                            ningún servicio en espera de confirmación
+                        </span>
+                    }
+                    else
+                    {
+                        @foreach (string caravana in Model.sugeridasParaTactar)
+                        {
+                            <button type="button" class="btn btn-sm registro-chip"
+                                    data-registro-caravana="@caravana">@caravana</button>
+                        }
+                        @if (Model.tactosPendientes > Model.sugeridasParaTactar.Count)
+                        {
+                            <a asp-page="/PagesReproduccion/TactosPendientes">
+                                ver los @Model.tactosPendientes
+                            </a>
+                        }
+                    }
+                </div>
+
+                <div class="registro-sugeridas" data-registro-para="parto"
+                     role="group" aria-label="Caravanas con parto próximo">
+                    <span class="registro-sugeridas-titulo">Por parir:</span>
+                    @if (Model.sugeridasParaParir.Count == 0)
+                    {
+                        <span class="registro-sugeridas-vacio">
+                            ningún parto próximo
+                        </span>
+                    }
+                    else
+                    {
+                        @foreach (string caravana in Model.sugeridasParaParir)
+                        {
+                            <button type="button" class="btn btn-sm registro-chip"
+                                    data-registro-caravana="@caravana">@caravana</button>
+                        }
+                        @if (Model.partosProximos > Model.sugeridasParaParir.Count)
+                        {
+                            <a asp-page="/PagesReproduccion/AlertasParto">
+                                ver los @Model.partosProximos
+                            </a>
+                        }
+                    }
+                </div>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+
+                <div class="registro-acciones">
+                    @* El texto lo cambia registroRapido.js según el evento elegido.
+                       Sin JavaScript queda el del celo, que es el que viene marcado. *@
+                    <button type="submit" class="btn btn-primary" data-registro-boton="1"
+                            data-texto-celo="Registrar celo"
+                            data-texto-tacto="Registrar tacto"
+                            data-texto-servicio="Abrir registro de servicio"
+                            data-texto-parto="Abrir registro de parto">Registrar celo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* Sugerencias del campo caravana: las hembras que están en el rodeo. No reemplaza
+       al selector -no filtra por categoría ni muestra el estado-, es el atajo para
+       quien ya sabe qué caravana va a escribir. *@
+    <datalist id="caravanasHembras">
+        @foreach (Dominio.Hembra hembra in Model.hembras)
+        {
+            @if (hembra.Activo)
+            {
+                <option value="@hembra.NumCaravana"></option>
+            }
+        }
+    </datalist>
+
     <div class="row">
         <div class="col-md-4 mb-3">
             <div class="card h-100">
@@ -142,4 +375,6 @@ else
             </div>
         </div>
     </div>
+
+    <partial name="_SelectorAnimal" model="Model.animales" />
 }

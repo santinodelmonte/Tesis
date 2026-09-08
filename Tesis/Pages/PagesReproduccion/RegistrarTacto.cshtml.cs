@@ -113,27 +113,17 @@ namespace Tesis.Pages.PagesReproduccion
                 return Page();
             }
 
-            if (resultado != Tacto.PRENADA && resultado != Tacto.VACIA && resultado != Tacto.DUDOSA)
-            {
-                ModelState.AddModelError(string.Empty, "Es obligatorio definir un resultado para el tacto!");
-                return Page();
-            }
-
-            if (fechaTacto > DateTime.Now)
-            {
-                ModelState.AddModelError(string.Empty, "La fecha del tacto no puede ser futura!");
-                return Page();
-            }
-
-            if (fechaTacto < servicioVigente.FechaServicio)
-            {
-                ModelState.AddModelError(string.Empty,
-                    "La fecha del tacto no puede ser anterior a la del servicio (" +
-                    servicioVigente.FechaServicio.ToShortDateString() + ")!");
-                return Page();
-            }
-
             Tacto unTacto = new Tacto(0, fechaTacto, resultado, observaciones ?? "", servicioVigente);
+
+            // El resultado obligatorio y las dos reglas de fecha -no futura, no anterior
+            // al servicio- las resuelve la Controladora, que es donde estan escritas una
+            // sola vez para el alta, la correccion y el registro rapido del inicio.
+            string vMotivo = unaControladora.ValidarTacto(unTacto);
+            if (vMotivo != "")
+            {
+                ModelState.AddModelError(string.Empty, vMotivo);
+                return Page();
+            }
 
             // El tacto mueve el estado reproductivo y nunca el productivo, y con
             // resultado positivo baja la fecha probable de parto a la lactancia en curso
