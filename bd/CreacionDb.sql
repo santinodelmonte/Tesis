@@ -555,7 +555,7 @@ INSERT INTO razas (nombre, descripcion) VALUES
 
 INSERT INTO categorias (nombre, descripcion) VALUES
     ('Ternera', 'Hembra de hasta 12 meses de edad.'),
-    ('Novilla', 'Hembra de mas de 12 meses sin partos registrados.'),
+    ('Vaquillona', 'Hembra de mas de 12 meses sin partos registrados.'),
     ('Vaca', 'Hembra con uno o mas partos registrados.'),
     ('Ternero', 'Macho de hasta 12 meses de edad.'),
     ('Novillo', 'Macho de mas de 12 meses que no se destina a reproduccion.'),

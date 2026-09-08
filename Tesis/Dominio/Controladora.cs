@@ -1006,7 +1006,7 @@ namespace Tesis.Dominio
                 }
                 else if (vEdadMeses > this.Parametros().EdadCambioCategoriaMeses)
                 {
-                    vNombre = "Novilla";
+                    vNombre = "Vaquillona";
                 }
                 else
                 {
@@ -4070,7 +4070,7 @@ namespace Tesis.Dominio
                 }
             }
 
-            // RF1.9: el parto que estrena a la vaca la saca de novilla. Como la
+            // RF1.9: el parto que estrena a la vaca la saca de vaquillona. Como la
             // categoria vive en animales y no en hembras, hay que actualizarla aparte.
             this.ActualizarCategoria(unaMadre.IdAnimal);
 
@@ -4464,7 +4464,7 @@ namespace Tesis.Dominio
             Hembra unaMadreNueva = this.CopiarHembra(unaMadre, vNumeroPartos, vEstadoProductivo,
                 this.EstadoReproductivoDeducido(unaMadre, 0, 0, pIdParto));
 
-            // RF1.9 al reves: la vaca de un solo parto vuelve a ser novilla
+            // RF1.9 al reves: la vaca de un solo parto vuelve a ser vaquillona
             Categoria unaCategoria = this.CalcularCategoria(unaMadreNueva);
             if (unaCategoria != null)
             {

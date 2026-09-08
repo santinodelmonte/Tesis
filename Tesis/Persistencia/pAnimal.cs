@@ -164,7 +164,7 @@ namespace Tesis.Persistencia
 
         // El comando se declara aparte porque no lo usa solo esta modificacion: el
         // borrado de un parto tiene que devolverle la categoria a la madre -una vaca de
-        // un solo parto vuelve a ser novilla- dentro de su propia transaccion.
+        // un solo parto vuelve a ser vaquillona- dentro de su propia transaccion.
         public const string SQL_MODIFICAR = "UPDATE animales SET "
             + "num_caravana = @num_caravana,"
             + "fecha_nacimiento = @fecha_nacimiento,"

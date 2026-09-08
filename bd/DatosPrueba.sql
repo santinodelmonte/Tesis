@@ -301,7 +301,7 @@ INSERT INTO planes_sanitarios (id_plan, nombre, tipo_procedimiento, periodicidad
 -- ---------------------------------------------------------------------
 INSERT INTO plan_categorias (id_plan, id_categoria) VALUES
     (2, 1),                      -- brucelosis: solo terneras
-    (3, 2), (3, 3),              -- reproductiva: novillas y vacas
+    (3, 2), (3, 3),              -- reproductiva: vaquillonas y vacas
     (4, 1), (4, 2), (4, 4), (4, 5),  -- desparasitacion: la recria
     (5, 1), (5, 4);              -- descorne: terneras y terneros
 

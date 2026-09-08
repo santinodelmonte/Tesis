@@ -247,7 +247,7 @@ namespace Tesis.Persistencia
                                 pHembra.ParametrosModificar(pMadreActualizada), conexion, transaccion);
 
                             // La categoria vive en animales: una vaca que se queda sin
-                            // partos vuelve a ser novilla.
+                            // partos vuelve a ser vaquillona.
                             Conexion.EjecutarComandoEnTransaccion(pAnimal.SQL_MODIFICAR,
                                 pAnimal.ParametrosModificar(pMadreActualizada), conexion, transaccion);
                         }
