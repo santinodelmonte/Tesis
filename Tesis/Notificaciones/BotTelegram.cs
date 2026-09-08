@@ -46,16 +46,22 @@ namespace Tesis.Notificaciones
             get { return mToken != ""; }
         }
 
-        // Manda un mensaje y devuelve si Telegram lo acepto.
+        // Manda un mensaje y devuelve si Telegram lo acepto y, cuando no, por que.
         //
         // Nunca propaga la excepcion. Un aviso que no sale no puede voltear el sitio ni
         // cortar el proceso que lo intento: la regla de negocio de CU48 dice que la
         // falla del envio no interrumpe la operacion del sistema.
-        public static async Task<bool> EnviarMensaje(string pChat, string pTexto)
+        public static async Task<RespuestaTelegram> EnviarMensaje(string pChat, string pTexto)
         {
-            if (!Configurado || pChat == "")
+            if (!Configurado)
             {
-                return false;
+                return new RespuestaTelegram(false,
+                    "el sistema no tiene cargado el token del bot");
+            }
+
+            if (pChat == "")
+            {
+                return new RespuestaTelegram(false, "no hay ningun chat vinculado");
             }
 
             try
@@ -73,11 +79,17 @@ namespace Tesis.Notificaciones
                 HttpResponseMessage vRespuesta = await Cliente.PostAsync(
                     URL_BASE + mToken + "/sendMessage", vContenido);
 
-                return vRespuesta.IsSuccessStatusCode;
+                if (vRespuesta.IsSuccessStatusCode)
+                {
+                    return new RespuestaTelegram(true, "");
+                }
+
+                return new RespuestaTelegram(false,
+                    LeerMotivo(await vRespuesta.Content.ReadAsStringAsync()));
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                return new RespuestaTelegram(false, e.Message);
             }
         }
 
@@ -87,15 +99,23 @@ namespace Tesis.Notificaciones
         // offset se le esta diciendo "de este numero en adelante", y eso confirma la
         // entrega de los anteriores: sin ese acuse los devolveria una y otra vez.
         //
-        // Devuelve la lista vacia ante cualquier problema. Que se caiga la conexion a
-        // internet no puede tumbar el proceso: en la vuelta siguiente vuelve a probar.
-        public static async Task<List<MensajeTelegram>> ObtenerMensajes(long pDesde)
+        // Ante cualquier problema devuelve una respuesta que dice que no se pudo, con
+        // el motivo. No devuelve la lista vacia: "no se pudo preguntar" y "no llego
+        // nada" tienen que poder distinguirse, porque la espera de veinte segundos que
+        // le marca el ritmo al proceso solo existe cuando la pregunta llega a destino.
+        //
+        // La cancelacion se pasa a la peticion y no se consulta solo al volver: sin eso
+        // apagar el sitio se queda esperando hasta veinte segundos una respuesta que ya
+        // no le importa a nadie.
+        public static async Task<RespuestaTelegram> ObtenerMensajes(long pDesde,
+            CancellationToken pCancelacion)
         {
             List<MensajeTelegram> _listaMensajes = new List<MensajeTelegram>();
 
             if (!Configurado)
             {
-                return _listaMensajes;
+                return new RespuestaTelegram(false,
+                    "el sistema no tiene cargado el token del bot");
             }
 
             try
@@ -104,15 +124,22 @@ namespace Tesis.Notificaciones
                     + "&allowed_updates=[\"message\"]"
                     + (pDesde > 0 ? "&offset=" + pDesde : "");
 
-                string vRespuesta = await Cliente.GetStringAsync(vUrl);
+                HttpResponseMessage vRespuesta = await Cliente.GetAsync(vUrl, pCancelacion);
+                string vTexto = await vRespuesta.Content.ReadAsStringAsync(pCancelacion);
 
-                using (JsonDocument vDocumento = JsonDocument.Parse(vRespuesta))
+                if (!vRespuesta.IsSuccessStatusCode)
+                {
+                    return new RespuestaTelegram(false, LeerMotivo(vTexto));
+                }
+
+                using (JsonDocument vDocumento = JsonDocument.Parse(vTexto))
                 {
                     JsonElement vRaiz = vDocumento.RootElement;
 
                     if (!vRaiz.TryGetProperty("result", out JsonElement vResultado))
                     {
-                        return _listaMensajes;
+                        return new RespuestaTelegram(false,
+                            "Telegram contesto sin la lista de mensajes");
                     }
 
                     foreach (JsonElement vActualizacion in vResultado.EnumerateArray())
@@ -125,11 +152,39 @@ namespace Tesis.Notificaciones
                     }
                 }
             }
+            catch (Exception e)
+            {
+                return new RespuestaTelegram(false, e.Message);
+            }
+            return new RespuestaTelegram(true, "", _listaMensajes);
+        }
+
+        // Telegram explica cada rechazo en el campo description de la respuesta:
+        // "Unauthorized" cuando el token no sirve, "chat not found" cuando el numero de
+        // chat no existe, "Conflict: terminated by other getUpdates request" cuando hay
+        // dos copias del sitio preguntando por los mismos mensajes.
+        //
+        // Sin ese texto los tres problemas se ven exactamente igual desde el sistema, y
+        // la pantalla termina culpando al identificador de chat de un token vencido.
+        private static string LeerMotivo(string pRespuesta)
+        {
+            try
+            {
+                using (JsonDocument vDocumento = JsonDocument.Parse(pRespuesta))
+                {
+                    if (vDocumento.RootElement.TryGetProperty("description",
+                        out JsonElement vMotivo))
+                    {
+                        return vMotivo.GetString() ?? "";
+                    }
+                }
+            }
             catch (Exception)
             {
-                return _listaMensajes;
+                // La respuesta no era JSON. Quedarse sin el texto del error no es razon
+                // para voltear nada: el que llama ya sabe que la operacion no salio.
             }
-            return _listaMensajes;
+            return "";
         }
 
         // Saca de la respuesta de Telegram lo unico que el sistema mira: el numero de
@@ -161,6 +216,46 @@ namespace Tesis.Notificaciones
 
             return new MensajeTelegram(vIdActualizacion.GetInt64(),
                 vIdChat.GetInt64().ToString(), vTexto);
+        }
+    }
+
+    // Lo que contesto Telegram: si acepto la operacion, por que la rechazo cuando no y
+    // los mensajes que trajo, si la operacion era leerlos.
+    //
+    // El motivo viaja con la respuesta y no en un campo compartido de BotTelegram
+    // porque hay dos que le escriben al bot al mismo tiempo -el proceso del resumen y
+    // la pantalla de notificaciones-, y un "ultimo error" unico le mostraria a una el
+    // problema de la otra.
+    public class RespuestaTelegram
+    {
+        private bool mSalioBien;
+        private string mMotivo;
+        private List<MensajeTelegram> mListaMensajes;
+
+        // Si Telegram acepto la operacion. Al leer mensajes, false es "no se pudo
+        // preguntar", que no es lo mismo que "no llego ninguno".
+        public bool SalioBien { get { return mSalioBien; } }
+
+        // Lo que contesto Telegram al rechazar, o el error de red si no llego a
+        // contestar. Vacio cuando salio bien.
+        public string Motivo { get { return mMotivo; } }
+
+        // Los mensajes que llegaron. Vacia en los envios, que no leen nada.
+        public List<MensajeTelegram> ListaMensajes { get { return mListaMensajes; } }
+
+        public RespuestaTelegram(bool pSalioBien, string pMotivo,
+            List<MensajeTelegram> pListaMensajes)
+        {
+            mSalioBien = pSalioBien;
+            mMotivo = pMotivo ?? "";
+            mListaMensajes = pListaMensajes ?? new List<MensajeTelegram>();
+        }
+
+        // La respuesta de una operacion que no trae mensajes: cualquier envio, y las
+        // lecturas que no se pudieron hacer.
+        public RespuestaTelegram(bool pSalioBien, string pMotivo)
+            : this(pSalioBien, pMotivo, new List<MensajeTelegram>())
+        {
         }
     }
 

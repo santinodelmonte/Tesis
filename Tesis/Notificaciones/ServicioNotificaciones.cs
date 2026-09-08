@@ -32,6 +32,16 @@ namespace Tesis.Notificaciones
         // pausa, un bot mal configurado reintentaria cada veinte segundos durante horas.
         private static readonly TimeSpan ESPERA_REINTENTO = TimeSpan.FromMinutes(10);
 
+        // Cuanto espera cuando no pudo siquiera preguntar por los mensajes.
+        //
+        // Es el freno del ciclo, y sin el no hay ninguno: la unica pausa de una vuelta
+        // normal son los veinte segundos que Telegram sostiene la respuesta, y una
+        // consulta que falla vuelve al instante. Con el token vencido, sin internet o
+        // con dos copias del sitio corriendo a la vez -Telegram contesta "Conflict" y
+        // rechaza a las dos-, eso es un ciclo cerrado que consume procesador y golpea
+        // la API cientos de veces por minuto sin conseguir nada.
+        private static readonly TimeSpan ESPERA_TRAS_FALLA = TimeSpan.FromMinutes(1);
+
         private readonly ILogger<ServicioNotificaciones> Registro;
 
         // El numero de la ultima actualizacion procesada de Telegram. Se guarda en
@@ -48,6 +58,11 @@ namespace Tesis.Notificaciones
         private TimeSpan mHoraResumen = Controladora.HORA_RESUMEN;
         private DateTime mUltimaLecturaConfiguracion = DateTime.MinValue;
         private DateTime mProximoIntento = DateTime.MinValue;
+
+        // Si la ultima consulta de mensajes fallo. Es para avisar una sola vez por
+        // racha y no una vez por minuto: un token mal cargado llenaria el registro de
+        // renglones identicos y taparia todo lo demas.
+        private bool mFallaEscucha = false;
 
         public ServicioNotificaciones(ILogger<ServicioNotificaciones> pRegistro)
         {
@@ -69,33 +84,95 @@ namespace Tesis.Notificaciones
 
             while (!pCancelacion.IsCancellationRequested)
             {
+                TimeSpan vEspera = TimeSpan.Zero;
+
                 try
                 {
-                    await this.AtenderComandos(pCancelacion);
+                    if (!await this.AtenderComandos(pCancelacion))
+                    {
+                        vEspera = ESPERA_TRAS_FALLA;
+                    }
+
+                    // El resumen se revisa igual aunque no se hayan podido leer los
+                    // mensajes: los dos problemas mas comunes -el token de otro bot y
+                    // las dos copias del sitio- rompen la escucha y dejan el envio
+                    // andando. Si el envio tambien falla, RevisarResumen tiene su
+                    // propia espera.
                     await this.RevisarResumen();
+                }
+                catch (OperationCanceledException)
+                {
+                    // El sitio se esta apagando. No es una falla del proceso y no va al
+                    // registro.
+                    break;
                 }
                 catch (Exception e)
                 {
                     // El ciclo no se corta nunca por una excepcion. Un error de red, la
                     // base caida o un dato inesperado dejan una linea en el registro y
-                    // se reintenta en la vuelta siguiente: el sistema tiene que seguir
-                    // funcionando aunque las notificaciones no salgan.
+                    // se reintenta mas tarde: el sistema tiene que seguir funcionando
+                    // aunque las notificaciones no salgan.
                     Registro.LogError(e, "Notificaciones: falla en el ciclo del proceso.");
-                    await Task.Delay(TimeSpan.FromMinutes(1), pCancelacion);
+                    vEspera = ESPERA_TRAS_FALLA;
+                }
+
+                if (vEspera > TimeSpan.Zero && !await this.Esperar(vEspera, pCancelacion))
+                {
+                    break;
                 }
             }
         }
 
-        // Los dos comandos que entiende el bot. Cualquier otra cosa recibe la ayuda.
-        private async Task AtenderComandos(CancellationToken pCancelacion)
+        // Espera, y devuelve si llego a cumplir la espera o si la corto el apagado del
+        // sitio. Que la cancelacion no se propague es a proposito: apagar el sitio no
+        // es un error y no tiene por que dejar una excepcion en el registro.
+        private async Task<bool> Esperar(TimeSpan pEspera, CancellationToken pCancelacion)
         {
-            List<MensajeTelegram> _listaMensajes = await BotTelegram.ObtenerMensajes(mUltimoMensajeLeido + 1);
+            try
+            {
+                await Task.Delay(pEspera, pCancelacion);
+                return true;
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+        }
 
-            foreach (MensajeTelegram unMensaje in _listaMensajes)
+        // Los dos comandos que entiende el bot. Cualquier otra cosa recibe la ayuda.
+        //
+        // Devuelve si se pudo escuchar. Que no se haya podido no es lo mismo que que no
+        // haya llegado nada: en el primer caso el que llama tiene que esperar antes de
+        // volver a preguntar, porque la consulta volvio sin gastar los veinte segundos
+        // que le dan el ritmo al ciclo.
+        private async Task<bool> AtenderComandos(CancellationToken pCancelacion)
+        {
+            RespuestaTelegram unaRespuesta = await BotTelegram.ObtenerMensajes(
+                mUltimoMensajeLeido + 1, pCancelacion);
+
+            if (!unaRespuesta.SalioBien)
+            {
+                if (!mFallaEscucha && !pCancelacion.IsCancellationRequested)
+                {
+                    Registro.LogWarning("Notificaciones: no se pueden leer los mensajes del bot "
+                        + "({Motivo}). Se reintenta cada {Minutos} minuto(s).",
+                        unaRespuesta.Motivo, ESPERA_TRAS_FALLA.TotalMinutes);
+                    mFallaEscucha = true;
+                }
+                return false;
+            }
+
+            if (mFallaEscucha)
+            {
+                Registro.LogInformation("Notificaciones: se restablecio la escucha del bot.");
+                mFallaEscucha = false;
+            }
+
+            foreach (MensajeTelegram unMensaje in unaRespuesta.ListaMensajes)
             {
                 if (pCancelacion.IsCancellationRequested)
                 {
-                    return;
+                    return true;
                 }
 
                 mUltimoMensajeLeido = unMensaje.IdActualizacion;
@@ -127,6 +204,7 @@ namespace Tesis.Notificaciones
                         + "pendientes de hoy.");
                 }
             }
+            return true;
         }
 
         // /start le contesta a cualquiera, y tiene que ser asi: es el paso con el que
@@ -220,13 +298,17 @@ namespace Tesis.Notificaciones
             List<Alerta> _listaAlertas = unaControladora.GenerarAlertasDelDia();
             string vMensaje = unaControladora.ArmarMensajeResumen(_listaAlertas);
 
-            if (!await BotTelegram.EnviarMensaje(unaConfiguracion.ChatTelegram, vMensaje))
+            RespuestaTelegram unaRespuesta = await BotTelegram.EnviarMensaje(
+                unaConfiguracion.ChatTelegram, vMensaje);
+
+            if (!unaRespuesta.SalioBien)
             {
                 // El envio fallo. No se registra nada -asi el dia sigue pendiente- y se
                 // espera antes de reintentar. Es el curso de excepcion 4a de CU49: el
                 // error se registra y se reintenta, sin interrumpir el funcionamiento.
-                Registro.LogWarning("Notificaciones: no se pudo enviar el resumen del {Fecha:dd/MM/yyyy}. "
-                    + "Se reintenta mas tarde.", vAhora);
+                Registro.LogWarning("Notificaciones: no se pudo enviar el resumen del "
+                    + "{Fecha:dd/MM/yyyy} ({Motivo}). Se reintenta mas tarde.",
+                    vAhora, unaRespuesta.Motivo);
                 mProximoIntento = vAhora.Add(ESPERA_REINTENTO);
                 return;
             }

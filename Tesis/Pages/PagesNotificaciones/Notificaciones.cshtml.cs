@@ -67,17 +67,22 @@ namespace Tesis.Pages.PagesNotificaciones
             // destinatario que no recibe nada, que es justamente lo que el curso de
             // excepcion 3a pide evitar: si la vinculacion no se completa, se conserva
             // la configuracion anterior.
-            bool vLlego = await BotTelegram.EnviarMensaje(chatTelegram.Trim(),
+            RespuestaTelegram unaRespuesta = await BotTelegram.EnviarMensaje(chatTelegram.Trim(),
                 "<b>Sistema de Gestión de Tambo</b>\n\n"
                 + "La vinculación quedó lista. Vas a recibir acá el resumen diario de "
                 + "tareas pendientes.");
 
-            if (!vLlego)
+            if (!unaRespuesta.SalioBien)
             {
+                // El motivo que dio Telegram va en el mensaje, y no es un detalle
+                // tecnico de más: sin él, un token vencido y un identificador de chat
+                // equivocado se leen igual, y la pantalla termina mandando a revisar el
+                // número cuando el número estaba bien.
                 ModelState.AddModelError(string.Empty,
-                    "No se pudo enviar el mensaje de prueba a ese chat. Revise que el identificador "
-                    + "sea el que devolvió el bot y que le haya escrito al menos una vez: Telegram no "
-                    + "deja que un bot inicie la conversación.");
+                    "No se pudo enviar el mensaje de prueba a ese chat"
+                    + (unaRespuesta.Motivo != "" ? " (Telegram respondió: " + unaRespuesta.Motivo + ")" : "")
+                    + ". Revise que el identificador sea el que devolvió el bot y que le haya escrito "
+                    + "al menos una vez: Telegram no deja que un bot inicie la conversación.");
                 this.Cargar();
                 return Page();
             }
