@@ -304,8 +304,6 @@ título, sus campos, sus botones y los mensajes con que rechaza o advierte.
   - El animal no tiene un servicio pendiente: hay que registrar el servicio antes del tacto.
   - Seleccione un animal!
   - El animal no tiene un servicio pendiente sobre el cual registrar el tacto!
-  - Es obligatorio definir un resultado para el tacto!
-  - La fecha del tacto no puede ser futura!
   - No se pudo registrar el tacto!
   - No se pudo corregir el tacto!
 

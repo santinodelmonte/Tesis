@@ -185,6 +185,98 @@ pasó a 30 el 02/09 porque no entraba la inseminación. Esas copias no llegan al
 tal cual están en disco, y por eso `Proyecto_v7.docx` se regeneró con los tres diagramas
 corregidos.
 
+## 7. Las precondiciones, y lo que destaparon (10/09)
+
+Era el punto 7 de `revision-tutor.md`: de 49 casos de uso, **21 decían sólo «el usuario
+debe estar logueado»** —la revisión contó 20; CU23 lo decía sin «en el sistema» y se
+escapaba de la cuenta—. Que el usuario esté logueado vale para todos, así que no distingue
+nada.
+
+Se siguió el criterio que la revisión propuso y que respeta al modelo de la cátedra: el
+«logueado» **se queda** —el ejemplo del tutor lo usa— y **cada precondición dice además su
+condición propia**, verificada contra la pantalla que resuelve el caso. Se aplicó también
+a los cuatro que tenían la condición propia pero no el «logueado» (CU9, CU21, CU30 y CU31),
+para que haya un solo criterio. Quedan sin él sólo **CU1**, que es el propio inicio de
+sesión, y **CU49**, que lo dispara el reloj sin sesión de por medio.
+
+Las precondiciones salieron de dos tipos:
+
+| Tipo | Casos | Ejemplo |
+|---|---|---|
+| **Exige algo antes** | CU2, CU4, CU8, CU9, CU12, CU21, CU29, CU30, CU31, CU35 | CU12: tiene que haber hembras en lactancia, porque el lote se arma con ellas y la pantalla no deja guardarlo vacío |
+| **Funciona sobre una base vacía** | CU3, CU10, CU14, CU15, CU17, CU23, CU25, CU37 a CU40, CU43 a CU47 | CU40: sin animales cargados, el tablero indica por dónde empezar |
+
+**Decir que un caso funciona sin datos también es una precondición**, y no una manera de
+esquivarla: dice qué no hace falta que sea verdad, y en casi todos remite al curso que
+resuelve el vacío. Así la precondición y los cursos se leen juntos.
+
+Algunas dejaron escrita una regla que no estaba en ningún lado. La raza es obligatoria en
+el alta y **no tiene pantalla propia**: se carga con la base de datos. Una pajuela exige que
+el toro que la aporta esté registrado como animal —el de catálogo, con «En pie»
+desmarcado—. Y en CU29 se separó lo que es precondición de lo que es excepción: que haya
+una vacuna dada de alta es precondición; que tenga stock se verifica al guardar.
+
+### Y el ejercicio encontró una regla escrita al revés
+
+La revisión lo había anticipado: pensar qué tiene que ser verdad antes es donde «suelen
+aparecer reglas de negocio que no estaban escritas». Apareció una, pero en sentido
+contrario: **una regla escrita que el sistema no cumple** (hallazgo H14).
+
+CU44 a CU47 decían que, si el período no tiene registros, el sistema «informa la situación
+y **no genera el archivo**». El sistema **lo genera igual**: el único motivo por el que no
+arma un reporte es un rango de fechas inválido, y tanto el PDF como la planilla escriben
+«Sin registros en el período» en cada sección vacía.
+
+**El código tiene razón.** Un reporte sanitario de un mes sin diagnósticos es un documento
+válido —dice que no hubo—, y negarse a emitirlo le quitaría a la encargada la constancia de
+un período sin novedades.
+
+| | Antes | Ahora |
+|---|---|---|
+| Período sin registros | Excepción 4a: no genera el archivo | **Curso alternativo** 4a: lo genera, con cada sección vacía indicada |
+| Rango de fechas inválido | No figuraba | **Excepción** 3a de CU44 a CU46: informa y no genera |
+| CU47, reporte genético | Excepción 4a: sin genealogía no genera; y la precondición exigía genealogía registrada | **Sin excepciones** —no usa período, así que siempre genera— y la precondición ya no la exige |
+
+Nadie más repetía la promesa: ni el manual, ni el protocolo de pruebas, ni los flujos.
+
+> **Un detalle del sistema, anotado y sin tocar.** El reporte genético no tiene período,
+> pero sus secciones vacías dicen igual «Sin registros en el período», porque la frase es
+> fija en los dos generadores. Es texto de pantalla y no un error de cálculo; se anota para
+> que no sorprenda en la captura.
+
+
+## 8. El manual de usuario, puesto al día (10/09)
+
+El manual —sección 2.4— se escribió el 26/08 leyendo las pantallas, pero en una rama que
+todavía no tenía ni el registro rápido del tablero ni las notificaciones por Telegram. Se
+lo comparó contra su propio commit (`ba6959b`): desde entonces cambiaron siete archivos de
+pantallas, y el manual no reflejaba cuatro de esos cambios. Revisándolo aparecieron,
+además, errores que estaban desde el principio.
+
+| Dónde | Qué decía | Qué dice ahora |
+|---|---|---|
+| §2.2 Moverse por el sistema | Un menú por módulo en la barra superior, seis módulos | El menú es una **columna lateral** con ocho secciones —*Pendientes y alertas* primero, *Reportes y notificaciones* al final— y Configuración al pie |
+| §3 Configuración | «Edad mínima al servicio»: por debajo no deja registrar un servicio | Que alcanza sólo a las hembras, que es también el piso de la genealogía, y que el macho pasa a toro a los 15 meses, fijo (H4) |
+| §4.3 Alta de animal | Que una madre sin edad para parir **avisa y deja guardar** | Que **se rechaza sin opción** —22 meses la madre, 24 el padre— y que lo que sólo avisa es el progenitor dado de baja o los padres emparentados (H12, H13) |
+| §9 Indicadores | «No se carga nada acá» | El **registro rápido** del tablero: el celo y el tacto se guardan ahí; el servicio y el parto abren su formulario con la caravana cargada |
+| §10 Reportes y notificaciones | Que el Módulo 7 estaba «construido a medias» | **Reescrita**: los tres botones de los reportes, qué trae cada uno y que un período vacío se genera igual; la vinculación con `/start` y el mensaje de prueba, la hora, los ocho avisos por módulo, cómo llega el resumen y `/resumen` |
+| §11 Desde el celular | «Los seis módulos» | Las ocho secciones |
+| Doce caminos de menú | Los del menú anterior: *Lista de Animales*, *Registrar Celo*, *Sanidad → Calendario Sanitario* | Los de hoy: *Rodeo*, *Celos → Registrar celo*, *Pendientes y alertas → Calendario sanitario* |
+
+**El error de §4.3 no era sólo del manual.** El guion de capturas (E1) y el protocolo de
+pruebas decían lo mismo, y `flujos-de-prueba.md` era el único que lo tenía bien. La prueba,
+corrida como estaba, habría marcado **falla con el sistema funcionando correctamente**. Se
+separó en dos: la madre sin edad, que se rechaza, y los padres emparentados, que avisan con
+*Guardar de todos modos*. La captura de la advertencia usa ahora ese segundo caso, el mismo
+que describe `flujos-de-prueba.md`.
+
+En la misma pasada: E6 del guion decía que el umbral del celo es «configurado» —son 9
+meses fijos, H1—, y la prueba del tacto sin resultado citaba un mensaje que cambió de texto
+cuando la validación pasó a `ValidarTacto`.
+
+Se sumó una captura, `m6-cu40-registro`, para el registro rápido. Las secciones piden
+**107** capturas y el guion define **107**.
+
 ---
 
 ## Lo que queda pendiente
@@ -193,5 +285,5 @@ corregidos.
   entrega, que es lo último de la lista.
 - Sigue en pie lo que ya arrastraba la v7: **fusionar RF3.4 con RF3.5 y quitar RF5.2**
   cambia la cantidad de requerimientos y obliga a renumerar, así que quedó para discusión
-  aparte; y las **precondiciones de los casos de uso** —20 de 49 dicen sólo «el usuario
-  debe estar logueado»— se corrigen mientras se escribe el manual.
+  aparte. Las precondiciones, que también venían de la v7, quedaron resueltas: ver el
+  punto 7.

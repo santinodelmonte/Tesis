@@ -92,7 +92,10 @@ dict(
     descripcion='Permite asentar la aplicación de una vacuna a un animal, indicando la '
         'fecha y el biológico utilizado.',
     rf='RF4.4',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado, el animal debe estar registrado y debe '
+        'haber al menos una vacuna dada de alta como insumo: la pantalla ofrece sólo las '
+        'vacunas y, si no hay ninguna, indica darlas de alta desde Insumos. Que la '
+        'vacuna tenga stock no es precondición: se verifica al guardar (6a).',
     desencadenante='Se realiza una jornada de vacunación obligatoria o preventiva.',
     curso=[
         'El usuario busca al animal por su número de caravana.',
@@ -127,7 +130,8 @@ dict(
         '—vacunaciones, desparasitaciones y descornes— que el establecimiento debe cumplir, '
         'y que el sistema utiliza para calcular el calendario sanitario.',
     rf='RF4.7',
-    precondicion='Los insumos y las categorías deben estar registrados en el sistema.',
+    precondicion='El usuario debe estar logueado y los insumos y las categorías deben '
+        'estar registrados en el sistema.',
     desencadenante='El usuario necesita dar de alta o ajustar un esquema sanitario del '
         'establecimiento.',
     curso=[
@@ -172,8 +176,8 @@ dict(
     descripcion='El usuario consulta el cronograma de procedimientos sanitarios pendientes '
         'y vencidos del rodeo, derivado de los planes sanitarios configurados.',
     rf='RF4.5',
-    precondicion='Deben existir planes sanitarios activos y animales registrados en el '
-        'rodeo.',
+    precondicion='El usuario debe estar logueado y deben existir planes sanitarios '
+        'activos y animales registrados en el rodeo.',
     desencadenante='El usuario necesita saber qué procedimientos sanitarios están '
         'pendientes.',
     curso=[
@@ -310,7 +314,10 @@ dict(
     descripcion='Permite dar de alta un nuevo insumo —medicamento, vacuna, antiparasitario '
         'o pajuela— o registrar el ingreso de una nueva partida de uno existente.',
     rf='RF5.1, RF5.2, RF5.7',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. Para dar de alta una pajuela, el toro '
+        'que la aporta debe estar registrado como animal —el de catálogo, con «En pie» '
+        'desmarcado—; para registrar el ingreso de una partida, el insumo debe estar '
+        'dado de alta (1a).',
     desencadenante='El establecimiento adquiere insumos o necesita inventariar el stock '
         'disponible.',
     curso=[
@@ -380,7 +387,8 @@ dict(
     descripcion='Despliega los insumos cuyas existencias son iguales o inferiores al umbral '
         'mínimo configurado.',
     rf='RF5.6',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: si '
+        'ningún insumo está por debajo de su stock mínimo, el sistema lo informa.',
     desencadenante='El usuario accede al panel de inventario para planificar futuras '
         'compras.',
     curso=[
@@ -410,7 +418,9 @@ dict(
     descripcion='Despliega las partidas de insumos vencidas o próximas a vencer, para '
         'retirarlas de uso o priorizar su aplicación.',
     rf='RF5.8',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: si no '
+        'hay partidas vencidas ni por vencer dentro de la anticipación configurada, el '
+        'sistema lo informa.',
     desencadenante='El usuario revisa el estado de los insumos almacenados.',
     curso=[
         'El usuario ingresa a la sección “Alertas de Vencimiento”.',
@@ -440,7 +450,8 @@ dict(
     descripcion='Permite consultar cronológicamente todos los ingresos y egresos de stock '
         'registrados sobre los insumos del establecimiento.',
     rf='RF5.9, RF5.10',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: si '
+        'ningún movimiento coincide con los filtros, el sistema lo informa (4a).',
     desencadenante='El usuario necesita auditar el consumo o el reabastecimiento de un '
         'insumo.',
     curso=[
@@ -478,7 +489,9 @@ dict(
     descripcion='Presenta, como pantalla de entrada al sistema, el estado del día del '
         'establecimiento: lo que hay pendiente y lo que vence.',
     rf='RF6.1',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: sin '
+        'animales cargados, el tablero indica por dónde empezar la puesta en marcha '
+        '(1a).',
     desencadenante='El usuario inicia sesión o vuelve a la pantalla principal.',
     curso=[
         'El sistema recupera los avisos vigentes de cada módulo: secados próximos, partos '
@@ -598,7 +611,9 @@ dict(
     descripcion='Permite llegar directamente a la ficha de un animal desde cualquier '
         'pantalla del sistema, ingresando su número de caravana.',
     rf='RF6.4',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado, desde cualquier pantalla: el buscador '
+        'está en la barra superior. Si la caravana no corresponde a ningún animal, el '
+        'sistema lo informa (2a).',
     desencadenante='El usuario necesita consultar un animal mientras está trabajando en '
         'otra pantalla.',
     curso=[
@@ -630,7 +645,9 @@ dict(
         'producción lechera individual y general del establecimiento para un período '
         'determinado.',
     rf='RF7.1',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: un '
+        'período sin producción genera igual el documento, con cada sección vacía '
+        'indicada (4a).',
     desencadenante='El usuario necesita disponer de la información productiva fuera del '
         'sistema.',
     curso=[
@@ -643,9 +660,12 @@ dict(
         'El sistema construye el documento en el formato solicitado y lo ofrece para su '
         'descarga.',
     ],
-    alternativos='—',
-    excepcion='4a. No existen registros de producción en el período seleccionado: el '
-        'sistema informa la situación y no genera el archivo.',
+    alternativos='4a. No existen registros de producción en el período seleccionado: el '
+        'sistema genera igual el documento e indica «Sin registros en el período» en '
+        'cada sección vacía, de modo que un período sin novedades queda documentado como '
+        'tal.',
+    excepcion='3a. La fecha desde es posterior a la fecha hasta: el sistema informa que '
+        'el rango es inválido y no genera el documento.',
     postcondicion='El archivo queda descargado en el dispositivo del usuario sin que se '
         'modifique ningún registro del sistema.',
     reglas='El reporte aplica la misma regla que el historial de producción: cada turno '
@@ -663,7 +683,9 @@ dict(
     descripcion='Permite generar y descargar un reporte con los diagnósticos, tratamientos '
         'y vacunaciones registrados en un período determinado.',
     rf='RF7.2',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: un '
+        'período sin eventos sanitarios genera igual el documento, con cada sección '
+        'vacía indicada (4a).',
     desencadenante='El usuario necesita documentar la sanidad del rodeo fuera del sistema.',
     curso=[
         'El usuario ingresa a la sección “Reportes” y selecciona “Reporte Sanitario”.',
@@ -674,9 +696,12 @@ dict(
         'El sistema construye el documento en el formato solicitado y lo ofrece para su '
         'descarga.',
     ],
-    alternativos='—',
-    excepcion='4a. No existen registros sanitarios en el período seleccionado: el sistema '
-        'informa la situación y no genera el archivo.',
+    alternativos='4a. No existen registros sanitarios en el período seleccionado: el '
+        'sistema genera igual el documento e indica «Sin registros en el período» en '
+        'cada sección vacía, de modo que un período sin novedades queda documentado como '
+        'tal.',
+    excepcion='3a. La fecha desde es posterior a la fecha hasta: el sistema informa que '
+        'el rango es inválido y no genera el documento.',
     postcondicion='El archivo queda descargado sin que se modifique ningún registro del '
         'sistema.',
     reglas='El reporte incluye el período de descarte de leche resultante de cada '
@@ -693,7 +718,9 @@ dict(
     descripcion='Permite generar y descargar un reporte con los servicios, preñeces, partos '
         'y secados de un período determinado.',
     rf='RF7.3',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: un '
+        'período sin eventos reproductivos genera igual el documento, con cada sección '
+        'vacía indicada (4a).',
     desencadenante='El usuario necesita analizar la marcha reproductiva del rodeo fuera del '
         'sistema.',
     curso=[
@@ -705,9 +732,12 @@ dict(
         'El sistema construye el documento en el formato solicitado y lo ofrece para su '
         'descarga.',
     ],
-    alternativos='—',
-    excepcion='4a. No existen registros reproductivos en el período seleccionado: el '
-        'sistema informa la situación y no genera el archivo.',
+    alternativos='4a. No existen registros reproductivos en el período seleccionado: el '
+        'sistema genera igual el documento e indica «Sin registros en el período» en '
+        'cada sección vacía, de modo que un período sin novedades queda documentado como '
+        'tal.',
+    excepcion='3a. La fecha desde es posterior a la fecha hasta: el sistema informa que '
+        'el rango es inválido y no genera el documento.',
     postcondicion='El archivo queda descargado sin que se modifique ningún registro del '
         'sistema.',
     reglas='El reporte acompaña cada evento con los indicadores reproductivos del período, '
@@ -724,8 +754,8 @@ dict(
     descripcion='Permite generar y descargar un reporte de genealogía y de rendimiento por '
         'línea genética.',
     rf='RF7.4',
-    precondicion='El usuario debe estar logueado y los animales deben tener genealogía '
-        'registrada.',
+    precondicion='El usuario debe estar logueado. No requiere genealogía registrada: el '
+        'reporte se genera igual y cada sección sin registros se indica como tal (4a).',
     desencadenante='El usuario necesita evaluar el aporte de cada línea genética del rodeo.',
     curso=[
         'El usuario ingresa a la sección “Reportes” y selecciona “Reporte Genético”.',
@@ -736,10 +766,11 @@ dict(
         'El sistema construye el documento en el formato solicitado y lo ofrece para su '
         'descarga.',
     ],
-    alternativos='2a. El alcance es un reproductor: el sistema reúne su descendencia y el '
-        'desempeño productivo de sus hijas.',
-    excepcion='4a. Los animales alcanzados no tienen genealogía registrada: el sistema '
-        'informa la situación y no genera el archivo.',
+    alternativos='2a. El alcance es un reproductor: el sistema reúne su descendencia y '
+        'el desempeño productivo de sus hijas. 4a. Los animales alcanzados no tienen '
+        'genealogía registrada: el sistema genera igual el documento e indica en cada '
+        'sección vacía que no hay registros.',
+    excepcion='—',
     postcondicion='El archivo queda descargado sin que se modifique ningún registro del '
         'sistema.',
     reglas='El rendimiento por línea genética sólo considera hijas con al menos una '

@@ -77,11 +77,20 @@ registrados, y permite aceptarla o sustituirla.
 
 `[captura: t-alta-categoria]`
 
-**Prueba:** dar de alta una cría indicando como madre un animal que no tenía edad
-suficiente para haber parido en esa fecha.
+**Prueba:** dar de alta la caravana `201`, nacida hace dos meses, indicando como madre a
+la ternera `177`, que no tenía edad para parir.
 
-**Resultado esperado:** el sistema no la registra automáticamente: muestra la advertencia
-de genealogía y ofrece **Guardar de todos modos**.
+**Resultado esperado:** el sistema rechaza el alta con «La madre tiene que haber nacido
+al menos 22 meses antes que la cria!» —la edad mínima al servicio configurada, 13 meses,
+más los 9 de gestación— y **no ofrece forzarla**: una madre más joven que su cría es
+imposible, no sospechosa.
+
+**Prueba:** la misma alta, pero con madre `152` y padre `7HO12165`, que es el padre de
+`152`.
+
+**Resultado esperado:** el sistema no la registra automáticamente: advierte que los
+progenitores tienen parentesco entre sí y que la cría nace consanguínea, y ofrece
+**Guardar de todos modos**.
 
 `[captura: t-alta-genealogia]`
 
@@ -221,7 +230,7 @@ ordeñe.
 | Celo con fecha posterior a la baja del animal | Lo rechaza por ser posterior a la baja | |
 | Servicio sin elegir toro ni pajuela | Lo rechaza | |
 | Servicio a una ternera por debajo de la edad mínima | Lo rechaza indicando la edad mínima al servicio | |
-| Tacto sin resultado | «Es obligatorio definir un resultado para el tacto!» | |
+| Tacto sin resultado | «Hay que indicar el resultado del tacto!» | |
 | Tacto de un animal sin servicio pendiente | «El animal no tiene un servicio pendiente…» | |
 
 **Prueba:** registrar una inseminación artificial eligiendo una pajuela del stock.

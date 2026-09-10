@@ -60,7 +60,8 @@ dict(
     descripcion='El usuario finaliza su sesión de trabajo, de modo que el sistema deje de '
         'ser accesible desde ese navegador sin volver a autenticarse.',
     rf='RF0.2',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado, con una sesión activa: es la que el '
+        'caso de uso cierra.',
     desencadenante='El usuario termina su jornada o deja el equipo disponible para otra '
         'persona.',
     curso=[
@@ -87,7 +88,9 @@ dict(
         'fechas recomendadas, valida cargas y arma los avisos, de modo que las reglas '
         'respondan al criterio del establecimiento y no a constantes fijas del sistema.',
     rf='RF0.3',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere una configuración previa: '
+        'mientras el establecimiento no guarde una propia, rigen los valores por defecto '
+        '(2a).',
     desencadenante='El establecimiento adopta un criterio de manejo distinto del que el '
         'sistema tiene configurado.',
     curso=[
@@ -129,7 +132,10 @@ dict(
     descripcion='Permite ingresar un nuevo animal al sistema con sus datos básicos, su '
         'fotografía y su registro genealógico.',
     rf='RF1.1, RF1.4, RF1.5, RF1.8, RF1.12, RF1.14',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado y las razas deben estar cargadas en el '
+        'sistema: la raza es obligatoria y no tiene alta desde el sistema, sino que se '
+        'carga con la base de datos. Para indicar un progenitor, éste debe estar '
+        'registrado como animal.',
     desencadenante='El usuario ingresa a la sección de alta de animales.',
     curso=[
         'El usuario ingresa a la pantalla de Alta de Animal.',
@@ -278,7 +284,9 @@ dict(
     descripcion='Permite recorrer el árbol genealógico de un animal, desplegando cada rama '
         'de la ascendencia y accediendo a la ficha de cualquier ancestro.',
     rf='RF1.6, RF1.13',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado y el animal debe estar registrado en el '
+        'sistema. No hace falta que tenga progenitores cargados: sin ellos, el árbol los '
+        'muestra como «No registrado» (3a).',
     desencadenante='El usuario solicita ver la genealogía de un animal específico.',
     curso=[
         'El usuario busca y selecciona el animal dentro del rodeo.',
@@ -314,8 +322,8 @@ dict(
         'reproductor antes de asignar el servicio, de modo de evitar cruzamientos entre '
         'animales emparentados.',
     rf='RF1.7',
-    precondicion='Ambos animales deben estar registrados en el sistema con su genealogía '
-        'cargada.',
+    precondicion='El usuario debe estar logueado y ambos animales deben estar '
+        'registrados en el sistema con su genealogía cargada.',
     desencadenante='El usuario planifica el servicio de una hembra.',
     curso=[
         'El usuario ingresa a la sección “Verificar Consanguinidad”.',
@@ -351,7 +359,8 @@ dict(
     descripcion='Permite realizar búsquedas y aplicar filtros combinados sobre los animales '
         'registrados.',
     rf='RF1.10',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere animales cargados: si '
+        'ninguno coincide con los filtros, el sistema lo informa (4a).',
     desencadenante='El usuario ingresa a la pantalla de consulta de animales.',
     curso=[
         'El usuario ingresa a la pantalla de Consulta de Animales.',
@@ -421,7 +430,8 @@ dict(
     descripcion='El usuario registra los litros totales obtenidos por el rodeo en un turno '
         'de ordeñe, tal como se leen del tanque.',
     rf='RF2.1, RF2.2',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado y debe haber hembras en lactancia: el '
+        'sistema arma el lote con ellas y no admite guardarlo sin al menos un animal.',
     desencadenante='El usuario ingresa a la pantalla de ordeñe por lote al terminar el '
         'ordeñe.',
     curso=[
@@ -509,7 +519,8 @@ dict(
     descripcion='Permite consultar cronológicamente la producción del establecimiento y las '
         'lactancias de cada animal dentro de un rango de fechas.',
     rf='RF2.5, RF2.6, RF2.7',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: un '
+        'período sin producción se informa como tal.',
     desencadenante='El usuario solicita consultar los historiales de producción.',
     curso=[
         'El usuario ingresa a la sección de Historial de Producción.',
@@ -548,7 +559,8 @@ dict(
     descripcion='Permite visualizar los litros totales producidos por el establecimiento en '
         'un mes calendario.',
     rf='RF2.4, RF2.7',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: un mes '
+        'sin producción se informa como tal (2a).',
     desencadenante='El usuario accede al panel de producción mensual.',
     curso=[
         'El usuario selecciona el mes y el año que desea consultar.',
@@ -609,7 +621,9 @@ dict(
     descripcion='Despliega las vacas en producción que están próximas a cumplir el tiempo '
         'sugerido para iniciar su secado.',
     rf='RF2.9, RF2.10',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: si '
+        'ninguna hembra preñada y en lactancia entra en la anticipación configurada, el '
+        'sistema informa que no hay secados próximos.',
     desencadenante='El usuario ingresa a la sección de alertas de producción.',
     curso=[
         'El usuario accede a la sección “Alertas de Secado”.',
@@ -740,8 +754,9 @@ dict(
     descripcion='El usuario registra el servicio de una hembra, ya sea por monta natural '
         'con un toro del rodeo o por inseminación artificial con una pajuela del stock.',
     rf='RF3.2, RF3.3, RF3.9, RF3.10, RF3.11, RF5.4',
-    precondicion='La hembra debe estar registrada y en condiciones de recibir servicio. En '
-        'la inseminación artificial debe existir stock de la pajuela seleccionada.',
+    precondicion='El usuario debe estar logueado, la hembra debe estar registrada y en '
+        'condiciones de recibir servicio y, en la inseminación artificial, debe existir '
+        'stock de la pajuela seleccionada.',
     desencadenante='El usuario detectó el celo de la hembra y decide darle servicio.',
     curso=[
         'El usuario busca e ingresa la caravana de la hembra.',
@@ -831,7 +846,9 @@ dict(
     descripcion='Lista las vacas preñadas que se encuentran próximas a su fecha probable de '
         'parto.',
     rf='RF3.7',
-    precondicion='El usuario debe estar logueado.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: si '
+        'ningún parto probable entra en la anticipación configurada, el sistema informa '
+        'que no hay partos próximos.',
     desencadenante='El usuario ingresa a la sección de alertas reproductivas.',
     curso=[
         'El usuario selecciona la opción “Alertas de Parto”.',
@@ -911,7 +928,9 @@ dict(
     descripcion='Presenta las dos listas que ordenan el trabajo reproductivo de la jornada: '
         'los servicios que esperan tacto y las hembras en condiciones de ser servidas.',
     rf='RF3.12',
-    precondicion='El usuario debe estar logueado en el sistema.',
+    precondicion='El usuario debe estar logueado. No requiere registros previos: una '
+        'lista sin animales se informa como tal —no hay tactos pendientes, no hay '
+        'hembras esperando servicio—.',
     desencadenante='El usuario planifica el trabajo reproductivo del día.',
     curso=[
         'El usuario accede a “Tactos Pendientes” o a “Vacas para Servir”.',

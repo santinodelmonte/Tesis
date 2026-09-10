@@ -8,7 +8,8 @@ Primera pasada el **26/08/2026**, contra `HEAD` de
 `claude/thesis-project-document-prompt-nj7ffh`. **Segunda pasada el 08/09/2026**,
 contra `master`: el Módulo 7, que en agosto todavía no existía, y los cuatro
 requerimientos que habían quedado sin verificar a nivel de línea. Los hallazgos
-nuevos son H9 a H13.
+nuevos son H9 a H13, y H14 salió el 10/09 al escribir las
+precondiciones de los casos de uso.
 
 ---
 
@@ -82,8 +83,9 @@ uno contra las constantes del código:
 | RF5.10 | Contra-movimiento que devuelve el stock | `Controladora.cs:2593` |
 
 Es un resultado bueno y conviene decirlo: **la parte difícil ya estaba hecha.** Lo
-que sigue son trece hallazgos —ocho de la primera pasada, cinco de la segunda— y
-ninguno es grave. **Doce de los trece se corrigen escribiendo, no programando**; el
+que sigue son catorce hallazgos —ocho de la primera pasada, cinco de la segunda y uno
+de las precondiciones— y ninguno es grave. **Trece de los catorce se corrigen
+escribiendo, no programando**; el
 único que pide tocar código es H5, y porque así se resolvió.
 
 ---
@@ -460,6 +462,22 @@ advertencia termina con «Es correcto si la cría vino de una pajuela suya».
 > que recorre la descendencia completa y no sólo los hijos directos). Conviene escribirlo
 > así.
 
+### H14 — CU44 a CU47 prometían no generar el reporte de un período vacío, y el sistema lo genera
+
+Apareció el 10/09, al escribir las precondiciones. Los cuatro reportes tenían una
+excepción 4a: sin registros en el período, «el sistema informa la situación y **no genera
+el archivo**». `ModeloReporte.Consultar()` sólo rechaza un rango de fechas inválido, y
+`GeneradorPdf` y `GeneradorExcel` escriben «Sin registros en el período» en cada sección
+vacía: **el documento sale igual**.
+
+**El código tiene razón**: un reporte de un mes sin novedades es un documento válido, que
+deja constancia de que no las hubo. No es de redacción del anteproyecto —RF7.1 a RF7.4 no
+dicen nada del caso— sino de los casos de uso.
+
+**APLICADO el 10/09 en el Proyecto.** El período vacío pasa a curso alternativo, el rango
+inválido pasa a ser la excepción real de CU44 a CU46, y CU47 queda sin excepciones porque
+no usa período. El detalle está en `cambios-anteproyecto-v8.md`, punto 7.
+
 ---
 
 ## 4. El Módulo 7, auditado
@@ -617,6 +635,7 @@ siendo **74 requerimientos, en el mismo orden** —verificado sobre el documento
 | H8 | Control de Versionado: `master`, sin las cuatro ramas inventadas, versiones por entrega documental | **aplicado** |
 | H9, H10, H11 | RF7.6 y RF7.7 | **aplicado** (parte, regenerando) |
 | H12, H13 | RF1.14 | **aplicado** |
+| H14 | CU44 a CU47: el período vacío genera igual el documento | **aplicado** (10/09) |
 
 **El Proyecto se corrigió en la misma tanda y pasa a ser `Proyecto_v7.docx`:** CU2, CU4,
 CU9, CU20, CU21 y el análisis de 2.1 repetían con sus palabras lo que los requerimientos
@@ -625,7 +644,7 @@ código del Módulo 7—. Regenerarlo destapó, además, tres cosas escritas y n
 publicadas: el registro rápido en CU40, el actor de CU49 y un método de más en el
 diccionario.
 
-**De los trece hallazgos quedan doce cerrados.** El único abierto es H6, que no es del
+**De los catorce hallazgos quedan trece cerrados.** El único abierto es H6, que no es del
 documento sino del despliegue, y se resuelve al armar el repositorio de entrega.
 
 El detalle de cada cambio, con su porqué, está en `docs/cambios-anteproyecto-v8.md`.

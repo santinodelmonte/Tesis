@@ -135,7 +135,7 @@ Descripción: El usuario finaliza su sesión de trabajo, de modo que el sistema 
 
 Referencia a Requerimientos Funcionales: RF0.2
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado, con una sesión activa: es la que el caso de uso cierra.
 
 Desencadenante: El usuario termina su jornada o deja el equipo disponible para otra persona.
 
@@ -171,7 +171,7 @@ Descripción: El usuario ajusta los parámetros de manejo con los que el sistema
 
 Referencia a Requerimientos Funcionales: RF0.3
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere una configuración previa: mientras el establecimiento no guarde una propia, rigen los valores por defecto (2a).
 
 Desencadenante: El establecimiento adopta un criterio de manejo distinto del que el sistema tiene configurado.
 
@@ -214,7 +214,7 @@ Descripción: Permite ingresar un nuevo animal al sistema con sus datos básicos
 
 Referencia a Requerimientos Funcionales: RF1.1, RF1.4, RF1.5, RF1.8, RF1.12, RF1.14
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado y las razas deben estar cargadas en el sistema: la raza es obligatoria y no tiene alta desde el sistema, sino que se carga con la base de datos. Para indicar un progenitor, éste debe estar registrado como animal.
 
 Desencadenante: El usuario ingresa a la sección de alta de animales.
 
@@ -374,7 +374,7 @@ Descripción: Permite recorrer el árbol genealógico de un animal, desplegando 
 
 Referencia a Requerimientos Funcionales: RF1.6, RF1.13
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado y el animal debe estar registrado en el sistema. No hace falta que tenga progenitores cargados: sin ellos, el árbol los muestra como «No registrado» (3a).
 
 Desencadenante: El usuario solicita ver la genealogía de un animal específico.
 
@@ -414,7 +414,7 @@ Descripción: El usuario consulta el grado de parentesco entre una hembra y un p
 
 Referencia a Requerimientos Funcionales: RF1.7
 
-Pre-condición: Ambos animales deben estar registrados en el sistema con su genealogía cargada.
+Pre-condición: El usuario debe estar logueado y ambos animales deben estar registrados en el sistema con su genealogía cargada.
 
 Desencadenante: El usuario planifica el servicio de una hembra.
 
@@ -456,7 +456,7 @@ Descripción: Permite realizar búsquedas y aplicar filtros combinados sobre los
 
 Referencia a Requerimientos Funcionales: RF1.10
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere animales cargados: si ninguno coincide con los filtros, el sistema lo informa (4a).
 
 Desencadenante: El usuario ingresa a la pantalla de consulta de animales.
 
@@ -537,7 +537,7 @@ Descripción: El usuario registra los litros totales obtenidos por el rodeo en u
 
 Referencia a Requerimientos Funcionales: RF2.1, RF2.2
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado y debe haber hembras en lactancia: el sistema arma el lote con ellas y no admite guardarlo sin al menos un animal.
 
 Desencadenante: El usuario ingresa a la pantalla de ordeñe por lote al terminar el ordeñe.
 
@@ -623,7 +623,7 @@ Descripción: Permite consultar cronológicamente la producción del establecimi
 
 Referencia a Requerimientos Funcionales: RF2.5, RF2.6, RF2.7
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: un período sin producción se informa como tal.
 
 Desencadenante: El usuario solicita consultar los historiales de producción.
 
@@ -663,7 +663,7 @@ Descripción: Permite visualizar los litros totales producidos por el establecim
 
 Referencia a Requerimientos Funcionales: RF2.4, RF2.7
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: un mes sin producción se informa como tal (2a).
 
 Desencadenante: El usuario accede al panel de producción mensual.
 
@@ -743,7 +743,7 @@ Descripción: Despliega las vacas en producción que están próximas a cumplir 
 
 Referencia a Requerimientos Funcionales: RF2.9, RF2.10
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: si ninguna hembra preñada y en lactancia entra en la anticipación configurada, el sistema informa que no hay secados próximos.
 
 Desencadenante: El usuario ingresa a la sección de alertas de producción.
 
@@ -904,7 +904,7 @@ Descripción: El usuario registra el servicio de una hembra, ya sea por monta na
 
 Referencia a Requerimientos Funcionales: RF3.2, RF3.3, RF3.9, RF3.10, RF3.11, RF5.4
 
-Pre-condición: La hembra debe estar registrada y en condiciones de recibir servicio. En la inseminación artificial debe existir stock de la pajuela seleccionada.
+Pre-condición: El usuario debe estar logueado, la hembra debe estar registrada y en condiciones de recibir servicio y, en la inseminación artificial, debe existir stock de la pajuela seleccionada.
 
 Desencadenante: El usuario detectó el celo de la hembra y decide darle servicio.
 
@@ -996,7 +996,7 @@ Descripción: Lista las vacas preñadas que se encuentran próximas a su fecha p
 
 Referencia a Requerimientos Funcionales: RF3.7
 
-Pre-condición: El usuario debe estar logueado.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: si ningún parto probable entra en la anticipación configurada, el sistema informa que no hay partos próximos.
 
 Desencadenante: El usuario ingresa a la sección de alertas reproductivas.
 
@@ -1082,7 +1082,7 @@ Descripción: Presenta las dos listas que ordenan el trabajo reproductivo de la 
 
 Referencia a Requerimientos Funcionales: RF3.12
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: una lista sin animales se informa como tal —no hay tactos pendientes, no hay hembras esperando servicio—.
 
 Desencadenante: El usuario planifica el trabajo reproductivo del día.
 
@@ -1249,7 +1249,7 @@ Descripción: Permite asentar la aplicación de una vacuna a un animal, indicand
 
 Referencia a Requerimientos Funcionales: RF4.4
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado, el animal debe estar registrado y debe haber al menos una vacuna dada de alta como insumo: la pantalla ofrece sólo las vacunas y, si no hay ninguna, indica darlas de alta desde Insumos. Que la vacuna tenga stock no es precondición: se verifica al guardar (6a).
 
 Desencadenante: Se realiza una jornada de vacunación obligatoria o preventiva.
 
@@ -1291,7 +1291,7 @@ Descripción: El usuario define las reglas de los procedimientos sanitarios peri
 
 Referencia a Requerimientos Funcionales: RF4.7
 
-Pre-condición: Los insumos y las categorías deben estar registrados en el sistema.
+Pre-condición: El usuario debe estar logueado y los insumos y las categorías deben estar registrados en el sistema.
 
 Desencadenante: El usuario necesita dar de alta o ajustar un esquema sanitario del establecimiento.
 
@@ -1335,7 +1335,7 @@ Descripción: El usuario consulta el cronograma de procedimientos sanitarios pen
 
 Referencia a Requerimientos Funcionales: RF4.5
 
-Pre-condición: Deben existir planes sanitarios activos y animales registrados en el rodeo.
+Pre-condición: El usuario debe estar logueado y deben existir planes sanitarios activos y animales registrados en el rodeo.
 
 Desencadenante: El usuario necesita saber qué procedimientos sanitarios están pendientes.
 
@@ -1502,7 +1502,7 @@ Descripción: Permite dar de alta un nuevo insumo —medicamento, vacuna, antipa
 
 Referencia a Requerimientos Funcionales: RF5.1, RF5.2, RF5.7
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. Para dar de alta una pajuela, el toro que la aporta debe estar registrado como animal —el de catálogo, con «En pie» desmarcado—; para registrar el ingreso de una partida, el insumo debe estar dado de alta (1a).
 
 Desencadenante: El establecimiento adquiere insumos o necesita inventariar el stock disponible.
 
@@ -1584,7 +1584,7 @@ Descripción: Despliega los insumos cuyas existencias son iguales o inferiores a
 
 Referencia a Requerimientos Funcionales: RF5.6
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: si ningún insumo está por debajo de su stock mínimo, el sistema lo informa.
 
 Desencadenante: El usuario accede al panel de inventario para planificar futuras compras.
 
@@ -1622,7 +1622,7 @@ Descripción: Despliega las partidas de insumos vencidas o próximas a vencer, p
 
 Referencia a Requerimientos Funcionales: RF5.8
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: si no hay partidas vencidas ni por vencer dentro de la anticipación configurada, el sistema lo informa.
 
 Desencadenante: El usuario revisa el estado de los insumos almacenados.
 
@@ -1660,7 +1660,7 @@ Descripción: Permite consultar cronológicamente todos los ingresos y egresos d
 
 Referencia a Requerimientos Funcionales: RF5.9, RF5.10
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: si ningún movimiento coincide con los filtros, el sistema lo informa (4a).
 
 Desencadenante: El usuario necesita auditar el consumo o el reabastecimiento de un insumo.
 
@@ -1703,7 +1703,7 @@ Descripción: Presenta, como pantalla de entrada al sistema, el estado del día 
 
 Referencia a Requerimientos Funcionales: RF6.1
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: sin animales cargados, el tablero indica por dónde empezar la puesta en marcha (1a).
 
 Desencadenante: El usuario inicia sesión o vuelve a la pantalla principal.
 
@@ -1823,7 +1823,7 @@ Descripción: Permite llegar directamente a la ficha de un animal desde cualquie
 
 Referencia a Requerimientos Funcionales: RF6.4
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado, desde cualquier pantalla: el buscador está en la barra superior. Si la caravana no corresponde a ningún animal, el sistema lo informa (2a).
 
 Desencadenante: El usuario necesita consultar un animal mientras está trabajando en otra pantalla.
 
@@ -1862,7 +1862,7 @@ Descripción: Permite generar y descargar un reporte en formato PDF o Excel con 
 
 Referencia a Requerimientos Funcionales: RF7.1
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: un período sin producción genera igual el documento, con cada sección vacía indicada (4a).
 
 Desencadenante: El usuario necesita disponer de la información productiva fuera del sistema.
 
@@ -1878,9 +1878,9 @@ Curso Básico:
 
 5. El sistema construye el documento en el formato solicitado y lo ofrece para su descarga.
 
-Cursos Alternativos: —
+Cursos Alternativos: 4a. No existen registros de producción en el período seleccionado: el sistema genera igual el documento e indica «Sin registros en el período» en cada sección vacía, de modo que un período sin novedades queda documentado como tal.
 
-Cursos de Excepción: 4a. No existen registros de producción en el período seleccionado: el sistema informa la situación y no genera el archivo.
+Cursos de Excepción: 3a. La fecha desde es posterior a la fecha hasta: el sistema informa que el rango es inválido y no genera el documento.
 
 Post-condición: El archivo queda descargado en el dispositivo del usuario sin que se modifique ningún registro del sistema.
 
@@ -1902,7 +1902,7 @@ Descripción: Permite generar y descargar un reporte con los diagnósticos, trat
 
 Referencia a Requerimientos Funcionales: RF7.2
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: un período sin eventos sanitarios genera igual el documento, con cada sección vacía indicada (4a).
 
 Desencadenante: El usuario necesita documentar la sanidad del rodeo fuera del sistema.
 
@@ -1918,9 +1918,9 @@ Curso Básico:
 
 5. El sistema construye el documento en el formato solicitado y lo ofrece para su descarga.
 
-Cursos Alternativos: —
+Cursos Alternativos: 4a. No existen registros sanitarios en el período seleccionado: el sistema genera igual el documento e indica «Sin registros en el período» en cada sección vacía, de modo que un período sin novedades queda documentado como tal.
 
-Cursos de Excepción: 4a. No existen registros sanitarios en el período seleccionado: el sistema informa la situación y no genera el archivo.
+Cursos de Excepción: 3a. La fecha desde es posterior a la fecha hasta: el sistema informa que el rango es inválido y no genera el documento.
 
 Post-condición: El archivo queda descargado sin que se modifique ningún registro del sistema.
 
@@ -1942,7 +1942,7 @@ Descripción: Permite generar y descargar un reporte con los servicios, preñece
 
 Referencia a Requerimientos Funcionales: RF7.3
 
-Pre-condición: El usuario debe estar logueado en el sistema.
+Pre-condición: El usuario debe estar logueado. No requiere registros previos: un período sin eventos reproductivos genera igual el documento, con cada sección vacía indicada (4a).
 
 Desencadenante: El usuario necesita analizar la marcha reproductiva del rodeo fuera del sistema.
 
@@ -1958,9 +1958,9 @@ Curso Básico:
 
 5. El sistema construye el documento en el formato solicitado y lo ofrece para su descarga.
 
-Cursos Alternativos: —
+Cursos Alternativos: 4a. No existen registros reproductivos en el período seleccionado: el sistema genera igual el documento e indica «Sin registros en el período» en cada sección vacía, de modo que un período sin novedades queda documentado como tal.
 
-Cursos de Excepción: 4a. No existen registros reproductivos en el período seleccionado: el sistema informa la situación y no genera el archivo.
+Cursos de Excepción: 3a. La fecha desde es posterior a la fecha hasta: el sistema informa que el rango es inválido y no genera el documento.
 
 Post-condición: El archivo queda descargado sin que se modifique ningún registro del sistema.
 
@@ -1982,7 +1982,7 @@ Descripción: Permite generar y descargar un reporte de genealogía y de rendimi
 
 Referencia a Requerimientos Funcionales: RF7.4
 
-Pre-condición: El usuario debe estar logueado y los animales deben tener genealogía registrada.
+Pre-condición: El usuario debe estar logueado. No requiere genealogía registrada: el reporte se genera igual y cada sección sin registros se indica como tal (4a).
 
 Desencadenante: El usuario necesita evaluar el aporte de cada línea genética del rodeo.
 
@@ -1998,9 +1998,9 @@ Curso Básico:
 
 5. El sistema construye el documento en el formato solicitado y lo ofrece para su descarga.
 
-Cursos Alternativos: 2a. El alcance es un reproductor: el sistema reúne su descendencia y el desempeño productivo de sus hijas.
+Cursos Alternativos: 2a. El alcance es un reproductor: el sistema reúne su descendencia y el desempeño productivo de sus hijas. 4a. Los animales alcanzados no tienen genealogía registrada: el sistema genera igual el documento e indica en cada sección vacía que no hay registros.
 
-Cursos de Excepción: 4a. Los animales alcanzados no tienen genealogía registrada: el sistema informa la situación y no genera el archivo.
+Cursos de Excepción: —
 
 Post-condición: El archivo queda descargado sin que se modifique ningún registro del sistema.
 

@@ -48,12 +48,12 @@ tambo que el sistema conoce y la usuaria no tiene por qué adivinar.
 
 | # | Dónde | Qué muestra |
 |---|---|---|
-| E1 | Alta de animal | Advertencia de genealogía: la madre `177` no tenía edad para parir. **No bloquea**: ofrece *Guardar de todos modos* |
+| E1 | Alta de animal | Advertencia de genealogía: la madre `152` y el padre `7HO12165` son parientes —él es el padre de ella— y la cría nace consanguínea. **No bloquea**: ofrece *Guardar de todos modos*. *La madre sin edad para parir, en cambio, se rechaza sin opción: es imposible, no sospechosa* |
 | E2 | Verificar consanguinidad | `152` × `7HO12165` da parentesco: es su padre |
 | E3 | Registrar servicio | Servicio consanguíneo advertido, con *Registrar de todos modos* |
 | E4 | Ordeñe por lote | `115` no se puede sumar al lote: tiene descarte de leche vigente |
 | E5 | Control lechero puntual | Vaca `136`: «no se encuentra en lactancia, su estado productivo es Seca» |
-| E6 | Registrar celo | Ternera `177`, cuatro meses: por debajo de la edad mínima de celo configurada |
+| E6 | Registrar celo | Ternera `177`, cuatro meses: por debajo de la edad mínima de detección de celo, que es de 9 meses fijos y no depende de la configuración |
 | E7 | Control lechero | Litros por encima del máximo por control, con el tope en el mensaje |
 
 **Quedan afuera a propósito**, aunque estén en los flujos de prueba: caravana
@@ -86,7 +86,7 @@ que explicarlo con imagen, porque es lo contrario de lo que se espera.
 | `m1-cu10-filtros` | `BuscarAnimales` | Categoría *Vaca* + Estado *En lactancia* → las ocho vacas en ordeñe |
 | `m1-cu04-alta` | `AltaAnimal` | Formulario con la caravana `200` cargada |
 | `m1-cu04-categoria` | `AltaAnimal` (*detalle*) | Después de **Calcular Categoria**: propone **Vaca** porque tiene partos. *La regla de negocio central del sistema* |
-| `m1-cu04-genealogia` | `AltaAnimal` | **E1** — advertencia con *Guardar de todos modos* |
+| `m1-cu04-genealogia` | `AltaAnimal` | **E1** — caravana `201` con madre `152` y padre `7HO12165`: advertencia de parentesco con *Guardar de todos modos* |
 | `m1-cu05-foto` | `ModificarAnimal` | Campo de foto con la imagen cargada |
 | `m1-cu11-ficha` | `DetalleAnimal` de `115` | La ficha integral: datos, mastitis en tratamiento, descarte de leche vigente, partos, servicios y producción |
 | `m1-cu08-linaje` | `ConsultaLinaje` de `152` | El árbol armado: madre `101`, padre `7HO12165` |
@@ -167,19 +167,19 @@ que explicarlo con imagen, porque es lo contrario de lo que se espera.
 | Archivo | Pantalla | Estado a fotografiar |
 |---|---|---|
 | `m6-cu40-tablero` | `Index` | El inicio con los avisos del día |
+| `m6-cu40-registro` | `Index` (*detalle*) | El registro rápido recién usado: un celo guardado a una caravana sugerida en *Para servir*, con la confirmación y el campo de caravana vacío para el siguiente |
 | `m6-cu41-indicadores` | `Indicadores` | Composición del rodeo, litros promedio, intervalo entre partos, porcentaje de preñez |
 | `m6-cu42-descarte` | `CandidatasDescarte` | Con `133`: dos partos y sin preñez confirmada |
 | `m6-cu43-buscar` | `Index` (*detalle*) | Búsqueda rápida por caravana |
 
 ### Módulo 7 — Reportes y Notificaciones
 
-Las tres que el manual ya tiene escritas con su pie, y que se sacan cuando el módulo
-esté terminado:
+Las tres del módulo, que ya está terminado:
 
 | Archivo | Pantalla | Estado a fotografiar |
 |---|---|---|
 | `m7-reportes` | `ReporteProductivo` | Un reporte en pantalla, con sus botones de descarga en PDF y Excel |
-| `m7-configuracion-bot` | pantalla del canal de notificaciones | El destinatario cargado y el mensaje de prueba |
+| `m7-configuracion-bot` | `Notificaciones` | Vinculada a un chat, con la hora del resumen y los ocho avisos por módulo, uno de ellos apagado |
 | `m7-resumen-telegram` | **el celular** | El resumen diario recibido. **No la puede sacar Playwright**: es una foto del teléfono |
 
 Los cuatro reportes comparten pantalla y controles, así que alcanza con fotografiar
@@ -255,7 +255,7 @@ para distinguirlas de las del manual:
 | `t-acceso-directo` | La redirección al login al pedir una pantalla interna sin sesión |
 | `t-acceso-atras` | El botón atrás del navegador después de cerrar sesión |
 | `t-alta-categoria` | La categoría propuesta tras presionar *Calcular Categoría* |
-| `t-alta-genealogia` | La advertencia de genealogía con *Guardar de todos modos* |
+| `t-alta-genealogia` | `AltaAnimal` | Caravana `201` con madre `152` y padre `7HO12165`: la advertencia de parentesco con *Guardar de todos modos* |
 | `t-ficha-integral` | La ficha con diagnóstico, descarte, partos, servicios y producción |
 | `t-linaje-arbol` | El árbol armado a partir de los progenitores registrados |
 | `t-consanguinidad` | El parentesco detectado, con el antepasado común nombrado |

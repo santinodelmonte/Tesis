@@ -53,6 +53,8 @@
    - 8.4 El historial de movimientos
 9. Indicadores y decisiones
 10. Reportes y notificaciones
+   - 10.1 Los reportes
+   - 10.2 Las notificaciones por Telegram
 11. Usar el sistema desde el celular
 
 ---
@@ -117,13 +119,17 @@ que administrar cuentas ni permisos.
 
 ### 2.2 Moverse por el sistema
 
-Una vez adentro, la barra superior tiene un menú por módulo —Animales, Producción,
-Reproducción, Sanidad, Insumos, Indicadores— y cada uno abre primero el listado de lo
-que contiene. Desde el listado se llega a agregar, ver el detalle, corregir o eliminar.
+Una vez adentro, el menú es una **columna a la izquierda**, con una sección por módulo
+—Animales, Producción, Reproducción, Sanidad, Insumos, Indicadores, y Reportes y
+notificaciones— y, arriba de todas, **Pendientes y alertas**, que junta las siete listas
+de trabajo del día. Al pie de la columna, aparte, está **Configuración**. Cada entrada
+abre primero el listado de lo que contiene; desde el
+listado se llega a agregar, ver el detalle, corregir o eliminar. En una pantalla angosta
+la columna se pliega detrás del botón de menú.
 
 `[captura: m0-cu02-sesion]`
-> La barra superior, con los módulos, el buscador de caravana y el nombre de la
-> usuaria conectada.
+> La barra superior, con el buscador de caravana y el nombre de la usuaria conectada;
+> a la izquierda, el menú con una sección por módulo.
 
 **El buscador de caravana está siempre a la vista.** Escribir un número y confirmar
 lleva directo a la ficha de ese animal, desde cualquier pantalla y sin pasar por
@@ -140,7 +146,7 @@ lleva de nuevo al inicio de sesión.
 
 ## 3. Configurar el establecimiento
 
-El menú **Configuración** abre una única pantalla con **once parámetros** que ajustan
+**Configuración**, al pie del menú, abre una única pantalla con **once parámetros** que ajustan
 cómo el sistema calcula fechas, qué rechaza y con cuánta anticipación avisa. Vienen con
 valores por defecto que sirven para un tambo Holando, y conviene revisarlos una vez al
 empezar a usar el sistema.
@@ -152,7 +158,7 @@ empezar a usar el sistema.
 | Parámetro | Para qué sirve | Por defecto |
 |---|---|---|
 | Días de secado antes del parto | Cuánto antes del parto probable se recomienda secar la vaca | 60 |
-| Edad mínima al servicio (meses) | Por debajo de esa edad el sistema no deja registrar un servicio | 13 |
+| Edad mínima al servicio (meses) | A qué edad entra la vaquillona en servicio: por debajo, el sistema no deja registrarle uno. También es el piso que usa la validación de genealogía. Alcanza sólo a las hembras: el macho pasa a toro a los 15 meses, fijo | 13 |
 | Edad de cambio de categoría (meses) | Cuándo la cría deja de ser ternera o ternero | 12 |
 | Ordeñes por día | Cuántos turnos tiene la jornada | 2 |
 | Litros máximos por control individual | Tope de coherencia: por encima, el sistema supone un error de tipeo | 100 |
@@ -181,7 +187,7 @@ registrado.** Es la forma más rápida de entenderlo:
 
 ### 4.1 Ver el rodeo
 
-**Animales → Lista de Animales** muestra el rodeo activo. Los animales dados de baja no
+**Animales → Rodeo** muestra el rodeo activo. Los animales dados de baja no
 aparecen acá: siguen en el sistema y se los encuentra con el filtro correspondiente,
 pero no ensucian la lista de todos los días.
 
@@ -195,7 +201,7 @@ la cambia solo: propone y espera.
 
 ### 4.2 Buscar y filtrar
 
-**Animales → Buscar y Filtrar** combina filtros por estado, categoría, raza, rango de
+**Animales → Buscar y filtrar** combina filtros por estado, categoría, raza, rango de
 edad en meses y número de caravana.
 
 `[captura: m1-cu10-filtros]`
@@ -211,7 +217,7 @@ la edad desde no puede superar a la edad hasta!»*.
 
 ### 4.3 Dar de alta un animal
 
-**Animales → Lista de Animales → Agregar Animal**.
+**Animales → Rodeo → Agregar animal**.
 
 `[captura: m1-cu04-alta]`
 > Alta de animal. La madre y el padre se eligen con el botón *Buscar*, que abre el
@@ -240,12 +246,22 @@ nacimiento y la cantidad de partos, y la propone. Se puede aceptar o elegir otra
 El sistema rechaza el alta si falta la caravana o la raza, si la fecha de nacimiento es
 futura, o si **la caravana ya existe**.
 
-Y hay un caso que **no rechaza, avisa**:
+**También rechaza una genealogía imposible**, sin opción de forzarla: un animal como su
+propio padre o madre, un progenitor que desciende del animal que se está cargando, o un
+progenitor que no tenía edad para engendrarlo. La madre tiene que haber nacido al menos
+**22 meses** antes que la cría —la edad mínima al servicio configurada, 13 meses, más los
+9 de gestación— y el padre, **24**: los 15 meses del toro más la gestación. Una madre más
+joven que eso es imposible, no sospechosa.
+
+Y hay casos que **no rechaza, avisa**, porque en un tambo pueden ser ciertos aunque
+parezcan errores: que la madre figure dada de baja antes del nacimiento, que el padre
+figure dado de baja antes de la concepción —es correcto si la cría vino de una pajuela
+suya— o que los dos progenitores sean parientes.
 
 `[captura: m1-cu04-genealogia]`
-> Advertencia de genealogía: la madre elegida no tenía edad suficiente para haber parido
-> a este animal. El sistema no lo registra automáticamente, pero ofrece *Guardar de
-> todos modos* — porque el dato puede estar bien y ser la fecha la que está mal.
+> Advertencia de genealogía: la madre y el padre elegidos son parientes —él es su padre—
+> y la cría nace consanguínea. El sistema no lo registra automáticamente, pero ofrece
+> *Guardar de todos modos*: el dato puede ser correcto, y la decisión es de la encargada.
 
 ### 4.4 La ficha del animal
 
@@ -274,7 +290,7 @@ otro animal, y la genealogía se vuelve a verificar.
 
 ### 4.6 El linaje
 
-**Animales → Consultar Linaje** arma el árbol genealógico a partir de los partos
+**Animales → Linaje** arma el árbol genealógico a partir de los partos
 registrados y de los padres cargados en cada alta. **Nadie lo dibuja: se arma solo.**
 
 `[captura: m1-cu08-linaje]`
@@ -286,7 +302,7 @@ tabla, y recentrar en cualquier animal para seguir desde ahí.
 
 ### 4.7 Verificar consanguinidad
 
-**Animales → Verificar Consanguinidad** responde una pregunta concreta antes de decidir
+**Animales → Consanguinidad** responde una pregunta concreta antes de decidir
 un servicio: *¿esta hembra y este reproductor son parientes?*
 
 `[captura: m1-cu09-consanguinidad]`
@@ -338,7 +354,7 @@ mismo turno**: son dos miradas sobre la misma leche.
 
 ### 5.1 El ordeñe del turno
 
-**Producción → Ordeñe por Lote**. Se elige el turno, la fecha y se cargan los litros
+**Producción → Ordeñe por lote**. Se elige el turno, la fecha y se cargan los litros
 totales. Abajo viene la lista de los animales en ordeñe, tildados por defecto.
 
 `[captura: m2-cu12-lote]`
@@ -361,7 +377,7 @@ lugar de cargar uno nuevo.
 
 ### 5.2 El control lechero
 
-**Producción → Control Lechero** carga la medición de todo el rodeo en ordeñe de una
+**Producción → Control lechero** carga la medición de todo el rodeo en ordeñe de una
 sola vez, que es como se hace: se mide a todas el mismo día.
 
 `[captura: m2-cu13-masiva]`
@@ -392,7 +408,7 @@ a la actual: la carga puede ser retroactiva sin que los números se desordenen.
 
 ### 5.3 El historial y la métrica mensual
 
-**Producción → Historial de Producción** consulta lo registrado en un rango de fechas,
+**Producción → Historial de producción** consulta lo registrado en un rango de fechas,
 eligiendo si se quiere ver la producción del establecimiento o los controles
 individuales.
 
@@ -487,7 +503,7 @@ dicen qué animales necesitan atención hoy.
 
 ### 6.2 Celo
 
-**Reproducción → Registrar Celo**. Se elige la caravana, la fecha de detección y se
+**Reproducción → Celos → Registrar celo**. Se elige la caravana, la fecha de detección y se
 anota lo observado.
 
 `[captura: m3-cu20-celo]`
@@ -504,7 +520,7 @@ a la baja del animal.
 
 ### 6.3 Servicio
 
-**Reproducción → Registrar Servicio** registra el intento de preñar, que puede ser de
+**Reproducción → Servicios → Registrar servicio** registra el intento de preñar, que puede ser de
 dos tipos.
 
 `[captura: m3-cu21-ia]`
@@ -612,7 +628,7 @@ que está pendiente.
 
 ### 7.1 El calendario sanitario
 
-**Sanidad → Calendario Sanitario** es la pantalla que responde *¿qué hay que hacerle hoy
+**Pendientes y alertas → Calendario sanitario** es la pantalla que responde *¿qué hay que hacerle hoy
 al rodeo?*
 
 `[captura: m4-cu31-calendario]`
@@ -719,7 +735,7 @@ para que el consumo quede anotado sin tener que anotarlo.
 
 ### 8.1 Dar de alta un insumo
 
-**Insumos → Agregar Insumo**.
+**Insumos → Insumos y stock → Agregar insumo**.
 
 `[captura: m5-cu35-alta]`
 > Alta de un insumo. El *período de carencia* es el que después determina hasta cuándo no
@@ -777,11 +793,31 @@ carga desde **Ingreso de Stock**.
 ## 9. Indicadores y decisiones
 
 Los módulos anteriores registran. Éste **lee lo registrado y devuelve una lectura del
-rodeo**: no se carga nada acá.
+rodeo**. La única carga que se hace acá es el registro rápido del tablero, que se explica
+enseguida.
 
 `[captura: m6-cu40-tablero]`
 > Tablero de inicio. Es la primera pantalla al entrar y reúne las tareas pendientes y los
 > avisos vigentes de todos los módulos: qué animales necesitan atención hoy.
+
+**El tablero también carga.** Arriba de los avisos está el **registro rápido** de los
+cuatro eventos reproductivos, que son los que se anotan todos los días. Se elige el
+evento —celo, servicio, tacto o parto—, la caravana y la fecha:
+
+- **El celo y el tacto se guardan ahí mismo**, sin salir del tablero. El sistema aplica
+  las mismas reglas que en sus pantallas propias y, al guardar, confirma el registro y
+  deja el campo de caravana vacío y listo para el animal siguiente.
+- **El servicio y el parto abren su formulario** con la caravana ya cargada, porque
+  arrastran más: el servicio puede descontar una pajuela del stock y el parto da de alta
+  la cría.
+
+Debajo del campo aparecen **las caravanas que ya corresponden hoy** —*Para servir*,
+*Para tactar* y *Por parir*—, y tocar una la completa. En el caso más frecuente, que es
+cargarle el evento a un animal que ya está en una lista, no hay nada que escribir.
+
+`[captura: m6-cu40-registro]`
+> Registro rápido en el tablero, recién usado: el celo quedó registrado sin salir de la
+> pantalla, y el campo de caravana espera el animal siguiente.
 
 `[captura: m6-cu41-indicadores]`
 > Indicadores del rodeo. Composición por estado productivo y reproductivo, litros
@@ -820,35 +856,100 @@ Son criterios fijos del sistema, no parámetros configurables.
 
 ## 10. Reportes y notificaciones
 
+### 10.1 Los reportes
+
+**Reportes y notificaciones → Productivo, Sanitario, Reproductivo o Genético.** Los cuatro
+funcionan igual: se elige el período con **Desde** y **Hasta** —el genético no lleva
+período, porque la genealogía no depende de fechas— y se presiona uno de tres botones.
+
+| Botón | Qué hace |
+|---|---|
+| Ver en pantalla | Muestra el reporte en el propio sistema |
+| Descargar PDF | Lo baja como documento, para imprimir o mandar |
+| Descargar Excel | Lo baja como planilla, para trabajar los números |
+
 `[captura: m7-reportes]`
-> Reporte productivo. Los cuatro reportes —productivo, sanitario, reproductivo y
-> genético— se ven en pantalla y se descargan en **PDF** o en **Excel**.
+> Reporte productivo en pantalla, con sus botones de descarga. **Lo que se ve es exactamente
+> lo que sale en el PDF y en la planilla**: los tres reciben el mismo reporte ya armado.
 
-Los reportes se generan sobre el rango y los filtros elegidos, y son la forma de llevar
-la información fuera del sistema: el dueño los recibe para las decisiones económicas y el
-veterinario para ajustar los planes.
+| Reporte | Qué trae |
+|---|---|
+| Productivo | La producción general del establecimiento y la de cada vaca en ordeñe, con el detalle de los ordeñes y los controles del período |
+| Sanitario | Diagnósticos, tratamientos, vacunaciones y descornes del período, y la situación sanitaria del rodeo al día de la emisión |
+| Reproductivo | Servicios, tactos, partos y secados del período, con los indicadores reproductivos del rodeo |
+| Genético | La genealogía del rodeo y el rendimiento comparado de las líneas paternas |
 
-**Las notificaciones** llegan por el canal de mensajería configurado, sin necesidad de
-entrar al sistema:
+**Un período sin novedades también se reporta.** Si en las fechas elegidas no hubo, por
+ejemplo, ningún diagnóstico, el reporte sale igual y esa sección dice *«Sin registros en
+el período»*: deja constancia de que no los hubo. Lo único que el sistema rechaza es un
+rango al revés, con la fecha *Desde* posterior a *Hasta*.
 
-- **Avisos automáticos** de procedimientos sanitarios pendientes, partos próximos, tactos
-  pendientes, secados próximos, stock crítico, vencimiento de insumos y fin del período de
-  descarte de leche.
-- **Un resumen diario** de las tareas pendientes, que llega a la hora configurada. La
-  encargada empieza la jornada sabiendo qué animales necesitan atención sin haber abierto
-  el sistema.
+Los reportes son la forma de llevar la información fuera del sistema: el dueño los recibe
+para las decisiones económicas y el veterinario para ajustar los planes.
+
+### 10.2 Las notificaciones por Telegram
+
+El sistema manda **todos los días, a la hora que se elija, un resumen de las tareas
+pendientes** a un chat de Telegram. La encargada empieza la jornada sabiendo qué animales
+necesitan atención sin haber abierto el sistema.
+
+**Los avisos son los mismos que se ven en el tablero de inicio** y en las pantallas de
+alerta: la notificación es el canal, no una fuente de información distinta. No llega un
+mensaje por cada novedad: **todo viaja junto, en el resumen del día**.
+
+**Reportes y notificaciones → Notificaciones** se usa en dos pasos.
+
+**1. Vincular la cuenta.** Es lo único que no se hace desde el sistema, porque Telegram no
+deja que un bot inicie una conversación: la persona tiene que escribirle primero.
+
+1. En Telegram, buscar el bot del establecimiento y escribirle **/start**.
+2. El bot contesta con un número: el **identificador de chat**.
+3. Copiar ese número en **Identificador de chat** y confirmar la vinculación.
+
+El sistema **manda un mensaje de prueba a ese chat antes de guardar nada**. Si llega, la
+cuenta queda vinculada. Si no llega, avisa con el motivo que dio Telegram y **conserva la
+vinculación anterior**, así que un número mal copiado no deja al establecimiento sin
+avisos.
+
+Si la pantalla avisa que *el sistema no tiene cargado el token del bot*, es un dato de la
+instalación y no algo que se configure desde acá.
+
+**2. Elegir qué se recibe y cuándo.** Recién con la cuenta vinculada aparecen:
+
+- **La hora del resumen diario.** Lo habitual es antes del ordeñe de la mañana.
+- **Los ocho tipos de aviso**, agrupados por módulo, cada uno con su casilla, y **Guardar**:
+
+| Módulo | Avisos |
+|---|---|
+| Sanidad | Procedimientos sanitarios pendientes |
+| Reproducción | Partos próximos, tactos pendientes, vacas para servir |
+| Producción | Secados próximos, fin del descarte de leche |
+| Insumos | Stock crítico, partidas por vencer |
+
+**Apagar un aviso lo saca del mensaje y nada más**: se sigue viendo en el sistema igual que
+siempre.
 
 `[captura: m7-configuracion-bot]`
-> Configuración del canal de notificaciones: el destinatario y el mensaje de prueba que
-> permite verificar la conexión antes de darla por activa.
+> Notificaciones con la cuenta vinculada: el chat, la hora del resumen y los ocho avisos
+> agrupados por módulo, cada uno con su casilla.
+
+**Cómo llega el resumen.** Un encabezado con la fecha y, debajo, los pendientes agrupados
+por módulo: cada tipo de aviso con su cantidad y una línea por animal o por insumo. De cada
+tipo se listan hasta **diez**; si hay más, el mensaje lo dice y el resto se ve en el
+sistema.
 
 `[captura: m7-resumen-telegram]`
 > El resumen diario recibido en el celular. Es la única captura del manual que no sale del
 > navegador.
 
-> **Al día de esta versión, el Módulo 7 está construido a medias:** los cuatro reportes
-> funcionan; el canal de notificaciones y el resumen diario están en desarrollo. Las tres
-> capturas de este apartado se toman cuando el módulo esté terminado.
+Tres cosas que conviene saber:
+
+- **Un día sin pendientes también recibe mensaje**, que dice *«No hay tareas pendientes»*.
+  Así el silencio no se confunde con una falla del envío.
+- **El resumen sale mientras el sistema esté funcionando.** Si estuvo apagado a la hora
+  configurada, sale cuando vuelve a funcionar, en lugar de saltearse el día.
+- **Escribiéndole /resumen al bot** se pide la lista en cualquier momento. Sólo le contesta
+  al chat vinculado: el resto de la información del tambo está detrás del inicio de sesión.
 
 ---
 
@@ -860,7 +961,8 @@ medir. Funciona en el navegador del teléfono sin instalar nada, y su uso está 
 a partir de los **375 píxeles** de ancho.
 
 `[captura: mov-menu]`
-> El menú colapsado en pantalla angosta. Los seis módulos siguen a un toque de distancia.
+> El menú plegado en pantalla angosta: las ocho secciones siguen a un toque de distancia,
+> detrás del botón de menú.
 
 `[captura: mov-lista-animales]`
 > La lista de animales en el celular: las tablas reacomodan sus columnas para leerse sin
