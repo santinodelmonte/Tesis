@@ -503,7 +503,7 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | FiltrarServiciosXFechaParto | List<Servicio> | DateTime pDesde, DateTime pHasta |
 | ListarAlertasParto | List<Servicio> | — |
 
-### Tactos (10 métodos)
+### Tactos (11 métodos)
 
 | Método | Devuelve | Parámetros |
 |---|---|---|
@@ -512,6 +512,7 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 | EsPositivo | bool | Tacto pTacto |
 | FiltrarTactosXServicio | List<Tacto> | int pIdServicio |
 | UltimoTacto | Tacto | Servicio pServicio |
+| ValidarTacto | string | Tacto pTacto |
 | AltaTacto | bool | Tacto pTacto |
 | ValidarModificarTacto | string | int pIdTacto, int pIdServicio, DateTime pFechaTacto, string pResultado |
 | ModificarTacto | bool | int pIdTacto, int pIdServicio, DateTime pFechaTacto, string pResultado, string pObservaciones |
@@ -716,7 +717,7 @@ No tiene tabla: es un pendiente del calendario sanitario, derivado de comparar e
 |---|---|---|
 | ListarPreferencias | List<PreferenciaNotificacion> | — |
 | ModificarPreferencia | bool | PreferenciaNotificacion pPreferencia |
-| RegistrarAlertas | bool | List<Alerta> pListaAlertas |
+| RegistrarEnvioResumen | bool | List<Alerta> pListaAlertas |
 | ContarAlertas | int | DateTime pFecha |
 
 ### Razas (2 métodos)

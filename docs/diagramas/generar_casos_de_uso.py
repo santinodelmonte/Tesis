@@ -38,10 +38,7 @@ def diagrama_modulo(numero, titulo, casos):
     filas = len(casos)
     alto_marco = MARGEN + 22 + filas * (ALTO_CASO + SEPARACION)
     alto = alto_marco + 90
-    # El resumen diario suma un actor Sistema a la derecha del marco, que necesita
-    # su propio lugar.
-    con_sistema = any(c['num'] == 49 for c in casos)
-    ancho = X_MARCO + ANCHO_MARCO + (270 if incluidos else 170 if con_sistema else 60)
+    ancho = X_MARCO + ANCHO_MARCO + (270 if incluidos else 60)
 
     d = Diagrama('cu-modulo-%d' % numero, ancho, alto, titulo)
 
@@ -55,14 +52,11 @@ def diagrama_modulo(numero, titulo, casos):
         figura = d.caso(x_caso, y, 'CU%d — %s' % (caso['num'], caso['nombre']),
                         ANCHO_CASO, ALTO_CASO)
         puestos[caso['num']] = figura
-        # El resumen diario lo dispara un proceso programado: la encargada es la
-        # destinataria, no quien lo ejecuta.
-        if caso['modulo'] == 7 and caso['num'] == 49:
-            sistema = d.actor(ancho - 70, y - 4, 'Sistema')
-            d.unir(sistema, figura, desde='izquierda', hasta='derecha')
-            d.unir(figura, actor, desde='izquierda', hasta='derecha')
-        else:
-            d.unir(actor, figura, desde='derecha', hasta='izquierda')
+        # Un solo actor para todos, CU49 incluido. El resumen lo dispara el reloj,
+        # pero quien persigue la meta es la encargada, y el disparo ya esta dicho en
+        # el desencadenante de la ficha. Dibujar el reloj como un segundo actor
+        # contradecia a la ficha, que desde el 26/08 tiene un actor solo.
+        d.unir(actor, figura, desde='derecha', hasta='izquierda')
         y += ALTO_CASO + SEPARACION
 
     y_incluido = marco.y + 40

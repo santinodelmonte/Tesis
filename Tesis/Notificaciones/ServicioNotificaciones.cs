@@ -2,8 +2,8 @@ using Tesis.Dominio;
 
 namespace Tesis.Notificaciones
 {
-    // El proceso programado de CU49, y el unico actor del sistema que no es una
-    // persona.
+    // El proceso programado de CU49. Es lo que dispara el caso de uso, no su actor:
+    // el actor es la encargada, que es para quien existe el resumen.
     //
     // Arranca con el sitio y se queda dando vueltas mientras el sitio este arriba. En
     // cada vuelta hace dos cosas:

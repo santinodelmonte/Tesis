@@ -179,7 +179,7 @@ Curso Básico:
 
 1. El usuario ingresa a la sección “Configuración”.
 
-2. El sistema despliega el formulario con los valores vigentes de cada uno de los once parámetros: días de secado previos al parto, edad mínima al servicio, edad de cambio de categoría, litros máximos por control individual, cantidad de ordeñes diarios, espera voluntaria posparto, días para el tacto, y los días de anticipación de los avisos de secado, de parto, del calendario sanitario y de vencimiento de insumos.
+2. El sistema despliega el formulario con los valores vigentes de cada uno de los once parámetros: días de secado previos al parto, edad mínima al servicio de la hembra, edad de cambio de categoría, litros máximos por control individual, cantidad de ordeñes diarios, espera voluntaria posparto, días para el tacto, y los días de anticipación de los avisos de secado, de parto, del calendario sanitario y de vencimiento de insumos.
 
 3. El usuario modifica los valores que correspondan y presiona “Guardar”.
 
@@ -240,7 +240,7 @@ Cursos de Excepción: 5a. El número de caravana ya existe en el sistema: el sis
 
 Post-condición: El animal queda registrado correctamente en la base de datos del establecimiento.
 
-Reglas de Negocio: El registro del padre y de la madre es opcional: un animal puede no tener progenitores conocidos, y de hecho así ingresan los animales del rodeo inicial. La categoría se calcula automáticamente a partir del sexo, la edad y la cantidad de partos del animal; el valor calculado se propone por defecto y puede ser ajustado por el usuario ante situaciones puntuales que así lo requieran. La fecha de nacimiento del progenitor debe admitir la edad mínima al servicio respecto de la cría.
+Reglas de Negocio: El registro del padre y de la madre es opcional: un animal puede no tener progenitores conocidos, y de hecho así ingresan los animales del rodeo inicial. La categoría se calcula automáticamente a partir del sexo, la edad y la cantidad de partos del animal; el valor calculado se propone por defecto y puede ser ajustado por el usuario ante situaciones puntuales que así lo requieran. La fecha de nacimiento del progenitor debe admitir la edad mínima al servicio más los nueve meses de gestación respecto de la cría: 22 meses para la madre y 24 para el padre.
 
 Validaciones: El número de caravana es obligatorio y único. La raza es obligatoria. La fecha de nacimiento no puede ser futura. La fotografía, cuando se carga, debe ser un archivo de imagen.
 
@@ -428,7 +428,7 @@ Curso Básico:
 
 4. El usuario presiona “Verificar”.
 
-5. El sistema recorre la ascendencia registrada de ambos animales y busca progenitores comunes.
+5. El sistema recorre los progenitores y los abuelos de ambos animales y busca un ancestro común.
 
 6. El sistema despliega el resultado indicando si existe parentesco y qué animal lo origina.
 
@@ -438,7 +438,7 @@ Cursos de Excepción: 5a. Alguno de los animales no tiene toda su ascendencia re
 
 Post-condición: El usuario conoce el riesgo de consanguinidad antes de registrar el servicio.
 
-Reglas de Negocio: Se considera parentesco la existencia de un ancestro común entre ambos animales. La verificación es informativa y no bloquea el registro del servicio; el sistema vuelve a advertirlo al registrarse el servicio (CU21).
+Reglas de Negocio: Se considera parentesco la existencia de un ancestro común entre los progenitores y los abuelos de ambos animales; la verificación no alcanza a la genealogía completa. La verificación es informativa y no bloquea el registro del servicio; el sistema vuelve a advertirlo al registrarse el servicio (CU21).
 
 Validaciones: La selección de la hembra y del reproductor es obligatoria. Ambos no pueden ser el mismo animal.
 
@@ -882,11 +882,11 @@ Curso Básico:
 
 Cursos Alternativos: —
 
-Cursos de Excepción: 1a. La caravana corresponde a un macho: el sistema emite un mensaje de error e impide la operación. 5a. El animal no alcanzó la edad mínima al servicio a la fecha del celo: el sistema informa la situación e impide el registro. 5b. La fecha del celo es posterior a la baja del animal: el sistema informa la situación e impide el registro.
+Cursos de Excepción: 1a. La caravana corresponde a un macho: el sistema emite un mensaje de error e impide la operación. 5a. El animal no alcanzó la edad mínima de detección de celo, de 9 meses, a la fecha del celo: el sistema informa la situación e impide el registro. 5b. La fecha del celo es posterior a la baja del animal: el sistema informa la situación e impide el registro.
 
 Post-condición: El celo queda registrado en la ficha reproductiva histórica de la hembra.
 
-Reglas de Negocio: Una ternera no manifiesta celo a efectos del manejo: el sistema exige que el animal haya alcanzado la edad mínima al servicio configurada. Un animal dado de baja no protagoniza eventos posteriores a su baja.
+Reglas de Negocio: Una ternera no manifiesta celo a efectos del manejo: el sistema exige que el animal haya alcanzado la edad mínima de detección de celo, de 9 meses. Ese umbral es anterior al de la edad mínima al servicio, porque la vaquillona manifiesta celo bastante antes de que servirla sea conveniente: el celo se detecta y se anota, que no es lo mismo que servirla. Un animal dado de baja no protagoniza eventos posteriores a su baja.
 
 Validaciones: La fecha de detección es obligatoria y no puede ser futura.
 
@@ -930,7 +930,7 @@ Curso Básico:
 
 Cursos Alternativos: 4a. El servicio es por monta natural: el sistema registra el toro del rodeo y no descuenta stock. 4b. El servicio es por inseminación artificial: el sistema registra la pajuela, descuenta una unidad del stock y toma el toro de catálogo vinculado a esa pajuela como reproductor. 6a. El sistema advierte que el toro elegido está dado de baja, o que existe parentesco entre la hembra y el reproductor: el usuario confirma y el registro continúa.
 
-Cursos de Excepción: 6a. La hembra no alcanzó la edad mínima al servicio: el sistema informa la situación e impide el registro. 6b. La fecha del servicio es posterior a la baja de la hembra o del toro: el sistema informa la situación e impide el registro. 7a. La pajuela seleccionada no tiene stock disponible: el sistema informa la falta y no registra el servicio. 5a. El usuario no indicó reproductor: el sistema solicita completarlo antes de guardar.
+Cursos de Excepción: 6a. La hembra no alcanzó la edad mínima al servicio configurada, de 13 meses por defecto: el sistema informa la situación e impide el registro. 6b. La fecha del servicio es posterior a la baja de la hembra o del toro: el sistema informa la situación e impide el registro. 7a. La pajuela seleccionada no tiene stock disponible: el sistema informa la falta y no registra el servicio. 5a. El usuario no indicó reproductor: el sistema solicita completarlo antes de guardar.
 
 Post-condición: El servicio queda registrado y asociado a su reproductor, con la fecha probable de parto calculada, y la hembra queda en estado reproductivo “servida”.
 

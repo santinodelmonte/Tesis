@@ -6,8 +6,9 @@ Se extraen las llamadas a la Controladora en el orden en que aparecen en el arch
 y para cada una se busca en pControladora a que clase de persistencia deriva. Asi el
 diagrama muestra el recorrido real entre capas y no una version idealizada.
 
-El unico caso sin pantalla es CU49, cuyo actor es el proceso programado que envia el
-resumen diario: sus mensajes se leen del servicio, que cumple el mismo papel.
+El unico caso sin pantalla es CU49, que no lo inicia la encargada sino el proceso
+programado que envia el resumen diario: sus mensajes se leen del servicio, que cumple
+el papel de la pantalla. El actor sigue siendo la encargada; el proceso es el disparo.
 """
 import os
 import re
@@ -83,7 +84,7 @@ PANTALLAS = {
 
 # Archivos que completan un caso de uso sin ser una pantalla, con la ruta relativa a
 # Tesis/. Los cuatro reportes comparten la clase base que resuelve la descarga, y CU49
-# no tiene pantalla en absoluto: su actor es el proceso programado, y el servicio que
+# no tiene pantalla en absoluto: lo dispara el proceso programado, y el servicio que
 # lo implementa es lo que cumple el papel de la vista.
 BASE_REPORTES = 'Pages/PagesReportes/ModeloReporte.cs'
 

@@ -145,6 +145,46 @@ que el anteproyecto:
 - El **diccionario de clases** decía «Tactos (10 métodos)» y son **once** desde que
   `ValidarTacto` se separó del alta.
 
+
+### Los diagramas, que tampoco estaban al día (10/09)
+
+Con el mismo criterio se regeneraron todos los diagramas y los artefactos del paso 1
+contra el código de hoy, y se compararon con los versionados. **La mayoría estaba bien:**
+el MER con sus 24 tablas, los diagramas de dominio y persistencia con las clases del
+Módulo 7, los 49 de secuencia y el de casos de uso del módulo 7 con CU44 a CU49. Ninguno
+decía «Novilla». Lo que no:
+
+| Diagrama | Qué tenía | Qué tiene |
+|---|---|---|
+| Secuencia **CU40** | Sólo la consulta del tablero | El **registro rápido**: `ValidarCelo`, `AltaCelo`, `ServicioVigente`, `ValidarTacto`, `AltaTacto` |
+| Secuencia **CU22** | La validación del tacto adentro del alta | `ValidarTacto()`, que se separó para que el tablero la use |
+| Casos de uso **módulo 7** | Un segundo actor, **«Sistema»**, conectado a CU49 | **Un solo actor**, como los otros siete módulos |
+
+Los dos de secuencia son consecuencia del registro rápido del 22/08: los diagramas se
+regeneraron al día siguiente, pero sin ese cambio adentro.
+
+**El actor «Sistema» merece su párrafo, porque no era un olvido sino una decisión vieja.**
+El generador lo dibujaba a propósito —«el resumen diario lo dispara un proceso
+programado»—, pero la ficha de CU49 tiene a la encargada como único actor desde la
+corrección aprobada el 26/08: el actor es quien persigue la meta, y quien quiere
+enterarse de sus tareas es ella. Que el tiempo dispara el caso de uso ya está dicho donde
+corresponde, en el desencadenante. Dibujarlo además como actor dejaba a la ficha y a su
+diagrama diciendo cosas distintas, y contradecía al anteproyecto, que presenta a Sofía
+como **único actor del sistema**. Se aplicó lo ya decidido, no se decidió nada nuevo.
+
+En el diagrama de **secuencia** de CU49 el proceso programado **se queda** como primera
+línea de vida: ahí no se afirma quién es el actor sino quién llama a la Controladora, y
+ése es el proceso. Se corrigieron también los dos comentarios que lo llamaban actor, en
+`ServicioNotificaciones.cs` y en `generar_secuencia.py`, para que el código diga lo mismo.
+
+**Las copias de revisión en markdown** también estaban viejas: `diccionario-clases-v6.md`
+decía «Tactos (10 métodos)» y llamaba `RegistrarAlertas` a lo que hoy es
+`RegistrarEnvioResumen`; `modelo-datos-v6.md` tenía `tipo_servicio` en `VARCHAR(20)`, que
+pasó a 30 el 02/09 porque no entraba la inseminación. Esas copias no llegan al documento
+—`editar_proyecto.py` importa el modelo de datos y el diccionario en vivo—; los `.png` sí,
+tal cual están en disco, y por eso `Proyecto_v7.docx` se regeneró con los tres diagramas
+corregidos.
+
 ---
 
 ## Lo que queda pendiente

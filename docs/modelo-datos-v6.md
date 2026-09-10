@@ -186,7 +186,7 @@ Generado desde `bd/CreacionDb.sql` por `modelo_datos.py`. No editar a mano.
 | Campo | Tipo | Restricciones | Observaciones |
 |---|---|---|---|
 | id_servicio | INT(11) | PK, Auto increment, No nulo |  |
-| tipo_servicio | VARCHAR(20) | No nulo |  |
+| tipo_servicio | VARCHAR(30) | No nulo |  |
 | fecha_servicio | DATE | No nulo |  |
 | fecha_probable_parto | DATE | No nulo | Calculada a partir de la fecha del servicio y ajustable por el usuario. |
 | observaciones | VARCHAR(200) | Nulo |  |
