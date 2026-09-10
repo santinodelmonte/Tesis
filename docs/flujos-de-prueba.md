@@ -96,7 +96,7 @@ secciones y la barra superior, el buscador de caravana, el nombre `sofia` y el b
 
 Una vaca comprada que entra al rodeo ya en producción.
 
-**Pasos.** Menú **Animales → Lista de Animales → Agregar Animal**.
+**Pasos.** Menú **Animales → Rodeo → Agregar animal**.
 
 | Campo | Dato |
 |---|---|
@@ -136,7 +136,7 @@ La cría nace consanguínea."*). El botón **Guardar de todos modos** la carga i
 
 ## 3. Buscar, filtrar y ver la ficha
 
-**Pasos.** **Animales → Buscar y Filtrar**.
+**Pasos.** **Animales → Buscar y filtrar**.
 
 | Filtro | Dato |
 |---|---|
@@ -159,10 +159,10 @@ hasta el 17/08, sus partos, sus servicios y su producción.
 
 ## 4. Linaje y consanguinidad
 
-**Linaje.** **Animales → Consultar Linaje**, elegir `152`. Tiene que armar el árbol
+**Linaje.** **Animales → Linaje**, elegir `152`. Tiene que armar el árbol
 con madre `101` y padre `7HO12165`.
 
-**Consanguinidad.** **Animales → Verificar Consanguinidad**.
+**Consanguinidad.** **Animales → Consanguinidad**.
 
 | Campo | Dato |
 |---|---|
@@ -178,7 +178,7 @@ animal en los dos campos → *"No puede verificar un animal contra sí mismo!"*.
 
 ## 5. Modificar un animal
 
-**Pasos.** **Animales → Lista de Animales**, editar `200`. Cargarle una foto desde el
+**Pasos.** **Animales → Rodeo**, editar `200`. Cargarle una foto desde el
 campo de foto (o sacarla con la cámara) y guardar.
 
 **Esperado.** La ficha de `200` muestra la foto, y también aparece en el árbol
@@ -188,7 +188,7 @@ genealógico de sus crías cuando las tenga.
 
 ## 6. Ordeñe por lote
 
-**Pasos.** **Produccion → Ordeñe por Lote**.
+**Pasos.** **Producción → Ordeñe por lote**.
 
 | Campo | Dato |
 |---|---|
@@ -216,7 +216,7 @@ sacar a la `133` del lote y guardar. El registro tiene que quedar con una vaca m
 
 ## 7. Control lechero (carga masiva)
 
-**Pasos.** **Produccion → Control Lechero (carga masiva)**.
+**Pasos.** **Producción → Control lechero** (carga masiva).
 
 | Campo | Dato |
 |---|---|
@@ -247,7 +247,7 @@ litros de al menos un animal!"*. Fecha futura → la rechaza.
 
 ## 8. Control de una vaca (carga puntual)
 
-**Pasos.** **Produccion → Control Lechero → Cargar una sola vaca**. Ya no hay entrada
+**Pasos.** **Producción → Control lechero → Cargar una sola vaca**. Ya no hay entrada
 propia en el menú: es la variante puntual del control lechero y se llega desde
 adentro, o desde el botón "Cargar control" de la ficha del animal, que además llega
 con la caravana ya elegida.
@@ -273,12 +273,12 @@ con la caravana ya elegida.
 
 ## 9. Historial: consulta, corrección y baja
 
-- **Produccion → Historial de Produccion**, rango `2026-07-01` a `2026-08-11`, por
+- **Producción → Historial de producción**, rango `2026-07-01` a `2026-08-11`, por
   lote: tiene que mostrar los catorce ordeñes del juego de datos más los que se
   cargaron recién.
 - Rango invertido (`2026-08-11` a `2026-07-01`) → *"El rango de fechas es
   invalido"*.
-- **Produccion → Metrica Mensual**, mes `Agosto` año `2026`: total del mes, promedio
+- **Producción → Métrica mensual**, mes `Agosto` año `2026`: total del mes, promedio
   por ordeñe y promedio por vaca. La leche del 05/08 no se tiene que contar dos veces
   (ese día hay lote y controles individuales del mismo ordeñe).
 
@@ -316,7 +316,7 @@ suma de esos controles.
 
 ## 10. Tacto: confirmar la preñez de la `102`
 
-**Pasos.** **Reproduccion → Tactos Pendientes**. La `102` tiene que aparecer: fue
+**Pasos.** **Pendientes y alertas → Tactos pendientes**. La `102` tiene que aparecer: fue
 servida por monta natural el 20/06 y ya pasaron más de 35 días.
 
 Entrar a **Registrar Tacto**.
@@ -343,7 +343,7 @@ vuelve a aparecer en **Vacas para Servir** cuando entre en celo.
 
 Ya está confirmada preñada y lleva casi once meses en leche: se seca.
 
-**Pasos.** **Produccion → Registrar Secado**.
+**Pasos.** **Producción → Lactancias → Registrar secado**.
 
 | Campo | Dato |
 |---|---|
@@ -359,7 +359,7 @@ Ya está confirmada preñada y lleva casi once meses en leche: se seca.
   hay nada que secar!"*.
 - Fecha futura → la rechaza.
 
-**Alertas de Secado.** Entrar a **Produccion → Alertas de Secado**: lista las vacas en
+**Alertas de Secado.** Entrar a **Pendientes y alertas → Secados próximos**: lista las vacas en
 lactancia cuya fecha probable de parto está a menos de 60 + 15 días. Con los datos de
 prueba está vacía; se puebla después de que se confirmen preñeces nuevas.
 
@@ -369,7 +369,7 @@ prueba está vacía; se puebla después de que se confirmen preñeces nuevas.
 
 Para la vaca comprada en el flujo 2, que entró al rodeo ya en producción.
 
-**Pasos.** **Produccion → Lactancias → Abrir Lactancia**.
+**Pasos.** **Producción → Lactancias → Abrir lactancia**.
 
 | Campo | Dato |
 |---|---|
@@ -387,7 +387,7 @@ animal ya tiene una lactancia abierta!"*.
 
 ## 13. Registrar un celo
 
-**Pasos.** **Reproduccion → Registrar Celo**.
+**Pasos.** **Reproducción → Celos → Registrar celo**.
 
 | Campo | Dato |
 |---|---|
@@ -409,7 +409,7 @@ animal ya tiene una lactancia abierta!"*.
 
 ## 14. Registrar un servicio
 
-**Pasos.** **Reproduccion → Vacas para Servir**: tienen que estar `115`, `130`, `133`
+**Pasos.** **Pendientes y alertas → Vacas para servir**: tienen que estar `115`, `130`, `133`
 y la vaquillona `158`. Entrar a **Registrar Servicio**.
 
 **Inseminación artificial:**
@@ -452,7 +452,7 @@ excluyentes.
 
 La `136` está preñada y pare el 18/08: pare una semana antes.
 
-**Pasos.** **Reproduccion → Alertas de Parto**: tienen que aparecer `136` (18/08) y,
+**Pasos.** **Pendientes y alertas → Partos próximos**: tienen que aparecer `136` (18/08) y,
 según la anticipación configurada, `140` (10/09). Entrar a **Registrar Parto**.
 
 **Madre:**
@@ -501,7 +501,7 @@ Dejar **Parto doble** sin tildar. **Confirmar Parto**.
 
 ## 16. Diagnóstico y tratamiento
 
-**Diagnóstico.** **Sanidad → Registrar Diagnostico**.
+**Diagnóstico.** **Sanidad → Diagnósticos → Registrar diagnóstico**.
 
 | Campo | Dato |
 |---|---|
@@ -510,7 +510,7 @@ Dejar **Parto doble** sin tildar. **Confirmar Parto**.
 | Estado | En tratamiento |
 | Enfermedad | `Dermatitis digital (cojera), miembro posterior derecho` |
 
-**Tratamiento.** **Sanidad → Registrar Tratamiento**.
+**Tratamiento.** **Sanidad → Tratamientos → Registrar tratamiento**.
 
 | Campo | Dato |
 |---|---|
@@ -545,7 +545,7 @@ preventivo no necesita diagnóstico.
 
 La ternera `177` es la que tiene la brucelosis pendiente en el calendario.
 
-**Pasos.** **Sanidad → Calendario Sanitario**: `177` tiene que figurar pendiente de
+**Pasos.** **Pendientes y alertas → Calendario sanitario**: `177` tiene que figurar pendiente de
 brucelosis, y `178` pendiente de descorne. Entrar a **Registrar Vacunacion**.
 
 | Campo | Dato |
@@ -562,7 +562,7 @@ sale del calendario: la brucelosis es de aplicación única en la vida.
 
 ## 18. Descorne
 
-**Pasos.** **Sanidad → Registrar Descorne**.
+**Pasos.** **Sanidad → Descornes → Registrar descorne**.
 
 | Campo | Dato |
 |---|---|
@@ -579,7 +579,7 @@ el plan está configurado sin producto, que es el caso previsto.
 
 ## 19. Plan sanitario
 
-**Pasos.** **Sanidad → Planes Sanitarios → Agregar Plan**.
+**Pasos.** **Sanidad → Planes sanitarios → Nuevo Plan**.
 
 | Campo | Dato |
 |---|---|
@@ -600,7 +600,7 @@ como el plan de aftosa.
 
 ## 20. Insumos y stock
 
-**Alta de insumo.** **Insumos → Agregar Insumo**.
+**Alta de insumo.** **Insumos → Insumos y stock → Agregar insumo**.
 
 | Campo | Dato |
 |---|---|
@@ -611,7 +611,7 @@ como el plan de aftosa.
 | Stock minimo | `8` |
 | Periodo de carencia (dias) | `5` |
 
-**Ingreso de stock.** **Insumos → Ingreso de Stock**. La ivermectina está en 3 con un
+**Ingreso de stock.** **Insumos → Insumos y stock → Registrar ingreso**. La ivermectina está en 3 con un
 mínimo de 5.
 
 | Campo | Dato |
@@ -625,7 +625,7 @@ mínimo de 5.
 **Esperado.** El stock pasa a 13 y la ivermectina desaparece de **Alertas de Stock
 Critico**.
 
-**Stock mínimo.** **Insumos → Configurar Stock Minimo**: `Pajuela Holando 29HO18296`,
+**Stock mínimo.** **Insumos → Insumos y stock**, botón **Stock Minimo** de la fila: `Pajuela Holando 29HO18296`,
 mínimo `2`. Queda en 3 sobre un mínimo de 2 y sale de la alerta.
 
 **Alertas.**
@@ -646,11 +646,11 @@ nombre → lo rechaza.
 
 ## 21. Indicadores y descarte
 
-- **Indicadores → Indicadores del Rodeo**: composición del rodeo por categoría,
+- **Indicadores → Indicadores del rodeo**: composición del rodeo por categoría,
   promedio de litros, intervalo entre partos, porcentaje de preñez. Los números tienen
   que moverse después de todo lo que se cargó (una vaca menos en ordeñe por el secado
   de `102`, una vaca más por el parto de `136`).
-- **Indicadores → Candidatas a Descarte**: tiene que proponer a las vacas con bajo
+- **Indicadores → Candidatas a descarte**: tiene que proponer a las vacas con bajo
   rendimiento o problemas reproductivos repetidos. `133`, con dos partos y sin preñez
   confirmada, es la candidata típica del juego de datos.
 
@@ -661,7 +661,7 @@ nombre → lo rechaza.
 **Pasos.** Menú **Configuracion**. Cambiar **Parto proximo (dias)** de `15` a `30` y
 guardar.
 
-**Esperado.** Volver a **Reproduccion → Alertas de Parto**: ahora `140` (pare el
+**Esperado.** Volver a **Pendientes y alertas → Partos próximos**: ahora `140` (pare el
 10/09) también tiene que aparecer, porque la ventana se amplió a 30 días.
 
 Otras pruebas rápidas sobre la misma pantalla:
@@ -679,7 +679,7 @@ configuración a las pruebas siguientes.
 
 ## 23. Baja de un animal
 
-**Pasos.** **Animales → Lista de Animales**, entrar a `160` (el novillo) y **Registrar
+**Pasos.** **Animales → Rodeo**, entrar a `160` (el novillo) y **Registrar
 Baja**.
 
 | Campo | Dato |

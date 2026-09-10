@@ -302,6 +302,14 @@ Suman cinco capturas de evidencia: el guion pasa de 107 a 112, y su sección de 
 tanda anterior había quedado con tres columnas en una tabla de dos, y los flujos 24 y 25,
 que nombraban botones y un camino de menú que ya no existen.
 
+Después, en su propio commit, los flujos perdieron los **29 caminos del menú anterior**
+que les quedaban —*«Reproduccion → Tactos Pendientes»*, *«Sanidad → Registrar
+Diagnostico»*, *«Insumos → Ingreso de Stock»*…—. Cada uno se reemplazó por la sección,
+la entrada y el botón reales, leídos del menú y de las pantallas de lista. Cinco listas
+de trabajo que los flujos buscaban en su módulo —tactos pendientes, vacas para servir,
+partos y secados próximos, el calendario sanitario— están en *Pendientes y alertas*, y
+varios registros que eran una entrada del menú son hoy un botón dentro de su lista.
+
 ---
 
 ## Lo que queda pendiente
