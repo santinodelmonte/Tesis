@@ -247,7 +247,7 @@ El criterio, siguiendo al ejemplo:
   del estado final: el parto que abrió la lactancia y dio de alta la cría, el
   tratamiento que sacó a la vaca del tanque, la inseminación que descontó la pajuela.
 
-**La lista ya está armada**, porque 2.3 está escrita. Son **29**, con el prefijo `t-`
+**La lista ya está armada**, porque 2.3 está escrita. Son **34**, con el prefijo `t-`
 para distinguirlas de las del manual:
 
 | Archivo | Qué evidencia |
@@ -255,7 +255,7 @@ para distinguirlas de las del manual:
 | `t-acceso-directo` | La redirección al login al pedir una pantalla interna sin sesión |
 | `t-acceso-atras` | El botón atrás del navegador después de cerrar sesión |
 | `t-alta-categoria` | La categoría propuesta tras presionar *Calcular Categoría* |
-| `t-alta-genealogia` | `AltaAnimal` | Caravana `201` con madre `152` y padre `7HO12165`: la advertencia de parentesco con *Guardar de todos modos* |
+| `t-alta-genealogia` | La advertencia de parentesco entre los padres —`152` y `7HO12165`—, con *Guardar de todos modos* |
 | `t-ficha-integral` | La ficha con diagnóstico, descarte, partos, servicios y producción |
 | `t-linaje-arbol` | El árbol armado a partir de los progenitores registrados |
 | `t-consanguinidad` | El parentesco detectado, con el antepasado común nombrado |
@@ -278,8 +278,13 @@ para distinguirlas de las del manual:
 | `t-stock-antes` | Las alertas de stock crítico antes de reponer |
 | `t-stock-despues` | Las mismas alertas, vacías |
 | `t-movimientos` | El ingreso y los egresos con su motivo |
+| `t-tablero` | El tablero recién cargado, con cada contador igual al de su pantalla de alerta |
+| `t-registro-rapido` | La confirmación del segundo celo cargado desde el tablero, con el campo de caravana vacío para el siguiente |
 | `t-indicadores` | Los indicadores movidos por el secado y el parto |
 | `t-descarte` | Las candidatas con sus motivos |
+| `t-reporte` | El reporte productivo en pantalla junto a su PDF y su planilla, con las mismas filas |
+| `t-telegram-vinculado` | Notificaciones después de vincular, y el mensaje de prueba recibido en Telegram |
+| `t-telegram-resumen` | El resumen recibido al lado del tablero, con los mismos números. **Es foto del teléfono**: no la puede sacar Playwright |
 | `t-configuracion-efecto` | La alerta de parto ampliada por el parámetro |
 
 Se sacan en la misma corrida del script que las del manual, pero **después de haber

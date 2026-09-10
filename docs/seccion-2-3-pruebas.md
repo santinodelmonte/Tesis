@@ -31,6 +31,11 @@ El juego de datos **calcula sus fechas contra el día en que se carga**, de modo
 alertas y los vencimientos quedan siempre vigentes y las pruebas se pueden repetir
 cualquier día sin ajustar nada.
 
+Las pruebas de las notificaciones necesitan, además, el **token del bot cargado** en la
+configuración de la aplicación (`bd/LEEME.md`) y **una cuenta de Telegram** desde la cual
+escribirle. Sin token, la pantalla lo avisa y no deja vincular: ése es el primer caso de
+esa sección.
+
 ---
 
 ## Acceso al sistema
@@ -372,6 +377,44 @@ uno con su motivo**: ningún descuento aparece sin explicación.
 
 ---
 
+## Tablero y registro rápido
+
+**Prueba:** con el juego de datos recién cargado, entrar al sistema y comparar cada
+contador del tablero de inicio con la pantalla de alerta que le corresponde.
+
+**Resultado esperado:** los números coinciden uno por uno —cuatro vacas para servir, un
+tacto pendiente, un parto próximo, dos insumos bajo el mínimo y dos partidas por vencer—,
+porque el tablero no calcula nada propio: junta las mismas listas que muestran las
+pantallas de alerta.
+
+`[captura: t-tablero]`
+
+**Prueba:** en *Registro rápido*, con la solapa **Celo**, tocar la caravana sugerida `130`
+en *Para servir* y presionar **Registrar celo**. Sin tocar nada más, escribir `133` y
+registrar de nuevo.
+
+**Resultado esperado:** el tablero confirma «Quedó registrado el celo de la caravana 130»,
+deja el campo de caravana **vacío y con el foco**, y conserva la solapa y la fecha. El
+segundo celo se registra igual. Los dos quedan en *Reproducción → Celos*, cargados sin
+haber entrado al menú.
+
+`[captura: t-registro-rapido]`
+
+| Caso | Resultado esperado | Resultado |
+|---|---|---|
+| Solapa **Tacto** con la `102` y resultado *Preñada* *(con el juego de datos recién cargado)* | La `102` pasa a *Preñada* y sale de *Tactos pendientes*; el contador del tablero baja en uno | |
+| Solapa **Servicio** con la `133` | Abre *Registrar servicio* con la caravana ya cargada, sin haber guardado nada | |
+| Celo a la caravana `T-01`, que es un macho | «La caravana T-01 corresponde a un macho: los eventos reproductivos se registran sobre la hembra!» | |
+| Celo a la ternera `177`, de cuatro meses | La rechaza por la edad mínima de detección de celo, con el mismo mensaje que *Registrar celo* | |
+| Celo a la caravana `999`, que no existe | «La caravana 999 no existe en el sistema!» | |
+| Celo con el campo de caravana vacío | «Indique la caravana del animal!» | |
+| Tacto a la `130`, que no tiene un servicio en espera | «La caravana 130 no tiene un servicio pendiente: hay que registrar el servicio antes del tacto!» | |
+
+Las cinco variantes que fallan informan el motivo **sin salir del tablero** y conservan lo
+que se había escrito.
+
+---
+
 ## Indicadores
 
 **Prueba:** consultar los indicadores del rodeo antes y después de registrar un secado y
@@ -389,6 +432,74 @@ promedios se recalculan.
 criterios, **indicando en cada caso el motivo**.
 
 `[captura: t-descarte]`
+
+---
+
+## Reportes
+
+**Prueba:** *Reportes y notificaciones → Productivo*, con el período que viene propuesto
+—del primero del mes a hoy—, presionar **Ver en pantalla**; después **Descargar PDF** y
+**Descargar Excel**.
+
+**Resultado esperado:** los dos archivos traen exactamente las mismas secciones, columnas
+y filas que la vista en pantalla —*Resumen del período*, *Producción del establecimiento*,
+*Producción por animal* y *Controles lecheros del período*—, y se descargan como
+`reporte-productivo-` seguido de la fecha de emisión.
+
+`[captura: t-reporte]`
+
+| Caso | Resultado esperado | Resultado |
+|---|---|---|
+| Reporte **sanitario** del mes | Diagnósticos, Tratamientos, Vacunaciones, Descornes y Situación al día de la emisión | |
+| Reporte **reproductivo** del mes | Servicios, Tactos y confirmación de preñez, Partos, Secados e Indicadores reproductivos del rodeo | |
+| Reporte **genético** | No pide fechas; trae la Genealogía del rodeo y el Rendimiento por línea paterna, «Rodeo al día de la emisión» | |
+| Un período anterior al primer registro del rodeo | Genera igual la vista y los archivos: las secciones del período sin datos dicen «Sin registros en el período» | |
+| Fecha *Desde* posterior a *Hasta* | «El rango de fechas es invalido: la fecha desde es posterior a la fecha hasta!», y no genera archivo | |
+
+---
+
+## Notificaciones por Telegram
+
+**Prueba:** escribirle `/start` al bot desde Telegram, copiar el número que contesta en
+*Reportes y notificaciones → Notificaciones* y presionar **Vincular y probar**.
+
+**Resultado esperado:** llega a Telegram el mensaje de prueba —«La vinculación quedó
+lista…»— y la pantalla confirma «La cuenta quedó vinculada y el mensaje de prueba salió.
+Revisá Telegram.», muestra el chat vinculado y habilita la hora del resumen y los ocho
+avisos, agrupados por módulo.
+
+`[captura: t-telegram-vinculado]`
+
+| Caso | Resultado esperado | Resultado |
+|---|---|---|
+| Sin el token del bot cargado | La pantalla avisa «El sistema no tiene cargado el token del bot.» y no deja vincular | |
+| Identificador de chat vacío | «Hay que indicar el identificador de chat de Telegram.» | |
+| Identificador con letras, como un nombre de usuario | «El identificador de chat es un numero: revise que no haya quedado pegado el nombre de usuario.» | |
+| Un número válido de un chat que nunca le escribió al bot | «No se pudo enviar el mensaje de prueba a ese chat…», con el motivo que dio Telegram; **conserva la vinculación anterior** | |
+
+**Prueba:** con el juego de datos recién cargado, poner la hora del resumen un minuto
+adelante del reloj, **Guardar** y esperar.
+
+**Resultado esperado:** llega «Tareas pendientes del» y la fecha, agrupado por módulo, con
+los mismos números que muestra el tablero de inicio: cuatro vacas para servir, un tacto
+pendiente, un parto próximo, los procedimientos del calendario sanitario, dos insumos bajo
+el mínimo y dos partidas por vencer. **Ese contraste es la prueba**: el mensaje y el
+tablero no pueden discrepar. Si antes se corrieron otras pruebas los números cambian, pero
+tienen que seguir coincidiendo.
+
+`[captura: t-telegram-resumen]`
+
+| Caso | Resultado esperado | Resultado |
+|---|---|---|
+| `/resumen` desde el chat vinculado | Contesta con el resumen en el momento, sin cancelar el envío automático del día | |
+| Apagar *Stock crítico*, **Guardar** y pedir `/resumen` | El bloque de stock desaparece del mensaje, y *Pendientes y alertas → Stock crítico* sigue mostrando los dos insumos | |
+| Apagar los ocho avisos y pedir `/resumen` | «No hay tareas pendientes.»: el día sin pendientes también recibe mensaje | |
+| Reiniciar el sitio después de que salió el resumen del día | No se manda de nuevo | |
+| Sitio apagado a la hora del resumen y levantado después | El resumen sale al levantar, en lugar de saltearse el día | |
+| `/resumen` desde otra cuenta de Telegram | «Este chat no está vinculado al sistema.», sin un solo dato del rodeo | |
+| Un mensaje cualquiera al bot, en una conversación de a dos | Contesta que no entiende y sugiere escribir `/resumen` | |
+
+Al terminar, volver a tildar los ocho avisos y dejar la hora del resumen como estaba.
 
 ---
 

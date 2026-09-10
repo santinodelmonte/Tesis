@@ -277,6 +277,31 @@ cuando la validación pasó a `ValidarTacto`.
 Se sumó una captura, `m6-cu40-registro`, para el registro rápido. Las secciones piden
 **107** capturas y el guion define **107**.
 
+
+## 9. Las pruebas del tablero y del Módulo 7 (10/09)
+
+El protocolo de 2.3 se armó desde `flujos-de-prueba.md` antes de que existieran el
+registro rápido y las notificaciones, y **no tenía una sola prueba** del tablero, de los
+reportes ni de Telegram: un módulo entero quedaba sin evidencia. Los flujos 24 a 26 sí los
+recorrían con datos concretos, y se pasaron al protocolo con los mensajes textuales del
+código.
+
+| Sección nueva | Cubre | Qué prueba |
+|---|---|---|
+| Tablero y registro rápido | CU40 | El tablero contra las pantallas de alerta; dos celos seguidos sin entrar al menú; el tacto y el servicio desde el tablero; cinco variantes que fallan sin salir del tablero |
+| Reportes | CU44 a CU47 | La vista contra el PDF y la planilla; qué trae cada reporte; el período vacío que se genera igual; el rango invertido |
+| Notificaciones por Telegram | CU48 y CU49 | La vinculación con su mensaje de prueba y cuatro variantes; el resumen contra el tablero; `/resumen`, un aviso apagado, los ocho apagados, el reinicio, el sitio caído, otra cuenta |
+
+**Un cuidado de orden.** El resumen se compara contra el tablero con el juego de datos
+recién cargado. El tacto de la `102` desde el tablero consume el único servicio en espera,
+así que después el resumen muestra un tacto menos —y el tablero también: lo que no puede
+pasar es que discrepen—.
+
+Suman cinco capturas de evidencia: el guion pasa de 107 a 112, y su sección de pruebas de
+29 a 34. En la misma pasada se corrigió la fila `t-alta-genealogia` del guion, que en la
+tanda anterior había quedado con tres columnas en una tabla de dos, y los flujos 24 y 25,
+que nombraban botones y un camino de menú que ya no existen.
+
 ---
 
 ## Lo que queda pendiente

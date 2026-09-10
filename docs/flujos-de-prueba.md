@@ -699,7 +699,7 @@ dar de baja el animal. Verifique que siga activo!"*.
 ## 24. Reportes
 
 **Pasos.** **Reportes y notificaciones → Productivo**. Dejar el período que viene
-propuesto —del primero del mes a hoy— y **Consultar**. Después **PDF** y **Excel**.
+propuesto —del primero del mes a hoy— y **Ver en pantalla**. Después **Descargar PDF** y **Descargar Excel**.
 
 **Esperado.** Los dos archivos traen exactamente lo que se ve en pantalla. Repetir con
 **Sanitario**, **Reproductivo** y **Genético**: el genético no usa período, porque la
@@ -737,7 +737,7 @@ el tablero no pueden discrepar en ningún número.
 - Escribirle `/resumen` al bot → contesta con el mismo mensaje en el momento, y eso
   **no** cancela el envío automático del día.
 - Destildar *Stock crítico*, guardar y pedir `/resumen` → el bloque de stock desaparece
-  del mensaje, y **Insumos → Alertas de Stock** sigue mostrando los dos insumos.
+  del mensaje, y **Pendientes y alertas → Stock crítico** sigue mostrando los dos insumos.
 - Reiniciar el sitio después de que el resumen salió → no se manda de nuevo.
 - Poner un identificador de chat con letras → lo rechaza sin salir a internet.
 - Escribirle al bot desde otra cuenta de Telegram y pedir `/resumen` → contesta que ese
