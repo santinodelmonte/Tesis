@@ -186,14 +186,17 @@ def segmentos(texto):
     return partes or [(texto, {})]
 
 
-def escribir(d, ruta_md, faltantes):
+def escribir(d, ruta_md, faltantes, base_titulo=3):
     """Escribe en el documento los bloques de un archivo. Devuelve cuantos escribio."""
     escritos = 0
     for clase, valor in bloques(ruta_md):
         if clase == 'titulo':
             nivel, texto = valor
-            # `##` del markdown es el primer subtitulo de la seccion: Heading5.
-            d.parrafo_rico(segmentos(texto), estilo='Heading%d' % min(6, nivel + 3))
+            # En el Proyecto, `##` es el primer subtitulo de una seccion 2.x y va en
+            # Heading5, para que no entre al indice. En el Anteproyecto, cuyas secciones
+            # son Heading2, el mismo `##` es un Heading3.
+            d.parrafo_rico(segmentos(texto),
+                           estilo='Heading%d' % min(6, nivel + base_titulo))
         elif clase == 'parrafo':
             d.parrafo_rico(segmentos(valor))
         elif clase == 'vineta':

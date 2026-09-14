@@ -37,7 +37,7 @@ ANCHO_MAXIMO_CM = 16.0
 class Documento:
     """Cursor sobre el cuerpo del documento: borra secciones y escribe detras."""
 
-    def __init__(self, ruta):
+    def __init__(self, ruta, inicio=None):
         self.doc = Document(ruta)
         self.cuerpo = self.doc.element.body
         self.cursor = None
@@ -45,8 +45,8 @@ class Documento:
         self._modelo_tabla = None
         # El indice del comienzo repite los titulos de todas las secciones. Sin este
         # corte, buscar un titulo devuelve su entrada del indice y el contenido nuevo
-        # termina escrito ahi.
-        self.inicio = self._fin_del_indice()
+        # termina escrito ahi. El anteproyecto no tiene ese indice y arranca en cero.
+        self.inicio = self._fin_del_indice() if inicio is None else inicio
 
     def _fin_del_indice(self):
         for i, elemento in enumerate(self._elementos()):
@@ -86,6 +86,12 @@ class Documento:
         for elemento in elementos[i + 1:j]:
             self.cuerpo.remove(elemento)
         self.cursor = elementos[i]
+        return self.cursor
+
+    def antes_de(self, titulo):
+        """Deja el cursor justo delante de un titulo, para escribir una seccion nueva."""
+        elementos = self._elementos()
+        self.cursor = elementos[self.buscar(titulo) - 1]
         return self.cursor
 
     def modelo_parrafo(self):

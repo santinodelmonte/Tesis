@@ -957,4 +957,32 @@ escribir(
 
 
 doc.save(RUTA_SALIDA)
+
+
+# --------------------------------------------------------------- 1.11 Estimacion del esfuerzo
+#
+# Va en una segunda pasada sobre el archivo ya guardado, y no entre las ediciones de
+# arriba, porque la seccion trae tablas: las escribe la clase Documento de
+# editar_proyecto, que es la que sabe clonar el borde de una tabla del documento.
+# El lugar es el que le da el modelo de la catedra: despues del estudio de
+# alternativas y antes del analisis de riesgo.
+
+import sys  # noqa: E402
+
+sys.path.insert(0, AQUI if 'AQUI' in dir() else os.path.dirname(os.path.abspath(__file__)))
+
+from editar_proyecto import Documento  # noqa: E402
+import render_secciones  # noqa: E402
+
+d = Documento(RUTA_SALIDA, inicio=0)
+d.antes_de('ANÁLISIS Y PLAN DE RIESGO')
+d.parrafo('ESTIMACIÓN DEL ESFUERZO', estilo='Heading2')
+faltantes = []
+bloques = render_secciones.escribir(
+    d, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                    'seccion-1-11-esfuerzo.md'),
+    faltantes, base_titulo=1)
+print('1.11 Estimacion del esfuerzo: %d bloques' % bloques)
+d.guardar(RUTA_SALIDA)
+
 print('guardado', RUTA_SALIDA)
