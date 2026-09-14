@@ -18,7 +18,7 @@ el repositorio lo que te importe: este prompt se escribió el 10/09/2026 y el c�
 | El plan maestro | `docs/prompt-documento-final.md` — cuatro fases; leé sobre todo sus puntos 2, 3, 7 y 8 |
 | Anteproyecto | `Anteproyecto_v8.docx`, **generado** por `docs/editar_anteproyecto.py` desde el v5 |
 | Proyecto | `Proyecto_v7.docx`, **generado** por `docs/editar_proyecto.py` desde el v5 más `casos_de_uso_parte*.py`, `modelo_datos.py`, `diccionario_clases.py` y `docs/diagramas/*.png` |
-| Secciones 2.3 a 2.7 | `docs/seccion-2-3-pruebas.md` … `docs/seccion-2-7-contingencia.md` — escritas en markdown, **todavía no están en el Word** |
+| Secciones 2.3 a 2.7 | `docs/seccion-2-3-pruebas.md` … `docs/seccion-2-7-contingencia.md`, que `docs/render_secciones.py` vuelca al Word desde el 14/09/2026 |
 | Capturas | `docs/guion-capturas.md` (qué fotografiar) y `docs/verificar_capturas.py` (hoy: 112 pedidas, 112 definidas). `docs/capturas/` no existe |
 | Registro de lo decidido | `docs/cambios-anteproyecto-v6.md`, `-v7.md`, `-v8.md` y `docs/auditoria-tres-vias.md` (14 hallazgos, 13 cerrados) |
 | Lo que falta del sistema | `docs/pendientes-tecnicos.md` — dice «No queda trabajo de código» |
@@ -58,22 +58,21 @@ el repositorio lo que te importe: este prompt se escribió el 10/09/2026 y el c�
 
 ## 3. Lo que queda, en orden
 
-### A. Insertar 2.3 a 2.7 en el Proyecto — lo hacés vos
+### A. Insertar 2.3 a 2.7 en el Proyecto — hecho el 14/09/2026
 
-`editar_proyecto.py` arma hasta la 2.2.7 y deja el resto como estaba en el v5. Falta el
-paso que toma `docs/seccion-2-*.md` y los escribe en su lugar, con el formato del
-documento. El punto 3 del plan maestro («Dos pasos, no uno: generar y después editar»)
-dice cómo. Tres condiciones:
+`docs/render_secciones.py` traduce los cinco markdown al cuerpo del documento y
+`editar_proyecto.py` lo llama al final. Dos reglas de lectura, que son la convención con
+que están escritos los archivos: lo que va entre el título y la primera raya `---` es
+andamiaje y no se entrega, y una cita `>` es el pie de una figura y sólo eso.
 
-- Cada marca `[captura: nombre]` se reemplaza por la imagen de `docs/capturas/nombre.png`
-  con el pie que la sigue, usando el mismo `d.imagen(ruta, pie)` que coloca los diagramas.
-  **Mientras no haya capturas**, dejá un marcador visible, no un hueco.
-- **El manual (2.4) lleva su propio índice**, numerado aparte, como en `EjemploTesis.pdf`:
-  es un documento adentro del documento.
-- Cuando existan 2.8 y 2.9, entran por el mismo camino.
+Las capturas que todavía no existen quedan como **`[FALTA LA CAPTURA: nombre]` en
+negrita**, no como un hueco; el día que `docs/capturas/` tenga los PNG, la misma
+regeneración las coloca con su pie. Los subtítulos de estas secciones van en Heading5 y
+Heading6 a propósito, para que el manual no le vuelque sus cuarenta y cuatro subtítulos al
+índice del documento final. **El manual sigue sin números de página en su índice**: eso
+necesita un campo TOC acotado, y entra con la Fase 4.
 
-Regenerá y compará el Proyecto antes y después: todo lo que ya estaba tiene que seguir
-igual.
+Cuando existan 2.8 y 2.9, se suman a `SECCIONES` y entran por el mismo camino.
 
 ### B. El script de capturas — lo hacés vos, lo corre el autor
 
@@ -149,9 +148,8 @@ coincide con el título real, se va a ver al ejecutar los flujos.
 
 ## 4. Por dónde empezar
 
-Por **A**: sin él, nada de lo escrito en 2.3 a 2.7 está en el documento que se entrega, y
-todo lo demás termina pasando por ese mismo paso. Después **B**, que es lo que destraba al
-autor el día que levante el sistema; después **C** y **D**.
+Por **B**, que es lo que destraba al autor el día que levante el sistema; después **C** y
+**D**. **A** ya está hecho.
 
 Antes de cambiar nada, contame en pocas líneas qué encontraste al verificar este prompt
 contra el repositorio y cómo pensás encarar **A**.
