@@ -78,11 +78,21 @@ class Documento:
 
     # -- edicion -----------------------------------------------------------
 
-    def vaciar(self, titulo, hasta):
-        """Borra lo que hay entre un titulo y el siguiente, y deja el cursor ahi."""
+    def vaciar(self, titulo, hasta=None):
+        """Borra lo que hay entre un titulo y el siguiente, y deja el cursor ahi.
+
+        Sin `hasta`, borra hasta el final del cuerpo: es el caso de la ultima seccion
+        del documento. El `sectPr` del final define el tamanio de pagina y los
+        margenes, asi que se queda donde esta.
+        """
         elementos = self._elementos()
         i = self.buscar(titulo)
-        j = self.buscar(hasta, i + 1)
+        if hasta is None:
+            j = len(elementos)
+            while j > i + 1 and elementos[j - 1].tag.endswith('}sectPr'):
+                j -= 1
+        else:
+            j = self.buscar(hasta, i + 1)
         for elemento in elementos[i + 1:j]:
             self.cuerpo.remove(elemento)
         self.cursor = elementos[i]
@@ -543,6 +553,9 @@ ESTADO_INDICE = {
     '2.5': 'Realizado',
     '2.6': 'Realizado',
     '2.7': 'Realizado',
+    # La 2.9 esta escrita pero tiene huecos marcados que solo los autores pueden
+    # completar; la 2.8 depende de una sesion de trabajo con la encargada.
+    '2.9': 'En proceso',
 }
 
 

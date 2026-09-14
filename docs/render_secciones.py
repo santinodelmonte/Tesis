@@ -33,6 +33,8 @@ SECCIONES = [
     ('2.5', '2.6', 'seccion-2-5-deployment.md'),
     ('2.6', '2.7', 'seccion-2-6-seguridad.md'),
     ('2.7', '2.8', 'seccion-2-7-contingencia.md'),
+    # La 2.9 cierra el documento: no hay titulo siguiente que marque donde termina.
+    ('2.9', None, 'seccion-2-9-conclusiones.md'),
 ]
 
 MARCA_CAPTURA = re.compile(r'^`?\[captura:\s*([a-z0-9\-]+)\s*\]`?$')
