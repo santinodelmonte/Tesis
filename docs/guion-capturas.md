@@ -296,19 +296,19 @@ hecho la acción que evidencian**: son el estado final, no la pantalla en blanco
 
 | | |
 |---|---|
-| 2.4 Manual — escritorio, módulos 0 a 6 | **67** |
+| 2.4 Manual — escritorio, módulos 0 a 6 | **68** |
 | 2.4 Manual — móvil | **7** |
 | 2.4 Manual — Módulo 7 | **3** |
-| **Subtotal del manual** | **77** |
-| 2.3 Pruebas — evidencia de resultados | **29** |
-| **Total** | **106** |
+| **Subtotal del manual** | **78** |
+| 2.3 Pruebas — evidencia de resultados | **34** |
+| **Total** | **112** |
 
 **Ninguno de los dos números es una estimación**: son las capturas que
 `docs/seccion-2-4-manual.md` y `docs/seccion-2-3-pruebas.md` piden, cada una en su
 lugar. `docs/verificar_capturas.py` comprueba que las listas coincidan con este guion
 y avisa si se desincronizan.
 
-El ejemplo del tutor tiene 69 en su sección de pruebas contra nuestras 29, y la
+El ejemplo del tutor tiene 69 en su sección de pruebas contra nuestras 34, y la
 diferencia es de criterio: él fotografía también las variantes de entrada que acá van
 en tabla. Las tablas dicen lo mismo en menos espacio.
 
@@ -320,7 +320,7 @@ sobre el linaje de la cría. Ese tipo de par es lo que separa un manual de una
 lista de pantallas.
 
 El ejemplo tiene 123 imágenes en las 47 páginas de su manual, algo más de dos y
-media por página; las 77 nuestras en la misma extensión dan menos de dos. Es la
+media por página; las 78 nuestras en la misma extensión dan menos de dos. Es la
 proporción que corresponde: cada pantalla con su imagen y el texto que explica qué
 hace, qué campos tiene y qué calcula sola.
 
@@ -338,5 +338,5 @@ hace, qué campos tiene y qué calcula sola.
   va neutro. Es dato de la clienta, no del sistema, y el manual se entiende igual.
 
 Al escribir el manual, entonces, **el trabajo está en los pies de figura**. Son
-ochenta y uno y cada uno tiene que decir qué se está mirando y por qué importa. Es
+setenta y ocho y cada uno tiene que decir qué se está mirando y por qué importa. Es
 lo que carga el peso que en otros manuales llevan las flechas.
