@@ -4,6 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Habilita dotnet user-secrets, que es donde viven la cadena de conexion, las
+         credenciales del sistema y el token del bot durante el desarrollo. -->
+    <UserSecretsId>tambo-gestion-tambo</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

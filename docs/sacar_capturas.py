@@ -48,6 +48,9 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 CAPTURAS = os.path.join(AQUI, 'capturas')
 
+# Las credenciales ya no viven en el repositorio: las carga el autor con user-secrets
+# (ver bd/LEEME.md). Estos son los valores del juego de prueba; si el sistema esta
+# configurado con otros, se pasan con --usuario y --clave.
 USUARIO = 'sofia'
 CONTRASENA = 'tambo2026'
 
@@ -296,13 +299,13 @@ GUION = [
 
 # --------------------------------------------------------------------------- el recorrido
 
-def entrar(pagina, base):
+def entrar(pagina, base, usuario=USUARIO, clave=CONTRASENA):
     """Inicia sesion. La contrasena nunca queda escrita en una captura."""
     pagina.goto(base + '/PagesSeguridad/Login', wait_until='networkidle')
     if pagina.locator('#usuario').count() == 0:
         return  # la sesion ya estaba abierta
-    pagina.fill('#usuario', USUARIO)
-    pagina.fill('#contrasena', CONTRASENA)
+    pagina.fill('#usuario', usuario)
+    pagina.fill('#contrasena', clave)
     pagina.get_by_role('button', name='Ingresar').click()
     pagina.wait_for_load_state('networkidle')
 
@@ -336,6 +339,10 @@ def main():
                         help='prefijo de los nombres a sacar, por ejemplo m5 o t-')
     parser.add_argument('--rehacer', default='',
                         help='nombres separados por coma que hay que volver a sacar')
+    parser.add_argument('--usuario', default=USUARIO,
+                        help='usuario del sistema, si no es el del juego de prueba')
+    parser.add_argument('--clave', default=CONTRASENA,
+                        help='contrasena del sistema, si no es la del juego de prueba')
     parser.add_argument('--listar', action='store_true',
                         help='dice que falta y no abre el navegador')
     args = parser.parse_args()
@@ -382,7 +389,7 @@ def main():
         # El login se fotografia sin sesion; todo lo demas, con ella.
         primera = pendientes[0][0] if pendientes else ''
         if primera != 'm0-cu01-login':
-            entrar(pagina, args.base)
+            entrar(pagina, args.base, args.usuario, args.clave)
 
         movil = False
         for i, (nombre, ruta, modo, detalle, destino) in enumerate(pendientes, 1):
@@ -393,7 +400,7 @@ def main():
                 contexto = navegador.new_context(viewport={'width': MOVIL[0],
                                                            'height': MOVIL[1]})
                 pagina = contexto.new_page()
-                entrar(pagina, args.base)
+                entrar(pagina, args.base, args.usuario, args.clave)
                 movil = True
                 print('\n-- de aca en adelante, %d x %d --\n' % MOVIL)
 
@@ -402,7 +409,7 @@ def main():
                 salteadas.append(nombre)
                 continue
             if nombre == 'm0-cu01-login':
-                entrar(pagina, args.base)
+                entrar(pagina, args.base, args.usuario, args.clave)
 
         navegador.close()
 

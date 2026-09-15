@@ -956,6 +956,140 @@ escribir(
     'correspondientes.')
 
 
+# --------------------------------------------------------------- reparos de forma (15/09)
+#
+# Lo que encontro la comparacion contra EjemploTesis.pdf y no era de contenido sino de
+# prolijidad: cosas que un tribunal ve en el indice automatico o en la primera hojeada.
+
+# 1. El documento arrancaba con la palabra «Indice» suelta, con estilo de titulo, antes
+#    de la portada. Era un resto de una version anterior.
+_suelto = doc.paragraphs[0]
+if _suelto.text.strip().lower() == 'indice':
+    _suelto._element.getparent().remove(_suelto._element)
+
+# 2. Palabras clave. El ejemplo de la catedra le dedica una pagina, entre el abstract y
+#    el indice, y nuestro anteproyecto no la tenia.
+_indice = buscar('ÍNDICE')
+_modelo_titulo = buscar('ABSTRACT')
+_titulo_pc = _clonar(_modelo_titulo, _indice, 'prev', 'PALABRAS CLAVE', None, False)
+_modelo_vinieta = buscar(BULLET + 'Usabilidad')
+_ultima = _titulo_pc
+for _palabra in ['Tambo', 'Ganadería lechera', 'Gestión del rodeo', 'Trazabilidad',
+                 'Producción de leche', 'Reproducción bovina', 'Sanidad animal',
+                 'Control de stock', 'Aplicación web', 'ASP.NET Core', 'MySQL',
+                 'Telegram']:
+    _ultima = _clonar(_modelo_vinieta, _ultima, 'next', BULLET + _palabra, None, False)
+
+# 3. Los nueve requerimientos no funcionales pasan a estar numerados. Sin numero no se
+#    los puede citar: ni un caso de uso puede referenciarlos ni 2.9 puede decir, uno por
+#    uno, si se cumplieron. El ejemplo de la catedra los numera, RNF1 a RNF7.
+for _numero, _nombre in enumerate(
+        ['Usabilidad', 'Accesibilidad', 'Compatibilidad', 'Disponibilidad',
+         'Rendimiento', 'Fiabilidad', 'Seguridad', 'Mantenibilidad', 'Portabilidad'], 1):
+    escribir(buscar(BULLET + _nombre + ':'), 'RNF%d. %s:' % (_numero, _nombre))
+
+# 4. En «Alcance y limitaciones» solo «Limitaciones» tenia subtitulo, asi que el indice
+#    mostraba una limitacion sin su alcance.
+_primer_alcance = buscar(BULLET + 'Registro y gestión de animales')
+_clonar(buscar('Limitaciones'), _primer_alcance, 'prev', 'Alcances', None, False)
+
+# 5. La linea de firmas estaba marcada como Heading2 y por lo tanto iba a aparecer en el
+#    indice automatico como si fuera una seccion, entre el compromiso y el glosario.
+# Hay dos lineas de firmas y la primera, la de la declaracion de autoria, ya estaba
+# bien: la que hay que arreglar es la del compromiso, que es la que suma a la clienta.
+_firmas = [_p for _p in doc.paragraphs if 'Sofia Vila' in _p.text][0]
+_firmas.style = doc.styles['Normal']
+
+# 6. El cronograma eran tres imagenes y ni una linea de texto, y la palabra «criticidad»
+#    aparecia en el titulo y en ningun otro lado. El ejemplo tampoco lo explica, asi que
+#    esto no corrige un error: aprovecha un lugar donde se puede estar por encima.
+_crono = buscar('CRONOGRAMA DE TRABAJO Y CRITICIDAD')
+_clonar(_modelo_vinieta, _crono, 'next',
+        'El cronograma refleja los seis incrementos definidos y su distribución en el '
+        'tiempo. La criticidad de cada tarea está dada por lo que depende de ella: son '
+        'críticas las que están en el camino crítico del proyecto, es decir aquellas '
+        'cuyo atraso arrastra a todas las siguientes. En este proyecto ese camino lo '
+        'forman la gestión del rodeo, que es la base sobre la que se apoyan los demás '
+        'módulos porque todo evento se registra contra un animal; el control productivo '
+        'y el manejo reproductivo, que comparten la lógica de estados de la hembra; y la '
+        'gestión sanitaria, de la que depende el control de insumos porque todo '
+        'tratamiento consume stock. Los reportes, las notificaciones y el tablero, en '
+        'cambio, consumen información ya registrada y no bloquean a nadie: su atraso '
+        'afecta al alcance de la entrega, no al resto del cronograma.', None, False)
+
+# 7. Las viñetas venian de un procesador de texto que deja un espacio invisible pegado al
+#    simbolo. No se ve, pero viaja en toda copia del texto y rompe cualquier busqueda.
+for _p in doc.paragraphs:
+    for _run in _p.runs:
+        for _t in _run._element.findall(qn('w:t')):
+            if _t.text and '\u200b' in _t.text:
+                _t.text = _t.text.replace('\u200b', '')
+
+
+# --------------------------------------------------------------- la bibliografia (15/09)
+#
+# Eran seis sitios oficiales de herramientas, sin autor, sin URL y sin norma. El problema
+# no era la forma: era que el anteproyecto usa teoria que no citaba. La clasificacion de
+# riesgos en catastrofico, critico, marginal y despreciable; los cuatro modelos de ciclo
+# de vida; el plan de SQA; los tipos de prueba de caja negra; y ahora los puntos de
+# funcion de 1.11 salen todos de Pressman, y Pressman no figuraba. La normalizacion y el
+# modelo entidad-relacion de 2.2.5, de Elmasri y Navathe. El ejemplo de la catedra cita
+# los dos, con edicion y editorial, al lado de los sitios de herramientas.
+#
+# Van en orden alfabetico por autor, como el ejemplo.
+
+_inicio_biblio = [i for i, _p in enumerate(doc.paragraphs)
+                  if _p.text.strip() == 'BIBLIOGRAFÍA'][0]
+
+_entradas = [
+    ('Bootstrap Team. Documentación oficial de Bootstrap [en línea].',
+     'Disponible en internet: https://getbootstrap.com/docs/. Utilizada como referencia '
+     'para el diseño responsive y la construcción de la interfaz. Último acceso: mayo '
+     'de 2026.'),
+    ('Elmasri, Ramez; Navathe, Shamkant B. Fundamentos de sistemas de bases de datos.',
+     '5.ª ed. Madrid: Pearson Addison-Wesley, 2007. Utilizado como referencia para el '
+     'modelo entidad-relación, la normalización y las restricciones de integridad.'),
+    ('Microsoft. Documentación oficial de .NET [en línea].',
+     'Disponible en internet: https://learn.microsoft.com/dotnet/. Utilizada como '
+     'referencia para la arquitectura, el desarrollo del backend, el acceso a datos y la '
+     'configuración del sistema. Último acceso: mayo de 2026.'),
+    ('Microsoft. Documentación oficial de Visual Studio [en línea].',
+     'Disponible en internet: https://learn.microsoft.com/visualstudio/. Utilizada como '
+     'referencia para el entorno de desarrollo. Último acceso: mayo de 2026.'),
+    ('Oracle Corporation. MySQL Reference Manual [en línea].',
+     'Disponible en internet: https://dev.mysql.com/doc/. Utilizado como referencia para '
+     'el modelado, la administración y las consultas de la base de datos. Último acceso: '
+     'mayo de 2026.'),
+    ('Pressman, Roger S. Ingeniería del software. Un enfoque práctico.',
+     '7.ª ed. México: McGraw-Hill, 2010. Utilizado como referencia para el análisis y la '
+     'clasificación de riesgos, los modelos de ciclo de vida, el plan de aseguramiento de '
+     'la calidad, los tipos de prueba y la estimación por puntos de función.'),
+]
+_extra = [
+    ('SmarterASP.NET. Sitio oficial del servicio de hosting [en línea].',
+     'Disponible en internet: https://www.smarterasp.net/. Utilizado como referencia para '
+     'el despliegue del sistema. Último acceso: mayo de 2026.'),
+    ('Telegram. Telegram Bot API [en línea].',
+     'Disponible en internet: https://core.telegram.org/bots/api. Utilizada como '
+     'referencia para la integración de las notificaciones. Último acceso: mayo de 2026.'),
+]
+
+_viejas = ['Microsoft .NET Documentation', 'MySQL Documentation', 'Bootstrap Documentation',
+           'Telegram Bot API Documentation', 'Visual Studio', 'SmarterASP.NET']
+_parrafos = [buscar(_v, _inicio_biblio) for _v in _viejas]
+for _parrafo, (_titulo, _cuerpo) in zip(_parrafos, _entradas):
+    # Los titulos viejos eran hipervinculos al sitio de cada herramienta, y un
+    # hipervinculo no es un run: escribir() no lo ve y el texto anterior sobrevivia
+    # pegado adelante del nuevo. Se sacan antes de escribir.
+    for _enlace in _parrafo._element.findall(qn('w:hyperlink')):
+        _parrafo._element.remove(_enlace)
+    escribir(_parrafo, _titulo, _cuerpo)
+
+_ultima_entrada = _parrafos[-1]
+for _titulo, _cuerpo in _extra:
+    _ultima_entrada = _clonar(_parrafos[0], _ultima_entrada, 'next', _titulo, _cuerpo, True)
+
+
 doc.save(RUTA_SALIDA)
 
 

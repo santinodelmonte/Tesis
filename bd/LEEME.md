@@ -13,7 +13,7 @@ La carpeta tiene dos scripts y nada más:
 > Windows, así que buscarlo en la lista de servicios no lo encuentra. El cliente de
 > línea de comandos está en `C:\xampp\mysql\bin\mysql.exe`. Los valores por defecto
 > de XAMPP —`localhost`, puerto 3306, usuario `root`, sin contraseña— son los que ya
-> trae la cadena de conexión de `Tesis/appsettings.json`.
+> toma la cadena de conexión de la configuración, que se carga desde afuera del repositorio (punto 5).
 
 ## 1. Crear la base
 
@@ -154,18 +154,15 @@ pantallas de vacunación, tratamiento y descorne.
 
 ## 5. Completar la cadena de conexión
 
-Los datos de conexión no están en el código: se leen de `Tesis/appsettings.json`.
+**`Tesis/appsettings.json` se versiona y va sin un solo valor real.** Las tres claves que
+el sistema necesita —la cadena de conexión, las credenciales de acceso y el token del
+bot— están ahí vacías a propósito y se cargan desde afuera del repositorio. Sin ellas el
+sistema arranca pero no conecta ni deja entrar a nadie.
 
-```json
-"ConnectionStrings": {
-  "Tambo": "server=localhost; port=3306; database=tambo; uid=root; pwd=; CharSet=utf8mb4;"
-}
-```
+Hay dos caminos y los dos funcionan; el primero es el recomendado porque no deja el valor
+en ningún archivo del proyecto:
 
-Ajustar servidor, puerto, usuario y contraseña según la instalación.
-
-Para no versionar la contraseña real conviene usar user-secrets, que la guarda
-fuera del repositorio y pisa el valor de `appsettings.json`:
+**Con user-secrets**, que guarda los valores en el perfil del usuario de Windows:
 
 ```bash
 dotnet user-secrets init --project Tesis/Tesis.csproj
@@ -175,23 +172,28 @@ dotnet user-secrets init --project Tesis/Tesis.csproj
 dotnet user-secrets set "ConnectionStrings:Tambo" "server=localhost; port=3306; database=tambo; uid=root; pwd=LA_CONTRASENA; CharSet=utf8mb4;" --project Tesis/Tesis.csproj
 ```
 
+**Con `appsettings.Development.json`**, que no se versiona. El repositorio trae
+`Tesis/appsettings.Development.json.ejemplo` como plantilla: se copia sacándole el
+`.ejemplo` y se completan los valores.
+
+Ajustar servidor, puerto, usuario y contraseña según la instalación.
+
 ## 6. Credenciales del sistema
 
-También salen de `Tesis/appsettings.json`:
-
-```json
-"Seguridad": {
-  "Usuario": "sofia",
-  "Contrasena": "tambo2026"
-}
-```
-
-Si no se cargan estas dos claves el sistema no habilita el acceso a nadie.
-Igual que la cadena de conexión, se pueden mover a user-secrets:
+Por el mismo camino y por el mismo motivo:
 
 ```bash
+dotnet user-secrets set "Seguridad:Usuario" "EL_USUARIO" --project Tesis/Tesis.csproj
 dotnet user-secrets set "Seguridad:Contrasena" "LA_CONTRASENA" --project Tesis/Tesis.csproj
 ```
+
+Si estas dos claves quedan vacías **el sistema no habilita el acceso a nadie**, que es el
+comportamiento correcto: es preferible que no entre nadie a que entre cualquiera con una
+contraseña que viajó en el repositorio.
+
+En el hosting no hay user-secrets: los tres valores van como variables de entorno desde
+el panel, con dos guiones bajos donde la clave lleva dos puntos —`ConnectionStrings__Tambo`,
+`Seguridad__Usuario`, `Seguridad__Contrasena`—.
 
 Todo el sitio queda detrás del login: sin sesión iniciada cualquier página redirige
 a `/PagesSeguridad/Login`.
@@ -202,7 +204,7 @@ Sin token, el sistema funciona igual: la pantalla **Reportes y notificaciones �
 Notificaciones** avisa que falta y el proceso del resumen diario no arranca. Con token,
 hay que completar además la vinculación desde esa pantalla.
 
-El token **no va en `appsettings.json`**, que está versionado. Es una credencial —quien
+El token **no va en `appsettings.json`**, que está versionado, igual que la cadena de conexión y las credenciales. Es una credencial —quien
 lo tiene maneja el bot— y Telegram revoca solo los que aparecen en un repositorio
 público. Va en `appsettings.Development.json`, que no se versiona:
 

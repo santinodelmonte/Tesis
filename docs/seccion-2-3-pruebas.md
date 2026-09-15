@@ -19,6 +19,22 @@ utilizan dos formas de registro: una **tabla**, cuando lo que se prueba son vari
 un mismo dato de entrada, y el par **prueba / resultado** con la captura de lo que el
 sistema devolvió, cuando lo que se verifica es un recorrido completo.
 
+El plan de testing prevé probar cada módulo de manera independiente y después verificar
+la integración entre ellos, y este registro sigue esas dos etapas. **Las pruebas de
+integración son las que atraviesan más de un módulo**, y están señaladas como tales
+porque son las que verifican la propiedad central del sistema: que un dato se cargue una
+sola vez y el sistema propague sus consecuencias. Son cuatro:
+
+| Qué se prueba | Qué módulos cruza |
+|---|---|
+| Un tratamiento sanitario deja a la vaca fuera del lote de ordeñe mientras dure el descarte de leche | Sanidad → Producción |
+| Un parto abre la lactancia de la madre, da de alta la cría y actualiza el estado y la categoría de la madre | Reproducción → Producción → Animales |
+| Una inseminación descuenta la pajuela del stock y una vacunación descuenta la dosis | Reproducción y Sanidad → Insumos |
+| El tablero y el resumen diario de Telegram muestran los mismos números que las pantallas de alerta de cada módulo | Tablero y Notificaciones → los cinco módulos de carga |
+
+Cada una de las cuatro aparece más abajo, en la sección del módulo desde el que se
+dispara la acción, con su resultado esperado y su captura de evidencia.
+
 ## Entorno de pruebas
 
 Las pruebas se ejecutaron sobre una instalación local con el rodeo de prueba cargado
