@@ -83,23 +83,32 @@ lo que falta.
 - **La etapa de pruebas de integración** quedó nombrada en 2.3, con las cuatro pruebas
   que cruzan módulos.
 
-### A. `docs/armar_tesis.py`, la Fase 4 — lo hacés vos
+### A. `docs/armar_tesis.py` — hecho el 15/09/2026
 
-Produce `Tesis.docx` desde el anteproyecto y el proyecto: el anteproyecto renumerado como
-`1.x`, el proyecto como `2.x`, portada, declaración de autoría, abstract, palabras clave,
-índice único, glosario, bibliografía y anexo. Está detallado en el punto 8 del plan
-maestro.
+`Tesis.docx` se arma con `python docs/armar_tesis.py`, **después** de correr
+`editar_anteproyecto.py` y `editar_proyecto.py`, porque parte de lo que ellos producen.
+La cadena completa es:
 
-Tres cosas que resuelve este paso y hoy no están:
+```bash
+python docs/editar_anteproyecto.py
+python docs/editar_proyecto.py
+python docs/armar_tesis.py
+```
 
-- **El índice va como campo TOC de verdad**, con `\o "1-4"`: los subtítulos de 2.3 a 2.9
-  van en Heading5 y Heading6 justamente para quedar afuera. Los números de página los
-  calcula Word cuando alguien actualiza el campo, y eso hay que decírselo a los autores.
-- **El índice del manual necesita el suyo**, acotado a su parte del documento
-  (`TOC \b` sobre un marcador), porque hoy no tiene números de página.
-- **La tabla de estado que hoy hace de índice en el Proyecto** —con su columna
-  «Realizado / En proceso / Pendiente»— desaparece. No puede entregarse: le dice al
-  tribunal en la página dos qué no se terminó.
+Renumera el anteproyecto como `1.1` a `1.15` —con «Plan de Proyecto» agrupando los once
+apartados de planificación, como en el modelo—, trae el proyecto entero con sus 62
+imágenes, y manda el glosario y la bibliografía al final, detrás del proyecto, con un
+anexo nuevo.
+
+**El índice va como campo TOC y llega hasta el tercer nivel.** Word lo completa solo: el
+archivo pide actualizar los campos al abrirse, y si alguien dice que no, se hace con
+Ctrl+E y F9. Los números de página no los puede calcular el script. El manual lleva su
+propio índice, acotado con un marcador a su parte del documento.
+
+Quedan tres cosas de la portada y el material preliminar **que conviene que confirmen los
+autores**, y que se cambian en una línea de `portada()`: la tapa dice «Trabajo Final de
+Carrera» y «2026»; la declaración de autoría dice «Examen Integrador 2»; y el abstract se
+reescribió para describir el trabajo terminado y no sólo la etapa de planificación.
 
 ### B. Lo que sólo pueden hacer los autores
 
