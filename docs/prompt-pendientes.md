@@ -65,7 +65,12 @@ lo que falta.
 
 - **Las secciones 2.3 a 2.7 están en el Word** (14/09). `docs/render_secciones.py` las
   vuelca desde los markdown; `editar_proyecto.py` lo llama al final.
-- **El script de capturas existe**: `docs/sacar_capturas.py`, 112 de 112 cubiertas.
+- **Las capturas están sacadas**: 108 de 112, de una corrida ordenada contra el sistema
+  andando. `docs/recetas_capturas.py` automatiza las 66 que dependen de una acción, en el
+  orden que hace que el antes y el después signifiquen algo. **Faltan cuatro y ninguna es
+  automatizable**: `m7-configuracion-bot` y `t-telegram-vinculado` necesitan un token de
+  bot con un chat vinculado, y `m7-resumen-telegram` y `t-telegram-resumen` son fotos del
+  teléfono.
 - **1.11 Estimación del esfuerzo** está en el anteproyecto, con el conteo en
   `docs/estimacion_esfuerzo.py`, que se verifica solo contra el código.
 - **2.9 Conclusiones** está escrita, con 16 marcas `[COMPLETAR]` para lo que sólo saben
@@ -115,9 +120,10 @@ etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
 
 ### B. Lo que sólo pueden hacer los autores
 
-- **Levantar el sistema** con `DatosPrueba.sql` recién cargado, correr
-  `docs/sacar_capturas.py` y ejecutar las pruebas de 2.3 completando la columna
-  «Resultado». Conviene en una sola sesión.
+- **Las cuatro capturas de Telegram**: vincular el bot con su token y sacar las dos de
+  pantalla, más las dos fotos del teléfono. Van a `docs/capturas/` con esos nombres.
+- **Ejecutar las pruebas de 2.3 completando la columna «Resultado»**, sobre el sistema
+  andando. Es lo único que queda de la jornada con el sistema levantado.
 - **2.8 Grado de satisfacción del cliente** (una página, sin imágenes). No es una
   encuesta: es el relato de la relación con la encargada a lo largo de las iteraciones.
   Hace falta que le muestren el sistema y anoten lo que dice; con esas notas, la redactás
