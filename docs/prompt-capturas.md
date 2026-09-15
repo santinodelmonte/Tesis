@@ -172,11 +172,75 @@ Después, `git add` y commit. Las capturas pesan, así que van en un commit prop
 | Una captura sale cortada | El script fotografía la página entera; si querés sólo un pedazo, sacala a mano y guardala con el mismo nombre |
 | Se cerró el navegador a mitad | Volvé a correrlo: retoma donde quedó, las que ya existen no se repiten |
 
-Y si preferís que te acompañe mientras la corrés, pegá esto en un chat nuevo de Claude
-Code abierto en el repositorio:
+## 8. El prompt, para pegar en un chat nuevo
 
-> Estoy corriendo `docs/sacar_capturas.py` para sacar las 112 capturas del manual y de
-> las pruebas. Leé `docs/prompt-capturas.md`, `docs/guion-capturas.md` y
-> `docs/seccion-2-3-pruebas.md`. Voy a ir contándote qué sale distinto de lo que el guion
-> espera; ayudame a decidir si es un problema del juego de datos, del guion o del sistema.
-> No levantes el sistema vos: lo tengo abierto en Visual Studio.
+Abrí Claude Code en `C:\Users\Usuario\Documents\Tesis` y pegá esto. La sesión corre en
+**tu** máquina, así que tiene `dotnet`, MySQL y Playwright, cosa que el contenedor remoto
+no tiene.
+
+---
+
+> Estoy por sacar las 112 capturas de la tesis «Sistema de Gestión de Tambo» (Analista
+> Programador, CTC Rosario; autores Santino Delmonte y Alejo de León; tutor Andrés Klett).
+>
+> **Contexto.** El sistema está terminado: siete módulos, CU1 a CU49, `dotnet build` con 0
+> errores. El documento también, salvo dos secciones. Lo que falta es **evidencia**: las
+> capturas, la columna «Resultado» de las pruebas, y la sección 2.8. Leé, en este orden,
+> `docs/prompt-capturas.md` (el runbook de esta sesión), `docs/guion-capturas.md` (qué
+> fotografía cada una y con qué animal) y `docs/seccion-2-3-pruebas.md` (las pruebas y su
+> resultado esperado). Verificá contra el repositorio lo que te importe: el código manda.
+>
+> **Lo que vamos a hacer, en este orden.**
+>
+> 1. **Chequear que esté todo listo** antes de abrir el navegador: que `dotnet user-secrets
+>    list --project Tesis/Tesis.csproj` traiga la cadena de conexión y las credenciales
+>    —desde el 15/09 no viajan en el repositorio—, que la base tenga `CreacionDb.sql` y
+>    `DatosPrueba.sql` **recién cargados**, y que Playwright esté instalado. Lo de la base
+>    no es un trámite: el juego de datos ancla el rodeo a la fecha en que se carga, y con
+>    la base de hace unos días el descarte de leche de la `115` ya se venció; esa es justo
+>    la captura que cierra el circuito entre sanidad y producción.
+> 2. **Correr `python docs/sacar_capturas.py --base http://localhost:5000`.** Son 112: 42
+>    salen solas y en 68 el script se detiene y me dice qué cargar. Yo hago cada paso en el
+>    navegador que abre el script; vos ayudame cuando lo que veo no sea lo que el guion
+>    espera. Ese es el trabajo principal de esta sesión: **decidir si una diferencia es un
+>    problema del juego de datos, del guion o del sistema**, y arreglarla donde
+>    corresponda. Si hay que tocar el guion o el script, tocalos; si parece un problema del
+>    sistema, decímelo y lo miramos antes de seguir.
+> 3. **Completar la columna «Resultado»** de `docs/seccion-2-3-pruebas.md` a medida que las
+>    pruebas se ejecutan. Muchos recorridos coinciden con las capturas `t-`, así que sale
+>    en la misma pasada. **Escribí lo que pasó, no lo que esperábamos**: si una prueba
+>    falla, va la falla y después el arreglo.
+> 4. **Al terminar**: `python docs/verificar_capturas.py` tiene que decir **112 de 112**
+>    (dos son fotos del teléfono, que subo yo con los nombres `m7-resumen-telegram.png` y
+>    `t-telegram-resumen.png`). Después regenerá la cadena entera y compará la salida:
+>    `python docs/editar_anteproyecto.py && python docs/editar_proyecto.py && python
+>    docs/armar_tesis.py`. Los `[FALTA LA CAPTURA: …]` del documento desaparecen solos: el
+>    generador busca el `.png` y, si lo encuentra, coloca la imagen con su pie.
+>
+> **Reglas de trabajo, aprendidas y no supuestas.**
+>
+> - **Español rioplatense, con voseo.** Prosa que argumenta, tablas donde hay datos, nada
+>   de relleno ni afirmaciones sin verificar.
+> - **Manda el código.** Si un documento y el código discrepan, el código tiene razón salvo
+>   que sea un error. Pero **un cambio de requerimiento no se aplica sin consultarme**.
+> - **Los `.docx` se generan, nunca se editan a mano.** Toda corrección va al script, y
+>   después se regenera y se compara la salida contra la anterior.
+> - **No hay pruebas automatizadas y no las va a haber.** Las de 2.3 son funcionales y
+>   manuales, sobre el sistema andando.
+> - **El sistema lo levanto yo** desde Visual Studio. No lo levantes vos.
+> - **Cuidado con los archivos**: cada `.cs` y `.py` tiene su codificación —unos con BOM,
+>   otros sin— y CRLF. Editá a nivel de bytes y preservá las dos cosas.
+> - **Git**: se trabaja en `master`. Commit sólo cuando te lo pida; push nunca sin pedido.
+>   Mensajes en español sin tildes, con un título que cuenta qué cambió y por qué y un
+>   cuerpo en prosa. Las capturas pesan: van en un commit propio.
+>
+> Antes de empezar, contame en pocas líneas qué encontraste al verificar esto contra el
+> repositorio y si el punto 1 está en condiciones.
+
+---
+
+Y si sólo querés una mano puntual en medio de la corrida, alcanza con:
+
+> Estoy corriendo `docs/sacar_capturas.py`. Leé `docs/prompt-capturas.md` y
+> `docs/guion-capturas.md`. Te voy a ir contando qué sale distinto de lo que el guion
+> espera. No levantes el sistema vos: lo tengo abierto en Visual Studio.
