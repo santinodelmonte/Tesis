@@ -345,7 +345,22 @@ def main():
                         help='contrasena del sistema, si no es la del juego de prueba')
     parser.add_argument('--listar', action='store_true',
                         help='dice que falta y no abre el navegador')
+    parser.add_argument('--guion', action='store_true',
+                        help='imprime el plan entero en markdown, para leerlo aparte')
     args = parser.parse_args()
+
+    if args.guion:
+        print('| Archivo | Qué hay que hacer |')
+        print('|---|---|')
+        for nombre, _, modo, detalle in GUION:
+            if modo == 'auto':
+                que = 'sale sola'
+            elif modo == 'telefono':
+                que = '**foto del teléfono**'
+            else:
+                que = detalle
+            print('| `%s` | %s |' % (nombre, que))
+        return 0
 
     if not os.path.isdir(CAPTURAS):
         os.makedirs(CAPTURAS)
