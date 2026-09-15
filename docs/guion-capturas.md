@@ -83,7 +83,7 @@ que explicarlo con imagen, porque es lo contrario de lo que se espera.
 | Archivo | Pantalla | Estado a fotografiar |
 |---|---|---|
 | `m1-cu10-lista` | `ListaAnimales` | El rodeo completo. `112`, dada de baja, no está |
-| `m1-cu10-filtros` | `BuscarAnimales` | Categoría *Vaca* + Estado *En lactancia* → las ocho vacas en ordeñe |
+| `m1-cu10-filtros` | `BuscarAnimales` | Categoría *Vaca* + Estado *Activos* → las vacas del rodeo. **El filtro de estado es activo/inactivo, no productivo**: no existe un filtro «En lactancia» |
 | `m1-cu04-alta` | `AltaAnimal` | Formulario con la caravana `200` cargada |
 | `m1-cu04-categoria` | `AltaAnimal` (*detalle*) | Después de **Calcular Categoria**: propone **Vaca** porque tiene partos. *La regla de negocio central del sistema* |
 | `m1-cu04-genealogia` | `AltaAnimal` | **E1** — caravana `201` con madre `152` y padre `7HO12165`: advertencia de parentesco con *Guardar de todos modos* |
