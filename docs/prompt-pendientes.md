@@ -105,10 +105,13 @@ archivo pide actualizar los campos al abrirse, y si alguien dice que no, se hace
 Ctrl+E y F9. Los números de página no los puede calcular el script. El manual lleva su
 propio índice, acotado con un marcador a su parte del documento.
 
-Quedan tres cosas de la portada y el material preliminar **que conviene que confirmen los
-autores**, y que se cambian en una línea de `portada()`: la tapa dice «Trabajo Final de
-Carrera» y «2026»; la declaración de autoría dice «Examen Integrador 2»; y el abstract se
-reescribió para describir el trabajo terminado y no sólo la etapa de planificación.
+La portada, la declaración de autoría y el abstract del documento único **quedaron
+aprobados por los autores el 15/09/2026** y no se vuelven a discutir: la tapa dice «Trabajo
+Final de Carrera», lleva la línea «Entregado para la obtención del título de Analista
+Programador» y cierra con «2026»; la declaración dice «Examen Integrador 2»; y el abstract
+describe el trabajo terminado —los siete módulos y la propagación entre ellos— y no sólo la
+etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
+`docs/armar_tesis.py`, y se cambian ahí si alguna vez hace falta.
 
 ### B. Lo que sólo pueden hacer los autores
 
@@ -128,6 +131,8 @@ reescribió para describir el trabajo terminado y no sólo la etapa de planifica
 
 ### C. Decisiones ya tomadas — no volver a abrirlas
 
+- **La portada, la declaración de autoría y el abstract** del `Tesis.docx`, aprobados el
+  15/09. Están en `portada()` y `ABSTRACT` de `docs/armar_tesis.py`.
 - **RF3.4 y RF3.5 no se fusionan, y RF5.2 se queda** (15/09). Quedan **74
   requerimientos**. A esta altura renumerar toca los casos de uso, los diagramas de
   secuencia y el documento entero, y el beneficio es cosmético.
