@@ -296,6 +296,17 @@ def m2_lactancia(pag, base, sacar):
 
 # --------------------------------------------------------------------------- Modulo 3
 
+def m3_celo(pag, base, sacar):
+    """El celo de una vaca en servicio, y el de una ternera que no tiene edad."""
+    pag.goto(base + '/PagesReproduccion/RegistrarCelo', wait_until='networkidle')
+    caravana(pag, '115')
+    sacar('m3-cu20-celo')
+    pag.goto(base + '/PagesReproduccion/RegistrarCelo', wait_until='networkidle')
+    caravana(pag, '177')
+    boton(pag, 'Guardar')
+    sacar('m3-cu20-edad')
+
+
 def m3_servicio_ia(pag, base, sacar):
     pag.goto(base + '/PagesReproduccion/RegistrarServicio', wait_until='networkidle')
     caravana(pag, '115')
@@ -505,10 +516,9 @@ def m5_movimientos(pag, base, sacar):
 
 def m6_registro_rapido(pag, base, sacar):
     """El tablero registra el celo sin pasar por el menu, y deja el campo listo."""
-    for nombre in ('m6-cu40-registro', 't-registro-rapido'):
+    for nombre, vaca in (('m6-cu40-registro', '133'), ('t-registro-rapido', '130')):
         pag.goto(base + '/', wait_until='networkidle')
-        sugerida = pag.locator('.registro-rapido button, #registroRapido button').first
-        pag.fill('#caravanaRapida, [name=caravanaRapida], #numCaravana', '133')
+        pag.fill('#caravanaRapida, [name=caravanaRapida], #numCaravana', vaca)
         boton(pag, 'Registrar celo')
         sacar(nombre)
 
@@ -589,7 +599,7 @@ SESION = [
     m2_ordenie_lote, m2_control_masivo, m2_control_puntual, m2_control_seca,
     m2_control_maximo, m2_historial, m2_metrica, m2_secado, m2_lactancia, 'm2-lactancias',
     # Modulo 3
-    'm3-cu25-servir', m3_servicio_ia, m3_servicio_monta, m3_servicio_consanguineo,
+    'm3-cu25-servir', m3_celo, m3_servicio_ia, m3_servicio_monta, m3_servicio_consanguineo,
     'm3-cu22-pendientes', m3_tacto, m3_alertas_despues_del_tacto, m3_parto,
     m3_efecto_del_parto, t_parto_doble, m3_corregir_parto, 'm3-listas',
     # Modulo 4 — el calendario, antes de vacunar
