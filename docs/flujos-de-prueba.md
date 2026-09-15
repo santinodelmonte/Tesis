@@ -374,7 +374,7 @@ Para la vaca comprada en el flujo 2, que entró al rodeo ya en producción.
 | Campo | Dato |
 |---|---|
 | Caravana | `200` |
-| Numero de lactancia | Apretar **Proponer numero** → tiene que sugerir `3` |
+| Numero de lactancia | Apretar **Proponer** → tiene que sugerir `3` |
 | Fecha de inicio | `2026-05-20` |
 
 **Esperado.** `200` pasa a **En lactancia** y aparece en el lote de ordeñe y en el

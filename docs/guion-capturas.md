@@ -108,7 +108,7 @@ que explicarlo con imagen, porque es lo contrario de lo que se espera.
 | `m2-cu15-metrica` | `MetricaMensual` | Agosto 2026: total, promedio por ordeñe y por vaca |
 | `m2-cu16-secado` | `RegistrarSecado` | Secado de `102` |
 | `m2-cu17-alertas` | `AlertasSecado` | Con vacas listadas. **Requiere orden**: ver punto 4 |
-| `m2-cu18-lactancia` | `AltaLactancia` | `200`, con **Proponer numero** sugiriendo `3` |
+| `m2-cu18-lactancia` | `AltaLactancia` | `200`, con **Proponer** sugiriendo `3` |
 | `m2-cu19-corregir` | `HistorialProduccion` | Corrección de un control: fecha, turno y caravana visibles pero bloqueados |
 | `m2-cu19-eliminar` | `HistorialProduccion` | La confirmación, que nombra caravana, fecha, turno y litros |
 | `m2-lactancias` | `ListaLactancias` | El listado de lactancias |
