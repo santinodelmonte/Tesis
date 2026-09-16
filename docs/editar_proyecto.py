@@ -546,8 +546,8 @@ def seccion_diccionario(d):
 
 
 ESTADO_INDICE = {
-    # 2.3 y 2.4 estan escritas, pero la columna «Resultado» de las pruebas y las
-    # capturas se completan con el sistema andando: todavia no estan terminadas.
+    # 2.3 quedo ejecutada el 16/09; siguen en proceso los casos que necesitan el bot de
+    # Telegram vinculado. 2.4 espera las dos capturas de Telegram y la foto del telefono.
     '2.3': 'En proceso',
     '2.4': 'En proceso',
     '2.5': 'Realizado',

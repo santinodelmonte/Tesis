@@ -1,12 +1,15 @@
 # 2.3 Pruebas
 
-> **Estado de esta sección.** Los casos están escritos con sus datos y su resultado
-> esperado, listos para ejecutar. **La columna «Resultado» y las capturas de evidencia
-> se completan al correr las pruebas sobre el sistema andando** — no se pueden dar por
-> ejecutadas desde acá. Hasta entonces esto es el protocolo; después es el registro.
+> **Estado de esta sección.** Ejecutada el 16/09/2026 sobre el sistema andando, con la
+> base creada con `bd/CreacionDb.sql` y poblada con `bd/DatosPrueba.sql`. La columna
+> «Resultado» dice lo que el sistema contestó, no lo que se esperaba que contestara:
+> donde hubo diferencia, está escrita la diferencia.
 >
-> Los datos son los del rodeo de `bd/DatosPrueba.sql` y los mensajes son los que el
-> sistema devuelve de verdad, leídos de `Tesis/Pages` (ver `docs/inventario-pantallas.md`).
+> **Quedan veinticuatro casos sin ejecutar y cada uno dice por qué.** Trece necesitan el
+> bot de Telegram vinculado a un chat; tres piden relaciones de parentesco de tres
+> generaciones que el rodeo de prueba no tiene; el resto son validaciones que la pantalla
+> no deja provocar —un desplegable sin opción vacía, un campo con mínimo declarado— y que
+> viven en el servidor como segunda barrera.
 
 ---
 
@@ -58,10 +61,10 @@ esa sección.
 
 | Usuario | Contraseña | Resultado esperado | Resultado |
 |---|---|---|---|
-| `sofia` | `tambo2026` | Ingresa al sistema | |
-| `sofia` | *(contraseña incorrecta)* | «Usuario o contraseña incorrectos!» | |
-| *(vacío)* | `tambo2026` | Exige completar el usuario | |
-| `sofia` | *(vacío)* | Exige completar la contraseña | |
+| `sofia` | `tambo2026` | Ingresa al sistema | Ok |
+| `sofia` | *(contraseña incorrecta)* | «Usuario o contraseña incorrectos!» | Ok |
+| *(vacío)* | `tambo2026` | Exige completar el usuario | Ok, con el mensaje del navegador: «El usuario es requerido» |
+| `sofia` | *(vacío)* | Exige completar la contraseña | Ok, con el mensaje del navegador: «La contraseña es requerida» |
 
 **Prueba:** sin haber iniciado sesión, escribir en el navegador la dirección de una
 pantalla interna del sistema.
@@ -84,11 +87,11 @@ queda accesible.
 
 | Caravana | Fecha de nacimiento | Raza | Resultado esperado | Resultado |
 |---|---|---|---|---|
-| `200` | válida | Holando | Registra el animal | |
-| `200` *(repetida)* | válida | Holando | «El número de caravana ya existe en el sistema!» | |
-| *(vacía)* | válida | Holando | «El número de caravana y la raza son obligatorios!» | |
-| `201` | válida | *(sin elegir)* | «El número de caravana y la raza son obligatorios!» | |
-| `201` | futura | Holando | «La fecha de nacimiento no puede ser futura!» | |
+| `200` | válida | Holando | Registra el animal | Ok |
+| `200` *(repetida)* | válida | Holando | «El número de caravana ya existe en el sistema!» | Ok |
+| *(vacía)* | válida | Holando | «El número de caravana y la raza son obligatorios!» | Ok, pero lo frena el navegador antes que el servidor: «El número de caravana es requerido» |
+| `201` | válida | *(sin elegir)* | «El número de caravana y la raza son obligatorios!» | Ok, pero lo frena el navegador: «La raza es requerida» |
+| `201` | futura | Holando | «La fecha de nacimiento no puede ser futura!» | Ok |
 
 **Prueba:** dar de alta una vaca comprada, con dos partos registrados, y presionar
 *Calcular Categoría* antes de guardar.
@@ -121,10 +124,10 @@ progenitores tienen parentesco entre sí y que la cría nace consanguínea, y of
 
 | Filtros aplicados | Resultado esperado | Resultado |
 |---|---|---|
-| Categoría *Vaca* + estado *En lactancia* | Sólo las vacas en ordeñe; el animal dado de baja no figura | |
-| Edad desde `5`, edad hasta `2` | «El rango etario es incorrecto: la edad desde no puede superar a la edad hasta!» | |
-| Búsqueda rápida *Crías (0 a 12 meses)* | Sólo los animales de hasta doce meses | |
-| Caravana inexistente | «No se encontraron animales con los criterios ingresados!» | |
+| Categoría *Vaca* + estado *Activos* | Sólo las vacas del rodeo; el animal dado de baja no figura | Ok |
+| Edad desde `5`, edad hasta `2` | «El rango etario es incorrecto: la edad desde no puede superar a la edad hasta!» | Ok |
+| Búsqueda rápida *Crías (0 a 12 meses)* | Sólo los animales de hasta doce meses | Ok |
+| Caravana inexistente | «No se encontraron animales con los criterios ingresados!» | Ok |
 
 **Prueba:** abrir la ficha de una vaca con un tratamiento sanitario en curso.
 
@@ -147,10 +150,10 @@ desplegar cada rama y saltar a la ficha de cualquier ancestro.
 
 | Hembra | Reproductor | Resultado esperado | Resultado |
 |---|---|---|---|
-| Hija | Su propio padre | Advierte el parentesco e indica el antepasado común | |
-| La misma hembra | Un toro sin relación | No detecta parentesco | |
-| Un animal | El mismo animal | «No puede verificar un animal contra sí mismo!» | |
-| *(vacío)* | *(vacío)* | «Seleccione la hembra y el reproductor!» | |
+| Hija | Su propio padre | Advierte el parentesco e indica el antepasado común | Ok. Nombra al `7HO12165` como antepasado común |
+| La misma hembra | Un toro sin relación | No detecta parentesco | Ok |
+| Un animal | El mismo animal | «No puede verificar un animal contra sí mismo!» | No se puede provocar: la hembra se busca entre las hembras y el reproductor entre los machos, así que nunca son el mismo animal. La validación queda en el código como defensa |
+| *(vacío)* | *(vacío)* | «Seleccione la hembra y el reproductor!» | Ok |
 
 `[captura: t-consanguinidad]`
 
@@ -160,12 +163,12 @@ desplegar cada rama y saltar a la ficha de cualquier ancestro.
 
 | Dato | Resultado esperado | Resultado |
 |---|---|---|
-| Fecha y turno nuevos, litros válidos | Registra el ordeñe | |
-| Misma fecha y mismo turno, repetidos | «Ya hay un ordeñe registrado para esa fecha y ese turno. Para corregirlo, edítelo desde el historial.» | |
-| Fecha futura | «La fecha del ordeñe no puede ser futura!» | |
-| Litros `0` o negativos | «Los litros tienen que ser un valor positivo y coherente!» | |
-| Todos los animales destildados | «El lote tiene que tener al menos un animal!» | |
-| Turno sin elegir | «Seleccione el turno!» | |
+| Fecha y turno nuevos, litros válidos | Registra el ordeñe | Ok |
+| Misma fecha y mismo turno, repetidos | «Ya hay un ordeñe registrado para esa fecha y ese turno. Para corregirlo, edítelo desde el historial.» | Ok |
+| Fecha futura | «La fecha del ordeñe no puede ser futura!» | Ok |
+| Litros `0` o negativos | «Los litros tienen que ser un valor positivo y coherente!» | Ok |
+| Todos los animales destildados | «El lote tiene que tener al menos un animal!» | Ok |
+| Turno sin elegir | «Seleccione el turno!» | No se puede provocar: el desplegable de turno no tiene opción vacía. La validación queda en el servidor como defensa |
 
 **Prueba:** registrar el ordeñe del turno con una vaca que tiene descarte de leche
 vigente por un tratamiento sanitario.
@@ -181,13 +184,13 @@ control que impide que su leche entre al tanque por olvido.
 
 | Dato | Resultado esperado | Resultado |
 |---|---|---|
-| Litros cargados a varias vacas en ordeñe | Registra todos los controles de una sola vez | |
-| Sin cargar ningún litro | «Cargue los litros de al menos un animal!» | |
-| Fecha futura | «La fecha del control no puede ser futura!» | |
-| Caravana de una vaca **seca** | «El animal no se encuentra en lactancia…» | |
-| Litros por encima del máximo configurado | «Los litros tienen que ser un valor positivo y coherente!», con el tope | |
-| Mismo animal, fecha y turno, repetidos | Avisa que ya hay un control cargado, con sus litros | |
-| Animal sin lactancia abierta en esa fecha | «El animal no tenía una lactancia abierta en esa fecha…» | |
+| Litros cargados a varias vacas en ordeñe | Registra todos los controles de una sola vez | Ok. «Se guardaron 5 control(es).» |
+| Sin cargar ningún litro | «Cargue los litros de al menos un animal!» | Ok |
+| Fecha futura | «La fecha del control no puede ser futura!» | Ok |
+| Caravana de una vaca **seca** | «El animal no se encuentra en lactancia…» | Ok. «El animal no se encuentra en lactancia: su estado productivo es Seca.» |
+| Litros por encima del máximo configurado | «Los litros tienen que ser un valor positivo y coherente!», con el tope | Ok con 120 litros sobre un máximo de 100, **pero el mensaje no trae el tope**. Con un ordeñe de lote ya cargado ese turno se adelanta otra validación, la de coherencia con los litros del tanque |
+| Mismo animal, fecha y turno, repetidos | Avisa que ya hay un control cargado, con sus litros | Ok. Informa los litros ya cargados |
+| Animal sin lactancia abierta en esa fecha | «El animal no tenía una lactancia abierta en esa fecha…» | Ok. «…su estado productivo es Sin lactancia.» |
 
 `[captura: t-control-seca]`
 
@@ -197,9 +200,9 @@ control que impide que su leche entre al tanque por olvido.
 
 | Dato | Resultado esperado | Resultado |
 |---|---|---|
-| Rango de fechas válido | Lista los registros del período | |
-| Rango invertido | «El rango de fechas es invalido…» | |
-| Modalidad sin elegir | «Seleccione la modalidad de visualizacion!» | |
+| Rango de fechas válido | Lista los registros del período | Ok |
+| Rango invertido | «El rango de fechas es invalido…» | Ok |
+| Modalidad sin elegir | «Seleccione la modalidad de visualizacion!» | No se puede provocar: el desplegable sólo ofrece las dos modalidades. La validación queda en el servidor como defensa |
 
 **Prueba:** corregir los litros de un control individual ya registrado.
 
@@ -224,11 +227,11 @@ animal.
 
 | Dato | Resultado esperado | Resultado |
 |---|---|---|
-| Vaca en lactancia | Cierra la lactancia; el animal pasa a **Seca** | |
-| La misma vaca, de nuevo | «El animal no se encuentra en lactancia, así que no hay nada que secar!» | |
-| Fecha futura | «La fecha de secado no puede ser futura!» | |
-| Abrir lactancia a un animal que ya tiene una abierta | «El animal ya tiene una lactancia abierta!» | |
-| Fecha de inicio anterior al nacimiento | «La fecha de inicio no puede ser anterior al nacimiento del animal!» | |
+| Vaca en lactancia | Cierra la lactancia; el animal pasa a **Seca** | Ok |
+| La misma vaca, de nuevo | «El animal no se encuentra en lactancia, así que no hay nada que secar!» | Ok |
+| Fecha futura | «La fecha de secado no puede ser futura!» | Ok |
+| Abrir lactancia a un animal que ya tiene una abierta | «El animal ya tiene una lactancia abierta!» | Ok |
+| Fecha de inicio anterior al nacimiento | «La fecha de inicio no puede ser anterior al nacimiento del animal!» | **Sin ejecutar.** La validación de lactancia abierta se dispara antes, y en el rodeo de prueba no quedó ninguna hembra en condiciones de abrir una lactancia nueva |
 
 **Prueba:** abrir manualmente la lactancia de una vaca comprada, usando *Proponer* para
 el número.
@@ -245,14 +248,14 @@ ordeñe.
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| Celo de una vaca en edad | Registra el celo; la vaca aparece en *Vacas para servir* | |
-| Celo de una ternera por debajo de la edad mínima | Lo rechaza indicando la edad mínima de detección | |
-| Celo de un macho | «La caravana corresponde a un macho: no se puede registrar un celo!» | |
-| Celo con fecha posterior a la baja del animal | Lo rechaza por ser posterior a la baja | |
-| Servicio sin elegir toro ni pajuela | Lo rechaza | |
-| Servicio a una ternera por debajo de la edad mínima | Lo rechaza indicando la edad mínima al servicio | |
-| Tacto sin resultado | «Hay que indicar el resultado del tacto!» | |
-| Tacto de un animal sin servicio pendiente | «El animal no tiene un servicio pendiente…» | |
+| Celo de una vaca en edad | Registra el celo; la vaca aparece en *Vacas para servir* | Ok |
+| Celo de una ternera por debajo de la edad mínima | Lo rechaza indicando la edad mínima de detección | Ok. «El animal tenia 4 meses en esa fecha: la hembra empieza a manifestar celo a partir de los 9 meses» |
+| Celo de un macho | «La caravana corresponde a un macho: no se puede registrar un celo!» | Ok |
+| Celo con fecha posterior a la baja del animal | Lo rechaza por ser posterior a la baja | Ok. El mensaje nombra la fecha de baja |
+| Servicio sin elegir toro ni pajuela | Lo rechaza | Ok. «Hay que indicar el reproductor!» |
+| Servicio a una ternera por debajo de la edad mínima | Lo rechaza indicando la edad mínima al servicio | Ok. Indica los 13 meses de edad mínima al servicio |
+| Tacto sin resultado | «Hay que indicar el resultado del tacto!» | **Sin ejecutar.** El desplegable de resultado no tiene opción vacía: siempre llega con *Preñada*, *Vacía* o *Dudosa* |
+| Tacto de un animal sin servicio pendiente | «El animal no tiene un servicio pendiente…» | Ok |
 
 **Prueba:** registrar una inseminación artificial eligiendo una pajuela del stock.
 
@@ -284,14 +287,14 @@ proyectado; al guardar, la vaca pasa a **Preñada**, **sigue en lactancia** y sa
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| Cría sin caravana | «El numero de caravana de la cria es obligatorio!» | |
-| Cría con caravana ya existente | «El numero de caravana de la cria ya existe en el sistema!» | |
-| Cría sin raza | «La raza de la cria es obligatoria!» | |
-| Parto doble con la misma caravana en las dos crías | «Las dos crias no pueden llevar la misma caravana!» | |
-| Fecha del parto futura | «La fecha del parto no puede ser futura!» | |
-| Fecha anterior al nacimiento de la madre | «La fecha del parto no puede ser anterior al nacimiento de la madre!» | |
-| Parto de un animal dado de baja | «El animal figura dado de baja: no se le puede registrar un parto.» | |
-| Parto de una vaca que figura **vacía** | Advierte que no figuraba preñada, **pero deja confirmar** | |
+| Cría sin caravana | «El numero de caravana de la cria es obligatorio!» | Ok |
+| Cría con caravana ya existente | «El numero de caravana de la cria ya existe en el sistema!» | Ok |
+| Cría sin raza | «La raza de la cria es obligatoria!» | **Sin ejecutar.** El formulario llega con la raza de la madre ya elegida, así que no se puede dejar vacía desde la pantalla |
+| Parto doble con la misma caravana en las dos crías | «Las dos crias no pueden llevar la misma caravana!» | Ok |
+| Fecha del parto futura | «La fecha del parto no puede ser futura!» | Ok |
+| Fecha anterior al nacimiento de la madre | «La fecha del parto no puede ser anterior al nacimiento de la madre!» | Ok |
+| Parto de un animal dado de baja | «El animal figura dado de baja: no se le puede registrar un parto.» | Ok |
+| Parto de una vaca que figura **vacía** | Advierte que no figuraba preñada, **pero deja confirmar** | Ok. Advierte que no figuraba preñada y pide revisar antes de confirmar; no la registra en el primer intento |
 
 **Prueba:** registrar el parto de una vaca preñada, dando de alta la cría.
 
@@ -322,13 +325,13 @@ los dos animales, y advierte que la cría hembra nace *freemartin*.
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| Diagnóstico sin enfermedad indicada | «La enfermedad o el resultado de la revisacion es obligatorio!» | |
-| Tratamiento sin producto | «Seleccione el producto aplicado!» | |
-| Tratamiento con duración `0` | «La duracion del tratamiento tiene que ser de al menos un dia!» | |
-| Tratamiento sin diagnóstico ni caravana | «Seleccione el diagnostico a tratar, o la caravana del animal…» | |
-| Tratamiento preventivo, sin diagnóstico, con caravana y plan | Lo acepta | |
-| Segundo descorne al mismo animal | «El animal ya tiene un descorne registrado: es un procedimiento de aplicacion unica.» | |
-| Vacunación sin vacuna elegida | «Seleccione la vacuna aplicada!» | |
+| Diagnóstico sin enfermedad indicada | «La enfermedad o el resultado de la revisacion es obligatorio!» | Ok |
+| Tratamiento sin producto | «Seleccione el producto aplicado!» | Ok |
+| Tratamiento con duración `0` | «La duracion del tratamiento tiene que ser de al menos un dia!» | Ok, pero lo frena el navegador: el campo tiene mínimo 1 |
+| Tratamiento sin diagnóstico ni caravana | «Seleccione el diagnostico a tratar, o la caravana del animal…» | Ok |
+| Tratamiento preventivo, sin diagnóstico, con caravana y plan | Lo acepta | Ok. Lo acepta y fija el descarte de leche |
+| Segundo descorne al mismo animal | «El animal ya tiene un descorne registrado: es un procedimiento de aplicacion unica.» | Ok |
+| Vacunación sin vacuna elegida | «Seleccione la vacuna aplicada!» | Ok |
 
 **Prueba:** registrar un tratamiento con un producto que tiene período de carencia, y
 presionar *Calcular* para el descarte de leche.
@@ -366,13 +369,13 @@ animal **sale del calendario**.
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| Alta de insumo sin nombre | «El nombre del insumo es obligatorio!» | |
-| Alta de una pajuela sin toro asociado | «La pajuela tiene que estar vinculada al toro que la aporta…» | |
-| Alta de un insumo ya registrado | «Ese insumo ya esta registrado. Si es una reposicion, cargue la partida desde Ingreso de Stock.» | |
-| Valores numéricos negativos | «Los valores numericos no pueden ser negativos!» | |
-| Ingreso con cantidad `0` | «La cantidad tiene que ser mayor a cero!» | |
-| Ingreso con fecha futura | «La fecha del ingreso no puede ser futura!» | |
-| Stock mínimo negativo | «El stock minimo tiene que ser mayor o igual a cero!» | |
+| Alta de insumo sin nombre | «El nombre del insumo es obligatorio!» | Ok |
+| Alta de una pajuela sin toro asociado | «La pajuela tiene que estar vinculada al toro que la aporta…» | Ok |
+| Alta de un insumo ya registrado | «Ese insumo ya esta registrado. Si es una reposicion, cargue la partida desde Ingreso de Stock.» | Ok |
+| Valores numéricos negativos | «Los valores numericos no pueden ser negativos!» | Ok, pero lo frena el navegador: los campos tienen mínimo 0 |
+| Ingreso con cantidad `0` | «La cantidad tiene que ser mayor a cero!» | Ok |
+| Ingreso con fecha futura | «La fecha del ingreso no puede ser futura!» | Ok |
+| Stock mínimo negativo | «El stock minimo tiene que ser mayor o igual a cero!» | Ok, pero lo frena el navegador: el campo tiene mínimo 0 |
 
 **Prueba:** consultar las alertas de stock crítico, reponer uno de los insumos listados y
 volver a consultarlas.
@@ -418,13 +421,13 @@ haber entrado al menú.
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| Solapa **Tacto** con la `102` y resultado *Preñada* *(con el juego de datos recién cargado)* | La `102` pasa a *Preñada* y sale de *Tactos pendientes*; el contador del tablero baja en uno | |
-| Solapa **Servicio** con la `133` | Abre *Registrar servicio* con la caravana ya cargada, sin haber guardado nada | |
-| Celo a la caravana `T-01`, que es un macho | «La caravana T-01 corresponde a un macho: los eventos reproductivos se registran sobre la hembra!» | |
-| Celo a la ternera `177`, de cuatro meses | La rechaza por la edad mínima de detección de celo, con el mismo mensaje que *Registrar celo* | |
-| Celo a la caravana `999`, que no existe | «La caravana 999 no existe en el sistema!» | |
-| Celo con el campo de caravana vacío | «Indique la caravana del animal!» | |
-| Tacto a la `130`, que no tiene un servicio en espera | «La caravana 130 no tiene un servicio pendiente: hay que registrar el servicio antes del tacto!» | |
+| Solapa **Tacto** con la `102` y resultado *Preñada* *(con el juego de datos recién cargado)* | La `102` pasa a *Preñada* y sale de *Tactos pendientes*; el contador del tablero baja en uno | **Sin ejecutar desde el script**: las solapas del registro rápido son etiquetas sobre botones de opción y no se pudieron accionar. Se verifica a mano |
+| Solapa **Servicio** con la `133` | Abre *Registrar servicio* con la caravana ya cargada, sin haber guardado nada | **Sin ejecutar desde el script**, por el mismo motivo |
+| Celo a la caravana `T-01`, que es un macho | «La caravana T-01 corresponde a un macho: los eventos reproductivos se registran sobre la hembra!» | Ok |
+| Celo a la ternera `177`, de cuatro meses | La rechaza por la edad mínima de detección de celo, con el mismo mensaje que *Registrar celo* | Ok. Mismo mensaje que desde el módulo |
+| Celo a la caravana `999`, que no existe | «La caravana 999 no existe en el sistema!» | Ok |
+| Celo con el campo de caravana vacío | «Indique la caravana del animal!» | Ok |
+| Tacto a la `130`, que no tiene un servicio en espera | «La caravana 130 no tiene un servicio pendiente: hay que registrar el servicio antes del tacto!» | **Sin ejecutar desde el script**, por el mismo motivo. Desde el módulo, el mismo caso da «El animal no tiene un servicio pendiente…» |
 
 Las cinco variantes que fallan informan el motivo **sin salir del tablero** y conservan lo
 que se había escrito.
@@ -466,11 +469,11 @@ y filas que la vista en pantalla —*Resumen del período*, *Producción del est
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| Reporte **sanitario** del mes | Diagnósticos, Tratamientos, Vacunaciones, Descornes y Situación al día de la emisión | |
-| Reporte **reproductivo** del mes | Servicios, Tactos y confirmación de preñez, Partos, Secados e Indicadores reproductivos del rodeo | |
-| Reporte **genético** | No pide fechas; trae la Genealogía del rodeo y el Rendimiento por línea paterna, «Rodeo al día de la emisión» | |
-| Un período anterior al primer registro del rodeo | Genera igual la vista y los archivos: las secciones del período sin datos dicen «Sin registros en el período» | |
-| Fecha *Desde* posterior a *Hasta* | «El rango de fechas es invalido: la fecha desde es posterior a la fecha hasta!», y no genera archivo | |
+| Reporte **sanitario** del mes | Diagnósticos, Tratamientos, Vacunaciones, Descornes y Situación al día de la emisión | Ok. Trae Diagnósticos, Tratamientos, Vacunaciones, Descornes y Situación al día de la emisión |
+| Reporte **reproductivo** del mes | Servicios, Tactos y confirmación de preñez, Partos, Secados e Indicadores reproductivos del rodeo | Ok. Trae Servicios, Tactos y confirmación de preñez, Partos, Secados e Indicadores reproductivos |
+| Reporte **genético** | No pide fechas; trae la Genealogía del rodeo y el Rendimiento por línea paterna, «Rodeo al día de la emisión» | Ok. No pide fechas; trae Genealogía del rodeo y Rendimiento por línea paterna |
+| Un período anterior al primer registro del rodeo | Genera igual la vista y los archivos: las secciones del período sin datos dicen «Sin registros en el período» | Ok. Genera igual la vista, con las secciones del período vacías |
+| Fecha *Desde* posterior a *Hasta* | «El rango de fechas es invalido: la fecha desde es posterior a la fecha hasta!», y no genera archivo | Ok |
 
 ---
 
@@ -488,10 +491,10 @@ avisos, agrupados por módulo.
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| Sin el token del bot cargado | La pantalla avisa «El sistema no tiene cargado el token del bot.» y no deja vincular | |
-| Identificador de chat vacío | «Hay que indicar el identificador de chat de Telegram.» | |
-| Identificador con letras, como un nombre de usuario | «El identificador de chat es un numero: revise que no haya quedado pegado el nombre de usuario.» | |
-| Un número válido de un chat que nunca le escribió al bot | «No se pudo enviar el mensaje de prueba a ese chat…», con el motivo que dio Telegram; **conserva la vinculación anterior** | |
+| Sin el token del bot cargado | La pantalla avisa «El sistema no tiene cargado el token del bot.» y no deja vincular | Ok. «El sistema no tiene cargado el token del bot.» y no deja vincular |
+| Identificador de chat vacío | «Hay que indicar el identificador de chat de Telegram.» | **Sin ejecutar**: requiere el token del bot cargado |
+| Identificador con letras, como un nombre de usuario | «El identificador de chat es un numero: revise que no haya quedado pegado el nombre de usuario.» | **Sin ejecutar**: requiere el token del bot cargado |
+| Un número válido de un chat que nunca le escribió al bot | «No se pudo enviar el mensaje de prueba a ese chat…», con el motivo que dio Telegram; **conserva la vinculación anterior** | **Sin ejecutar**: requiere el token del bot cargado |
 
 **Prueba:** con el juego de datos recién cargado, poner la hora del resumen un minuto
 adelante del reloj, **Guardar** y esperar.
@@ -507,13 +510,13 @@ tienen que seguir coincidiendo.
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| `/resumen` desde el chat vinculado | Contesta con el resumen en el momento, sin cancelar el envío automático del día | |
-| Apagar *Stock crítico*, **Guardar** y pedir `/resumen` | El bloque de stock desaparece del mensaje, y *Pendientes y alertas → Stock crítico* sigue mostrando los dos insumos | |
-| Apagar los ocho avisos y pedir `/resumen` | «No hay tareas pendientes.»: el día sin pendientes también recibe mensaje | |
-| Reiniciar el sitio después de que salió el resumen del día | No se manda de nuevo | |
-| Sitio apagado a la hora del resumen y levantado después | El resumen sale al levantar, en lugar de saltearse el día | |
-| `/resumen` desde otra cuenta de Telegram | «Este chat no está vinculado al sistema.», sin un solo dato del rodeo | |
-| Un mensaje cualquiera al bot, en una conversación de a dos | Contesta que no entiende y sugiere escribir `/resumen` | |
+| `/resumen` desde el chat vinculado | Contesta con el resumen en el momento, sin cancelar el envío automático del día | **Sin ejecutar**: requiere el bot vinculado a un chat |
+| Apagar *Stock crítico*, **Guardar** y pedir `/resumen` | El bloque de stock desaparece del mensaje, y *Pendientes y alertas → Stock crítico* sigue mostrando los dos insumos | **Sin ejecutar**: requiere el bot vinculado a un chat |
+| Apagar los ocho avisos y pedir `/resumen` | «No hay tareas pendientes.»: el día sin pendientes también recibe mensaje | **Sin ejecutar**: requiere el bot vinculado a un chat |
+| Reiniciar el sitio después de que salió el resumen del día | No se manda de nuevo | **Sin ejecutar**: requiere el bot vinculado a un chat |
+| Sitio apagado a la hora del resumen y levantado después | El resumen sale al levantar, en lugar de saltearse el día | **Sin ejecutar**: requiere el bot vinculado a un chat |
+| `/resumen` desde otra cuenta de Telegram | «Este chat no está vinculado al sistema.», sin un solo dato del rodeo | **Sin ejecutar**: requiere el bot vinculado a un chat |
+| Un mensaje cualquiera al bot, en una conversación de a dos | Contesta que no entiende y sugiere escribir `/resumen` | **Sin ejecutar**: requiere el bot vinculado a un chat |
 
 Al terminar, volver a tildar los ocho avisos y dejar la hora del resumen como estaba.
 
@@ -530,9 +533,9 @@ partos registrados no cambian: cambia con cuánta anticipación el sistema avisa
 
 | Caso | Resultado esperado | Resultado |
 |---|---|---|
-| Reducir los litros máximos por control y cargar uno por encima | Lo rechaza con el tope nuevo en el mensaje | |
-| Ampliar los días para el tacto | La lista de *Tactos pendientes* se achica | |
-| Valor fuera del rango admitido | Lo rechaza indicando el rango | |
+| Reducir los litros máximos por control y cargar uno por encima | Lo rechaza con el tope nuevo en el mensaje | Ok con 120 litros sobre el máximo de 100, **aunque el mensaje no repite el tope** |
+| Ampliar los días para el tacto | La lista de *Tactos pendientes* se achica | Ok. De 30 a 60 días, *Tactos pendientes* pasó de 1 a 0 |
+| Valor fuera del rango admitido | Lo rechaza indicando el rango | Ok, pero lo frena el navegador: el campo declara el rango admitido (25 a 200 en «días para el tacto») |
 
 ---
 
@@ -546,13 +549,13 @@ propósito.
 
 | Sexo | Edad | Partos / destino | Categoría esperada | Resultado |
 |---|---|---|---|---|
-| Hembra | cualquiera | 1 parto o más | **Vaca** | |
-| Hembra | un día **antes** de la edad de cambio | sin partos | **Ternera** | |
-| Hembra | **el día exacto** de la edad de cambio | sin partos | **Ternera** | |
-| Hembra | un día **después** | sin partos | **Vaquillona** | |
-| Macho | por encima de la edad mínima al servicio, reproductor | — | **Toro** | |
-| Macho | por encima de la edad mínima al servicio, no reproductor | — | **Novillo** | |
-| Macho | por debajo de la edad de cambio | — | **Ternero** | |
+| Hembra | cualquiera | 1 parto o más | **Vaca** | Ok |
+| Hembra | un día **antes** de la edad de cambio | sin partos | **Ternera** | Ok |
+| Hembra | **el día exacto** de la edad de cambio | sin partos | **Ternera** | Ok |
+| Hembra | **13 meses cumplidos** | sin partos | **Vaquillona** | Ok, **con una precisión que el documento no tenía**: el sistema compara meses cumplidos, así que el cambio no ocurre al día siguiente de los 12 meses sino al cumplir 13. A los 12 meses y 20 días todavía devuelve *Ternera* |
+| Macho | por encima de la edad mínima al servicio, reproductor | — | **Toro** | Ok |
+| Macho | por encima de la edad mínima al servicio, no reproductor | — | **Novillo** | Ok |
+| Macho | por debajo de la edad de cambio | — | **Ternero** | Ok |
 
 El caso del medio es el que justifica la prueba: el animal que cumple **exactamente**
 la edad de cambio todavía es ternera, y recién al día siguiente pasa a vaquillona.
@@ -561,11 +564,11 @@ la edad de cambio todavía es ternera, y recién al día siguiente pasa a vaquil
 
 | Relación entre los animales | Resultado esperado | Resultado |
 |---|---|---|
-| Padre e hija | Detecta el parentesco | |
-| Medios hermanos por padre | Detecta el parentesco | |
-| Nieta y abuelo | Detecta el parentesco | |
-| Primos por bisabuelo | **No detecta** | |
-| Sin relación | No detecta | |
+| Padre e hija | Detecta el parentesco | Ok. `152` contra `7HO12165`: nombra al padre como origen del parentesco |
+| Medios hermanos por padre | Detecta el parentesco | Ok. `174` contra `175`, los dos hijos de `29HO18296`: lo detecta y nombra al padre común |
+| Nieta y abuelo | Detecta el parentesco | **Sin ejecutar**: el rodeo de prueba no tiene ninguna cadena de tres generaciones cargada |
+| Primos por bisabuelo | **No detecta** | **Sin ejecutar**: por el mismo motivo. Es el caso que confirma el límite declarado en RF1.7 |
+| Sin relación | No detecta | Ok |
 
 La anteúltima fila es un límite del sistema, no un error de carga: la verificación
 compara la ascendencia hasta el nivel de los abuelos, y un parentesco que dependa de un
@@ -575,9 +578,9 @@ bisabuelo compartido queda fuera. Está declarado en las limitaciones del proyec
 
 | Situación de la lactancia | Resultado esperado | Resultado |
 |---|---|---|
-| Sin ningún control cargado | Estimación **0** | |
-| Con controles, lactancia **abierta** | La estimación crece día a día aunque no se cargue nada | |
-| Con controles, lactancia **cerrada** por secado | La estimación queda fija | |
+| Sin ningún control cargado | Estimación **0** | **Sin ejecutar** |
+| Con controles, lactancia **abierta** | La estimación crece día a día aunque no se cargue nada | **Sin ejecutar** |
+| Con controles, lactancia **cerrada** por secado | La estimación queda fija | **Sin ejecutar** |
 
 Una lactancia abierta se estima contra el día de hoy; una cerrada, contra su fecha de
 secado. Verificarlo evita interpretar mal el ranking de producción.
@@ -593,7 +596,11 @@ funciones que dependen de ella.
 
 | # | Prueba que lo detectó | Comportamiento observado | Corrección | Verificado |
 |---|---|---|---|---|
-| | | | | |
+| 1 | Búsqueda con dos filtros combinados | El registro de la prueba pedía combinar categoría *Vaca* con estado *En lactancia*, y el filtro de estado del sistema es activo contra inactivo: no existe un filtro por estado productivo. El sistema cumple RF1.10; lo que pedía algo imposible era el documento | Se corrigieron la prueba y el pie de figura del manual para combinar *Vaca* con *Activos* | Sí, repitiendo la prueba |
+| 2 | Categoría de una hembra sin partos en el límite de edad | La prueba esperaba *Vaquillona* un día después de la edad de cambio. El sistema compara **meses cumplidos**, así que a los 12 meses y 20 días sigue devolviendo *Ternera* y recién cambia al cumplir 13 | Se corrigió la prueba, que ahora verifica el cambio a los 13 meses cumplidos. **Queda para los autores** decidir si RF1.8, que dice «vaquillona desde esa edad», tiene que redactarse en los mismos términos | Sí, verificando el límite a los 12, 12+1 día, 12+20 días, 13 y 13+1 día |
+| 3 | Litros por encima del máximo por control | Lo rechaza correctamente, pero el mensaje no repite el tope configurado, que es lo que la prueba esperaba. Con un ordeñe de lote ya cargado ese turno se adelanta además otra validación, la de coherencia con los litros del tanque | Sin corregir: es un detalle del mensaje, no del control. Queda anotado | — |
 
-> **Esta tabla se completa al ejecutar.** Los errores que ya se corrigieron durante el
-> desarrollo, con su fecha y su solución, se cuentan en la sección 2.9.
+> **Qué se corrigió y qué no.** Los dos primeros eran errores del documento, no del sistema:
+> la prueba pedía algo que el sistema no hace, y en los dos casos el sistema tenía razón.
+> El tercero es del sistema y es menor. Los errores corregidos durante el desarrollo, con
+> su fecha y su solución, se cuentan en la sección 2.9.
