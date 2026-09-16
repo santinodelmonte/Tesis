@@ -5,11 +5,14 @@
 > «Resultado» dice lo que el sistema contestó, no lo que se esperaba que contestara:
 > donde hubo diferencia, está escrita la diferencia.
 >
-> **Quedan veinticuatro casos sin ejecutar y cada uno dice por qué.** Trece necesitan el
-> bot de Telegram vinculado a un chat; tres piden relaciones de parentesco de tres
-> generaciones que el rodeo de prueba no tiene; el resto son validaciones que la pantalla
-> no deja provocar —un desplegable sin opción vacía, un campo con mínimo declarado— y que
-> viven en el servidor como segunda barrera.
+> **Quedan veintidós casos sin ejecutar y cada uno dice por qué.** Trece necesitan el bot
+> de Telegram vinculado a un chat; el resto son validaciones que la pantalla no deja
+> provocar —un desplegable sin opción vacía, un campo con mínimo declarado— y que viven en
+> el servidor como segunda barrera.
+>
+> Los casos de borde de la genealogía **sí se ejecutan**: para eso el rodeo de prueba
+> incorpora una línea de cuatro generaciones, que es la única forma de verificar el límite
+> de RF1.7, porque el caso que lo confirma es el que tiene que dar negativo.
 
 ---
 
@@ -566,8 +569,8 @@ la edad de cambio todavía es ternera, y recién al día siguiente pasa a vaquil
 |---|---|---|
 | Padre e hija | Detecta el parentesco | Ok. `152` contra `7HO12165`: nombra al padre como origen del parentesco |
 | Medios hermanos por padre | Detecta el parentesco | Ok. `174` contra `175`, los dos hijos de `29HO18296`: lo detecta y nombra al padre común |
-| Nieta y abuelo | Detecta el parentesco | **Sin ejecutar**: el rodeo de prueba no tiene ninguna cadena de tres generaciones cargada |
-| Primos por bisabuelo | **No detecta** | **Sin ejecutar**: por el mismo motivo. Es el caso que confirma el límite declarado en RF1.7 |
+| Nieta y abuelo | Detecta el parentesco | Ok. `903` contra `7HO99001`, su abuelo por línea materna: lo detecta y lo nombra |
+| Primos por bisabuelo | **No detecta** | Ok: **no lo detecta**, que es lo que corresponde. `905` contra `906`, cuyo ancestro común es el bisabuelo `7HO99001`, queda fuera del alcance que declara RF1.7. Es el caso que confirma el límite |
 | Sin relación | No detecta | Ok |
 
 La anteúltima fila es un límite del sistema, no un error de carga: la verificación

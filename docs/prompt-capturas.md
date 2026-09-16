@@ -100,6 +100,7 @@ Los animales que te va a pedir, todos de `DatosPrueba.sql`:
 | `133` | Candidata a descarte: dos partos y sin preñez |
 | `200`, `201` | Las dos altas que vas a cargar vos. La `200` se guarda (hace falta después para la lactancia); la `201` **no** |
 | `29HO18296` | La pajuela con stock crítico |
+| `7HO99001`, `901` a `906` | La línea de cuatro generaciones que existe sólo para probar el límite de la verificación de consanguinidad. Las dos generaciones viejas están dadas de baja, así que no aparecen en el rodeo activo |
 
 Y dos productos: **ivermectina** (stock crítico, se repone con +10) y
 **oxitetraciclina** (para el historial de movimientos).

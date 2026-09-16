@@ -137,6 +137,13 @@ y no modela la curva de lactancia; y los umbrales de descarte son criterios fijo
 parámetros configurables. **Las tres están escritas en las limitaciones del alcance**, que
 es lo que las convierte en una decisión y no en una deuda.
 
+La de la consanguinidad dejó además una enseñanza sobre cómo se prueba un límite. Decir
+que la verificación llega hasta los abuelos no se demuestra con un caso que dé positivo:
+se demuestra con **el que tiene que dar negativo**, dos primos cuyo ancestro común es el
+bisabuelo. Para poder correrlo hubo que agregar al rodeo de prueba una línea de cuatro
+generaciones, porque con tres no alcanza. El caso da negativo, como corresponde, y recién
+ahí la limitación deja de ser una afirmación del documento y pasa a ser un resultado.
+
 **R6 — Dependencia de servicios externos de notificación. No se dio, y está cubierto.** El
 bot de Telegram funcionó, y el diseño no depende de él: las alertas que el bot envía son
 las mismas que se ven en el tablero y en las pantallas de cada módulo, de donde el bot las
@@ -311,12 +318,6 @@ sistema: el campo declara que es obligatorio, o que tiene un mínimo, y el formu
 llega al servidor. La validación del servidor existe igual, que es lo correcto, pero **la
 usuaria ve un mensaje distinto del que el documento describe**, y en inglés cuando el
 navegador está en inglés. Unificar los dos textos es barato y se nota.
-
-**El rodeo de prueba no alcanza para los casos de borde de la genealogía.**
-`DatosPrueba.sql` tiene padres e hijos y medios hermanos, pero ninguna cadena de tres
-generaciones, así que tres casos de prueba quedaron sin ejecutar —entre ellos el de primos
-por bisabuelo, que es justamente el que confirmaría el límite declarado en RF1.7—. Cargar
-dos abuelos más en el juego de datos cierra ese hueco.
 
 **No hay registro de quién hizo cada cosa.** El sistema tiene un único par de credenciales
 —es una decisión de alcance, porque hay una sola persona a cargo de los registros— pero la

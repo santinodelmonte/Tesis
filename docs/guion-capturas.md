@@ -25,6 +25,14 @@ porque tienen la historia cargada que hace falta.
 | **Datos de la clienta** | El nombre del establecimiento va neutro en la pantalla de configuración. |
 | **Una sola sesión** | Todas se sacan de una pasada, en orden. El sistema se va modificando a medida que se cargan cosas y el orden del punto 4 lo tiene en cuenta. |
 
+### Una línea genealógica que no se fotografía
+
+El rodeo incluye `7HO99001` y `901` a `906`: cuatro generaciones que existen para que los
+casos de borde de la consanguinidad de 2.3 se puedan ejecutar —el límite de RF1.7 se
+demuestra con el caso que da negativo, y para eso hace falta un bisabuelo—. Las dos
+generaciones más viejas están dadas de baja, así que no engrosan el rodeo activo de
+ninguna captura.
+
 ### La fecha se resuelve sola
 
 `bd/DatosPrueba.sql` ancla el rodeo entero a `@hoy = CURDATE()`: las fechas se

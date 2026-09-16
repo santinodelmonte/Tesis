@@ -163,7 +163,16 @@ INSERT INTO animales (id_animal, num_caravana, fecha_nacimiento, activo, fecha_b
 
     -- Vaca dada de baja. Queda en la base con activo = 0: la baja es
     -- logica y su historia productiva y sanitaria se conserva.
-    (29, '112',         @hoy - INTERVAL 2446 DAY, 0, @hoy - INTERVAL 146 DAY , 'Descarte por mastitis cronica reiterada', 1, 3);
+    (29, '112',         @hoy - INTERVAL 2446 DAY, 0, @hoy - INTERVAL 146 DAY , 'Descarte por mastitis cronica reiterada', 1, 3),
+
+    -- Linea genealogica de cuatro generaciones (ver el bloque de linaje, mas abajo).
+    (30, '7HO99001',    @hoy - INTERVAL 4500 DAY, 0, @hoy - INTERVAL 400 DAY, 'Venta',    1, 6),
+    (31, '901',         @hoy - INTERVAL 3200 DAY, 0, @hoy - INTERVAL 300 DAY, 'Descarte', 1, 3),
+    (32, '902',         @hoy - INTERVAL 3150 DAY, 0, @hoy - INTERVAL 280 DAY, 'Descarte', 1, 3),
+    (33, '903',         @hoy - INTERVAL 2100 DAY, 1, NULL, NULL, 1, 3),
+    (34, '904',         @hoy - INTERVAL 2050 DAY, 1, NULL, NULL, 1, 3),
+    (35, '905',         @hoy - INTERVAL  900 DAY, 1, NULL, NULL, 1, 2),
+    (36, '906',         @hoy - INTERVAL  880 DAY, 1, NULL, NULL, 1, 5);
 
 
 -- ---------------------------------------------------------------------
@@ -189,7 +198,12 @@ INSERT INTO hembras (id_animal, numero_partos, estado_productivo, estado_reprodu
     (23, 0, 'Sin lactancia', 'Vacía'),
     (24, 0, 'Sin lactancia', 'Vacía'),
     (25, 0, 'Sin lactancia', 'Vacía'),
-    (29, 5, 'Seca',          'Vacía');    -- dada de baja
+    (29, 5, 'Seca',          'Vacía'),
+    (31, 1, 'Seca', 'Vacia'),
+    (32, 1, 'Seca', 'Vacia'),
+    (33, 1, 'Seca', 'Vacia'),
+    (34, 1, 'Seca', 'Vacia'),
+    (35, 0, 'Sin lactancia', 'Vacia');    -- dada de baja
 
 
 -- ---------------------------------------------------------------------
@@ -205,7 +219,9 @@ INSERT INTO machos (id_animal, en_pie) VALUES
     ( 4, 0),   -- catalogo
     (26, 0),   -- ternero
     (27, 0),   -- ternero
-    (28, 0);   -- novillo
+    (28, 0),
+    (30, 0),
+    (36, 0);   -- novillo
 
 
 -- ---------------------------------------------------------------------
@@ -223,6 +239,34 @@ UPDATE animales SET id_madre = 13, id_padre = 3 WHERE id_animal = 25;
 UPDATE animales SET id_madre = 14, id_padre = 4 WHERE id_animal = 26;
 UPDATE animales SET id_madre = 16, id_padre = 1 WHERE id_animal = 27;
 UPDATE animales SET id_madre = 17, id_padre = 4 WHERE id_animal = 28;
+
+-- Linea de cuatro generaciones, para los casos de borde de la consanguinidad.
+--
+-- El sistema compara los progenitores y los abuelos de los dos animales, y nada
+-- mas: es el alcance que declara RF1.7. Sin una cadena de cuatro generaciones no
+-- hay forma de probar ese limite, porque el caso que lo confirma es el que tiene
+-- que dar NEGATIVO: dos primos cuyo ancestro comun es el bisabuelo.
+--
+--                          7HO99001  (bisabuelo, dado de baja)
+--                          /       \
+--                       901         902   (abuelas, dadas de baja)
+--                        |           |
+--                       903         904   (madres, en el rodeo)
+--                        |           |
+--                       905         906   (primos: hembra y macho)
+--
+-- Habilita dos pruebas de 2.3:
+--   * 903 contra 7HO99001  -> nieta y abuelo: TIENE que detectarlo
+--   * 905 contra 906       -> primos por bisabuelo: NO tiene que detectarlo
+--
+-- Las dos generaciones viejas van dadas de baja, que es lo que pasa en un tambo
+-- de verdad y de paso ejercita lo que promete RF1.2: la baja conserva el lugar
+-- del animal en el linaje de sus descendientes.
+UPDATE animales SET id_madre = 31 WHERE id_animal = 33;
+UPDATE animales SET id_madre = 32 WHERE id_animal = 34;
+UPDATE animales SET id_madre = 33 WHERE id_animal = 35;
+UPDATE animales SET id_madre = 34 WHERE id_animal = 36;
+UPDATE animales SET id_padre = 30 WHERE id_animal IN (31, 32);
 
 
 -- =====================================================================
