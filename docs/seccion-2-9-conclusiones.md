@@ -84,13 +84,40 @@ el documento no registró. Los casos más claros:
 vale la pena decirlo porque es lo que un tribunal pregunta: **cuando el documento y el
 sistema discrepaban, se revisó cuál de los dos tenía razón, y en la mayoría de los casos
 la tenía el sistema**, porque describía la operativa real del tambo. La corrección fue del
-documento, no del código —salvo en H5, donde se cambiaron los dos lados—. El hallazgo que
-sigue abierto es **H6**: [COMPLETAR: si las credenciales se sacaron del repositorio antes
-de la entrega, o si se decidió otra cosa].
+documento, no del código —salvo en H5, donde se cambiaron los dos lados—. **H6, el único
+que quedaba abierto, se cerró el 15/09**: las credenciales y la cadena de conexión salieron
+del archivo versionado y se cargan desde afuera del repositorio, que es lo que el
+requerimiento no funcional de Seguridad pedía desde el principio y lo que la sección 2.6
+afirma.
 
 El mismo trabajo dio lugar a **tres versiones sucesivas del anteproyecto**: la v6, que
 incorporó los veinte requerimientos que el sistema había ganado; la v7, que quitó lo que
 no se podía verificar; y la v8, que aplicó los hallazgos de la auditoría.
+
+**Y el riesgo volvió a aparecer al ejecutar las pruebas**, que es el dato que más vale la
+pena contar, porque muestra que la auditoría no había agotado el problema. Correr los
+ciento diez casos de la sección 2.3 sobre el sistema andando encontró **tres divergencias
+más del mismo tipo**, y en dos de ellas el equivocado volvió a ser el documento:
+
+| Qué esperaba la prueba | Qué hace el sistema | Cómo se resolvió |
+|---|---|---|
+| Combinar el filtro de categoría *Vaca* con un estado *En lactancia* | El filtro de estado es activo contra inactivo: no existe un filtro por estado productivo | Se corrigió la prueba y el pie de figura del manual. El sistema cumple RF1.10 |
+| Que una hembra sin partos pasara a *Vaquillona* un día después de la edad de cambio | Compara **meses cumplidos**: a los 12 meses y 20 días sigue siendo *Ternera* y recién cambia al cumplir 13 | Se corrigió la prueba. Queda decidir si RF1.8, que dice «vaquillona desde esa edad», se redacta en los mismos términos |
+| Que el rechazo por litros fuera de rango repitiera el tope configurado | Rechaza bien, pero el mensaje no trae el tope | Sin corregir: es el texto del mensaje, no el control |
+
+La segunda es la que más enseña. **Nadie había mirado nunca el límite exacto**: el
+requerimiento decía «desde esa edad», el caso de uso lo repetía y el código comparaba
+meses cumplidos con un «mayor que». Las tres redacciones convivieron seis meses sin que la
+diferencia se notara, porque **ninguna prueba había pisado el borde**. Recién al escribir
+el caso de prueba —y ejecutarlo a los 12, a los 12 más un día, a los 12 más veinte días, a
+los 13 y a los 13 más un día— la diferencia apareció.
+
+La ejecución dejó además un hallazgo de otra clase: **una validación del código que no se
+puede alcanzar desde la pantalla**. La verificación de consanguinidad se defiende de que
+alguien compare un animal contra sí mismo, pero busca la hembra entre las hembras y el
+reproductor entre los machos, que son conjuntos disjuntos: la comparación nunca se cumple.
+No es un error —el sistema no hace nada malo— pero es código que nadie va a ejecutar
+nunca, y saberlo vale más que suponer que está probado.
 
 **R3 — Falta de experiencia en desarrollos de gran escala. Se dio, y era esperable.**
 [COMPLETAR: qué costó aprender y cómo se resolvió.] Quedó a la vista en el propio proceso:
@@ -172,6 +199,14 @@ anterior al que se estaba construyendo, y hubo que hacer una pasada completa al 
 alinear los dos. Si hubiera que hacerlo de nuevo, la revisión del documento sería parte de
 cada iteración y no una etapa final.
 
+Con las pruebas pasó lo mismo, y es la segunda lección. Cada iteración terminaba con
+pruebas funcionales, pero **el protocolo completo se escribió y se ejecutó al final**, y
+ahí aparecieron tres divergencias que seis meses de uso no habían mostrado. La razón es
+sencilla: probar mientras se construye verifica que lo que se acaba de hacer funciona;
+escribir el caso de prueba obliga a decir **qué tendría que pasar**, y es ahí donde se ve
+que el documento y el sistema no dicen lo mismo. Las dos cosas hacen falta, y la segunda
+llegó tarde.
+
 ## Herramientas utilizadas
 
 **ASP.NET Core con Razor Pages** cumplió lo que se esperaba de él al elegirlo: el modelo de
@@ -212,7 +247,10 @@ cuándo y por qué cada regla del sistema quedó como quedó.
 ## Producto final
 
 El sistema quedó terminado: **los siete módulos, los cuarenta y nueve casos de uso, y la
-compilación sin errores**. Cubre lo que el anteproyecto se propuso —centralizar en un
+compilación sin errores**. De los ciento diez casos de prueba de la sección 2.3, ochenta y
+cinco se ejecutaron con el resultado esperado y **ninguno dejó al sistema haciendo algo
+incorrecto**: las tres diferencias que aparecieron eran del documento en dos casos y del
+texto de un mensaje en el tercero. Cubre lo que el anteproyecto se propuso —centralizar en un
 único lugar la información del rodeo que hoy se lleva en cuadernos y pizarrones— y lo hace
 con una propiedad que no estaba pedida y que resultó ser lo más valioso: **cada dato se
 carga una sola vez y el sistema propaga sus consecuencias**. Un tratamiento saca a la vaca
@@ -220,11 +258,28 @@ del tanque de leche; un parto abre una lactancia, da de alta la cría y actualiz
 categoría de la madre; una inseminación descuenta una pajuela del stock. Eso es lo que
 distingue al sistema de una planilla mejor organizada.
 
-Sobre el cumplimiento de los objetivos específicos: [COMPLETAR: cuáles se pueden dar por
-cumplidos según las pruebas ejecutadas en 2.3 y la sesión de trabajo con la encargada.
-Los objetivos están redactados para que cada uno se pueda verificar contra una pantalla o
-un comportamiento concreto, de modo que esta evaluación es una por una y no una impresión
-general.]
+Sobre el cumplimiento de los objetivos específicos, las pruebas de la sección 2.3
+permiten decir algo concreto y no una impresión general, porque los objetivos están
+redactados para verificarse contra una pantalla o un comportamiento.
+
+**Se pueden dar por cumplidos contra la evidencia ejecutada**: la centralización del
+rodeo en un único repositorio y la consulta de la información histórica en una sola
+pantalla, verificadas en la ficha integral, que reúne datos, linaje, sanidad,
+reproducción y producción a partir del número de caravana; la reducción de los errores de
+transcripción, verificada en los valores que el sistema calcula y nadie escribe —la
+categoría propuesta, la fecha probable de parto, el fin del descarte de leche, el número
+de lactancia—; el seguimiento del ciclo reproductivo completo, con celo, servicio, tacto y
+parto encadenados y el estado de la hembra actualizándose solo; el control de insumos, con
+el descuento al aplicarlos, la alerta de stock mínimo y el aviso de vencimiento por
+partida; y la reducción de la carga operativa del registro diario, que es lo que verifican
+las cuatro pruebas de integración: el dato se carga una vez y el sistema propaga sus
+consecuencias.
+
+**Queda por verificar con la encargada** el objetivo que depende de su uso y no del
+sistema: que la información disponible mejore efectivamente sus decisiones. Eso sale de la
+sesión de trabajo que se relata en la sección 2.8, y no de una prueba funcional.
+
+[COMPLETAR: si la sesión con la encargada confirmó ese último punto.]
 
 ## Puntos a mejorar
 
@@ -249,6 +304,19 @@ de registros acumulados habría que paginar contra la base.
 **La proyección de producción a 305 días es lineal.** Es la limitación que más se nota en
 el uso real, porque la curva de lactancia no es una recta y la estimación se aleja hacia el
 final del período.
+
+**La validación está escrita dos veces y no dice lo mismo en los dos lados.** Al ejecutar
+las pruebas, treinta y un casos terminaron con el mensaje del navegador y no con el del
+sistema: el campo declara que es obligatorio, o que tiene un mínimo, y el formulario nunca
+llega al servidor. La validación del servidor existe igual, que es lo correcto, pero **la
+usuaria ve un mensaje distinto del que el documento describe**, y en inglés cuando el
+navegador está en inglés. Unificar los dos textos es barato y se nota.
+
+**El rodeo de prueba no alcanza para los casos de borde de la genealogía.**
+`DatosPrueba.sql` tiene padres e hijos y medios hermanos, pero ninguna cadena de tres
+generaciones, así que tres casos de prueba quedaron sin ejecutar —entre ellos el de primos
+por bisabuelo, que es justamente el que confirmaría el límite declarado en RF1.7—. Cargar
+dos abuelos más en el juego de datos cierra ese hueco.
 
 **No hay registro de quién hizo cada cosa.** El sistema tiene un único par de credenciales
 —es una decisión de alcance, porque hay una sola persona a cargo de los registros— pero la
