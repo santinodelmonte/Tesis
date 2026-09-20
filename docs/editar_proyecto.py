@@ -553,6 +553,9 @@ ESTADO_INDICE = {
     '2.5': 'Realizado',
     '2.6': 'Realizado',
     '2.7': 'Realizado',
+    # Escrita sobre lo que dejo rastro en el proyecto; lo que dijo la encargada al ver
+    # el sistema terminado sale de una sesion de trabajo con ella.
+    '2.8': 'En proceso',
     # La 2.9 esta escrita pero tiene huecos marcados que solo los autores pueden
     # completar; la 2.8 depende de una sesion de trabajo con la encargada.
     '2.9': 'En proceso',

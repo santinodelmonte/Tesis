@@ -1109,6 +1109,87 @@ from editar_proyecto import Documento  # noqa: E402
 import render_secciones  # noqa: E402
 
 d = Documento(RUTA_SALIDA, inicio=0)
+
+# El organigrama del establecimiento, en la Presentacion del Cliente. El ejemplo de la
+# catedra le dedica una subseccion entera a la estructura organizacional; en un tambo
+# familiar con una sola encargada esa subseccion seria relleno, pero el dibujo explica
+# sin decirlo por que el sistema tiene un unico usuario.
+d.antes_de('PRESENTACIÓN DEL PROBLEMA')
+d.parrafo('')
+d.imagen(os.path.join(AQUI, 'diagramas', 'organigrama-establecimiento.png'),
+         'Figura. Estructura del establecimiento. La encargada es la única persona '
+         'que opera el sistema: los tamberos le entregan los registros del día en '
+         'papel y el veterinario es un servicio externo que consulta la información '
+         'sanitaria y genética, pero ninguno de los dos entra a la aplicación.')
+
+# El glosario, rehecho. El que venia del v5 explicaba quince terminos tecnicos y ni
+# uno del tambo: un tribunal formado en software no tiene por que saber que es una
+# caravana, un tacto o el descarte de leche, y el documento los usa en cada pagina.
+# Se suman ademas los dos terminos que trajeron las secciones nuevas: los puntos de
+# funcion de 1.11 y la caja negra del plan de testing. Van en orden alfabetico.
+GLOSARIO = [
+    ('Bootstrap', 'framework CSS utilizado para facilitar el diseño visual y adaptable '
+     'de la interfaz del sistema.'),
+    ('Caja negra', 'forma de probar un sistema desde afuera, verificando lo que '
+     'devuelve ante cada entrada, sin mirar cómo está escrito por dentro.'),
+    ('Caravana', 'la chapa numerada que identifica a cada animal del rodeo. Es su '
+     'nombre en el tambo y la clave con la que se lo busca en el sistema.'),
+    ('Categoría', 'la clasificación del animal según su sexo, su edad y sus partos: '
+     'ternera, vaquillona, vaca, ternero, novillo o toro. El sistema la calcula.'),
+    ('Celo', 'el período en que la hembra está receptiva y puede quedar preñada. Se '
+     'detecta observando su comportamiento, y es el evento que abre el ciclo '
+     'reproductivo.'),
+    ('Consanguinidad', 'parentesco entre dos animales que se van a cruzar. Cruzar '
+     'parientes concentra defectos genéticos en la cría, y por eso el sistema avisa.'),
+    ('CSS3', 'lenguaje utilizado para definir estilos y diseño visual de páginas web.'),
+    ('Descarte de leche', 'el período posterior a un tratamiento sanitario durante el '
+     'cual la leche del animal no puede ir al tanque, porque conserva restos del '
+     'medicamento.'),
+    ('Framework', 'estructura o conjunto de herramientas y componentes reutilizables '
+     'que facilitan el desarrollo de aplicaciones de software.'),
+    ('Git', 'sistema de control de versiones utilizado para administrar los cambios '
+     'realizados sobre el proyecto.'),
+    ('GitHub', 'plataforma utilizada para almacenar y sincronizar el repositorio '
+     'remoto del sistema.'),
+    ('HTML5', 'lenguaje de marcado utilizado para la estructura y contenido de la '
+     'aplicación web.'),
+    ('Iteración', 'período de desarrollo donde se implementa un conjunto específico '
+     'de funcionalidades del sistema.'),
+    ('JavaScript', 'lenguaje de programación utilizado para desarrollar '
+     'funcionalidades dinámicas e interactivas en la aplicación web.'),
+    ('Lactancia', 'el período durante el cual una vaca da leche, que empieza con el '
+     'parto y termina con el secado. El sistema la abre y la cierra solo.'),
+    ('MySQL', 'sistema de gestión de bases de datos utilizado para almacenar y '
+     'administrar la información del sistema.'),
+    ('Pajuela', 'la dosis de semen congelado con que se insemina una hembra. En el '
+     'sistema es un insumo de stock, y cada una está vinculada al toro que la aporta.'),
+    ('Puntos de función', 'unidad para medir el tamaño de un sistema por lo que hace y '
+     'no por cuánto código tiene: se cuentan sus entradas, salidas, consultas y '
+     'archivos, y se ajusta el total según catorce factores. Es el método con que se '
+     'estima el esfuerzo en la sección 1.11.'),
+    ('Rodeo', 'el conjunto de animales del establecimiento.'),
+    ('SCM', '(Software Configuration Management) gestión encargada de controlar y '
+     'administrar los componentes del proyecto.'),
+    ('Secado', 'el corte deliberado del ordeñe de una vaca antes del parto, para que '
+     'descanse. Cierra su lactancia.'),
+    ('Servicio', 'la cruza de una hembra, por monta natural o por inseminación '
+     'artificial.'),
+    ('SQA', '(Software Quality Assurance) conjunto de actividades destinadas a '
+     'garantizar la calidad del software desarrollado.'),
+    ('Tacto', 'la revisación con que se confirma si la hembra quedó preñada después '
+     'de un servicio.'),
+    ('Testing', 'proceso de pruebas realizado para verificar el correcto '
+     'funcionamiento del sistema.'),
+    ('UML', 'lenguaje de modelado utilizado para representar gráficamente distintos '
+     'componentes y procesos del sistema.'),
+    ('Versionado', 'proceso mediante el cual se controlan las diferentes versiones '
+     'del sistema durante el desarrollo.'),
+]
+
+d.vaciar('GLOSARIO', 'BIBLIOGRAFÍA')
+for _termino, _definicion in GLOSARIO:
+    d.parrafo_rico([(_termino + ': ', {'negrita': True}), (_definicion, {})])
+
 d.antes_de('ANÁLISIS Y PLAN DE RIESGO')
 d.parrafo('ESTIMACIÓN DEL ESFUERZO', estilo='Heading2')
 faltantes = []

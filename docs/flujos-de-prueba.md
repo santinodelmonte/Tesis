@@ -395,7 +395,7 @@ animal ya tiene una lactancia abierta!"*.
 | Fecha de deteccion | `2026-08-11` |
 | Observaciones | `Celo firme, monta a otras vacas del lote.` |
 
-**Esperado.** Queda en **Celos Detectados** y `115` aparece en **Vacas para Servir**.
+**Esperado.** Queda en **Celos detectados** y `115` aparece en **Vacas para Servir**.
 
 **Variantes que tienen que fallar.**
 

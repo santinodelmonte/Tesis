@@ -87,6 +87,16 @@ lo que falta.
   lo explica en los puntos 5, 6 y 7.
 - **La etapa de pruebas de integración** quedó nombrada en 2.3, con las cuatro pruebas
   que cruzan módulos.
+- **Las pruebas de 2.3 están ejecutadas** (16/09): 87 filas con resultado y 19 sin
+  ejecutar, cada una con su motivo. Encontraron tres divergencias, que están en la tabla
+  de errores de la sección y contadas en 2.9.
+- **2.8 existe** (20/09), escrita sobre lo que dejó rastro en el proyecto; lo que dijo la
+  encargada sale de la sesión con ella.
+- **El organigrama del establecimiento** está en la Presentación del Cliente, generado
+  por `docs/diagramas/generar_organigrama.py`.
+- **El glosario se rehízo**: 27 términos, con las palabras del tambo —caravana, celo,
+  tacto, secado, pajuela, descarte de leche— que antes no estaban y que el documento usa
+  en cada página.
 
 ### A. `docs/armar_tesis.py` — hecho el 15/09/2026
 
@@ -121,9 +131,8 @@ etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
 ### B. Lo que sólo pueden hacer los autores
 
 - **Las cuatro capturas de Telegram**: vincular el bot con su token y sacar las dos de
-  pantalla, más las dos fotos del teléfono. Van a `docs/capturas/` con esos nombres.
-- **Ejecutar las pruebas de 2.3 completando la columna «Resultado»**, sobre el sistema
-  andando. Es lo único que queda de la jornada con el sistema levantado.
+  pantalla, más las dos fotos del teléfono. Van a `docs/capturas/` con esos nombres. Con
+  el bot vinculado caen además **trece pruebas de 2.3** que hoy figuran sin ejecutar.
 - **2.8 Grado de satisfacción del cliente** (una página, sin imágenes). No es una
   encuesta: es el relato de la relación con la encargada a lo largo de las iteraciones.
   Hace falta que le muestren el sistema y anoten lo que dice; con esas notas, la redactás
@@ -152,12 +161,6 @@ etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
 
 **El repositorio de entrega**, nuevo y sin historia: el procedimiento completo está en
 `docs/entrega-repositorio.md`. No se ejecuta hasta que todo lo demás esté terminado.
-
-### Menor, cuando haya un rato
-
-`flujos-de-prueba.md` ya usa los caminos del menú de hoy, pero todavía nombra algunas
-pantallas por su título viejo —«Celos Detectados», «Tactos Pendientes»—. Si alguno no
-coincide con el título real, se va a ver al ejecutar los flujos.
 
 ## 4. Por dónde empezar
 

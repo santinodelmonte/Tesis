@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="580" height="320" viewBox="0 0 580 320">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="290.0" y="26.0" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Estructura del establecimiento</text>
+<line x1="185.0" y1="114.0" x2="185.0" y2="146.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="185.0" y1="204.0" x2="185.0" y2="236.0" stroke="#40484f" stroke-width="1.2"/>
+<line x1="310.0" y1="175.0" x2="370.0" y2="175.0" stroke="#40484f" stroke-width="1.2" stroke-dasharray="6 4"/>
+<rect x="60.0" y="56.0" width="250.0" height="58.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="185.0" y="85.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Juan Vila — dueño del establecimiento</text>
+<rect x="60.0" y="146.0" width="250.0" height="58.0" rx="3" fill="#e6efe8" stroke="#40484f" stroke-width="1.2"/>
+<text x="185.0" y="168.1" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Sofía Vila — encargada del sector,</text>
+<text x="185.0" y="181.9" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#12181d" text-anchor="middle" dominant-baseline="middle">única usuaria del sistema</text>
+<rect x="60.0" y="236.0" width="250.0" height="58.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="185.0" y="265.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Tamberos — ordeñe y tareas diarias</text>
+<rect x="370.0" y="146.0" width="200.0" height="58.0" rx="3" fill="#f4f6f8" stroke="#40484f" stroke-width="1.2"/>
+<text x="470.0" y="168.1" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">Médico veterinario — servicio</text>
+<text x="470.0" y="181.9" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#12181d" text-anchor="middle" dominant-baseline="middle">externo</text>
+</svg>
