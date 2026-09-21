@@ -18,7 +18,7 @@ el repositorio lo que te importe: este prompt se escribió el 10/09/2026 y el c�
 | El plan maestro | `docs/prompt-documento-final.md` — cuatro fases; leé sobre todo sus puntos 2, 3, 7 y 8 |
 | Anteproyecto | `Anteproyecto_v8.docx`, **generado** por `docs/editar_anteproyecto.py` desde el v5 |
 | Proyecto | `Proyecto_v7.docx`, **generado** por `docs/editar_proyecto.py` desde el v5 más `casos_de_uso_parte*.py`, `modelo_datos.py`, `diccionario_clases.py` y `docs/diagramas/*.png` |
-| Secciones 2.3 a 2.7 | `docs/seccion-2-3-pruebas.md` … `docs/seccion-2-7-contingencia.md` — escritas en markdown, **todavía no están en el Word** |
+| Secciones 2.3 a 2.7 | `docs/seccion-2-3-pruebas.md` … `docs/seccion-2-7-contingencia.md`, que `docs/render_secciones.py` vuelca al Word desde el 14/09/2026 |
 | Capturas | `docs/guion-capturas.md` (qué fotografiar) y `docs/verificar_capturas.py` (hoy: 112 pedidas, 112 definidas). `docs/capturas/` no existe |
 | Registro de lo decidido | `docs/cambios-anteproyecto-v6.md`, `-v7.md`, `-v8.md` y `docs/auditoria-tres-vias.md` (14 hallazgos, 13 cerrados) |
 | Lo que falta del sistema | `docs/pendientes-tecnicos.md` — dice «No queda trabajo de código» |
@@ -58,100 +58,120 @@ el repositorio lo que te importe: este prompt se escribió el 10/09/2026 y el c�
 
 ## 3. Lo que queda, en orden
 
-### A. Insertar 2.3 a 2.7 en el Proyecto — lo hacés vos
+Actualizado el **15/09/2026**. Lo tachado de la lista anterior se hizo; lo que sigue es
+lo que falta.
 
-`editar_proyecto.py` arma hasta la 2.2.7 y deja el resto como estaba en el v5. Falta el
-paso que toma `docs/seccion-2-*.md` y los escribe en su lugar, con el formato del
-documento. El punto 3 del plan maestro («Dos pasos, no uno: generar y después editar»)
-dice cómo. Tres condiciones:
+### Ya no queda pendiente
 
-- Cada marca `[captura: nombre]` se reemplaza por la imagen de `docs/capturas/nombre.png`
-  con el pie que la sigue, usando el mismo `d.imagen(ruta, pie)` que coloca los diagramas.
-  **Mientras no haya capturas**, dejá un marcador visible, no un hueco.
-- **El manual (2.4) lleva su propio índice**, numerado aparte, como en `EjemploTesis.pdf`:
-  es un documento adentro del documento.
-- Cuando existan 2.8 y 2.9, entran por el mismo camino.
+- **Las secciones 2.3 a 2.7 están en el Word** (14/09). `docs/render_secciones.py` las
+  vuelca desde los markdown; `editar_proyecto.py` lo llama al final.
+- **Las capturas están sacadas**: 108 de 112, de una corrida ordenada contra el sistema
+  andando. `docs/recetas_capturas.py` automatiza las 66 que dependen de una acción, en el
+  orden que hace que el antes y el después signifiquen algo. **Faltan cuatro y ninguna es
+  automatizable**: `m7-configuracion-bot` y `t-telegram-vinculado` necesitan un token de
+  bot con un chat vinculado, y `m7-resumen-telegram` y `t-telegram-resumen` son fotos del
+  teléfono.
+- **1.11 Estimación del esfuerzo** está **cerrada** (21/09): el conteo en
+  `docs/estimacion_esfuerzo.py` se verifica solo contra el código, y el calendario real
+  —15/04 a 07/10, 25 semanas, 16 h semanales por integrante— da 800 horas planificadas y
+  1,35 h por punto de función. Sin marcas pendientes.
+- **2.9 Conclusiones** está escrita y **le quedan dos marcas**: la confirmación que sale
+  de la capacitación y el párrafo de cierre. El contraste de horas —800 planificadas
+  contra unas 1.000 reconstruidas, +25 %— está en R1, dicho como reconstrucción y no como
+  medición.
+- **Los reparos de forma** (15/09): palabras clave, RNF1 a RNF9 numerados, el subtítulo
+  «Alcances», la línea de firmas que se colaba al índice, el «Indice» suelto del
+  comienzo, el párrafo de criticidad del cronograma y los espacios invisibles de las
+  viñetas.
+- **La bibliografía cita libros**: Pressman y Elmasri-Navathe, que son de donde salen los
+  riesgos, los ciclos de vida, el SQA, los tipos de prueba, los puntos de función, la
+  normalización y el MER. Antes eran seis sitios sin autor ni URL.
+- **H6, las credenciales versionadas** (15/09): `appsettings.json` va con las tres claves
+  vacías y los valores se cargan con user-secrets o variables de entorno. `bd/LEEME.md`
+  lo explica en los puntos 5, 6 y 7.
+- **La etapa de pruebas de integración** quedó nombrada en 2.3, con las cuatro pruebas
+  que cruzan módulos.
+- **Las pruebas de 2.3 están ejecutadas** (16/09): 87 filas con resultado y 19 sin
+  ejecutar, cada una con su motivo. Encontraron tres divergencias, que están en la tabla
+  de errores de la sección y contadas en 2.9.
+- **2.8 está redactada** (21/09) con lo que contaron los autores: contacto telefónico
+  quincenal, propuestas de cambio que llevaba el equipo a partir del tutor y no la
+  clienta, y validaciones sin sorpresas —contado con su contracara, que es también un
+  punto a mejorar de 2.9—. Le quedan dos marcas, las dos de la capacitación.
+- **Se corrigió una incoherencia entre secciones**: el rediseño del tablero lo disparó el
+  tutor (20/08) y el contenido salió de revisar con la encargada qué se carga todos los
+  días. La 2.8 se lo atribuía entero al relevamiento.
+- **El organigrama del establecimiento** está en la Presentación del Cliente, generado
+  por `docs/diagramas/generar_organigrama.py`.
+- **El glosario se rehízo**: 27 términos, con las palabras del tambo —caravana, celo,
+  tacto, secado, pajuela, descarte de leche— que antes no estaban y que el documento usa
+  en cada página.
 
-Regenerá y compará el Proyecto antes y después: todo lo que ya estaba tiene que seguir
-igual.
+### A. `docs/armar_tesis.py` — hecho el 15/09/2026
 
-### B. El script de capturas — lo hacés vos, lo corre el autor
+`Tesis.docx` se arma con `python docs/armar_tesis.py`, **después** de correr
+`editar_anteproyecto.py` y `editar_proyecto.py`, porque parte de lo que ellos producen.
+La cadena completa es:
 
-No existe. `guion-capturas.md` describe un recorrido de **Playwright** que inicia sesión
-como `sofia`, fija el tamaño de ventana (1280 × 800; las del celular a 375 × 812) y
-visita cada pantalla con el rodeo de `DatosPrueba.sql` recién cargado, escribiendo
-`docs/capturas/<nombre>.png`. Leé el guion completo, sobre todo **«El orden importa»**:
-algunas capturas dependen de acciones previas (la alerta de stock antes de reponer, las
-pruebas `t-` después de la acción que evidencian). Dos no las puede sacar un script: son
-fotos del teléfono (`m7-resumen-telegram` y `t-telegram-resumen`).
+```bash
+python docs/editar_anteproyecto.py
+python docs/editar_proyecto.py
+python docs/armar_tesis.py
+```
 
-El script corre en la máquina del autor, con el sistema levantado desde Visual Studio.
-Dejalo listo para que él lo ejecute y explicale cómo en dos líneas.
+Renumera el anteproyecto como `1.1` a `1.15` —con «Plan de Proyecto» agrupando los once
+apartados de planificación, como en el modelo—, trae el proyecto entero con sus 62
+imágenes, y manda el glosario y la bibliografía al final, detrás del proyecto, con un
+anexo nuevo.
 
-### C. 2.9 Conclusiones — lo hacés vos
+**El índice va como campo TOC y llega hasta el tercer nivel.** Word lo completa solo: el
+archivo pide actualizar los campos al abrirse, y si alguien dice que no, se hace con
+Ctrl+E y F9. Los números de página no los puede calcular el script. El manual lleva su
+propio índice, acotado con un marcador a su parte del documento.
 
-Siete páginas, sin imágenes, con los **diez subtítulos del ejemplo** que lista el plan
-maestro (punto 7). El bloque largo es el **4, Riesgos**: los catorce del anteproyecto, uno
-por uno, si se dio o no y cómo se resolvió. Ahí va lo que encontró la auditoría —qué
-requerimiento cambió, cuándo y por qué—, con las fechas de `auditoria-tres-vias.md` y de
-los tres `cambios-anteproyecto-v*.md`. El punto 9, *Puntos a mejorar*, dice de frente lo
-que quedó corto.
+La portada, la declaración de autoría y el abstract del documento único **quedaron
+aprobados por los autores el 15/09/2026** y no se vuelven a discutir: la tapa dice «Trabajo
+Final de Carrera», lleva la línea «Entregado para la obtención del título de Analista
+Programador» y cierra con «2026»; la declaración dice «Examen Integrador 2»; y el abstract
+describe el trabajo terminado —los siete módulos y la propagación entre ellos— y no sólo la
+etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
+`docs/armar_tesis.py`, y se cambian ahí si alguna vez hace falta.
 
-Lo que depende de datos que no tenés —si los objetivos se cumplieron *según las pruebas
-ejecutadas*, lo que dijo la clienta— queda **marcado para completar**, no inventado.
+### B. Lo que sólo pueden hacer los autores
 
-### D. `docs/armar_tesis.py`, la Fase 4 — lo hacés vos
+- **Las cuatro capturas de Telegram**: vincular el bot con su token y sacar las dos de
+  pantalla, más las dos fotos del teléfono. Van a `docs/capturas/` con esos nombres. Con
+  el bot vinculado caen además **trece pruebas de 2.3** que hoy figuran sin ejecutar.
+- **La sesión de capacitación con la encargada, antes del 7/10.** Es la que verifica el
+  RNF1 de Usabilidad —que complete sin asistencia las cinco tareas de uso diario después
+  de una única sesión— y de la que salen las dos marcas de 2.8, la de 2.9 sobre el
+  objetivo que depende de su uso, y las palabras de ella sobre el sistema terminado.
+  Decidido el 21/09: se hace antes de la entrega, para no entregar un requerimiento no
+  funcional sin verificar.
+- **El párrafo de cierre de 2.9**, que es de los autores. El material con el que
+  escribirlo ya está debajo de la marca.
+- **El anexo**: fotos de los cuadernos y del pizarrón con que hoy se lleva el tambo. Es
+  la evidencia de la «Presentación del problema» y cuesta cinco minutos con un teléfono.
 
-Produce `Tesis.docx` desde el anteproyecto y el proyecto: el anteproyecto renumerado como
-`1.x`, el proyecto como `2.x`, portada, declaración de autoría, abstract, palabras clave,
-índice único, glosario, bibliografía y anexo. Está detallado en el punto 8 del plan
-maestro. El índice va como **campo TOC de verdad**; los números de página los calcula Word
-cuando alguien actualiza el campo, y eso hay que decírselo a los autores.
+### C. Decisiones ya tomadas — no volver a abrirlas
 
-El plan señala **dos huecos** que conviene verificar contra el `Anteproyecto_v8.docx`
-antes de darlos por ciertos: falta `1.11 Estimación del esfuerzo`, y el **anexo** necesita
-fotos de los cuadernos y planillas con que hoy se lleva el tambo, que tienen que traer
-los autores.
+- **La portada, la declaración de autoría y el abstract** del `Tesis.docx`, aprobados el
+  15/09. Están en `portada()` y `ABSTRACT` de `docs/armar_tesis.py`.
+- **RF3.4 y RF3.5 no se fusionan, y RF5.2 se queda** (15/09). Quedan **74
+  requerimientos**. A esta altura renumerar toca los casos de uso, los diagramas de
+  secuencia y el documento entero, y el beneficio es cosmético.
+- **No hay pruebas automatizadas y no las va a haber.** Las pruebas son funcionales y
+  manuales, sobre el sistema andando.
+- **El reporte genético** no tiene período, pero sus secciones vacías dicen «Sin
+  registros en el período»: la frase está fija en `Tesis/Reportes/GeneradorPdf.cs` y
+  `GeneradorExcel.cs`. Es una línea de código si la quieren cambiar. **Sigue abierta.**
 
-### E. Lo que sólo pueden hacer los autores
+### D. Lo último, y sólo al final
 
-- **2.8 Grado de satisfacción del cliente** (una página, sin imágenes). No es una encuesta:
-  es el relato de la relación con la encargada a lo largo de las iteraciones. Hace falta que
-  le muestren el sistema y anoten lo que dice; con esas notas, la redactás vos. De la misma
-  sesión sale el criterio del RNF de Usabilidad: que complete sola las cinco tareas diarias
-  después de una única capacitación.
-- **Levantar el sistema** con `DatosPrueba.sql` recién cargado, correr el script de
-  capturas y ejecutar las pruebas de 2.3, completando la columna «Resultado». Conviene en
-  una sola sesión.
-- **Push**: `master` está seis commits adelante de GitHub.
-
-### F. Decisiones que siguen abiertas — preguntá, no decidas
-
-- **Fusionar RF3.4 con RF3.5 y quitar RF5.2.** Viene de la v7 y quedó para discusión
-  aparte: cambia la cantidad de requerimientos (hoy 74) y obliga a renumerar y a tocar los
-  casos de uso que los referencian. Si no se hace, que quede decidido antes de unificar.
-- **El reporte genético** no tiene período, pero sus secciones vacías dicen «Sin registros
-  en el período»: la frase está fija en `Tesis/Reportes/GeneradorPdf.cs` y
-  `GeneradorExcel.cs`. Es una línea de código si la quieren cambiar.
-
-### G. Lo último, y sólo al final
-
-- **Las credenciales versionadas** (hallazgo H6, el único abierto de la auditoría):
-  `Tesis/appsettings.json` tiene usuario, contraseña y cadena de conexión en texto plano.
-- **El repositorio de entrega**, nuevo y sin historia: el procedimiento completo está en
-  `docs/entrega-repositorio.md`. No se ejecuta hasta que todo lo demás esté terminado.
-
-### Menor, cuando haya un rato
-
-`flujos-de-prueba.md` ya usa los caminos del menú de hoy, pero todavía nombra algunas
-pantallas por su título viejo —«Celos Detectados», «Tactos Pendientes»—. Si alguno no
-coincide con el título real, se va a ver al ejecutar los flujos.
+**El repositorio de entrega**, nuevo y sin historia: el procedimiento completo está en
+`docs/entrega-repositorio.md`. No se ejecuta hasta que todo lo demás esté terminado.
 
 ## 4. Por dónde empezar
 
-Por **A**: sin él, nada de lo escrito en 2.3 a 2.7 está en el documento que se entrega, y
-todo lo demás termina pasando por ese mismo paso. Después **B**, que es lo que destraba al
-autor el día que levante el sistema; después **C** y **D**.
-
-Antes de cambiar nada, contame en pocas líneas qué encontraste al verificar este prompt
-contra el repositorio y cómo pensás encarar **A**.
+Por **A**, que es lo único grande que queda del lado del documento, y no depende de
+nadie. **B** se destraba el día que el autor levante el sistema.

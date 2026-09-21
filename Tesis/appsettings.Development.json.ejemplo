@@ -6,6 +6,13 @@
       "Microsoft.AspNetCore": "Warning"
     }
   },
+  "ConnectionStrings": {
+    "Tambo": "server=localhost; port=3306; database=tambo; uid=root; pwd=LA_CONTRASENA_DE_MYSQL; CharSet=utf8mb4;"
+  },
+  "Seguridad": {
+    "Usuario": "EL_USUARIO_DEL_SISTEMA",
+    "Contrasena": "LA_CONTRASENA_DEL_SISTEMA"
+  },
   "Telegram": {
     "Token": "PEGAR ACA EL TOKEN QUE DEVUELVE BOTFATHER"
   }

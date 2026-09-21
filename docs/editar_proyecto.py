@@ -23,6 +23,8 @@ sys.path.insert(0, DIAGRAMAS)
 
 import modelo_datos  # noqa: E402
 import diccionario_clases  # noqa: E402
+import render_secciones  # noqa: E402
+import paginado  # noqa: E402
 from render_casos_de_uso import cargar, lineas  # noqa: E402
 
 ENTRADA = os.path.join(RAIZ, 'Proyecto_v5.docx')
@@ -36,7 +38,7 @@ ANCHO_MAXIMO_CM = 16.0
 class Documento:
     """Cursor sobre el cuerpo del documento: borra secciones y escribe detras."""
 
-    def __init__(self, ruta):
+    def __init__(self, ruta, inicio=None):
         self.doc = Document(ruta)
         self.cuerpo = self.doc.element.body
         self.cursor = None
@@ -44,8 +46,8 @@ class Documento:
         self._modelo_tabla = None
         # El indice del comienzo repite los titulos de todas las secciones. Sin este
         # corte, buscar un titulo devuelve su entrada del indice y el contenido nuevo
-        # termina escrito ahi.
-        self.inicio = self._fin_del_indice()
+        # termina escrito ahi. El anteproyecto no tiene ese indice y arranca en cero.
+        self.inicio = self._fin_del_indice() if inicio is None else inicio
 
     def _fin_del_indice(self):
         for i, elemento in enumerate(self._elementos()):
@@ -77,14 +79,30 @@ class Documento:
 
     # -- edicion -----------------------------------------------------------
 
-    def vaciar(self, titulo, hasta):
-        """Borra lo que hay entre un titulo y el siguiente, y deja el cursor ahi."""
+    def vaciar(self, titulo, hasta=None):
+        """Borra lo que hay entre un titulo y el siguiente, y deja el cursor ahi.
+
+        Sin `hasta`, borra hasta el final del cuerpo: es el caso de la ultima seccion
+        del documento. El `sectPr` del final define el tamanio de pagina y los
+        margenes, asi que se queda donde esta.
+        """
         elementos = self._elementos()
         i = self.buscar(titulo)
-        j = self.buscar(hasta, i + 1)
+        if hasta is None:
+            j = len(elementos)
+            while j > i + 1 and elementos[j - 1].tag.endswith('}sectPr'):
+                j -= 1
+        else:
+            j = self.buscar(hasta, i + 1)
         for elemento in elementos[i + 1:j]:
             self.cuerpo.remove(elemento)
         self.cursor = elementos[i]
+        return self.cursor
+
+    def antes_de(self, titulo):
+        """Deja el cursor justo delante de un titulo, para escribir una seccion nueva."""
+        elementos = self._elementos()
+        self.cursor = elementos[self.buscar(titulo) - 1]
         return self.cursor
 
     def modelo_parrafo(self):
@@ -127,6 +145,46 @@ class Documento:
         self.cursor = nuevo
         return nuevo
 
+    def _poblar(self, p, segmentos):
+        """Escribe en un parrafo ya creado una lista de tramos (texto, formato)."""
+        for texto, formato in segmentos:
+            if not texto:
+                continue
+            run = p.makeelement(qn('w:r'), {})
+            if formato:
+                rPr = run.makeelement(qn('w:rPr'), {})
+                if formato.get('mono'):
+                    fuente = rPr.makeelement(qn('w:rFonts'), {})
+                    for atributo in ('w:ascii', 'w:hAnsi', 'w:cs'):
+                        fuente.set(qn(atributo), 'Consolas')
+                    rPr.append(fuente)
+                if formato.get('negrita'):
+                    rPr.append(rPr.makeelement(qn('w:b'), {}))
+                if formato.get('cursiva'):
+                    rPr.append(rPr.makeelement(qn('w:i'), {}))
+                run.append(rPr)
+            t = run.makeelement(qn('w:t'), {})
+            t.set(qn('xml:space'), 'preserve')
+            t.text = texto
+            run.append(t)
+            p.append(run)
+        return p
+
+    def parrafo_rico(self, segmentos, estilo=None, sangria=0):
+        """Como parrafo(), pero el texto llega partido en tramos con su formato.
+
+        `sangria` es el nivel de anidamiento de una lista: corre el parrafo medio
+        centimetro por nivel, que es lo que separa un subitem de su item.
+        """
+        nuevo = self.parrafo('', estilo=estilo)
+        if sangria:
+            pPr = nuevo.find(qn('w:pPr'))
+            for viejo in pPr.findall(qn('w:ind')):
+                pPr.remove(viejo)
+            pPr.append(pPr.makeelement(qn('w:ind'),
+                                       {qn('w:left'): str(360 * sangria)}))
+        return self._poblar(nuevo, segmentos)
+
     def titulo(self, texto, nivel=4):
         return self.parrafo(texto, estilo='Heading%d' % nivel)
 
@@ -140,6 +198,12 @@ class Documento:
 
     def tabla(self, encabezados, filas):
         """Inserta una tabla con el mismo borde que las del documento original."""
+        return self.tabla_rica(
+            [[(str(c), {})] for c in encabezados],
+            [[[(str(c), {})] for c in fila] for fila in filas])
+
+    def tabla_rica(self, encabezados, filas):
+        """Como tabla(), pero cada celda llega partida en tramos con su formato."""
         modelo = self.modelo_tabla()
         nueva = copy.deepcopy(modelo)
         for hijo in list(nueva):
@@ -167,16 +231,12 @@ class Documento:
                 for p in tc.findall(qn('w:p')):
                     tc.remove(p)
                 p = tc.makeelement(qn('w:p'), {})
-                run = p.makeelement(qn('w:r'), {})
+                tramos = valor
                 if negrita:
-                    rPr = run.makeelement(qn('w:rPr'), {})
-                    rPr.append(rPr.makeelement(qn('w:b'), {}))
-                    run.append(rPr)
-                t = run.makeelement(qn('w:t'), {})
-                t.set(qn('xml:space'), 'preserve')
-                t.text = str(valor)
-                run.append(t)
-                p.append(run)
+                    tramos = [(t, dict(f, negrita=True)) for t, f in valor]
+                # Una celda vacia igual necesita su parrafo: es el renglon en blanco
+                # que se completa a mano al ejecutar las pruebas.
+                self._poblar(p, tramos or [('', {})])
                 tc.append(p)
                 tr.append(tc)
             return tr
@@ -207,6 +267,7 @@ class Documento:
         return p._element
 
     def guardar(self, ruta):
+        paginado.numerar(self.doc)
         self.doc.save(ruta)
         podar(ruta)
 
@@ -448,8 +509,10 @@ def seccion_diccionario(d):
         'mX se expone mediante una propiedad pública X con getter y setter. Las clases '
         'de dominio no contienen lógica de negocio: son anémicas y conservan únicamente '
         'sus atributos y su constructor. Toda la lógica reside en la clase Controladora, '
-        'que valida contra sus listas static en memoria, delega la escritura en '
-        'pControladora y recién después actualiza la caché.')
+        'que valida contra las listas que mantiene en memoria, delega la escritura en '
+        'pControladora y recién después actualiza esa caché. Las listas son campos de '
+        'instancia y se refrescan al construir la Controladora: no se comparten entre '
+        'peticiones.')
 
     d.parrafo('Clases de negocio', negrita=True)
     for nombre, base, nota, filas in diccionario_clases.entidades():
@@ -482,6 +545,59 @@ def seccion_diccionario(d):
         d.parrafo(nombre, negrita=True)
         d.tabla(['Método', 'Devuelve', 'Parámetros'],
                 [(n, t, p or '—') for n, t, p in metodos])
+
+
+ESTADO_INDICE = {
+    # 2.3 quedo ejecutada el 16/09; siguen en proceso los casos que necesitan el bot de
+    # Telegram vinculado. 2.4 espera las dos capturas de Telegram y la foto del telefono.
+    '2.3': 'En proceso',
+    '2.4': 'En proceso',
+    '2.5': 'Realizado',
+    '2.6': 'Realizado',
+    '2.7': 'Realizado',
+    # Escrita sobre lo que dejo rastro en el proyecto; lo que dijo la encargada al ver
+    # el sistema terminado sale de una sesion de trabajo con ella.
+    '2.8': 'En proceso',
+    # La 2.9 esta escrita pero tiene huecos marcados que solo los autores pueden
+    # completar; la 2.8 depende de una sesion de trabajo con la encargada.
+    '2.9': 'En proceso',
+}
+
+
+def seccion_indice(d):
+    """Pone al dia la columna de estado del indice del comienzo.
+
+    El indice vive antes del cuerpo, asi que no se puede llegar a el con buscar(),
+    que arranca justo despues. Se recorre a mano lo que hay delante.
+    """
+    for elemento in list(d.cuerpo.iterchildren())[:d.inicio]:
+        if not elemento.tag.endswith('}p'):
+            continue
+        texto = d._texto(elemento)
+        estado = ESTADO_INDICE.get(texto[:3])
+        if not estado or not texto.endswith('Pendiente'):
+            continue
+        for t in elemento.iter(qn('w:t')):
+            if t.text and 'Pendiente' in t.text:
+                t.text = t.text.replace('Pendiente', estado)
+                break
+
+
+def seccion_secciones_escritas(d):
+    """Escribe 2.3 a 2.7 desde los markdown de docs/.
+
+    De atras para adelante: al llenar una seccion, las anteriores todavia dicen
+    «Pendiente.», asi que ningun parrafo recien escrito puede confundirse con el titulo
+    que marca el final de la siguiente.
+    """
+    faltantes = []
+    for titulo, hasta, archivo in reversed(render_secciones.SECCIONES):
+        d.vaciar(titulo, hasta)
+        escritos = render_secciones.escribir(d, os.path.join(AQUI, archivo), faltantes)
+        print('%s: %d bloques' % (titulo, escritos))
+    if faltantes:
+        print('faltan %d capturas; quedaron marcadas en el documento' % len(faltantes))
+    return faltantes
 
 
 def seccion_analisis(d):
@@ -538,6 +654,8 @@ def main():
     seccion_modelo_datos(d)
     seccion_secuencia(d, casos)
     seccion_diccionario(d)
+    seccion_secciones_escritas(d)
+    seccion_indice(d)
 
     d.guardar(SALIDA)
     print('guardado', SALIDA)

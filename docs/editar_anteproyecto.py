@@ -956,5 +956,248 @@ escribir(
     'correspondientes.')
 
 
+# --------------------------------------------------------------- reparos de forma (15/09)
+#
+# Lo que encontro la comparacion contra EjemploTesis.pdf y no era de contenido sino de
+# prolijidad: cosas que un tribunal ve en el indice automatico o en la primera hojeada.
+
+# 1. El documento arrancaba con la palabra «Indice» suelta, con estilo de titulo, antes
+#    de la portada. Era un resto de una version anterior.
+_suelto = doc.paragraphs[0]
+if _suelto.text.strip().lower() == 'indice':
+    _suelto._element.getparent().remove(_suelto._element)
+
+# 2. Palabras clave. El ejemplo de la catedra le dedica una pagina, entre el abstract y
+#    el indice, y nuestro anteproyecto no la tenia.
+_indice = buscar('ÍNDICE')
+_modelo_titulo = buscar('ABSTRACT')
+_titulo_pc = _clonar(_modelo_titulo, _indice, 'prev', 'PALABRAS CLAVE', None, False)
+_modelo_vinieta = buscar(BULLET + 'Usabilidad')
+_ultima = _titulo_pc
+for _palabra in ['Tambo', 'Ganadería lechera', 'Gestión del rodeo', 'Trazabilidad',
+                 'Producción de leche', 'Reproducción bovina', 'Sanidad animal',
+                 'Control de stock', 'Aplicación web', 'ASP.NET Core', 'MySQL',
+                 'Telegram']:
+    _ultima = _clonar(_modelo_vinieta, _ultima, 'next', BULLET + _palabra, None, False)
+
+# 3. Los nueve requerimientos no funcionales pasan a estar numerados. Sin numero no se
+#    los puede citar: ni un caso de uso puede referenciarlos ni 2.9 puede decir, uno por
+#    uno, si se cumplieron. El ejemplo de la catedra los numera, RNF1 a RNF7.
+for _numero, _nombre in enumerate(
+        ['Usabilidad', 'Accesibilidad', 'Compatibilidad', 'Disponibilidad',
+         'Rendimiento', 'Fiabilidad', 'Seguridad', 'Mantenibilidad', 'Portabilidad'], 1):
+    escribir(buscar(BULLET + _nombre + ':'), 'RNF%d. %s:' % (_numero, _nombre))
+
+# 4. En «Alcance y limitaciones» solo «Limitaciones» tenia subtitulo, asi que el indice
+#    mostraba una limitacion sin su alcance.
+_primer_alcance = buscar(BULLET + 'Registro y gestión de animales')
+_clonar(buscar('Limitaciones'), _primer_alcance, 'prev', 'Alcances', None, False)
+
+# 5. La linea de firmas estaba marcada como Heading2 y por lo tanto iba a aparecer en el
+#    indice automatico como si fuera una seccion, entre el compromiso y el glosario.
+# Hay dos lineas de firmas y la primera, la de la declaracion de autoria, ya estaba
+# bien: la que hay que arreglar es la del compromiso, que es la que suma a la clienta.
+_firmas = [_p for _p in doc.paragraphs if 'Sofia Vila' in _p.text][0]
+_firmas.style = doc.styles['Normal']
+
+# 6. El cronograma eran tres imagenes y ni una linea de texto, y la palabra «criticidad»
+#    aparecia en el titulo y en ningun otro lado. El ejemplo tampoco lo explica, asi que
+#    esto no corrige un error: aprovecha un lugar donde se puede estar por encima.
+_crono = buscar('CRONOGRAMA DE TRABAJO Y CRITICIDAD')
+_clonar(_modelo_vinieta, _crono, 'next',
+        'El cronograma refleja los seis incrementos definidos y su distribución en el '
+        'tiempo. La criticidad de cada tarea está dada por lo que depende de ella: son '
+        'críticas las que están en el camino crítico del proyecto, es decir aquellas '
+        'cuyo atraso arrastra a todas las siguientes. En este proyecto ese camino lo '
+        'forman la gestión del rodeo, que es la base sobre la que se apoyan los demás '
+        'módulos porque todo evento se registra contra un animal; el control productivo '
+        'y el manejo reproductivo, que comparten la lógica de estados de la hembra; y la '
+        'gestión sanitaria, de la que depende el control de insumos porque todo '
+        'tratamiento consume stock. Los reportes, las notificaciones y el tablero, en '
+        'cambio, consumen información ya registrada y no bloquean a nadie: su atraso '
+        'afecta al alcance de la entrega, no al resto del cronograma.', None, False)
+
+# 7. Las viñetas venian de un procesador de texto que deja un espacio invisible pegado al
+#    simbolo. No se ve, pero viaja en toda copia del texto y rompe cualquier busqueda.
+for _p in doc.paragraphs:
+    for _run in _p.runs:
+        for _t in _run._element.findall(qn('w:t')):
+            if _t.text and '\u200b' in _t.text:
+                _t.text = _t.text.replace('\u200b', '')
+
+
+# --------------------------------------------------------------- la bibliografia (15/09)
+#
+# Eran seis sitios oficiales de herramientas, sin autor, sin URL y sin norma. El problema
+# no era la forma: era que el anteproyecto usa teoria que no citaba. La clasificacion de
+# riesgos en catastrofico, critico, marginal y despreciable; los cuatro modelos de ciclo
+# de vida; el plan de SQA; los tipos de prueba de caja negra; y ahora los puntos de
+# funcion de 1.11 salen todos de Pressman, y Pressman no figuraba. La normalizacion y el
+# modelo entidad-relacion de 2.2.5, de Elmasri y Navathe. El ejemplo de la catedra cita
+# los dos, con edicion y editorial, al lado de los sitios de herramientas.
+#
+# Van en orden alfabetico por autor, como el ejemplo.
+
+_inicio_biblio = [i for i, _p in enumerate(doc.paragraphs)
+                  if _p.text.strip() == 'BIBLIOGRAFÍA'][0]
+
+_entradas = [
+    ('Bootstrap Team. Documentación oficial de Bootstrap [en línea].',
+     'Disponible en internet: https://getbootstrap.com/docs/. Utilizada como referencia '
+     'para el diseño responsive y la construcción de la interfaz. Último acceso: mayo '
+     'de 2026.'),
+    ('Elmasri, Ramez; Navathe, Shamkant B. Fundamentos de sistemas de bases de datos.',
+     '5.ª ed. Madrid: Pearson Addison-Wesley, 2007. Utilizado como referencia para el '
+     'modelo entidad-relación, la normalización y las restricciones de integridad.'),
+    ('Microsoft. Documentación oficial de .NET [en línea].',
+     'Disponible en internet: https://learn.microsoft.com/dotnet/. Utilizada como '
+     'referencia para la arquitectura, el desarrollo del backend, el acceso a datos y la '
+     'configuración del sistema. Último acceso: mayo de 2026.'),
+    ('Microsoft. Documentación oficial de Visual Studio [en línea].',
+     'Disponible en internet: https://learn.microsoft.com/visualstudio/. Utilizada como '
+     'referencia para el entorno de desarrollo. Último acceso: mayo de 2026.'),
+    ('Oracle Corporation. MySQL Reference Manual [en línea].',
+     'Disponible en internet: https://dev.mysql.com/doc/. Utilizado como referencia para '
+     'el modelado, la administración y las consultas de la base de datos. Último acceso: '
+     'mayo de 2026.'),
+    ('Pressman, Roger S. Ingeniería del software. Un enfoque práctico.',
+     '7.ª ed. México: McGraw-Hill, 2010. Utilizado como referencia para el análisis y la '
+     'clasificación de riesgos, los modelos de ciclo de vida, el plan de aseguramiento de '
+     'la calidad, los tipos de prueba y la estimación por puntos de función.'),
+]
+_extra = [
+    ('SmarterASP.NET. Sitio oficial del servicio de hosting [en línea].',
+     'Disponible en internet: https://www.smarterasp.net/. Utilizado como referencia para '
+     'el despliegue del sistema. Último acceso: mayo de 2026.'),
+    ('Telegram. Telegram Bot API [en línea].',
+     'Disponible en internet: https://core.telegram.org/bots/api. Utilizada como '
+     'referencia para la integración de las notificaciones. Último acceso: mayo de 2026.'),
+]
+
+_viejas = ['Microsoft .NET Documentation', 'MySQL Documentation', 'Bootstrap Documentation',
+           'Telegram Bot API Documentation', 'Visual Studio', 'SmarterASP.NET']
+_parrafos = [buscar(_v, _inicio_biblio) for _v in _viejas]
+for _parrafo, (_titulo, _cuerpo) in zip(_parrafos, _entradas):
+    # Los titulos viejos eran hipervinculos al sitio de cada herramienta, y un
+    # hipervinculo no es un run: escribir() no lo ve y el texto anterior sobrevivia
+    # pegado adelante del nuevo. Se sacan antes de escribir.
+    for _enlace in _parrafo._element.findall(qn('w:hyperlink')):
+        _parrafo._element.remove(_enlace)
+    escribir(_parrafo, _titulo, _cuerpo)
+
+_ultima_entrada = _parrafos[-1]
+for _titulo, _cuerpo in _extra:
+    _ultima_entrada = _clonar(_parrafos[0], _ultima_entrada, 'next', _titulo, _cuerpo, True)
+
+
 doc.save(RUTA_SALIDA)
+
+
+# --------------------------------------------------------------- 1.11 Estimacion del esfuerzo
+#
+# Va en una segunda pasada sobre el archivo ya guardado, y no entre las ediciones de
+# arriba, porque la seccion trae tablas: las escribe la clase Documento de
+# editar_proyecto, que es la que sabe clonar el borde de una tabla del documento.
+# El lugar es el que le da el modelo de la catedra: despues del estudio de
+# alternativas y antes del analisis de riesgo.
+
+import sys  # noqa: E402
+
+sys.path.insert(0, AQUI if 'AQUI' in dir() else os.path.dirname(os.path.abspath(__file__)))
+
+from editar_proyecto import Documento  # noqa: E402
+import render_secciones  # noqa: E402
+
+d = Documento(RUTA_SALIDA, inicio=0)
+
+# El organigrama del establecimiento, en la Presentacion del Cliente. El ejemplo de la
+# catedra le dedica una subseccion entera a la estructura organizacional; en un tambo
+# familiar con una sola encargada esa subseccion seria relleno, pero el dibujo explica
+# sin decirlo por que el sistema tiene un unico usuario.
+d.antes_de('PRESENTACIÓN DEL PROBLEMA')
+d.parrafo('')
+d.imagen(os.path.join(AQUI, 'diagramas', 'organigrama-establecimiento.png'),
+         'Figura. Estructura del establecimiento. La encargada es la única persona '
+         'que opera el sistema: los tamberos le entregan los registros del día en '
+         'papel y el veterinario es un servicio externo que consulta la información '
+         'sanitaria y genética, pero ninguno de los dos entra a la aplicación.')
+
+# El glosario, rehecho. El que venia del v5 explicaba quince terminos tecnicos y ni
+# uno del tambo: un tribunal formado en software no tiene por que saber que es una
+# caravana, un tacto o el descarte de leche, y el documento los usa en cada pagina.
+# Se suman ademas los dos terminos que trajeron las secciones nuevas: los puntos de
+# funcion de 1.11 y la caja negra del plan de testing. Van en orden alfabetico.
+GLOSARIO = [
+    ('Bootstrap', 'framework CSS utilizado para facilitar el diseño visual y adaptable '
+     'de la interfaz del sistema.'),
+    ('Caja negra', 'forma de probar un sistema desde afuera, verificando lo que '
+     'devuelve ante cada entrada, sin mirar cómo está escrito por dentro.'),
+    ('Caravana', 'la chapa numerada que identifica a cada animal del rodeo. Es su '
+     'nombre en el tambo y la clave con la que se lo busca en el sistema.'),
+    ('Categoría', 'la clasificación del animal según su sexo, su edad y sus partos: '
+     'ternera, vaquillona, vaca, ternero, novillo o toro. El sistema la calcula.'),
+    ('Celo', 'el período en que la hembra está receptiva y puede quedar preñada. Se '
+     'detecta observando su comportamiento, y es el evento que abre el ciclo '
+     'reproductivo.'),
+    ('Consanguinidad', 'parentesco entre dos animales que se van a cruzar. Cruzar '
+     'parientes concentra defectos genéticos en la cría, y por eso el sistema avisa.'),
+    ('CSS3', 'lenguaje utilizado para definir estilos y diseño visual de páginas web.'),
+    ('Descarte de leche', 'el período posterior a un tratamiento sanitario durante el '
+     'cual la leche del animal no puede ir al tanque, porque conserva restos del '
+     'medicamento.'),
+    ('Framework', 'estructura o conjunto de herramientas y componentes reutilizables '
+     'que facilitan el desarrollo de aplicaciones de software.'),
+    ('Git', 'sistema de control de versiones utilizado para administrar los cambios '
+     'realizados sobre el proyecto.'),
+    ('GitHub', 'plataforma utilizada para almacenar y sincronizar el repositorio '
+     'remoto del sistema.'),
+    ('HTML5', 'lenguaje de marcado utilizado para la estructura y contenido de la '
+     'aplicación web.'),
+    ('Iteración', 'período de desarrollo donde se implementa un conjunto específico '
+     'de funcionalidades del sistema.'),
+    ('JavaScript', 'lenguaje de programación utilizado para desarrollar '
+     'funcionalidades dinámicas e interactivas en la aplicación web.'),
+    ('Lactancia', 'el período durante el cual una vaca da leche, que empieza con el '
+     'parto y termina con el secado. El sistema la abre y la cierra solo.'),
+    ('MySQL', 'sistema de gestión de bases de datos utilizado para almacenar y '
+     'administrar la información del sistema.'),
+    ('Pajuela', 'la dosis de semen congelado con que se insemina una hembra. En el '
+     'sistema es un insumo de stock, y cada una está vinculada al toro que la aporta.'),
+    ('Puntos de función', 'unidad para medir el tamaño de un sistema por lo que hace y '
+     'no por cuánto código tiene: se cuentan sus entradas, salidas, consultas y '
+     'archivos, y se ajusta el total según catorce factores. Es el método con que se '
+     'estima el esfuerzo en la sección 1.11.'),
+    ('Rodeo', 'el conjunto de animales del establecimiento.'),
+    ('SCM', '(Software Configuration Management) gestión encargada de controlar y '
+     'administrar los componentes del proyecto.'),
+    ('Secado', 'el corte deliberado del ordeñe de una vaca antes del parto, para que '
+     'descanse. Cierra su lactancia.'),
+    ('Servicio', 'la cruza de una hembra, por monta natural o por inseminación '
+     'artificial.'),
+    ('SQA', '(Software Quality Assurance) conjunto de actividades destinadas a '
+     'garantizar la calidad del software desarrollado.'),
+    ('Tacto', 'la revisación con que se confirma si la hembra quedó preñada después '
+     'de un servicio.'),
+    ('Testing', 'proceso de pruebas realizado para verificar el correcto '
+     'funcionamiento del sistema.'),
+    ('UML', 'lenguaje de modelado utilizado para representar gráficamente distintos '
+     'componentes y procesos del sistema.'),
+    ('Versionado', 'proceso mediante el cual se controlan las diferentes versiones '
+     'del sistema durante el desarrollo.'),
+]
+
+d.vaciar('GLOSARIO', 'BIBLIOGRAFÍA')
+for _termino, _definicion in GLOSARIO:
+    d.parrafo_rico([(_termino + ': ', {'negrita': True}), (_definicion, {})])
+
+d.antes_de('ANÁLISIS Y PLAN DE RIESGO')
+d.parrafo('ESTIMACIÓN DEL ESFUERZO', estilo='Heading2')
+faltantes = []
+bloques = render_secciones.escribir(
+    d, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                    'seccion-1-11-esfuerzo.md'),
+    faltantes, base_titulo=1)
+print('1.11 Estimacion del esfuerzo: %d bloques' % bloques)
+d.guardar(RUTA_SALIDA)
+
 print('guardado', RUTA_SALIDA)

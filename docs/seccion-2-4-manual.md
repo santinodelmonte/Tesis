@@ -205,8 +205,8 @@ la cambia solo: propone y espera.
 edad en meses y número de caravana.
 
 `[captura: m1-cu10-filtros]`
-> Búsqueda con dos filtros combinados —categoría *Vaca* y estado *En lactancia*—: el
-> resultado son las vacas que hoy están dando leche.
+> Búsqueda con dos filtros combinados —categoría *Vaca* y estado *Activos*—: el
+> resultado son las vacas que integran hoy el rodeo.
 
 Arriba hay **búsquedas rápidas** que resuelven de un clic lo que se consulta seguido:
 *Rodeo activo*, *Crías (0 a 12 meses)*, *Recría (13 a 24 meses)*, *Vacas*, *Toros*,

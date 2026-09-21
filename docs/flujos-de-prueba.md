@@ -374,7 +374,7 @@ Para la vaca comprada en el flujo 2, que entró al rodeo ya en producción.
 | Campo | Dato |
 |---|---|
 | Caravana | `200` |
-| Numero de lactancia | Apretar **Proponer numero** → tiene que sugerir `3` |
+| Numero de lactancia | Apretar **Proponer** → tiene que sugerir `3` |
 | Fecha de inicio | `2026-05-20` |
 
 **Esperado.** `200` pasa a **En lactancia** y aparece en el lote de ordeñe y en el
@@ -395,7 +395,7 @@ animal ya tiene una lactancia abierta!"*.
 | Fecha de deteccion | `2026-08-11` |
 | Observaciones | `Celo firme, monta a otras vacas del lote.` |
 
-**Esperado.** Queda en **Celos Detectados** y `115` aparece en **Vacas para Servir**.
+**Esperado.** Queda en **Celos detectados** y `115` aparece en **Vacas para Servir**.
 
 **Variantes que tienen que fallar.**
 
