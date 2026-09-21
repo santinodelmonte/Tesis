@@ -33,6 +33,8 @@ from docx.opc.packuri import PackURI
 from docx.opc.part import Part
 from docx.oxml.ns import qn
 
+import paginado
+
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 
@@ -518,6 +520,7 @@ def main():
 
     marcado = indice_del_manual(cuerpo, modelo_parrafo)
 
+    secciones_numeradas = paginado.numerar(ante)
     ante.save(SALIDA)
     actualiza = pedir_actualizacion(SALIDA)
 
@@ -529,6 +532,7 @@ def main():
           % (copiados, len(copiadas)))
     print('indice del manual: %s' % ('acotado con un marcador' if marcado else
                                      'NO se pudo acotar'))
+    print('secciones con numero de pagina: %d' % secciones_numeradas)
     print('Word va a pedir actualizar los campos al abrir: %s' % ('si' if actualiza
                                                                   else 'NO'))
     print('guardado', SALIDA)
@@ -560,11 +564,17 @@ def indice_del_manual(cuerpo, modelo_parrafo):
     for elemento in elementos[i_titulo + 1:i_ultima]:
         cuerpo.remove(elemento)
 
-    elementos[i_titulo].addnext(campo_toc(
+    campo = campo_toc(
         modelo_parrafo, ' TOC \\b manual \\o "5-6" \\h \\z \\u ',
         'El índice del manual se genera solo: seleccionar todo con Ctrl+E y '
-        'actualizar con F9.'))
-    marcar(cuerpo, elementos[i_manual], elementos[i_fin - 1], 'manual', 9001)
+        'actualizar con F9.')
+    elementos[i_titulo].addnext(campo)
+
+    # El marcador arranca despues del campo y no en el titulo del manual: si empezara
+    # antes, el indice se listaria a si mismo —«2.4 Manual de Usuario» y «Índice» son
+    # titulos del rango que \o "5-6" alcanza— y un indice que figura dentro de si mismo
+    # se lee como un error.
+    marcar(cuerpo, campo.getnext(), elementos[i_fin - 1], 'manual', 9001)
     return True
 
 

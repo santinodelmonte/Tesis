@@ -24,6 +24,7 @@ sys.path.insert(0, DIAGRAMAS)
 import modelo_datos  # noqa: E402
 import diccionario_clases  # noqa: E402
 import render_secciones  # noqa: E402
+import paginado  # noqa: E402
 from render_casos_de_uso import cargar, lineas  # noqa: E402
 
 ENTRADA = os.path.join(RAIZ, 'Proyecto_v5.docx')
@@ -266,6 +267,7 @@ class Documento:
         return p._element
 
     def guardar(self, ruta):
+        paginado.numerar(self.doc)
         self.doc.save(ruta)
         podar(ruta)
 
