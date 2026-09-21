@@ -4,19 +4,31 @@ Fuente de la sección: los diez subtítulos del ejemplo de la cátedra, los cato
 del anteproyecto, `docs/auditoria-tres-vias.md`, los tres `cambios-anteproyecto-v*.md` y
 la historia del repositorio.
 
-> **Lo que está marcado `[COMPLETAR: …]` no se puede escribir desde el repositorio.** Son
-> los hechos que sólo conocen los autores: cómo trabajaron entre ellos, qué dijo el tutor
-> y qué dijo la clienta, cuántas horas le dedicaron, y qué dieron las pruebas al
-> ejecutarse. No están inventados a propósito.
+> **Quedan dos `[COMPLETAR: …]`**: la confirmación que sale de la sesión de capacitación
+> con la encargada, y el párrafo de cierre, que es de los autores. Todo lo demás está
+> escrito sobre hechos del proyecto.
 
 ---
 
 ## Dinámica del equipo de trabajo
 
-[COMPLETAR: si habían trabajado juntos antes, cómo se repartieron las tareas, si el
-reparto funcionó, y cómo resolvieron los desacuerdos cuando aparecieron.]
+Los dos integrantes ya habían trabajado juntos en varios trabajos académicos previos, y
+eso se notó menos en la velocidad que en la falta de fricción: no hubo un período de
+acomodamiento, porque cada uno sabía de antemano cómo trabajaba el otro.
 
-Lo que sí quedó asentado es la forma de trabajo: el desarrollo se dividió en **seis
+**No hubo reparto fijo de tareas.** Ni por módulo ni por capa: el trabajo se asignaba
+dentro de cada incremento según la disponibilidad de cada uno, y los dos terminaron
+escribiendo en las tres capas del sistema. Lo que sí hubo fue una regla constante: **lo
+que escribía uno lo revisaba el otro antes de integrarlo**. Cuando la revisión encontraba
+algo, se corregía y se seguía; los desacuerdos se resolvieron discutiendo el caso concreto
+y ninguno escaló más allá de eso.
+
+Ese esquema tiene un costo y una ventaja, y conviene nombrar los dos. El costo es que
+nadie es el experto de ningún módulo, y por lo tanto cada tarea empieza con un rato de
+releer lo que hay. La ventaja quedó a la vista en el resultado y se explica en el párrafo
+siguiente.
+
+La forma de trabajo quedó asentada así: el desarrollo se dividió en **seis
 incrementos**, cada uno con su conjunto de funcionalidades y sus pruebas, y el trabajo se
 hizo sobre los mismos módulos con revisión cruzada, tal como se planificó en el
 anteproyecto. Los módulos no se repartieron por integrante, y esa decisión tuvo una
@@ -26,21 +38,33 @@ cría— quedaron coherentes, porque nadie tuvo que adivinar qué hacía el mód
 
 ## Relación con el cliente
 
-[COMPLETAR: cómo fue el contacto con la encargada a lo largo de las iteraciones, con qué
-frecuencia, por qué medios, y cómo se resolvieron las diferencias de criterio. El relato
-extendido va en la sección 2.8.]
+El contacto con la encargada fue **telefónico y quincenal**, y se acortó cuando hizo falta:
+al cerrar un incremento, o cuando una regla del tambo admitía más de una lectura y no se
+podía seguir sin preguntar. El relato extendido va en la sección 2.8; acá interesa un
+hecho que define la relación y que conviene no maquillar: **las propuestas de cambio no
+vinieron de la clienta, vinieron del equipo**, casi siempre a partir de una observación
+del tutor, y se decidían con ella. Las instancias de validación fueron, por eso,
+instancias sin sorpresas.
 
-Hay un hecho concreto que conviene dejar escrito acá porque cambió el sistema: **el
-relevamiento sobre lo que se carga todos los días** mostró que los cuatro eventos
-reproductivos —celo, servicio, tacto y parto— se anotan a diario, uno por animal, y que
-llegar a cada uno costaba cuatro clics de menú. De ahí salió el **registro rápido del
-tablero**, que resuelve dos de esos eventos en la propia pantalla de inicio y abre el
-formulario completo de los otros dos con la caravana ya cargada. No es una funcionalidad
-que estuviera en el anteproyecto: salió de mirar cómo se trabaja.
+Hay un cambio concreto que conviene dejar escrito acá porque rehízo la pantalla principal.
+El disparador fue una observación del tutor sobre el tablero; el contenido salió de
+revisar con la encargada **qué se carga efectivamente todos los días**, y ahí apareció lo
+que ningún requerimiento había registrado: los cuatro eventos reproductivos —celo,
+servicio, tacto y parto— se anotan a diario, uno por animal, y llegar a cada uno costaba
+cuatro clics de menú. De ahí salió el **registro rápido del tablero**, que resuelve dos de
+esos eventos en la propia pantalla de inicio y abre el formulario completo de los otros dos
+con la caravana ya cargada. No es una funcionalidad que estuviera en el anteproyecto.
 
 ## Relación con el tutor
 
-[COMPLETAR: cómo fue el acompañamiento a lo largo del proyecto.]
+El acompañamiento del tutor fue **sostenido y exigente, sobre todo al principio**. Las
+primeras reuniones no se ocuparon de corregir lo que había, sino de señalar que el equipo
+podía ofrecer bastante más de lo que estaba ofreciendo: el alcance que se proponía era
+razonable y también era cómodo. Esa exigencia inicial es la que explica buena parte de la
+distancia entre lo que el anteproyecto imaginaba y lo que el sistema terminó siendo, y es
+también el origen de casi todas las propuestas de cambio que el equipo después llevó a la
+clienta. Visto desde el final, fue la intervención más productiva del proyecto: **subió el
+piso antes de que estuviera caro subirlo**.
 
 Queda registrada una intervención que cambió el sistema: el **20/08/2026 el tutor pidió
 rehacer la pantalla de inicio**, y el rediseño quedó hecho el 22/08. El tablero pasó de
@@ -64,6 +88,19 @@ el tablero, los indicadores, las candidatas a descarte, la ficha integral—. El
 preventivo previsto, dividir el desarrollo en incrementos controlados, es el que absorbió
 el crecimiento: los casos de uso nuevos se concentraron en la cuarta y la quinta
 iteración, sin obligar a rehacer lo construido antes.
+
+La subestimación también se puede medir en horas, y conviene hacerlo porque es la cuenta
+que la sección 1.11 dejó planteada. El plan preveía **dieciséis horas semanales por
+integrante a lo largo de veinticinco semanas: 800 horas**, o 1,35 horas por punto de
+función. El esfuerzo real fue **de alrededor de mil horas**, un **veinticinco por ciento
+por encima** de lo planificado, que llevan la productividad a unas 1,69 horas por punto de
+función. La cifra es una reconstrucción y no una medición —el equipo no llevó registro de
+horas, y decirlo es parte de la honestidad de la estimación—: sale de las veinticinco
+semanas de calendario, de descontar las cinco en las que no hubo avance por obligaciones
+de cursada, y de reconocer que en las restantes la dedicación estuvo bastante por encima
+de las dieciséis horas pactadas. **Lo que sí es un dato y no una reconstrucción es que el
+proyecto se entregó en la fecha prevista**: el desvío no se pagó con calendario, se pagó
+con horas.
 
 **R2 — Errores en la especificación o interpretación de requerimientos. Se dio, y fue el
 hallazgo más importante del proyecto.** Al terminar el sistema se hizo una **auditoría de
@@ -120,13 +157,26 @@ No es un error —el sistema no hace nada malo— pero es código que nadie va a
 nunca, y saberlo vale más que suponer que está probado.
 
 **R3 — Falta de experiencia en desarrollos de gran escala. Se dio, y era esperable.**
-[COMPLETAR: qué costó aprender y cómo se resolvió.] Quedó a la vista en el propio proceso:
+Lo que más costó aprender no fue lo que más líneas tiene, sino lo que salía del terreno
+conocido: **la integración con el bot de Telegram y la generación de reportes en PDF y en
+planilla**. Las dos cosas son, cada una a su modo, salir del navegador: una habla con un
+servicio externo que responde cuando quiere, y la otra construye un documento sin una
+pantalla donde ver el resultado hasta que está hecho. Se resolvieron del mismo modo, que
+es el único que había disponible: leyendo la documentación de la biblioteca, probando
+contra casos chicos y recién después llevándolo al sistema. Quedó a la vista también en
+otra parte del proceso:
 varias decisiones de arquitectura se tomaron sobre la marcha y se corrigieron después —la
 caché de la capa de dominio, que era compartida por todo el proceso y pasó a vivir en cada
 instancia, es el ejemplo más claro—.
 
-**R4 — Retrasos en el desarrollo. [COMPLETAR: si se dio, en qué iteración, y cómo se
-recuperó.]**
+**R4 — Retrasos en el desarrollo. Se dio, al principio.** Los atrasos se concentraron en
+los primeros incrementos, que es donde era esperable: es el tramo en el que todavía se
+estaban tomando las decisiones de arquitectura y en el que cada pantalla se escribía por
+primera vez, sin un patrón ya resuelto del cual copiar. El control previsto era reacomodar
+el alcance de las iteraciones siguientes; **no hizo falta usarlo**. El tiempo se recuperó
+aumentando la dedicación semanal por encima de la planificada, que es de dónde sale el
+desvío de horas de R1, y a partir del tercer incremento el ritmo se estabilizó porque ya
+había un patrón para cada tipo de pantalla. La fecha de entrega no se movió.
 
 **R5 — Funcionalidades de alta complejidad. Se dio, y se resolvió acotando en vez de
 prometer.** Tres reglas del tambo resultaron más caras de lo previsto, y en los tres casos
@@ -150,7 +200,12 @@ las mismas que se ven en el tablero y en las pantallas de cada módulo, de donde
 toma. Si el servicio dejara de responder, no se pierde información ni se interrumpe la
 operación. El plan de contingencia de 2.7 lo retoma.
 
-**R7 — Resistencia al cambio por parte de la usuaria. [COMPLETAR: si apareció.]** El
+**R7 — Resistencia al cambio por parte de la usuaria. No se dio.** En ningún momento
+apareció la objeción que el riesgo anticipaba —que en el cuaderno tal cosa se hacía más
+rápido—. Hay que decir, para que la afirmación valga lo que vale, que **el riesgo se
+evaluó sobre una sola persona**: la encargada es la única que va a operar el sistema, y a
+los tamberos la incorporación no les modifica la tarea, así que no hubo con quiénes
+medirlo. El
 control preventivo previsto —mantener una operativa parecida a la actual— se aplicó desde
 el diseño: el sistema se organiza en el orden en que ocurre el trabajo del tambo y no en
 el orden en que se construyó el software.
@@ -162,20 +217,33 @@ decirlo así.
 
 **R9 — Fallas del hosting o pérdida de información. No se dio.** El control preventivo
 —los respaldos automáticos del servicio— está descrito en 2.6, junto con la recomendación
-de una segunda copia fuera del servidor. [COMPLETAR: si hubo algún episodio durante el
-despliegue.]
+de una segunda copia fuera del servidor. No hubo ningún episodio de caída ni de pérdida de
+información durante el despliegue ni en el uso posterior.
 
-**R10 — Falta de comunicación entre los integrantes. [COMPLETAR.]**
+**R10 — Falta de comunicación entre los integrantes. No se dio.** El riesgo suponía un
+equipo que tiene que construir su forma de trabajar durante el proyecto, y acá esa forma
+ya existía por los trabajos anteriores. El mecanismo que lo sostuvo fue el mismo todo el
+tiempo: mensajería para el día a día y videollamada cuando el tema pedía más ida y vuelta
+que un mensaje. Con la revisión cruzada pasó algo parecido: las correcciones del otro se
+aplicaban sin discusión de fondo, porque estaban hechas sobre un código que los dos
+conocían.
 
-**R11 — Abandono del proyecto por parte de un integrante. [COMPLETAR: lo esperable es que
-no se haya dado.]**
+**R11 — Abandono del proyecto por parte de un integrante. No se dio, y no llegó a
+insinuarse.**
 
-**R12 — Pérdida de interés o disponibilidad del cliente. [COMPLETAR.]**
+**R12 — Pérdida de interés o disponibilidad del cliente. No se dio en la forma prevista.**
+La disposición de la encargada se mantuvo durante todo el proyecto. Lo que sí varió fue su
+disponibilidad: hubo momentos en que el tiempo libre no daba y alguna instancia de
+validación se pospuso. Nunca se cayó, y el desarrollo nunca quedó frenado esperándola,
+porque el trabajo de la iteración siguiente no dependía de esa confirmación.
 
-**R13 — El sistema no cumple las expectativas del cliente. [COMPLETAR: qué dijo la
-encargada al ver el sistema terminado; el relato va en 2.8.]** El control preventivo
-funcionó al menos una vez de forma comprobable: el rediseño del tablero salió de un
-relevamiento sobre lo que se carga todos los días, no de una suposición del equipo.
+**R13 — El sistema no cumple las expectativas del cliente. No se dio.** Las validaciones
+incrementales funcionaron como control preventivo con un efecto bastante literal: **al
+final no hubo nada que la encargada viera por primera vez**, porque cada módulo se le
+había mostrado a medida que se construía. Eso es exactamente lo que el riesgo buscaba
+evitar, y tiene también la contracara que la sección 2.8 desarrolla: un cliente que
+valida sin sorpresas es un cliente que tampoco está forzando los límites del sistema. La
+confirmación que falta no es de expectativas sino de uso, y sale de la capacitación.
 
 **R14 — Interfaz de usuario poco intuitiva. Se dio, y se corrigió.** La primera pantalla
 de inicio era un resumen que no servía para trabajar, y hubo que rehacerla. Además se
@@ -237,13 +305,29 @@ resumen diario llega al teléfono a la hora configurada con las tareas del día.
 
 **QuestPDF y ClosedXML** resolvieron los reportes en PDF y planilla sin fricción.
 
-**Git y GitHub** [COMPLETAR: si el equipo tenía experiencia previa; en qué ayudó
-concretamente].
+**Git y GitHub** se usaron desde el primer día con una base previa, pero el manejo se
+pulió mucho durante el proyecto: pasar de versionar el trabajo propio a integrar el de dos
+personas sobre los mismos archivos obliga a entender las ramas de otra manera. **No se
+perdió trabajo en ninguna integración.** Lo que la herramienta aportó y no era obvio de
+antemano es el registro: cuando la auditoría final preguntó por qué una regla del sistema
+era como era, la respuesta estaba en el historial.
 
 ## Trabajo colaborativo
 
-[COMPLETAR: cómo se coordinaron en el día a día, qué medios usaron, y qué aprendieron
-sobre trabajar de a dos sobre el mismo código.]
+La coordinación del día a día fue **por mensajería**, por comodidad y porque permitía
+trabajar en horarios distintos sin tener que sincronizarse; cuando un tema pedía más
+interacción que un intercambio de mensajes —una decisión de diseño, repasar algo que no
+cerraba— se pasaba a **videollamada**. No hubo reuniones fijas de calendario, y con este
+equipo no hicieron falta.
+
+Sobre trabajar de a dos en el mismo código, la enseñanza no es sobre la herramienta sino
+sobre la decisión de no repartirse los módulos. Cuesta más al empezar cada tarea, porque
+hay que volver a leer lo que escribió el otro. Lo devuelve en las reglas que cruzan
+módulos, que en este sistema son las que le dan valor: **el tratamiento que saca a la vaca
+del tanque, el parto que abre una lactancia y da de alta la cría, la inseminación que
+descuenta una pajuela**. Esas reglas viven en el borde entre dos módulos, y son
+exactamente las que se rompen cuando cada uno programa contra su idea de lo que hace el
+módulo del otro.
 
 Del repositorio se desprende una práctica que conviene contar: **el trabajo se hizo en
 ramas por funcionalidad que se integraban a `master` mediante solicitudes de
@@ -298,6 +382,15 @@ del plan justamente para no comprometer algo que el proyecto no iba a hacer. Per
 está y hay que nombrarlo: **cada cambio obliga a repetir el recorrido a mano**, y las
 reglas que cruzan módulos son las que más se benefician de una prueba que se corra sola.
 Es lo primero que agregaría el equipo si el sistema siguiera creciendo.
+
+**La validación con la clienta confirmó más de lo que exploró.** Mostrarle cada incremento
+a medida que se construía evitó las sorpresas del final, y eso es un acierto. Pero tuvo un
+efecto que recién se ve con el proyecto terminado: **casi ninguna propuesta de cambio nació
+de ella**. Las llevó el equipo, en general a partir de una observación del tutor. Una
+validación que solamente confirma no encuentra lo que todavía falta pedir, y la forma de
+haberlo evitado no era pedirle opiniones sino ponerla a operar el sistema antes: la
+sesión en la que ella lo usa sin que nadie se lo muestre debería haber ocurrido en la
+mitad del proyecto y no al final.
 
 **El documento se atrasó respecto del sistema.** Ya está dicho en Metodología, y es el
 punto a mejorar más honesto del proyecto: hubo que hacer una auditoría de tres vías al

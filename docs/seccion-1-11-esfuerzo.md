@@ -4,8 +4,9 @@ Fuente de la sección: el método de puntos de función tal como lo presenta el 
 la cátedra, aplicado sobre el inventario de funciones de `docs/estimacion_esfuerzo.py`,
 que a su vez se verifica contra `Tesis/Dominio/Controladora.cs` y `bd/CreacionDb.sql`.
 
-**Dos cosas quedan para completar** y están marcadas en el texto: la dedicación semanal
-que el equipo se fijó, y las horas efectivamente trabajadas, que van en 2.9.
+La dedicación semanal y el esfuerzo planificado salen del calendario que el equipo se
+fijó al presentar la idea; el contraste contra las horas efectivamente trabajadas va en
+la sección 2.9, al evaluar el riesgo R1.
 
 ---
 
@@ -163,13 +164,31 @@ rápido de lo que suma trabajo**, porque cada operación cuenta como función co
 escribe siguiendo un patrón ya conocido.
 
 Por eso la estimación de este proyecto no se tomó de la tabla, sino que se ancló en el
-calendario disponible y se usó el tamaño para verificar que ese calendario alcanzara. Con
-un equipo de dos integrantes, seis iteraciones y una dedicación de
-**[COMPLETAR: horas semanales por integrante que el equipo se fijó]**, el esfuerzo
-planificado es de **[COMPLETAR: total de horas]**, lo que supone una productividad de
-**[COMPLETAR: horas por punto de función]**.
+calendario disponible y se usó el tamaño para verificar que ese calendario alcanzara.
 
-Ese número —y no el de la bibliografía— es el que hay que mirar al cerrar el proyecto, y
-es lo que la sección 2.9 retoma al evaluar si la planificación fue realista. El riesgo
-**R1, subestimación del tamaño del proyecto**, es exactamente el riesgo de que esta cuenta
-esté mal.
+El calendario es el que va desde la **presentación de la idea, el 15 de abril de 2026**,
+hasta la **entrega del 7 de octubre de 2026**: veinticinco semanas, repartidas en seis
+incrementos. Sobre esa base, el equipo se fijó una dedicación de **dieciséis horas
+semanales por integrante**, que con dos integrantes da un esfuerzo planificado de
+**800 horas**.
+
+| Concepto | Valor |
+|---|---|
+| Semanas de calendario (15/04/2026 – 07/10/2026) | 25 |
+| Integrantes | 2 |
+| Dedicación semanal planificada por integrante | 16 h |
+| **Esfuerzo planificado** | **800 h** |
+| Puntos de función | 593 |
+| **Productividad planificada** | **1,35 h por punto de función** |
+
+Ese valor —1,35 horas por punto de función— es el que hay que mirar al cerrar el
+proyecto, y es lo que la sección 2.9 retoma al evaluar si la planificación fue realista.
+Conviene decir desde acá qué significa: es **un orden de magnitud más bajo que el de la
+bibliografía**, y lo es por las dos razones del párrafo anterior. No es una productividad
+que un equipo pueda prometerle a un cliente; es la que corresponde a dos personas
+escribiendo un sistema de gestión sobre un framework que ya resuelve el acceso a datos y
+la capa web, sin ninguna de las estructuras que rodean a un desarrollo industrial.
+
+El riesgo **R1, subestimación del tamaño del proyecto**, es exactamente el riesgo de que
+esta cuenta esté mal.
+
