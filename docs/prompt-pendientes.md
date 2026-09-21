@@ -71,10 +71,14 @@ lo que falta.
   automatizable**: `m7-configuracion-bot` y `t-telegram-vinculado` necesitan un token de
   bot con un chat vinculado, y `m7-resumen-telegram` y `t-telegram-resumen` son fotos del
   teléfono.
-- **1.11 Estimación del esfuerzo** está en el anteproyecto, con el conteo en
-  `docs/estimacion_esfuerzo.py`, que se verifica solo contra el código.
-- **2.9 Conclusiones** está escrita, con 16 marcas `[COMPLETAR]` para lo que sólo saben
-  los autores.
+- **1.11 Estimación del esfuerzo** está **cerrada** (21/09): el conteo en
+  `docs/estimacion_esfuerzo.py` se verifica solo contra el código, y el calendario real
+  —15/04 a 07/10, 25 semanas, 16 h semanales por integrante— da 800 horas planificadas y
+  1,35 h por punto de función. Sin marcas pendientes.
+- **2.9 Conclusiones** está escrita y **le quedan dos marcas**: la confirmación que sale
+  de la capacitación y el párrafo de cierre. El contraste de horas —800 planificadas
+  contra unas 1.000 reconstruidas, +25 %— está en R1, dicho como reconstrucción y no como
+  medición.
 - **Los reparos de forma** (15/09): palabras clave, RNF1 a RNF9 numerados, el subtítulo
   «Alcances», la línea de firmas que se colaba al índice, el «Indice» suelto del
   comienzo, el párrafo de criticidad del cronograma y los espacios invisibles de las
@@ -90,8 +94,13 @@ lo que falta.
 - **Las pruebas de 2.3 están ejecutadas** (16/09): 87 filas con resultado y 19 sin
   ejecutar, cada una con su motivo. Encontraron tres divergencias, que están en la tabla
   de errores de la sección y contadas en 2.9.
-- **2.8 existe** (20/09), escrita sobre lo que dejó rastro en el proyecto; lo que dijo la
-  encargada sale de la sesión con ella.
+- **2.8 está redactada** (21/09) con lo que contaron los autores: contacto telefónico
+  quincenal, propuestas de cambio que llevaba el equipo a partir del tutor y no la
+  clienta, y validaciones sin sorpresas —contado con su contracara, que es también un
+  punto a mejorar de 2.9—. Le quedan dos marcas, las dos de la capacitación.
+- **Se corrigió una incoherencia entre secciones**: el rediseño del tablero lo disparó el
+  tutor (20/08) y el contenido salió de revisar con la encargada qué se carga todos los
+  días. La 2.8 se lo atribuía entero al relevamiento.
 - **El organigrama del establecimiento** está en la Presentación del Cliente, generado
   por `docs/diagramas/generar_organigrama.py`.
 - **El glosario se rehízo**: 27 términos, con las palabras del tambo —caravana, celo,
@@ -133,16 +142,16 @@ etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
 - **Las cuatro capturas de Telegram**: vincular el bot con su token y sacar las dos de
   pantalla, más las dos fotos del teléfono. Van a `docs/capturas/` con esos nombres. Con
   el bot vinculado caen además **trece pruebas de 2.3** que hoy figuran sin ejecutar.
-- **2.8 Grado de satisfacción del cliente** (una página, sin imágenes). No es una
-  encuesta: es el relato de la relación con la encargada a lo largo de las iteraciones.
-  Hace falta que le muestren el sistema y anoten lo que dice; con esas notas, la redactás
-  vos. De la misma sesión sale el criterio del RNF1 de Usabilidad.
-- **Las 16 marcas `[COMPLETAR]` de 2.9 y las 3 de 1.11**: cómo trabajó el equipo, cómo
-  fue con el tutor y con la clienta, si hubo retrasos, y las horas dedicadas.
+- **La sesión de capacitación con la encargada, antes del 7/10.** Es la que verifica el
+  RNF1 de Usabilidad —que complete sin asistencia las cinco tareas de uso diario después
+  de una única sesión— y de la que salen las dos marcas de 2.8, la de 2.9 sobre el
+  objetivo que depende de su uso, y las palabras de ella sobre el sistema terminado.
+  Decidido el 21/09: se hace antes de la entrega, para no entregar un requerimiento no
+  funcional sin verificar.
+- **El párrafo de cierre de 2.9**, que es de los autores. El material con el que
+  escribirlo ya está debajo de la marca.
 - **El anexo**: fotos de los cuadernos y del pizarrón con que hoy se lleva el tambo. Es
   la evidencia de la «Presentación del problema» y cuesta cinco minutos con un teléfono.
-- **El organigrama** de la presentación del cliente: dueño, encargada, tamberos y
-  veterinario externo. Cierra la sección de actores de un golpe de vista.
 
 ### C. Decisiones ya tomadas — no volver a abrirlas
 
