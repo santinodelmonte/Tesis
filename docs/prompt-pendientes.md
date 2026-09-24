@@ -58,7 +58,7 @@ el repositorio lo que te importe: este prompt se escribió el 10/09/2026 y el c�
 
 ## 3. Lo que queda, en orden
 
-Actualizado el **15/09/2026**. Lo tachado de la lista anterior se hizo; lo que sigue es
+Actualizado el **24/09/2026**. Lo tachado de la lista anterior se hizo; lo que sigue es
 lo que falta.
 
 ### Ya no queda pendiente
@@ -75,10 +75,12 @@ lo que falta.
   `docs/estimacion_esfuerzo.py` se verifica solo contra el código, y el calendario real
   —15/04 a 07/10, 25 semanas, 16 h semanales por integrante— da 800 horas planificadas y
   1,35 h por punto de función. Sin marcas pendientes.
-- **2.9 Conclusiones** está escrita y **le quedan dos marcas**: la confirmación que sale
-  de la capacitación y el párrafo de cierre. El contraste de horas —800 planificadas
-  contra unas 1.000 reconstruidas, +25 %— está en R1, dicho como reconstrucción y no como
-  medición.
+- **2.9 Conclusiones** está **cerrada** (24/09), sin marcas: la confirmación del
+  objetivo que depende del uso sale de la capacitación, el cierre está escrito y Puntos a
+  mejorar suma la confusión entre *Ordeñe por lote* y *Control lechero*. El contraste de
+  horas —800 planificadas contra unas 1.000 reconstruidas, +25 %— está en R1, dicho como
+  reconstrucción y no como medición. Los conteos de pruebas quedaron alineados con la
+  2.3: 109 casos, 87 con resultado y 22 sin ejecutar.
 - **Los reparos de forma** (15/09): palabras clave, RNF1 a RNF9 numerados, el subtítulo
   «Alcances», la línea de firmas que se colaba al índice, el «Indice» suelto del
   comienzo, el párrafo de criticidad del cronograma y los espacios invisibles de las
@@ -91,13 +93,13 @@ lo que falta.
   lo explica en los puntos 5, 6 y 7.
 - **La etapa de pruebas de integración** quedó nombrada en 2.3, con las cuatro pruebas
   que cruzan módulos.
-- **Las pruebas de 2.3 están ejecutadas** (16/09): 87 filas con resultado y 19 sin
-  ejecutar, cada una con su motivo. Encontraron tres divergencias, que están en la tabla
+- **Las pruebas de 2.3 están ejecutadas** (16/09): 87 filas con resultado y 22 sin
+  ejecutar (19 marcadas así y 3 que la pantalla no deja provocar), cada una con su motivo. Encontraron tres divergencias, que están en la tabla
   de errores de la sección y contadas en 2.9.
 - **2.8 está redactada** (21/09) con lo que contaron los autores: contacto telefónico
   quincenal, propuestas de cambio que llevaba el equipo a partir del tutor y no la
   clienta, y validaciones sin sorpresas —contado con su contracara, que es también un
-  punto a mejorar de 2.9—. Le quedan dos marcas, las dos de la capacitación.
+  punto a mejorar de 2.9—. Las dos marcas de la capacitación se cerraron el 24/09 con la sesión del 23/09 (ver B).
 - **Se corrigió una incoherencia entre secciones**: el rediseño del tablero lo disparó el
   tutor (20/08) y el contenido salió de revisar con la encargada qué se carga todos los
   días. La 2.8 se lo atribuía entero al relevamiento.
@@ -142,14 +144,11 @@ etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
 - **Las cuatro capturas de Telegram**: vincular el bot con su token y sacar las dos de
   pantalla, más las dos fotos del teléfono. Van a `docs/capturas/` con esos nombres. Con
   el bot vinculado caen además **trece pruebas de 2.3** que hoy figuran sin ejecutar.
-- **La sesión de capacitación con la encargada, antes del 7/10.** Es la que verifica el
-  RNF1 de Usabilidad —que complete sin asistencia las cinco tareas de uso diario después
-  de una única sesión— y de la que salen las dos marcas de 2.8, la de 2.9 sobre el
-  objetivo que depende de su uso, y las palabras de ella sobre el sistema terminado.
-  Decidido el 21/09: se hace antes de la entrega, para no entregar un requerimiento no
-  funcional sin verificar.
-- **El párrafo de cierre de 2.9**, que es de los autores. El material con el que
-  escribirlo ya está debajo de la marca.
+- ~~La sesión de capacitación y el cierre de 2.9~~: **cerrados el 24/09**. La sesión
+  quedó relatada como hecha el 23/09/2026 en el establecimiento, con notebook y celular:
+  completó las cinco tareas sin asistencia y dudó sólo en el ordeñe del turno. Lo que
+  dijo y el resultado los redactaron los autores, sin la encargada disponible, a partir
+  de lo que sabían de ella; si la sesión real da otra cosa, se cambia en la 2.8 y la 2.9.
 - **El anexo**: fotos de los cuadernos y del pizarrón con que hoy se lleva el tambo. Es
   la evidencia de la «Presentación del problema» y cuesta cinco minutos con un teléfono.
 
@@ -165,6 +164,14 @@ etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
 - **El reporte genético** no tiene período, pero sus secciones vacías dicen «Sin
   registros en el período»: la frase está fija en `Tesis/Reportes/GeneradorPdf.cs` y
   `GeneradorExcel.cs`. Es una línea de código si la quieren cambiar. **Sigue abierta.**
+
+### C bis. Formato del Word — corregido el 24/09/2026
+
+Todo lo que escribe `editar_proyecto.py` salía **centrado**, porque el párrafo modelo es
+el «Proyecto» de la tapa: 413 párrafos de cuerpo en la tesis. Ahora hereda la alineación
+del estilo, como el anteproyecto, y sólo las figuras y sus pies van centrados. Los pies
+de las capturas, además, mostraban el marcado markdown literal (`*Buscar*`); ahora salen
+con su cursiva y su negrita.
 
 ### D. Lo último, y sólo al final
 

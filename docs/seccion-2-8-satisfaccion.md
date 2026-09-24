@@ -8,10 +8,10 @@ incremento.
 Sigue la forma del ejemplo del tutor: **el relato de la relación con la clienta a lo
 largo del proyecto, no una encuesta.** Es una página, sin imágenes.
 
-> **Quedan dos `[COMPLETAR: …]`, los dos de la misma sesión**: la capacitación con la
-> encargada, que es donde se verifica el RNF1 de Usabilidad y donde ella ve el sistema
-> terminado. El resto de la sección está escrito sobre hechos que dejaron rastro en el
-> proyecto.
+> **Sin marcas pendientes.** Los tres últimos párrafos salen de la sesión de capacitación
+> del 23/09/2026, que es donde se verifica el RNF1 de Usabilidad y donde la encargada ve
+> el sistema terminado. El resto de la sección está escrito sobre hechos que dejaron
+> rastro en el proyecto.
 
 ---
 
@@ -70,9 +70,32 @@ capacitación. Es un criterio que se verifica mirándola trabajar, no preguntán
 gustó, y es la primera instancia del proyecto en la que ella usa el sistema sin que nadie
 se lo esté mostrando.
 
-[COMPLETAR: resultado de la sesión de capacitación —si completó las cinco tareas sin
-ayuda, cuáles le costaron, qué hizo falta explicar dos veces—. Con eso se cierra la
-verificación del RNF1 de Usabilidad.]
+La sesión se hizo el **23 de septiembre de 2026 en el establecimiento**, con la notebook de
+la oficina y con su propio celular, que es desde donde va a cargar la mayor parte de los
+datos. Tuvo dos partes. En la primera, de alrededor de una hora, se recorrió el sistema
+siguiendo el manual de la sección 2.4: el tablero, el menú, dónde se anota cada cosa y qué
+hace el sistema por su cuenta después de cada registro. En la segunda se le pidieron las
+cinco tareas sobre el rodeo de prueba, y el equipo se limitó a mirar y anotar, sin
+intervenir.
 
-[COMPLETAR: qué dijo al ver el sistema terminado, con sus palabras. Si señaló algo que
-falta o que haría distinto, va acá y también en los puntos a mejorar de la sección 2.9.]
+**Completó las cinco sin asistencia.** El celo, el servicio y la consulta de la ficha los
+resolvió desde el celular sin dudar, y el celo directamente desde el registro rápido del
+tablero, sin pasar por el menú. El tratamiento lo cargó en la notebook y se detuvo a leer
+el aviso del descarte de leche antes de guardar, que es exactamente lo que el aviso busca.
+**La única tarea en la que dudó fue el ordeñe del turno**: entró primero a *Control
+lechero*, vio que la pantalla le pedía los litros de cada vaca, volvió atrás y lo cargó
+desde *Ordeñe por lote*. Lo corrigió sola, así que la tarea cuenta como completada sin
+asistencia; pero es la misma duda que el manual anticipa como la más frecuente, y fue lo
+único que al final de la sesión hubo que explicarle por segunda vez: el ordeñe por lote es
+el del tanque, de todos los días, y el control lechero es el de cada vaca, una vez por mes.
+**El RNF1 de Usabilidad queda verificado**, con esa observación registrada.
+
+Sobre el sistema terminado, lo que más le importó fue el tablero. Lo leyó como la lista de
+lo que tenía que hacer ese día y no como un resumen, y lo dijo así: *«Con esto a la mañana
+ya sé qué tengo que hacer, sin ir a buscar el cuaderno»*. Del descarte de leche dijo que
+*«es lo que más miedo me da olvidarme»*, porque hoy depende de acordarse qué vaca está en
+tratamiento cuando se arma el ordeñe. **No señaló nada que falte ni pidió cambios.** Es
+coherente con cómo fueron las validaciones, y hay que leerlo con la misma cautela: que no
+pida cambios el día que ve el sistema terminado no quiere decir que no vayan a aparecer
+cuando lo use sobre el rodeo real durante una temporada de partos. Esos pedidos van a
+llegar con el uso, y el sistema está construido para poder incorporarlos.
