@@ -18,6 +18,7 @@ namespace Tesis.Dominio
     {
         private string mTitulo;
         private string mPeriodo;
+        private string mTextoSinRegistros;
         private DateTime mFechaEmision;
         private List<SeccionReporte> mSecciones;
 
@@ -27,6 +28,11 @@ namespace Tesis.Dominio
         // entero cuando no depende del tiempo.
         public string Periodo { get { return mPeriodo; } set { mPeriodo = value; } }
 
+        // Lo que dice una seccion vacia. Casi todos los reportes cubren un periodo y la
+        // frase lo nombra; el genetico es una foto del rodeo y no tiene periodo, asi que
+        // la Controladora le pone otra.
+        public string TextoSinRegistros { get { return mTextoSinRegistros; } set { mTextoSinRegistros = value; } }
+
         public DateTime FechaEmision { get { return mFechaEmision; } set { mFechaEmision = value; } }
 
         public List<SeccionReporte> Secciones { get { return mSecciones; } set { mSecciones = value; } }
@@ -35,6 +41,7 @@ namespace Tesis.Dominio
         {
             mTitulo = pTitulo;
             mPeriodo = pPeriodo;
+            mTextoSinRegistros = "Sin registros en el período.";
             mFechaEmision = DateTime.Now;
             mSecciones = new List<SeccionReporte>();
         }

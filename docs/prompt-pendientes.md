@@ -161,9 +161,9 @@ etapa de planificación. Los tres viven en `portada()` y `ABSTRACT`, dentro de
   secuencia y el documento entero, y el beneficio es cosmético.
 - **No hay pruebas automatizadas y no las va a haber.** Las pruebas son funcionales y
   manuales, sobre el sistema andando.
-- **El reporte genético** no tiene período, pero sus secciones vacías dicen «Sin
-  registros en el período»: la frase está fija en `Tesis/Reportes/GeneradorPdf.cs` y
-  `GeneradorExcel.cs`. Es una línea de código si la quieren cambiar. **Sigue abierta.**
+- **El reporte genético** no tiene período, y sus secciones vacías ahora dicen «Sin
+  registros.» (25/09). La frase la decide la Controladora en `Reporte.TextoSinRegistros`;
+  los reportes con período siguen diciendo «Sin registros en el período.»
 
 ### C bis. Formato del Word — corregido el 24/09/2026
 

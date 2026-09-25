@@ -85,7 +85,7 @@ namespace Tesis.Reportes
 
             if (pSeccion.Filas.Count == 0)
             {
-                pHoja.Cell(vFila, 1).Value = "Sin registros en el período.";
+                pHoja.Cell(vFila, 1).Value = pReporte.TextoSinRegistros;
                 pHoja.Cell(vFila, 1).Style.Font.Italic = true;
             }
             else

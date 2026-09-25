@@ -84,7 +84,7 @@ namespace Tesis.Reportes
                         // Una seccion vacia se informa y no se omite: que no haya
                         // tratamientos en el periodo es un dato, y borrarla del reporte
                         // dejaria la duda de si no hubo o no se consulto.
-                        columna.Item().PaddingTop(4).Text("Sin registros en el período.")
+                        columna.Item().PaddingTop(4).Text(pReporte.TextoSinRegistros)
                             .FontSize(9).Italic().FontColor(Colors.Grey.Darken1);
                         continue;
                     }

@@ -7300,6 +7300,7 @@ namespace Tesis.Dominio
             this.Refrescar();
 
             Reporte unReporte = new Reporte("Reporte genético", "Rodeo al día de la emisión");
+            unReporte.TextoSinRegistros = "Sin registros.";
 
             SeccionReporte unaGenealogia = unReporte.AgregarSeccion("Genealogía del rodeo",
                 new string[] { "Caravana", "Categoría", "Raza", "Nacimiento", "Madre", "Padre" });
