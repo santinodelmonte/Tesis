@@ -33,6 +33,22 @@ SALIDA = os.path.join(RAIZ, 'Proyecto_v7.docx')
 ANCHO_MAXIMO_CM = 16.0
 
 
+def centrar(p):
+    """Centra un parrafo y le saca la sangria de primera linea: figuras y sus pies."""
+    pPr = p.find(qn('w:pPr'))
+    if pPr is None:
+        pPr = p.makeelement(qn('w:pPr'), {})
+        p.insert(0, pPr)
+    for viejo in pPr.findall(qn('w:jc')) + pPr.findall(qn('w:ind')):
+        pPr.remove(viejo)
+    # El orden de los hijos de pPr lo fija el esquema: ind va antes que jc. Los parrafos
+    # que llegan aca traen a lo sumo un pStyle, que va primero, asi que agregar al final
+    # respeta el orden.
+    pPr.append(pPr.makeelement(qn('w:ind'), {qn('w:firstLine'): '0'}))
+    pPr.append(pPr.makeelement(qn('w:jc'), {qn('w:val'): 'center'}))
+    return p
+
+
 # --------------------------------------------------------------------------- utilidades
 
 class Documento:
@@ -123,6 +139,11 @@ class Documento:
                 nuevo.remove(hijo)
 
         pPr = nuevo.find(qn('w:pPr'))
+        # El modelo es el primer parrafo sin estilo del documento, que es el «Proyecto»
+        # de la tapa y esta centrado. Sin esto, todo el cuerpo salia centrado; asi
+        # hereda la alineacion del estilo, como el anteproyecto.
+        for viejo in pPr.findall(qn('w:jc')):
+            pPr.remove(viejo)
         if estilo:
             for viejo in pPr.findall(qn('w:pStyle')):
                 pPr.remove(viejo)
@@ -260,10 +281,14 @@ class Documento:
 
         p = self.doc.add_paragraph()
         p.add_run().add_picture(ruta, width=Cm(ancho), height=Cm(alto))
+        centrar(p._element)
         self.cursor.addnext(p._element)
         self.cursor = p._element
-        if pie:
-            self.parrafo(pie)
+        if isinstance(pie, list):
+            # Tramos con formato: el pie de una captura trae cursivas y negritas.
+            centrar(self.parrafo_rico(pie))
+        elif pie:
+            centrar(self.parrafo(pie))
         return p._element
 
     def guardar(self, ruta):

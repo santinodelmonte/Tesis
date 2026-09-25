@@ -24,7 +24,7 @@
 
         @if (!seccion.Filas.Any())
         {
-            <p class="text-muted fst-italic">Sin registros en el período.</p>
+            <p class="text-muted fst-italic">@Model.TextoSinRegistros</p>
         }
         else
         {

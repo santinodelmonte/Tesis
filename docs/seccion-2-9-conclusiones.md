@@ -4,9 +4,9 @@ Fuente de la sección: los diez subtítulos del ejemplo de la cátedra, los cato
 del anteproyecto, `docs/auditoria-tres-vias.md`, los tres `cambios-anteproyecto-v*.md` y
 la historia del repositorio.
 
-> **Quedan dos `[COMPLETAR: …]`**: la confirmación que sale de la sesión de capacitación
-> con la encargada, y el párrafo de cierre, que es de los autores. Todo lo demás está
-> escrito sobre hechos del proyecto.
+> **Sin marcas pendientes.** La confirmación de «Producto final» sale de la sesión de
+> capacitación del 23/09/2026 que relata la sección 2.8. Todo lo demás está escrito sobre
+> hechos del proyecto.
 
 ---
 
@@ -133,7 +133,7 @@ no se podía verificar; y la v8, que aplicó los hallazgos de la auditoría.
 
 **Y el riesgo volvió a aparecer al ejecutar las pruebas**, que es el dato que más vale la
 pena contar, porque muestra que la auditoría no había agotado el problema. Correr los
-ciento diez casos de la sección 2.3 sobre el sistema andando encontró **tres divergencias
+ciento nueve casos de la sección 2.3 sobre el sistema andando encontró **tres divergencias
 más del mismo tipo**, y en dos de ellas el equivocado volvió a ser el documento:
 
 | Qué esperaba la prueba | Qué hace el sistema | Cómo se resolvió |
@@ -243,7 +243,8 @@ final no hubo nada que la encargada viera por primera vez**, porque cada módulo
 había mostrado a medida que se construía. Eso es exactamente lo que el riesgo buscaba
 evitar, y tiene también la contracara que la sección 2.8 desarrolla: un cliente que
 valida sin sorpresas es un cliente que tampoco está forzando los límites del sistema. La
-confirmación que falta no es de expectativas sino de uso, y sale de la capacitación.
+confirmación que faltaba no era de expectativas sino de uso, y la dio la capacitación:
+la encargada completó las cinco tareas de uso diario sin asistencia.
 
 **R14 — Interfaz de usuario poco intuitiva. Se dio, y se corrigió.** La primera pantalla
 de inicio era un resumen que no servía para trabajar, y hubo que rehacerla. Además se
@@ -330,7 +331,7 @@ exactamente las que se rompen cuando cada uno programa contra su idea de lo que 
 módulo del otro.
 
 Del repositorio se desprende una práctica que conviene contar: **el trabajo se hizo en
-ramas por funcionalidad que se integraban a `master` mediante solicitudes de
+ramas por funcionalidad que se integraban a** `master` **mediante solicitudes de
 incorporación**, lo que dejó cada incremento asociado a un conjunto de cambios
 identificable. Es también lo que permitió hacer la auditoría final: se pudo reconstruir
 cuándo y por qué cada regla del sistema quedó como quedó.
@@ -338,8 +339,8 @@ cuándo y por qué cada regla del sistema quedó como quedó.
 ## Producto final
 
 El sistema quedó terminado: **los siete módulos, los cuarenta y nueve casos de uso, y la
-compilación sin errores**. De los ciento diez casos de prueba de la sección 2.3, ochenta y
-cinco se ejecutaron con el resultado esperado y **ninguno dejó al sistema haciendo algo
+compilación sin errores**. De los ciento nueve casos de prueba de la sección 2.3, ochenta y
+siete se ejecutaron con el resultado esperado y **ninguno dejó al sistema haciendo algo
 incorrecto**: las tres diferencias que aparecieron eran del documento en dos casos y del
 texto de un mensaje en el tercero. Cubre lo que el anteproyecto se propuso —centralizar en un
 único lugar la información del rodeo que hoy se lleva en cuadernos y pizarrones— y lo hace
@@ -370,7 +371,14 @@ consecuencias.
 sistema: que la información disponible mejore efectivamente sus decisiones. Eso sale de la
 sesión de trabajo que se relata en la sección 2.8, y no de una prueba funcional.
 
-[COMPLETAR: si la sesión con la encargada confirmó ese último punto.]
+La sesión lo confirmó en la medida en que una sola jornada puede confirmarlo. Al abrir el
+tablero, la encargada lo leyó como la lista de trabajo del día —qué vaca revisar, qué parto
+se acerca, qué insumo reponer— y no como un resumen, y señaló el descarte de leche como el
+dato que más le preocupa olvidar y que hoy depende de su memoria. Eso muestra que la
+información llega a la decisión **en el momento en que la decisión se toma**, que es lo que
+el objetivo pedía. Lo que una sesión no puede mostrar es el efecto sostenido —menos tactos
+atrasados, ninguna leche en descarte en el tanque—, y eso sólo se va a ver con una
+temporada de uso sobre el rodeo real.
 
 ## Puntos a mejorar
 
@@ -391,6 +399,14 @@ validación que solamente confirma no encuentra lo que todavía falta pedir, y l
 haberlo evitado no era pedirle opiniones sino ponerla a operar el sistema antes: la
 sesión en la que ella lo usa sin que nadie se lo muestre debería haber ocurrido en la
 mitad del proyecto y no al final.
+
+**Las dos formas de cargar la leche se confunden desde el menú.** Fue lo único que le
+costó a la encargada en la capacitación: buscó el ordeñe del turno en *Control lechero*
+antes de encontrarlo en *Ordeñe por lote*. El manual ya lo advierte como la duda más
+frecuente, pero una advertencia en el manual es la solución cara. La barata es que el menú
+lo diga solo —una línea debajo de cada entrada, «litros del tanque, cada turno» y «litros
+por vaca, una vez por mes»—, o que las dos entradas se llamen por lo que la encargada
+anota y no por el nombre técnico de la práctica.
 
 **El documento se atrasó respecto del sistema.** Ya está dicho en Metodología, y es el
 punto a mejorar más honesto del proyecto: hubo que hacer una auditoría de tres vías al
@@ -419,9 +435,6 @@ que también cargue datos, el esquema de acceso es lo primero que habría que re
 
 ## Conclusión final
 
-[COMPLETAR: el cierre es de los autores. Lo que sigue es el material con el que se puede
-escribir.]
-
 El proyecto entregó un sistema completo y en funcionamiento para un establecimiento que
 hasta hoy trabaja con cuadernos y pizarrones, y lo entregó con la documentación que permite
 mantenerlo: los requerimientos, los casos de uso, el modelo de datos, los diagramas y el
@@ -433,3 +446,16 @@ especificar, diseñar, construir, probar y documentar— y haber descubierto en 
 dice y lo que el sistema hace sigan siendo lo mismo al final de seis iteraciones; y que las
 reglas del negocio que uno cree entender después de una entrevista casi nunca son las
 reglas que el trabajo real tiene.
+
+Hay una imagen que resume el proyecto mejor que cualquier cifra, y es la de la sesión de
+capacitación: la encargada abriendo el tablero y leyéndolo como la lista de lo que tiene
+que hacer ese día. Para eso se construyó el sistema. No para guardar datos —eso ya lo hacía
+el cuaderno— sino para que **el dato que se anota hoy aparezca mañana en el lugar donde hace
+falta**, sin que nadie tenga que acordarse de ir a buscarlo.
+
+El sistema queda ahora en manos de quien lo va a usar, y lo que sigue ya no depende del
+equipo sino del uso: una temporada de partos sobre el rodeo real va a encontrar lo que
+ninguna prueba encontró y lo que ninguna validación llegó a pedir. Lo que el equipo se
+propone conservar de este trabajo es una costumbre más que un resultado: preguntar antes
+de suponer, verificar lo que el documento afirma contra lo que el sistema hace, y contar
+los errores con la misma precisión que los aciertos.

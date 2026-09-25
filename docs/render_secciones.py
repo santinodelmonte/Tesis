@@ -219,7 +219,7 @@ def escribir(d, ruta_md, faltantes, base_titulo=3):
             ruta = os.path.join(CAPTURAS, nombre + '.png')
             pie = ('Figura. ' + pie) if pie else ''
             if os.path.exists(ruta):
-                d.imagen(ruta, pie)
+                d.imagen(ruta, segmentos(pie) if pie else '')
             else:
                 # Marcador visible: un hueco silencioso se entrega sin que nadie lo note.
                 faltantes.append(nombre)
